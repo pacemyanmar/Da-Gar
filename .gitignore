@@ -3,8 +3,8 @@ vendor/
 node_modules/
 nbproject/
 resources/assets/vendor/
-kanaung-boilerplate.sublime-project
-kanaung-boilerplate.sublime-workspace
+sms.sublime-project
+sms.sublime-workspace
 
 # Laravel 4 specific
 bootstrap/compiled.php
