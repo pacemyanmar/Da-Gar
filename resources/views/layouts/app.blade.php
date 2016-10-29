@@ -138,29 +138,8 @@
         </div>
     </div>
     @endif
-    <!-- jQuery 2.1.4 -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
-    <script type="text/javascript">
-        function loadscript(src, type="script", place=0) {
-            var script = document.createElement(type);
-            script.async = true;
-            script.src = src;
-
-            var first = document.getElementsByTagName(type)[place];
-            first.parentNode.insertBefore(script, first.nextSibling);
-        }
-        if ('undefined' == typeof window.jQuery) {
-            loadscript("{{ elixir('js/vendor.js') }}")
-        } else {
-            <!-- AdminLTE App -->
-            loadscript("https://cdnjs.cloudflare.com/ajax/libs/admin-lte/2.3.3/js/app.min.js");
-            
-            loadscript("https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.2/js/select2.min.js");
-            loadscript("http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js");
-            
-        }
-
-    </script>
+    <!-- Combined vendor js -->
+    <script src="{{ elixir('js/vendor.js') }}"></script>
 
     @yield('scripts')
 </body>
