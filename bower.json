@@ -1,0 +1,15 @@
+{
+  "name": "sms",
+  "dependencies": {
+    "formBuilder": "*",
+    "select2": "*",
+    "bootstrap": "*",
+    "ionicons": "*",
+    "iCheck": "*",
+    "datatables": "*",
+    "rivets": "*",
+    "backbone": "*",
+    "backbone-deep-model": "*",
+    "adminlte": "*"
+  }
+}
