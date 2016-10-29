@@ -21,8 +21,9 @@ elixir(mix => {
             // Order is important
             //'underscore/underscore-min.js',
             'jquery/dist/jquery.min.js',
-            'jquery-ui/ui/minified/jquery-ui.min.js',
-            'jquery-ui/ui/minified/jquery.ui.sortable.min.js',
+            'jquery-ui/jquery-ui.min.js',
+            'jquery-ui-sortable/jquery-ui-sortable.min.js',
+            '../js/tooltip-conflict.js',
             //'backbone/backbone.js',
             //'backbone-deep-model/distribution/deep-model.js',            
             'select2/dist/js/select2.min.js',

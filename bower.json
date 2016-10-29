@@ -10,6 +10,7 @@
     "rivets": "*",
     "backbone": "*",
     "backbone-deep-model": "*",
-    "adminlte": "*"
+    "adminlte": "*",
+    "jquery-ui": "*"
   }
 }
