@@ -14,7 +14,23 @@ require('laravel-elixir-vue');
  */
 
 elixir(mix => {
-    mix.styles([
+    mix.copy('resources/assets/vendor/bootstrap/dist/fonts', 'public/fonts')
+        .copy('resources/assets/vendor/font-awesome/fonts', 'public/fonts')
+        .copy('resources/assets/vendor/ionicons/fonts','public/fonts')
+        .copy('resources/assets/vendor/adminlte/img', 'public/img')
+        .copy('resources/assets/vendor/datatables/media/images', 'public/images')
+        .styles([
+            'bootstrap/dist/css/bootstrap.min.css',
+            'bootstrap/dist/css/bootstrap-theme.min.css',
+            'font-awesome/css/font-awesome.min.css',
+            'select2/dist/css/select2.css',
+            'adminlte/dist/css/AdminLTE.min.css',
+            'adminlte/dist/css/skins/_all-skins.min.css',
+            'ionicons/css/ionicons.min.css',
+            'iCheck/skins/all.css',
+            'formBuilder/dist/form-builder.min.css',
+            'formBuilder/dist/form-render.min.css',
+            'datatables/media/css/dataTables.bootstrap.min.css'
     	
     	],'public/css/vendor.css','resources/assets/vendor/')
     	.scripts([
@@ -31,6 +47,8 @@ elixir(mix => {
             'bootstrap/dist/js/bootstrap.min.js',
             'formBuilder/dist/form-builder.min.js',
             'formBuilder/dist/form-render.min.js',
+            'datatables/media/js/jquery.dataTables.min.js',
+            'datatables/media/js/dataTables.bootstrap.min.js',
             'adminlte/dist/js/app.min.js'
     		],'public/js/vendor.js','resources/assets/vendor/')
     	.sass('app.scss')
