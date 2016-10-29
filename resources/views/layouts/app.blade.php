@@ -140,6 +140,9 @@
     @endif
     <!-- Combined vendor js -->
     <script src="{{ elixir('js/vendor.js') }}"></script>
+    
+    <!-- app script -->
+    <script src="{{ elixir('js/app.js') }}"></script>
 
     @yield('scripts')
 </body>

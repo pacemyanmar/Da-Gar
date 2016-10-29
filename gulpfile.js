@@ -34,5 +34,6 @@ elixir(mix => {
             'adminlte/dist/js/app.min.js'
     		],'public/js/vendor.js','resources/assets/vendor/')
     	.sass('app.scss')
-       	.webpack('app.js');
+       	.webpack('app.js')
+        .version(["public/css/app.css","public/css/vendor.css","public/js/app.js","public/js/vendor.js"]);
 });
