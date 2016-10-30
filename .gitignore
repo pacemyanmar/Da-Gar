@@ -3,6 +3,8 @@ vendor/
 node_modules/
 nbproject/
 resources/assets/vendor/
+public/*/
+
 sms.sublime-project
 sms.sublime-workspace
 

@@ -14,11 +14,13 @@ require('laravel-elixir-vue');
  */
 
 elixir(mix => {
-    mix.copy('resources/assets/vendor/bootstrap/dist/fonts', 'public/fonts')
-        .copy('resources/assets/vendor/font-awesome/fonts', 'public/fonts')
-        .copy('resources/assets/vendor/ionicons/fonts','public/fonts')
-        .copy('resources/assets/vendor/adminlte/img', 'public/img')
-        .copy('resources/assets/vendor/datatables/media/images', 'public/images')
+    // by using versioning on js and css files, all dependencies related files and directory should be in "build" dir.
+    mix.copy('resources/assets/vendor/bootstrap/dist/fonts', 'public/build/fonts')
+        .copy('resources/assets/vendor/font-awesome/fonts', 'public/build/fonts')
+        .copy('resources/assets/vendor/ionicons/fonts','public/build/fonts')
+        .copy('resources/assets/vendor/adminlte/img', 'public/build/img')
+        .copy('resources/assets/vendor/datatables/media/images', 'public/build/images')
+        .copy('resources/assets/vendor/ion-checkradio/img', 'public/build/img')
         .styles([
             'bootstrap/dist/css/bootstrap.min.css',
             'bootstrap/dist/css/bootstrap-theme.min.css',
@@ -27,24 +29,24 @@ elixir(mix => {
             'adminlte/dist/css/AdminLTE.min.css',
             'adminlte/dist/css/skins/_all-skins.min.css',
             'ionicons/css/ionicons.min.css',
-            'iCheck/skins/all.css',
             'formBuilder/dist/form-builder.min.css',
             'formBuilder/dist/form-render.min.css',
-            'datatables/media/css/dataTables.bootstrap.min.css'
+            'datatables/media/css/dataTables.bootstrap.min.css',
+            'magic-check/css/magic-check.min.css',
     	
     	],'public/css/vendor.css','resources/assets/vendor/')
     	.scripts([
             // Order is important
             //'underscore/underscore-min.js',
             'jquery/dist/jquery.min.js',
+            'jquery-migrate-official/dist/jquery-migrate.min.js',
             'jquery-ui/jquery-ui.min.js',
             'jquery-ui-sortable/jquery-ui-sortable.min.js',
-            '../js/tooltip-conflict.js',
+            '../js/tooltip-conflict.js', // resolve conflict between jquery-ui and bootstrap            
+            'bootstrap/dist/js/bootstrap.min.js',
             //'backbone/backbone.js',
             //'backbone-deep-model/distribution/deep-model.js',            
             'select2/dist/js/select2.min.js',
-            'iCheck/icheck.min.js',
-            'bootstrap/dist/js/bootstrap.min.js',
             'formBuilder/dist/form-builder.min.js',
             'formBuilder/dist/form-render.min.js',
             'datatables/media/js/jquery.dataTables.min.js',

@@ -5,13 +5,18 @@
     "select2": "*",
     "bootstrap": "*",
     "ionicons": "*",
-    "iCheck": "*",
+    "iCheck": "iCheck#6fd2ef4",
     "datatables": "*",
     "rivets": "*",
     "backbone": "*",
     "backbone-deep-model": "*",
     "adminlte": "*",
     "jquery-ui": "*",
-    "font-awesome": "^4.7.0"
+    "font-awesome": "^4.7.0",
+    "jquery-migrate-official": "^3.0.0",
+    "awesome-bootstrap-checkbox": "^0.3.7",
+    "jquery-labelauty": "labelauty#^1.1.0",
+    "ion-checkradio": "^2.0.0",
+    "magic-check": "^1.0.3"
   }
 }
