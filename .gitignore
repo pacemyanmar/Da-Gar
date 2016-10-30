@@ -5,15 +5,15 @@ nbproject/
 resources/assets/vendor/
 public/*/
 
-sms.sublime-project
-sms.sublime-workspace
+*.sublime-project
+*.sublime-workspace
 
 # Laravel 4 specific
 bootstrap/compiled.php
 app/storage/
 
 # Laravel 5 & Lumen specific
-bootstrap/cache/
+bootstrap/cache/services.php
 .env.*.php
 .env.php
 .env
