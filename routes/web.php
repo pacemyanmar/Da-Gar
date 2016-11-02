@@ -26,4 +26,8 @@ Route::get('/home', 'HomeController@index');
 
 
 
+
+
+
+
 Route::resource('projects', 'ProjectController');

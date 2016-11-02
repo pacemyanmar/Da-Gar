@@ -11,7 +11,7 @@
         "inIndex": false
     },
     {
-        "name": "name",
+        "name": "project",
         "dbType": "string",
         "htmlType": "text",
         "validations": "",
@@ -23,6 +23,28 @@
     },
     {
         "name": "type",
+        "dbType": "string",
+        "htmlType": "text",
+        "validations": "",
+        "searchable": true,
+        "fillable": true,
+        "primary": false,
+        "inForm": true,
+        "inIndex": true
+    },
+    {
+        "name": "sections",
+        "dbType": "text",
+        "htmlType": "text",
+        "validations": "",
+        "searchable": true,
+        "fillable": true,
+        "primary": false,
+        "inForm": true,
+        "inIndex": true
+    },
+    {
+        "name": "dblink",
         "dbType": "string",
         "htmlType": "text",
         "validations": "",

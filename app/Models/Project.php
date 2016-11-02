@@ -7,7 +7,7 @@ use Eloquent as Model;
 /**
  * Class Project
  * @package App\Models
- * @version November 2, 2016, 7:49 am UTC
+ * @version November 2, 2016, 8:56 am UTC
  */
 class Project extends Model
 {
@@ -17,8 +17,10 @@ class Project extends Model
 
 
     public $fillable = [
-        'name',
-        'type'
+        'project',
+        'type',
+        'sections',
+        'dblink'
     ];
 
     /**
@@ -27,8 +29,10 @@ class Project extends Model
      * @var array
      */
     protected $casts = [
-        'name' => 'string',
-        'type' => 'string'
+        'project' => 'string',
+        'type' => 'string',
+        'sections' => 'array',
+        'dblink' => 'string'
     ];
 
     /**

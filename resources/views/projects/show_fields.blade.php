@@ -4,16 +4,28 @@
     <p>{!! $project->id !!}</p>
 </div>
 
-<!-- Name Field -->
+<!-- Project Field -->
 <div class="form-group">
-    {!! Form::label('name', 'Name:') !!}
-    <p>{!! $project->name !!}</p>
+    {!! Form::label('project', 'Project:') !!}
+    <p>{!! $project->project !!}</p>
 </div>
 
 <!-- Type Field -->
 <div class="form-group">
     {!! Form::label('type', 'Type:') !!}
     <p>{!! $project->type !!}</p>
+</div>
+
+<!-- Sections Field -->
+<div class="form-group">
+    {!! Form::label('sections', 'Sections:') !!}
+    <p>{!! $project->sections !!}</p>
+</div>
+
+<!-- Dblink Field -->
+<div class="form-group">
+    {!! Form::label('dblink', 'Dblink:') !!}
+    <p>{!! $project->dblink !!}</p>
 </div>
 
 <!-- Created At Field -->

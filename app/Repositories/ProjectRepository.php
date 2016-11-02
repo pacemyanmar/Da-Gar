@@ -11,8 +11,10 @@ class ProjectRepository extends BaseRepository
      * @var array
      */
     protected $fieldSearchable = [
-        'name',
-        'type'
+        'project',
+        'type',
+        'sections',
+        'dblink'
     ];
 
     /**

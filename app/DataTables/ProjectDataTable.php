@@ -44,7 +44,7 @@ class ProjectDataTable extends DataTable
             ->addAction(['width' => '10%'])
             ->ajax('')
             ->parameters([
-                'dom' => 'frtip',
+                'dom' => 'Bfrtip',
                 'scrollX' => false,
                 'buttons' => [
                     'print',
@@ -72,8 +72,9 @@ class ProjectDataTable extends DataTable
     private function getColumns()
     {
         return [
-            'name' => ['name' => 'name', 'data' => 'name'],
-            'type' => ['name' => 'type', 'data' => 'type']
+            'project' => ['name' => 'project', 'data' => 'project'],
+            'type' => ['name' => 'type', 'data' => 'type'],
+            'dblink' => ['name' => 'dblink', 'data' => 'dblink']
         ];
     }
 

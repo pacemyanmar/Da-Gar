@@ -42,8 +42,10 @@ trait MakeProjectTrait
         $fake = Faker::create();
 
         return array_merge([
-            'name' => $fake->word,
+            'project' => $fake->word,
             'type' => $fake->word,
+            'sections' => $fake->text,
+            'dblink' => $fake->word,
             'created_at' => $fake->word,
             'updated_at' => $fake->word
         ], $projectFields);
