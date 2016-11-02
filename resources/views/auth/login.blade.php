@@ -34,7 +34,14 @@
 
         <form method="post" action="{{ url('/login') }}">
             {!! csrf_field() !!}
-
+            <div class="form-group has-feedback {{ $errors->has('csrf_error') ? ' has-error' : '' }}">
+                <span class="form-control-feedback"></span>
+                @if ($errors->has('csrf_error'))
+                    <span class="help-block">
+                    <strong>{{ $errors->first('csrf_error') }}</strong>
+                </span>
+                @endif
+            </div>
             <div class="form-group has-feedback {{ $errors->has('email') ? ' has-error' : '' }}">
                 <input type="email" class="form-control" name="email" value="{{ old('email') }}" placeholder="Email">
                 <span class="glyphicon glyphicon-envelope form-control-feedback"></span>
