@@ -108,9 +108,9 @@ return [
 
     'options' => [
 
-        'softDelete' => true,
+        'softDelete' => false,
 
-        'tables_searchable_default' => false,
+        'tables_searchable_default' => true,
     ],
 
     /*
@@ -144,11 +144,11 @@ return [
 
         'tests'         => true,
 
-        'datatables'    => false,
+        'datatables'    => true,
 
         'menu'          => [
 
-            'enabled'       => false,
+            'enabled'       => true,
 
             'menu_file'     => 'layouts/menu.blade.php',
         ],
@@ -163,7 +163,7 @@ return [
 
     'timestamps' => [
 
-        'enabled'       => true,
+        'enabled'       => false,
 
         'created_at'    => 'created_at',
 
