@@ -7,3 +7,13 @@
 
 // Bootstrap
 @import "node_modules/bootstrap-sass/assets/stylesheets/bootstrap";
+
+table.dataTable thead .sorting_asc {
+	    background-image: none !important;
+}
+table.dataTable thead .sorting {
+	    background-image: none !important;
+}
+table.dataTable thead .sort_desc {
+	    background-image: none !important;
+}
