@@ -44,7 +44,7 @@ class ProjectDataTable extends DataTable
             ->addAction(['width' => '10%'])
             ->ajax('')
             ->parameters([
-                'dom' => 'Bfrtip',
+                'dom' => 'rtip',
                 'scrollX' => false,
                 'buttons' => [
                     'print',
@@ -59,7 +59,7 @@ class ProjectDataTable extends DataTable
                              'pdf',
                          ],
                     ],
-                    'colvis'
+                    //'colvis'
                 ]
             ]);
     }

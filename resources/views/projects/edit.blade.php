@@ -46,7 +46,13 @@
 </div>
 @@include('questions.modal')
 @endsection
-
+@section('css')
+<style type="text/css">
+  .toggle {
+    display: none;
+  }
+</style>
+@endsection
 @section('scripts')
 <script type='text/javascript'>
   
@@ -137,46 +143,9 @@
       $("#fb-editor").empty()
     })
     
-    var htmlStr =   '<tr class="item" style="display: table-row;"><td style="vertical-align: middle">';
-    htmlStr +=  '<input type="text" style="width: 100%" required class="form-control sectionname"/>';
-    htmlStr +=  '</td>';
-    htmlStr +=  '<td style="vertical-align: middle">';
-    htmlStr +=  '<input type="text" class="form-control descriptions"/>';
-    htmlStr +=  '</td>';
-    htmlStr +=  '<td style="vertical-align: middle">';
-    htmlStr +=  '<i onclick="removeItem(this)" class="remove fa fa-trash-o" style="cursor: pointer;font-size: 20px;color: red"></i>';
-    htmlStr +=  '</td>';
-    htmlStr +=  '</tr>';
-
-    $("#btnAdd").on("click", function () {
-      var item = $(htmlStr).clone();
-      $("#container").append(item);
-    });
-
-    $(".editProject").on("click", function () {
-      $(".toggle").toggle();
-    });
-
-    $("#project").on("submit", function(e) {
-      $('.item').each(function (index,value) {
-        var sectionname = $(this).find('.sectionname').val();
-        $(this).find('.sectionname').attr('name','sections['+index+'][sectionname]');
-        $(this).find('.descriptions').attr('name','sections['+index+'][descriptions]');
-      });
-    });
-
-    // For radio button and checkbox styling
-    $('input').iCheck({
-            checkboxClass: 'icheckbox_square-blue',
-            radioClass: 'iradio_square-blue',
-            increaseArea: '10%' // optional
-        });
 
   });
-
-  function removeItem(e) {
-    e.parentNode.parentNode.parentNode.removeChild(e.parentNode.parentNode);
-  }
+  
 
 </script>
 @endsection
