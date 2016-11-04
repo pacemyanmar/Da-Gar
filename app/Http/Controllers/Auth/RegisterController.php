@@ -47,11 +47,15 @@ class RegisterController extends Controller
      */
     protected function validator(array $data)
     {
+        $messages = [
+            'terms.required' => 'You need to accept our terms!',
+        ];
         return Validator::make($data, [
             'name' => 'required|max:255',
             'email' => 'required|email|max:255|unique:users',
             'password' => 'required|min:6|confirmed',
-        ]);
+            'terms' => 'required'
+        ],$messages);
     }
 
     /**
