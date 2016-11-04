@@ -47,6 +47,7 @@ class QuestionDataTable extends DataTable
                 'dom' => 'Bfrtip',
                 'scrollX' => false,
                 'buttons' => [
+                    'create',
                     'print',
                     'reset',
                     'reload',
@@ -58,8 +59,7 @@ class QuestionDataTable extends DataTable
                              'excel',
                              'pdf',
                          ],
-                    ],
-                    'colvis'
+                    ]
                 ]
             ]);
     }

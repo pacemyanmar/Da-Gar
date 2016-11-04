@@ -17,6 +17,10 @@
     "awesome-bootstrap-checkbox": "^0.3.7",
     "jquery-labelauty": "labelauty#^1.1.0",
     "ion-checkradio": "^2.0.0",
-    "magic-check": "^1.0.3"
+    "magic-check": "^1.0.3",
+    "datatables-colvis": "^1.1.2",
+    "datatables.net-buttons": "^1.2.2",
+    "datatables.net-buttons-bs": "^1.2.2",
+    "datatables.net-buttons-dt": "^1.2.2"
   }
 }

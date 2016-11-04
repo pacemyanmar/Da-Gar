@@ -32,6 +32,7 @@ elixir(mix => {
             'formBuilder/dist/form-builder.min.css',
             'formBuilder/dist/form-render.min.css',
             'datatables/media/css/dataTables.bootstrap.min.css',
+            'datatables.net-buttons-bs/css/buttons.bootstrap.min.css',
             'magic-check/css/magic-check.min.css',
     	
     	],'public/css/vendor.css','resources/assets/vendor/')
@@ -51,6 +52,12 @@ elixir(mix => {
             'formBuilder/dist/form-render.min.js',
             'datatables/media/js/jquery.dataTables.min.js',
             'datatables/media/js/dataTables.bootstrap.min.js',
+            'datatables.net-buttons/js/dataTables.buttons.min.js',
+            'datatables.net-buttons/js/buttons.colVis.min.js',
+            'datatables.net-buttons/js/buttons.flash.min.js',
+            'datatables.net-buttons/js/buttons.html5.min.js',
+            'datatables.net-buttons/js/buttons.print.min.js',
+            'datatables.net-buttons-bs/js/buttons.bootstrap.min.js',
             'adminlte/dist/js/app.min.js'
     		],'public/js/vendor.js','resources/assets/vendor/')
     	.sass('app.scss')
