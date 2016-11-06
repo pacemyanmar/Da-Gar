@@ -1,23 +1,28 @@
 <!-- Qnum Field -->
 <div class="form-group col-sm-6">
-    {!! Form::label('qnum', 'Qnum:') !!}
+    {!! Form::label('qnum', 'No.:') !!}
     {!! Form::text('qnum', null, ['class' => 'form-control']) !!}
 </div>
 
-<!-- Question Field -->
+<!-- Questions Field -->
 <div class="form-group col-sm-6">
     {!! Form::label('question', 'Question:') !!}
     {!! Form::text('question', null, ['class' => 'form-control']) !!}
 </div>
 
-<!-- Sort Field -->
 <div class="form-group col-sm-6">
-    {!! Form::label('sort', 'Sort:') !!}
-    {!! Form::number('sort', null, ['class' => 'form-control']) !!}
+<select name="layout" id="layout" class="form-control">
+	<option value="">-- Select One/None --</option>
+	<option value="2cols">2 Columns</option>
+	<option value="3cols">3 Columns</option>
+	<option value="matrix">Matrix Table (Use only with radio button)</option>
+</select>
 </div>
 
-<!-- Submit Field -->
-<div class="form-group col-sm-12">
-    {!! Form::submit('Save', ['class' => 'btn btn-primary']) !!}
-    <a href="{!! route('questions.index') !!}" class="btn btn-default">Cancel</a>
-</div>
+<!-- Project Id Field -->
+<!--div class="form-group col-sm-6"-->
+    {{-- Form::label('answers', 'Answers:') --}}
+    {!! Form::hidden('project_id', $project->id) !!}
+    {!! Form::hidden('sort', 0) !!}
+    {!! Form::hidden('raw_ans') !!}
+    {!! Form::hidden('section', 0) !!}

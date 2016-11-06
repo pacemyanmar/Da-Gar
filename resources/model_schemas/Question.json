@@ -33,7 +33,7 @@
         "inIndex": true
     },
     {
-        "name": "answers",
+        "name": "raw_ans",
         "dbType": "text",
         "htmlType": "text",
         "validations": "required",
@@ -41,6 +41,28 @@
         "fillable": true,
         "primary": false,
         "inForm": false,
+        "inIndex": false
+    },
+    {
+        "name": "render",
+        "dbType": "text",
+        "htmlType": "text",
+        "validations": "required",
+        "searchable": false,
+        "fillable": true,
+        "primary": false,
+        "inForm": false,
+        "inIndex": false
+    },
+    {
+        "name": "section",
+        "dbType": "integer",
+        "htmlType": "number",
+        "validations": "required",
+        "searchable": false,
+        "fillable": true,
+        "primary": false,
+        "inForm": true,
         "inIndex": false
     },
     {
@@ -53,6 +75,17 @@
         "primary": false,
         "inForm": true,
         "inIndex": false
+    },
+    {
+        "name": "layout",
+        "dbType": "string",
+        "htmlType": "text",
+        "validations": "required",
+        "searchable": true,
+        "fillable": true,
+        "primary": false,
+        "inForm": true,
+        "inIndex": true
     },
     {
         "name": "project_id",

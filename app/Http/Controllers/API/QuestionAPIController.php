@@ -2,12 +2,13 @@
 
 namespace App\Http\Controllers\API;
 
+use App\Http\Controllers\AppBaseController;
 use App\Http\Requests\API\CreateQuestionAPIRequest;
 use App\Http\Requests\API\UpdateQuestionAPIRequest;
 use App\Models\Question;
 use App\Repositories\QuestionRepository;
+use App\Traits\QuestionTrait;
 use Illuminate\Http\Request;
-use App\Http\Controllers\AppBaseController;
 use InfyOm\Generator\Criteria\LimitOffsetCriteria;
 use Prettus\Repository\Criteria\RequestCriteria;
 use Response;
@@ -19,6 +20,7 @@ use Response;
 
 class QuestionAPIController extends AppBaseController
 {
+    use QuestionTrait;
     /** @var  QuestionRepository */
     private $questionRepository;
 
@@ -55,7 +57,30 @@ class QuestionAPIController extends AppBaseController
     {
         $input = $request->all();
 
+        $args = [
+                'raw_ans' => $request->only('raw_ans')['raw_ans'],
+                'qnum' => $request->only('qnum')['qnum'],
+                'layout' => $request->only('layout')['layout'],
+                'project_id' => $request->only('project_id')['project_id'],
+                'section' => $request->only('section')['section']
+                ];
+        $input['render'] = $this->to_render($args);       
+
         $questions = $this->questionRepository->create($input);
+        /**
+        if(!empty($raw_answers)) {
+            $answers = [];
+            foreach($raw_answers as $answer) {
+                $answer['class_name'] = $answer['className'];
+                $answer['project_id'] = $questions->project->id;
+                $answer['question_id'] = $questions->id;
+                $answer['user_id'] = Auth::user()->getAuthIdentifier(); 
+                $answers[] = $answer;
+            }
+
+            DB::table('answers')->insert($answers);
+        }
+        */
 
         return $this->sendResponse($questions->toArray(), 'Question saved successfully');
     }

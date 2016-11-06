@@ -19,9 +19,12 @@ class Question extends Model
     public $fillable = [
         'qnum',
         'question',
-        'answers',
+        'raw_ans',
         'sort',
-        'project_id'
+        'project_id',
+        'render',
+        'section',
+        'layout'
     ];
 
     /**
@@ -30,11 +33,15 @@ class Question extends Model
      * @var array
      */
     protected $casts = [
+        'id' => 'integer',
         'qnum' => 'string',
         'question' => 'string',
-        'answers' => 'string',
+        'raw_ans' => 'array',
+        'render' => 'array',
         'sort' => 'integer',
-        'project_id' => 'integer'
+        'project_id' => 'integer',
+        'section' => 'integer',
+        'layout' => 'string'
     ];
 
     /**
@@ -45,7 +52,7 @@ class Question extends Model
     public static $rules = [
         'qnum' => 'required',
         'question' => 'required',
-        'answers' => 'required',
+        'raw_ans' => 'required',
         'sort' => 'required'
     ];
 

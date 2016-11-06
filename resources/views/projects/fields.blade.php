@@ -123,13 +123,6 @@
       });
     });
 
-    // For radio button and checkbox styling
-    $('input').iCheck({
-            checkboxClass: 'icheckbox_square-blue',
-            radioClass: 'iradio_square-blue',
-            increaseArea: '10%' // optional
-        });
-
   });
 function removeItem(e) {
     e.parentNode.parentNode.parentNode.removeChild(e.parentNode.parentNode);
