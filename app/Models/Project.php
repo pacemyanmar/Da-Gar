@@ -44,5 +44,13 @@ class Project extends Model
         
     ];
 
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     **/
+    public function questions()
+    {
+        return $this->HasMany(\App\Models\Question::class);
+    }
+
     
 }

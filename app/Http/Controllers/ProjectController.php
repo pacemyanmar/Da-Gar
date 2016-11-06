@@ -97,7 +97,9 @@ class ProjectController extends AppBaseController
             return redirect(route('projects.index'));
         }
 
-        return view('projects.edit')->with('project', $project);
+        return view('projects.edit')
+        ->with('project', $project)
+        ->with('questions', $project->questions);
     }
 
     /**

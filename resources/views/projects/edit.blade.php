@@ -37,14 +37,14 @@
       </div>          
     </div>
     <div class="panel-body">
-      @@include('questions.table')
+      @include('projects.table_questions')
     </div>
   </div> 
   @endforeach
   @endif
   {!! Form::close() !!}
 </div>
-@@include('questions.modal')
+@include('questions.modal')
 @endsection
 @section('css')
 <style type="text/css">

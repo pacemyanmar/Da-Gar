@@ -41,7 +41,7 @@ class QuestionDataTable extends DataTable
     {
         return $this->builder()
             ->columns($this->getColumns())
-            ->addAction(['width' => '10%'])
+            //->addAction(['width' => '10%'])
             ->ajax('')
             ->parameters([
                 'dom' => 'Bfrtip',
@@ -72,7 +72,7 @@ class QuestionDataTable extends DataTable
     private function getColumns()
     {
         return [
-            'qnum' => ['name' => 'qnum', 'data' => 'qnum'],
+            'qnum' => ['name' => 'qnum', 'data' => 'qnum', 'title' => 'No.'],
             'question' => ['name' => 'question', 'data' => 'question']
         ];
     }
