@@ -7,7 +7,7 @@ use App\Http\Requests\API\CreateQuestionAPIRequest;
 use App\Http\Requests\API\UpdateQuestionAPIRequest;
 use App\Models\Question;
 use App\Repositories\QuestionRepository;
-use App\Traits\QuestionTrait;
+use App\Traits\QuestionsTrait;
 use Illuminate\Http\Request;
 use InfyOm\Generator\Criteria\LimitOffsetCriteria;
 use Prettus\Repository\Criteria\RequestCriteria;
@@ -20,7 +20,7 @@ use Response;
 
 class QuestionAPIController extends AppBaseController
 {
-    use QuestionTrait;
+    use QuestionsTrait;
     /** @var  QuestionRepository */
     private $questionRepository;
 
@@ -116,14 +116,21 @@ class QuestionAPIController extends AppBaseController
      */
     public function update($id, UpdateQuestionAPIRequest $request)
     {
-        $input = $request->all();
+        $questions = $this->questionRepository->findWithoutFail($id);
 
-        /** @var Question $question */
-        $question = $this->questionRepository->findWithoutFail($id);
-
-        if (empty($question)) {
+        if (empty($questions)) {
             return $this->sendError('Question not found');
         }
+        $project_id = $request->only('project_id')['project_id'];
+        $input = $request->all();
+        $args = [
+                'raw_ans' => $request->only('raw_ans')['raw_ans'],
+                'qnum' => $request->only('qnum')['qnum'],
+                'layout' => $request->only('layout')['layout'],
+                'project_id' => $request->only('project_id')['project_id'],
+                'section' => $request->only('section')['section']
+                ];
+        $input['render'] = $this->to_render($args);
 
         $question = $this->questionRepository->update($input, $id);
 

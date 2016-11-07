@@ -1,7 +1,7 @@
 <?php
 namespace App\Traits;
 
-trait QuestionTrait {
+trait QuestionsTrait {
 	/**
      * @param array $raw_ans raw json array from formBuilder input
      * @param string $qnum question number from input

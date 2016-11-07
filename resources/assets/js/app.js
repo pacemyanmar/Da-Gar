@@ -19,8 +19,6 @@ const app = new Vue({
     el: 'body'
 });
 
-
-
 // Form reset method from stackoverflow
 // http://stackoverflow.com/questions/680241/resetting-a-multi-stage-form-with-jquery
 global.resetForm = function ($form) {

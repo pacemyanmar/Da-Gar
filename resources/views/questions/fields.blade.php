@@ -25,4 +25,4 @@
     {!! Form::hidden('project_id', $project->id) !!}
     {!! Form::hidden('sort', 0) !!}
     {!! Form::hidden('raw_ans') !!}
-    {!! Form::hidden('section', 0) !!}
+    {!! Form::hidden('section', null) !!}

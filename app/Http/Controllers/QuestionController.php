@@ -8,13 +8,13 @@ use App\Http\Requests;
 use App\Http\Requests\CreateQuestionRequest;
 use App\Http\Requests\UpdateQuestionRequest;
 use App\Repositories\QuestionRepository;
-use App\Traits\QuestionTrait;
+use App\Traits\QuestionsTrait;
 use Flash;
 use Response;
 
 class QuestionController extends AppBaseController
 {
-    use QuestionTrait;
+    use QuestionsTrait;
     /** @var  QuestionRepository */
     private $questionRepository;
 
@@ -62,7 +62,7 @@ class QuestionController extends AppBaseController
                 'project_id' => $request->only('project_id')['project_id'],
                 'section' => $request->only('section')['section']
                 ];
-        $input['render'] = $this->to_render($args);       
+        $input['render'] = $this->to_render($args);
 
         $question = $this->questionRepository->create($input);
         /**
@@ -70,8 +70,8 @@ class QuestionController extends AppBaseController
             $answers = [];
             foreach($raw_answers as $answer) {
                 $answer['class_name'] = $answer['className'];
-                $answer['project_id'] = $questions->project->id;
-                $answer['question_id'] = $questions->id;
+                $answer['project_id'] = $question->project->id;
+                $answer['question_id'] = $question->id;
                 $answer['user_id'] = Auth::user()->getAuthIdentifier(); 
                 $answers[] = $answer;
             }

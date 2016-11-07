@@ -15,16 +15,15 @@ class CreateQuestionsTable extends Migration
     {
         Schema::create('questions', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('qnum', 50);
-            $table->text('question');
+            $table->string('qnum');
+            $table->string('question');
             $table->text('raw_ans');
             $table->text('render');
-            $table->integer('section')->unsigned();
             $table->string('layout');
+            $table->integer('section')->unsigned();
             $table->integer('sort')->unsigned();
-            $table->integer('project_id')->unsigned()->foreign('projects','id');
-            $table->timestamps();
-            $table->softDeletes();
+            $table->integer('project_id')->unsigned();
+            $table->foreign('project_id')->references('id')->on('projects');
         });
     }
 

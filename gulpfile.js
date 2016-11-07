@@ -21,6 +21,7 @@ elixir(mix => {
         .copy('resources/assets/vendor/adminlte/img', 'public/build/img')
         .copy('resources/assets/vendor/datatables/media/images', 'public/build/images')
         .copy('resources/assets/vendor/ion-checkradio/img', 'public/build/img')
+        .copy('resources/assets/images', 'public/images')
         .styles([
             //'bootstrap/dist/css/bootstrap.min.css',
             //'bootstrap/dist/css/bootstrap-theme.min.css',

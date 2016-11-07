@@ -13,18 +13,20 @@ class Question extends Model
 {
 
     public $table = 'questions';
-    
+
+
+    public $timestamps = false;    
 
 
     public $fillable = [
         'qnum',
         'question',
         'raw_ans',
-        'sort',
-        'project_id',
         'render',
+        'sort',
+        'layout',
         'section',
-        'layout'
+        'project_id'
     ];
 
     /**
