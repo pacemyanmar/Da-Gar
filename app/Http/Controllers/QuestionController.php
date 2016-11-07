@@ -3,16 +3,18 @@
 namespace App\Http\Controllers;
 
 use App\DataTables\QuestionDataTable;
+use App\Http\Controllers\AppBaseController;
 use App\Http\Requests;
 use App\Http\Requests\CreateQuestionRequest;
 use App\Http\Requests\UpdateQuestionRequest;
 use App\Repositories\QuestionRepository;
+use App\Traits\QuestionsTrait;
 use Flash;
-use App\Http\Controllers\AppBaseController;
 use Response;
 
 class QuestionController extends AppBaseController
 {
+    use QuestionsTrait;
     /** @var  QuestionRepository */
     private $questionRepository;
 
@@ -53,7 +55,30 @@ class QuestionController extends AppBaseController
     {
         $input = $request->all();
 
-        $question = $this->questionRepository->create($input);
+        $args = [
+                'raw_ans' => $request->only('raw_ans')['raw_ans'],
+                'qnum' => $request->only('qnum')['qnum'],
+                'layout' => $request->only('layout')['layout'],
+                'project_id' => $request->only('project_id')['project_id'],
+                'section' => $request->only('section')['section']
+                ];
+        $input['render'] = $this->to_render($args);       
+
+        $questions = $this->questionsRepository->create($input);
+        /**
+        if(!empty($raw_answers)) {
+            $answers = [];
+            foreach($raw_answers as $answer) {
+                $answer['class_name'] = $answer['className'];
+                $answer['project_id'] = $questions->project->id;
+                $answer['question_id'] = $questions->id;
+                $answer['user_id'] = Auth::user()->getAuthIdentifier(); 
+                $answers[] = $answer;
+            }
+
+            DB::table('answers')->insert($answers);
+        }
+        */
 
         Flash::success('Question saved successfully.');
 

@@ -33,7 +33,7 @@
     <div class="panel-heading">
       <div class="panel-title">
         {!! $section['sectionname'] !!} <small> {!! (!empty($section['descriptions']))?" | ".$section['descriptions']:"" !!}</small>
-        <span class="pull-right"><a href="#" class='btn btn-success' data-toggle="modal" data-target="#qModal" data-qurl="@{!! route('api.v1.questions.store') !!}" data-section="{!! $section_key !!}" data-method='POST'><i class="glyphicon glyphicon-plus"></i></a></span>
+        <span class="pull-right"><a href="#" class='btn btn-success' data-toggle="modal" data-target="#qModal" data-qurl="{!! route('api.questions.store') !!}" data-section="{!! $section_key !!}" data-method='POST'><i class="glyphicon glyphicon-plus"></i></a></span>
       </div>          
     </div>
     <div class="panel-body">
@@ -71,7 +71,7 @@
       var formData = button.data('answers')
       var qid = button.data('qid') // Extract info from data-* attributes
       var qnum = button.data('qnum')
-      var question = button.data('questions')
+      var question = button.data('question')
       var section = button.data('section')
       var layout = button.data('layout')
       var actionurl = button.data('qurl')
@@ -80,7 +80,7 @@
       // Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.
       var modal = $(this)
       modal.find( "input[name='qnum']" ).val(qnum)
-      modal.find( "input[name='questions']" ).val(question)
+      modal.find( "input[name='question']" ).val(question)
       modal.find( "input[name='section']" ).val(section)
       modal.find( "select[name='layout']" ).val(layout)
       modal.find( "input[name='_method']" ).val(method)

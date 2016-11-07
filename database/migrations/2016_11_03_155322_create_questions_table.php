@@ -17,7 +17,10 @@ class CreateQuestionsTable extends Migration
             $table->increments('id');
             $table->string('qnum');
             $table->string('question');
-            $table->text('answers');
+            $table->text('raw_ans');
+            $table->text('render');
+            $table->string('layout');
+            $table->integer('section');
             $table->integer('sort');
             $table->integer('project_id')->unsigned();
             $table->foreign('project_id')->references('id')->on('projects');

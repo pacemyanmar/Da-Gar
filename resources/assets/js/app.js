@@ -18,3 +18,12 @@ Vue.component('example', require('./components/Example.vue'));
 const app = new Vue({
     el: 'body'
 });
+
+
+// Form reset method from stackoverflow
+// http://stackoverflow.com/questions/680241/resetting-a-multi-stage-form-with-jquery
+global.resetForm = function ($form) {
+    $form.find('input:text, input:password, input:file, select, textarea').val('');
+    $form.find('input:radio, input:checkbox')
+         .removeAttr('checked').removeAttr('selected');
+}

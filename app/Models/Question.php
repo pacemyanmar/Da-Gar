@@ -13,14 +13,19 @@ class Question extends Model
 {
 
     public $table = 'questions';
-    
+
+
+    public $timestamps = false;    
 
 
     public $fillable = [
         'qnum',
         'question',
-        'answers',
+        'raw_ans',
+        'render',
         'sort',
+        'layout',
+        'section',
         'project_id'
     ];
 
@@ -32,7 +37,8 @@ class Question extends Model
     protected $casts = [
         'qnum' => 'string',
         'question' => 'string',
-        'answers' => 'string',
+        'raw_ans' => 'array',
+        'render' => 'array',
         'sort' => 'integer',
         'project_id' => 'integer'
     ];
@@ -45,7 +51,7 @@ class Question extends Model
     public static $rules = [
         'qnum' => 'required',
         'question' => 'required',
-        'answers' => 'required',
+        'raw_ans' => 'required',
         'sort' => 'required'
     ];
 
