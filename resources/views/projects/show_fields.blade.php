@@ -1,42 +1,21 @@
-<!-- Id Field -->
-<div class="form-group">
-    {!! Form::label('id', 'Id:') !!}
-    <p>{!! $project->id !!}</p>
-</div>
-
-<!-- Project Field -->
-<div class="form-group">
-    {!! Form::label('project', 'Project:') !!}
-    <p>{!! $project->project !!}</p>
-</div>
-
-<!-- Type Field -->
-<div class="form-group">
-    {!! Form::label('type', 'Type:') !!}
-    <p>{!! $project->type !!}</p>
-</div>
-
-<!-- Sections Field -->
-<div class="form-group">
-    {!! Form::label('sections', 'Sections:') !!}
-    <p>{!! $project->sections !!}</p>
-</div>
-
-<!-- Dblink Field -->
-<div class="form-group">
-    {!! Form::label('dblink', 'Dblink:') !!}
-    <p>{!! $project->dblink !!}</p>
-</div>
-
-<!-- Created At Field -->
-<div class="form-group">
-    {!! Form::label('created_at', 'Created At:') !!}
-    <p>{!! $project->created_at !!}</p>
-</div>
-
-<!-- Updated At Field -->
-<div class="form-group">
-    {!! Form::label('updated_at', 'Updated At:') !!}
-    <p>{!! $project->updated_at !!}</p>
-</div>
-
+<table class="table table-responsive" id="questions-table">
+    <thead>
+        <th class="col-xs-1">No.</th>
+        <th class="col-xs-11">Questions</th>
+    </thead>
+    <tbody>
+        @foreach($questions as $question)
+            @if($question->section == $section_key)
+            <tr>
+                <td class="col-xs-1">{!! $question->qnum !!}</td>
+                <td class="col-xs-11">
+                    <div class="row">{!! $question->questions !!}</div>
+                    <div class="row">
+                        @include('questions.ans_fields')
+                    </div>
+                </td>
+            </tr>
+            @endif
+        @endforeach
+    </tbody>
+</table>
