@@ -40,13 +40,12 @@
 		
 		@foreach ($question->render as $k => $element)
 			@if($k >= ($i * $ans_in_col) && $k < (($i + 1) * $ans_in_col))
-			
-				@if ($element['type'] == 'checkbox')
-					@if(!isset($element['value']))
-						@php
-							$element['value'] = $k;
-						@endphp
-					@endif
+				@if(!isset($element['value']))
+					@php
+						$element['value'] = $k;
+					@endphp
+				@endif
+				@if ($element['type'] == 'checkbox')					
 					@include('questions.checkbox')
 				@endif
 				@if ($element['type'] == 'radio')
