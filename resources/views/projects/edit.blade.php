@@ -68,7 +68,7 @@
 
     $('#qModal').on('shown.bs.modal', function(event) {
       var button = $(event.relatedTarget) // Button that triggered the modal
-      var formData = button.data('rawans')
+      var formData = button.data('answers')
       var qid = button.data('qid') // Extract info from data-* attributes
       var qnum = button.data('qnum')
       var question = button.data('question')
