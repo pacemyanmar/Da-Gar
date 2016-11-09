@@ -2,7 +2,7 @@
 if($element['type'] == 'date') $element['className'] .= ' form-control';
 
 $options = [
-'class' => $element['className'],
+'class' => $element['className'].' col-xs-6',
 'id' => $element['id'],
 'placeholder' => $element['label']
 ];
@@ -13,6 +13,6 @@ if(isset($element['step'])) $options['step'] = $element['step'];
 }
 @endphp
     <div class="form-group">
-    	{!! Form::label($element['id'], $element['label'], ['class'=>'control-label']) !!}
-    		{!! Form::input($element['type'],$element['name'], null, $options) !!}
+    	{!! Form::label($element['id'], $element['label'], ['class'=>'col-xs-6 normal-text']) !!}
+    	{!! Form::input($element['type'],$element['name'], null, $options) !!}
     </div>

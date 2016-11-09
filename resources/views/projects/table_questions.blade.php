@@ -8,9 +8,9 @@
         @foreach($questions as $question)
             @if($question->section == $section_key)
             <tr>
-                <td class="col-xs-1">{!! $question->qnum !!}</td>
+                <td class="col-xs-1"><label>{!! $question->qnum !!}</label></td>
                 <td class="col-xs-9">
-                    <div class="row">{!! $question->question !!}</div>
+                    <div class="row"><label>{!! $question->question !!}</label></div>
                     <div class="row">
                         @include('questions.ans_fields')
                     </div>
