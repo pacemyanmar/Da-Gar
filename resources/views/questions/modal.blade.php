@@ -9,7 +9,7 @@
       <div class="modal-body"> 
             <div class="row">           
             {!! Form::open(['url' => '#', 'id' => 'qModalForm']) !!}
-            <!--input name="_method" value="" type="hidden"-->
+            <input name="_method" value="" type="hidden">
             @include('questions.fields')
             {!! Form::close() !!}
             </div>

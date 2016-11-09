@@ -19,6 +19,7 @@
 
 	$col_group_count = ($question->layout == '2cols')? 2:(($question->layout == '3cols')? 3:1);
 
+	$wordcount = 50 - ($col_group_count * 10);
 	/**
 	 * @var integer Total number of input fields in a column
 	 */
@@ -35,7 +36,7 @@
 @else
 	@for($i=0,$j=0;$i<$col_group_count; $i++)
 		@if($j == ($i * $ans_in_col))
-			<div class="{!! $css_class[$col_group_count] !!}">
+			<div class="{!! $css_class[$col_group_count] !!} @if($i>0) {{ ' padleft' }}@endif">
 		@endif
 		
 		@foreach ($question->render as $k => $element)
