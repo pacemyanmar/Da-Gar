@@ -10,11 +10,18 @@
     <link rel="stylesheet" href="{{ elixir('css/app.css') }}">
 
     @yield('css')
+
+    <!-- Scripts -->
+    <script>
+        window.Laravel = <?php echo json_encode([
+            'csrfToken' => csrf_token(),
+        ]); ?>
+    </script>
 </head>
 
 <body class="skin-blue sidebar-mini">
 @if (!Auth::guest())
-    <div class="wrapper">
+    <div class="wrapper" id="app">
         <!-- Main Header -->
         <header class="main-header">
 
@@ -140,5 +147,7 @@
     <script src="{{ elixir('js/app.js') }}"></script>
 
     @yield('scripts')
+
+    @stack('vue-scripts')
 </body>
 </html>

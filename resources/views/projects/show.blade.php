@@ -14,7 +14,7 @@
                 </div>                  
             </div>
             <div class="panel-body">
-                @@include("projects.$project->dblink")
+                @include("projects.$project->dblink")
             </div>
         </div> 
         @foreach($project->sections as $section_key => $section)

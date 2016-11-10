@@ -148,4 +148,36 @@ class VoterController extends AppBaseController
 
         return redirect(route('voters.index'));
     }
+
+    /**
+     * @param Request $request
+     * @return Response
+     */
+    public function search(Request $request)
+    {
+        $query = $request->only('query')['query'];
+        $field = $request->only('type')['type'];
+        $currentPage = $request->only('page')['page'];
+        $perPage = $request->only('per_page')['per_page'];
+        $sort = $request->only('sort')['sort'];
+        $where = [$field => [$field,'like',$query.'%']];
+
+        $column = ['name','nrc_id','dob','father','mother','address'];
+
+        if(!empty($query) && mb_strlen($query) < 7) {
+            return Response::json(ResponseUtil::makeError('Please use longer keyword to search.'), 404);
+        }
+        /** @var VoterList $voterList */
+        if(!empty($query) && !empty($field)) {
+            $voterList = $this->voterListRepository->findWhere($where, $column);
+        } else {
+            return Response::json(ResponseUtil::makeError('One or more parameter required'), 404);
+        }
+
+        if ($voterList->isEmpty()) {
+            return Response::json(ResponseUtil::makeError('VoterList not found'), 404);
+        }
+
+        return $this->sendResponse($voterList->toArray(), 'VoterList retrieved successfully');
+    }
 }
