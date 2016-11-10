@@ -12,3 +12,7 @@
     <a href="{!! route('questions.index') !!}"><i class="fa fa-edit"></i><span>Questions</span></a>
 </li>
 
+<li class="{{ Request::is('voters*') ? 'active' : '' }}">
+    <a href="{!! route('voters.index') !!}"><i class="fa fa-edit"></i><span>Voters</span></a>
+</li>
+

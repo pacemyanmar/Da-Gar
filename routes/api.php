@@ -33,3 +33,5 @@ Route::resource('projects', 'ProjectAPIController');
 
 
 Route::resource('questions', 'QuestionAPIController');
+
+Route::resource('voters', 'VoterAPIController');

@@ -7,9 +7,40 @@ class MyFaker {
     public function render($faker) {
         return $this->to_render($faker);
     }
+    /**
+     * "[\r\n\t{\r\n\t\t\"type\": \"checkbox\",\r\n\t\t\"label\": \"Checkbox\",\r\n\t\t\"className\": \"checkbox\",\r\n\t\t\"name\": \"checkbox-1478449196912\"\r\n\t}\r\n]"
+     */
+    public function ans() {
+        $faker = Faker\Factory::create();
+        $count = $faker->randomDigitNotNull;
+        $return = "\r\n";
+        $tab = "\t";
+        
+        $string = "[$return$tab";
+
+        for($i=1;$i<=$count;$i++) {
+            $type = $faker->randomElement($array = array ('checkbox','radio','text', 'number'));
+            $n = $faker->words(3, true);
+            $label = ucfirst($n);
+            $name = str_slug($n).'-'.$faker->randomNumber($nbDigits = 9);
+
+            $string .= '{'.$return.$tab.$tab;
+            $string .= '"type": "'.$type.'",'.$return.$tab.$tab.'"label": "'.$label.'",'.$return.$tab.$tab.'"className": "'.$type;
+            $string .= '",'.$return.$tab.$tab.'"name": "'.$name.'"';
+            $string .= "$return$tab}";
+
+            if($i != $count) {
+                $string .= ','.$return.$tab;
+            }
+        }
+
+        $string .= "$return]";
+        return $string;
+    }
 }
 
 $myfaker = new MyFaker();
+
 /*
 |--------------------------------------------------------------------------
 | Model Factories
@@ -64,7 +95,7 @@ $factory->define(App\Models\Project::class, function (Faker\Generator $faker) {
  */
 $factory->define(App\Models\Question::class, function (Faker\Generator $faker) use ($myfaker) {
 
-    $raw_ans =  ans();
+    $raw_ans =  $myfaker->ans();
     
     /**
      * run closure function to get project id
@@ -96,33 +127,18 @@ $factory->define(App\Models\Question::class, function (Faker\Generator $faker) u
 });
 
 /**
- * "[\r\n\t{\r\n\t\t\"type\": \"checkbox\",\r\n\t\t\"label\": \"Checkbox\",\r\n\t\t\"className\": \"checkbox\",\r\n\t\t\"name\": \"checkbox-1478449196912\"\r\n\t}\r\n]"
+ * Factory Model for Voters
  */
 
-function ans() {
-    $faker = Faker\Factory::create();
-    $count = $faker->randomDigitNotNull;
-    $return = "\r\n";
-    $tab = "\t";
-    
-    $string = "[$return$tab";
-
-    for($i=1;$i<=$count;$i++) {
-        $type = $faker->randomElement($array = array ('checkbox','radio','text', 'number'));
-        $n = $faker->words(3, true);
-        $label = ucfirst($n);
-        $name = str_slug($n).'-'.$faker->randomNumber($nbDigits = 9);
-
-        $string .= '{'.$return.$tab.$tab;
-        $string .= '"type": "'.$type.'",'.$return.$tab.$tab.'"label": "'.$label.'",'.$return.$tab.$tab.'"className": "'.$type;
-        $string .= '",'.$return.$tab.$tab.'"name": "'.$name.'"';
-        $string .= "$return$tab}";
-
-        if($i != $count) {
-            $string .= ','.$return.$tab;
-        }
-    }
-
-    $string .= "$return]";
-    return $string;
-}
+$factory->define(App\Models\Voter::class, function (Faker\Generator $faker) {
+    $date = $faker->dateTimeThisMonth($max = 'now');
+    return [
+        'name' => $faker->name,
+        'dob' => $faker->date($format = 'Y-m-d', $max = '2000-01-01'),
+        'gender' => $faker->randomElement(['male','female','other']),
+        'nrc_id' => $faker->regexify('[1-9]{1,2}\/[A-Z]a[A-Z]a[A-Z]a-N-[0-9]{6}'),
+        'father' => $faker->name('male'),
+        'mother' => $faker->name('female'),
+        'address' => $faker->address
+    ];
+});

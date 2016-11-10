@@ -15,7 +15,7 @@ class Question extends Model
     public $table = 'questions';
 
 
-    public $timestamps = false;    
+    public $timestamps = false; 
 
 
     public $fillable = [
