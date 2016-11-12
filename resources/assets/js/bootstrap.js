@@ -18,22 +18,12 @@ window._ = require('lodash');
 
 window.Vue = require('vue');
 require('vue-resource');
+import Vuex from 'vuex'
+Vue.use(Vuex)
 
-//
-// secondly, require or import Vuetable and optional VuetablePagination component
-//
-import Vuetable from 'vuetable-2/src/components/Vuetable.vue'
-import VuetablePagination from 'vuetable-2/src/components/VuetablePagination.vue'
-import VuetablePaginationDropdown from 'vuetable-2/src/components/VuetablePaginationDropdown.vue'
-import VuetablePaginationInfo from 'vuetable-2/src/components/VuetablePaginationInfo.vue'
+window.VueTables = require('vue-tables-2');
 
-//
-// thirdly, register components to Vue
-//
-Vue.component('vuetable', Vuetable);
-Vue.component('vuetable-pagination', VuetablePagination)
-Vue.component('vuetable-pagination-dropdown', VuetablePaginationDropdown)
-Vue.component('vuetable-pagination-info', VuetablePaginationInfo)
+
 /**
  * We'll register a HTTP interceptor to attach the "CSRF" header to each of
  * the outgoing requests issued by this application. The CSRF middleware

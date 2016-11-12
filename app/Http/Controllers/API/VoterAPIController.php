@@ -126,4 +126,13 @@ class VoterAPIController extends AppBaseController
 
         return $this->sendResponse($id, 'Voter deleted successfully');
     }
+
+    /**
+     * @param Request $request
+     * @return Response
+     */
+    public function search(Request $request)
+    {
+        return $this->voterRepository->vueTables($request);
+    }
 }

@@ -3,10 +3,12 @@
 namespace App\Repositories;
 
 use App\Models\Voter;
+use App\Traits\VueTablesTrait;
 use InfyOm\Generator\Common\BaseRepository;
 
 class VoterRepository extends BaseRepository
 {
+    use VueTablesTrait;
     /**
      * @var array
      */

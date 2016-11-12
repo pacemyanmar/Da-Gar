@@ -13,7 +13,7 @@ require('laravel-elixir-vue-2');
  |
  */
 
-elixir(mix => {
+elixir(mix => {    
     // by using versioning on js and css files, all dependencies related files and directory should be in "build" dir.
     mix.copy('resources/assets/vendor/bootstrap/dist/fonts', 'public/build/fonts')
         .copy('resources/assets/vendor/font-awesome/fonts', 'public/build/fonts')
@@ -59,9 +59,19 @@ elixir(mix => {
             'datatables.net-buttons/js/buttons.html5.min.js',
             'datatables.net-buttons/js/buttons.print.min.js',
             'datatables.net-buttons-bs/js/buttons.bootstrap.min.js',
+            'moment/min/moment-with-locales.min.js',
             'adminlte/dist/js/app.min.js'
     		],'public/js/vendor.js','resources/assets/vendor/')
     	.sass('app.scss')
        	.webpack('app.js')
         .version(["public/css/app.css","public/css/vendor.css","public/js/app.js","public/js/vendor.js"]);
+        Elixir.webpack.mergeConfig({
+            module: {
+                loaders: [{
+                    test: /\.jsx?$/, 
+                    loader: 'babel',
+                    exclude: /node_modules(?!\/(vue-tables-2|vue-pagination-2))/
+                }]
+            }
+        });
 });

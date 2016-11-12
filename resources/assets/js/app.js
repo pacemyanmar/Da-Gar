@@ -15,7 +15,6 @@ require('./bootstrap');
 
 Vue.component('example', require('./components/Example.vue'));
 
-
 // Form reset method from stackoverflow
 // http://stackoverflow.com/questions/680241/resetting-a-multi-stage-form-with-jquery
 global.resetForm = function ($form) {

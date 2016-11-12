@@ -16,6 +16,8 @@ class Voter extends Model
     
     public $timestamps = false;
 
+    protected $primaryKey = 'status';
+
     public $fillable = [
         'name',
         'gender',

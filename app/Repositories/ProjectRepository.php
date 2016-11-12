@@ -3,10 +3,12 @@
 namespace App\Repositories;
 
 use App\Models\Project;
+use App\Traits\VueTablesTrait;
 use InfyOm\Generator\Common\BaseRepository;
 
 class ProjectRepository extends BaseRepository
 {
+    use VueTablesTrait;
     /**
      * @var array
      */

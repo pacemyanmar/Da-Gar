@@ -40,6 +40,7 @@ Route::resource('projects', 'ProjectController');
 
 Route::resource('questions', 'QuestionController');
 
+Route::get('voters/search',[ 'as' => 'voters.search', 'uses'=>'VoterController@search']);
+
 Route::resource('voters', 'VoterController');
 
-Route::get('voters/search',[ 'as' => 'voters.search', 'uses'=>'VoterController@search']);
