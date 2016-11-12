@@ -155,6 +155,12 @@ class VoterController extends AppBaseController
      */
     public function search(Request $request)
     {
+        $listall = $request->only('listall')['listall'];
+        $query = $request->only('query')['query'];
+        if(!$listall && empty($query) ) {
+            return ['data'=> [],
+                    'count'=>0];
+        }
         $fields = [
             'name', 'father', 'address'
         ];

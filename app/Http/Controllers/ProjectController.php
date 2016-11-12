@@ -151,4 +151,5 @@ class ProjectController extends AppBaseController
 
         return redirect(route('projects.index'));
     }
+
 }

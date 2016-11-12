@@ -1,19 +1,13 @@
 <div id="checktable">
 @if($project->type==="p2l")
 @endif
-	<div class="form-inline form-group">
-        <label>Search:</label>
-        <input id="search" class="form-control" @keyup.enter="setFilter" placeholder="Enter NRC ID to Search">
-        <button class="btn btn-primary" @click="setFilter">Go</button>
-        <button class="btn btn-default" @click="resetFilter">Reset</button>
-    </div>
-
+	<div class="table-responsive">
+          <v-server-table url="{!! route('voters.search') !!}" :columns="columns" :options="options"></v-server-table>
+  </div>
 @if($project->type==="l2p")
 	voterlist l2p
 @endif
-	<div class="table-responsive">
-          <v-server-table url="{!! route('voters.search') !!}" :columns="columns" :options="options"></v-server-table>
-    </div>
+	
 </div>
 
 
@@ -25,9 +19,19 @@ Vue.use(VueTables.server, [options], false);
 new Vue({
     el:"#app",
     data: {
-      columns:['name','father','address'],
+      columns:['name','father','address', 'edit'],
       options: {
-       // see the options API
+        initFilters: 'GENERIC',
+        params: {'all':true},
+        templates: {
+          edit: function(createElement, row) {
+            return createElement('a', {
+                attrs:{
+                    'href': '{!! route('voters.index') !!}/'+row.id
+                }
+            }, 'Open');
+          }
+        }
       }
     },
     methods: {

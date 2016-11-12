@@ -5,9 +5,12 @@ use Illuminate\Http\Request;
 
 trait VueTablesTrait
 {
+    
     public function VueTables(Request $request, array $fields)
     {
         extract($request->only('query', 'limit', 'page', 'orderBy', 'ascending', 'byColumn'));
+        
+        //\DB::connection()->enableQueryLog();
 
         $model = $this->model;
         /**
@@ -22,15 +25,20 @@ trait VueTablesTrait
         }
         $count = $model->count();
 
-        $model->limit($limit)
-        ->skip($limit * ($page-1));
+        $model = $model->limit($limit)
+                    ->skip($limit * ($page-1));
 
         if (isset($orderBy) && $orderBy):
-              $direction = $ascending==1?"ASC":"DESC";
-        $model->orderBy($orderBy, $direction);
+                $direction = $ascending==1?"ASC":"DESC";
+                $model = $model->orderBy($orderBy, $direction);
         endif;
 
         $results = $model->get()->toArray();
+
+        //$query = \DB::getQueryLog();
+        //dd($query);
+
+        //$lastQuery = end($query);
 
         return ['data'=>$results,
                 'count'=>$count];
@@ -46,12 +54,12 @@ trait VueTablesTrait
             }
 
 	        if (is_string($query)) {
-	            $model->where($field, 'LIKE', "%{$query}%");
+	            $model = $model->where($field, 'LIKE', "%{$query}%");
 	        } else {
 	            $start = Carbon::createFromFormat('Y-m-d', $query['start'])->startOfDay();
 	            $end = Carbon::createFromFormat('Y-m-d', $query['end'])->endOfDay();
 
-	            $model->whereBetween($field, [$start, $end]);
+	            $model = $model->whereBetween($field, [$start, $end]);
 	        }
 
         endforeach;
@@ -60,10 +68,10 @@ trait VueTablesTrait
     }
 
     protected function filter($model, $query, $fields)
-    {
+    {        
         foreach ($fields as $index => $field):
         	$method = $index ? "orWhere" : "where"; // very beautiful code to get first item of array because first numeric index will be "0". So if $index is false, it means $index = 0
-        	$model->{$method}($field, 'LIKE', "%{$query}%");
+        	$model = $model->{$method}($field, 'LIKE', "%{$query}%");
         endforeach;
 
         return $model;
