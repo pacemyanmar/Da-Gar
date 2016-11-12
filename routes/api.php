@@ -18,19 +18,7 @@ Route::get('/user', function (Request $request) {
 })->middleware('auth:api');
 
 
-
-
-
-
-
-
 Route::resource('projects', 'ProjectAPIController');
-
-
-
-
-
-
 
 Route::resource('questions', 'QuestionAPIController');
 

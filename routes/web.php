@@ -11,6 +11,7 @@
 |
 */
 
+
 Route::get('/', function () {
     return redirect('home');
 });
@@ -20,27 +21,16 @@ Auth::routes();
 
 Route::get('/home', 'HomeController@index');
 
-Auth::routes();
+Route::get('projects/{project}/voters/{voter}',['as' => 'projects.voters', 'uses' => 'ProjectVoterController@voterSurvey']);
 
-Route::get('/home', 'HomeController@index');
+Route::post('projects/{project}/voters/{voter}',['as' => 'projects.voters.create', 'uses' => 'ProjectVoterController@createVoterSurveyResult']);
 
-
-
-
-
-
+Route::match(['put', 'patch'],'projects/{project}/voters/{voter}',['as' => 'projects.voters.update', 'uses' => 'ProjectVoterController@updateVoterSurveyResult']);
 
 Route::resource('projects', 'ProjectController');
-
-
-
-
-
-
 
 Route::resource('questions', 'QuestionController');
 
 Route::get('voters/search',[ 'as' => 'voters.search', 'uses'=>'VoterController@search']);
 
 Route::resource('voters', 'VoterController');
-
