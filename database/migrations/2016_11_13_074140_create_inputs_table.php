@@ -1,0 +1,37 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+
+class CreateInputsTable extends Migration
+{
+
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
+    public function up()
+    {
+        Schema::create('inputs', function (Blueprint $table) {
+            $table->increments('id');
+            $table->string('type')->index();
+            $table->string('name')->index();
+            $table->string('label')->index();
+            $table->string('default')->index();
+            $table->integer('sort')->index();
+            $table->integer('question_id')->unsigned();
+            $table->foreign('question_id')->references('id')->on('questions');
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+        Schema::drop('inputs');
+    }
+}
