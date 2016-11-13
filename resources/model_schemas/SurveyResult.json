@@ -2,8 +2,8 @@
     {
         "name": "id",
         "dbType": "increments",
-        "htmlType": null,
-        "validations": null,
+        "htmlType": "number",
+        "validations": "",
         "searchable": false,
         "fillable": false,
         "primary": true,
@@ -11,73 +11,68 @@
         "inIndex": false
     },
     {
-        "name": "project",
-        "dbType": "string",
-        "htmlType": "text",
-        "validations": "",
-        "searchable": true,
-        "fillable": true,
-        "primary": false,
-        "inForm": true,
-        "inIndex": true
-    },
-    {
-        "name": "type",
-        "dbType": "string",
-        "htmlType": "text",
-        "validations": "",
-        "searchable": true,
-        "fillable": true,
-        "primary": false,
-        "inForm": true,
-        "inIndex": true
-    },
-    {
-        "name": "sections",
+        "name": "value",
         "dbType": "text",
         "htmlType": "text",
         "validations": "",
         "searchable": true,
         "fillable": true,
         "primary": false,
-        "inForm": true,
-        "inIndex": true
+        "inForm": false,
+        "inIndex": false
     },
     {
-        "name": "dblink",
-        "dbType": "string",
+        "name": "qnum",
+        "dbType": "string:index",
         "htmlType": "text",
         "validations": "",
         "searchable": true,
         "fillable": true,
         "primary": false,
-        "inForm": true,
-        "inIndex": true
+        "inForm": false,
+        "inIndex": false
     },
     {
-        "name": "created_at",
-        "dbType": "timestamp",
-        "htmlType": null,
-        "validations": null,
-        "searchable": false,
-        "fillable": false,
+        "name": "sort",
+        "dbType": "integer:index",
+        "htmlType": "text",
+        "validations": "",
+        "searchable": true,
+        "fillable": true,
         "primary": false,
         "inForm": false,
         "inIndex": false
     },
     {
-        "name": "updated_at",
-        "dbType": "timestamp",
-        "htmlType": null,
-        "validations": null,
-        "searchable": false,
-        "fillable": false,
+        "name": "samplable_id",        
+        "dbType": "integer:unsigned",
+    },
+    {
+        "name": "samplable_type",
+        "dbType": "string",
+    },
+    {
+        "name": "input_id",
+        "dbType": "integer:unsigned:foreign,inputs,id",
+        "relation": "mt1,input",
+        "htmlType": "number",
+        "validations": "",
+        "searchable": true,
+        "fillable": true,
         "primary": false,
         "inForm": false,
         "inIndex": false
     },
     {
-        "type": "relation",
-        "relation": "1tm,Project"
+        "name": "project_id",
+        "dbType": "integer:unsigned:foreign,projects,id",
+        "relation": "mt1,project",
+        "htmlType": "number",
+        "validations": "",
+        "searchable": true,
+        "fillable": true,
+        "primary": false,
+        "inForm": false,
+        "inIndex": false
     }
 ]

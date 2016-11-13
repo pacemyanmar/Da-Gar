@@ -88,6 +88,10 @@
         "inIndex": true
     },
     {
+        "type": "relation",
+        "relation": "1tm,Input"
+    },
+    {
         "name": "project_id",
         "dbType": "integer:unsigned:foreign,projects,id",
         "htmlType": "text",
