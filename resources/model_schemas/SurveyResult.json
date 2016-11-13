@@ -46,14 +46,17 @@
     {
         "name": "samplable_id",        
         "dbType": "integer:unsigned",
+        "htmlType": "text"
     },
     {
         "name": "samplable_type",
         "dbType": "string",
+        "htmlType": "text"
     },
     {
         "name": "survey_input_id",
         "dbType": "integer:unsigned:foreign,survey_inputs,id",
+        "htmlType": "text",
         "relation": "mt1,SurveyInput"
     },
     {
