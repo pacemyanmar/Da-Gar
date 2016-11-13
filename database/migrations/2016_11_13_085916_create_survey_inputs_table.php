@@ -3,7 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 
-class CreateInputsTable extends Migration
+class CreateSurveyInputsTable extends Migration
 {
 
     /**
@@ -13,12 +13,12 @@ class CreateInputsTable extends Migration
      */
     public function up()
     {
-        Schema::create('inputs', function (Blueprint $table) {
-            $table->increments('id');
+        Schema::create('survey_inputs', function (Blueprint $table) {
+            $table->string('id')->primary();
             $table->string('type')->index();
             $table->string('name')->index();
             $table->string('label')->index();
-            $table->string('default')->index();
+            $table->string('value')->index();
             $table->integer('sort')->index();
             $table->integer('question_id')->unsigned();
             $table->foreign('question_id')->references('id')->on('questions');
@@ -32,6 +32,6 @@ class CreateInputsTable extends Migration
      */
     public function down()
     {
-        Schema::drop('inputs');
+        Schema::drop('survey_inputs');
     }
 }

@@ -5,22 +5,26 @@ namespace App\Models;
 use Eloquent as Model;
 
 /**
- * Class Input
+ * Class SurveyInput
  * @package App\Models
- * @version November 13, 2016, 7:41 am UTC
+ * @version November 13, 2016, 8:59 am UTC
  */
-class Input extends Model
+class SurveyInput extends Model
 {
+    public $table = 'survey_inputs';
 
-    public $table = 'inputs';
+    public $incrementing = false;
+
+    protected $keyType = 'varchar';
     
-
+    public $timestamps = false;
 
     public $fillable = [
+        'id',
         'type',
         'name',
         'label',
-        'default',
+        'value',
         'sort',
         'question_id'
     ];
@@ -31,10 +35,11 @@ class Input extends Model
      * @var array
      */
     protected $casts = [
+        'id' => 'string',
         'type' => 'string',
         'name' => 'string',
         'label' => 'string',
-        'default' => 'string',
+        'value' => 'string',
         'sort' => 'integer',
         'question_id' => 'integer'
     ];
@@ -45,7 +50,7 @@ class Input extends Model
      * @var array
      */
     public static $rules = [
-        
+        'id' => 'required|unique'        
     ];
 
     /**
@@ -59,8 +64,8 @@ class Input extends Model
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      **/
-    public function project()
+    public function question()
     {
-        return $this->belongsTo(\App\Models\Project::class);
+        return $this->belongsTo(\App\Models\Question::class);
     }
 }

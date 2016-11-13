@@ -103,7 +103,7 @@ $factory->define(App\Models\Question::class, function (Faker\Generator $faker) u
             return factory(App\Models\Project::class)->make()->id;
         };
     $project_id = $project();
-    $qnum = 'Q'.$faker->numberBetween($min = 1, $max = 30);
+    $qnum = 'Q'.$faker->unique()->numberBetween($min = 1, $max = 99);
     $layout = '';
     $section = $faker->numberBetween($min = 0, $max = 1);
     return [
@@ -112,7 +112,7 @@ $factory->define(App\Models\Question::class, function (Faker\Generator $faker) u
         'raw_ans' => $raw_ans,
         'layout' => $layout,
         'section' => $section,
-        'sort' => $faker->numberBetween($min = 1, $max = 30),
+        'sort' => $faker->unique()->numberBetween($min = 1, $max = 99),
         'project_id' => $project_id,
 
         'render' => $myfaker->render([
@@ -124,6 +124,7 @@ $factory->define(App\Models\Question::class, function (Faker\Generator $faker) u
             ]),
     ];
 });
+
 
 /**
  * Factory Model for Voters

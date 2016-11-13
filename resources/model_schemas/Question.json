@@ -89,7 +89,7 @@
     },
     {
         "type": "relation",
-        "relation": "1tm,Input"
+        "relation": "1tm,SurveyInput"
     },
     {
         "name": "project_id",

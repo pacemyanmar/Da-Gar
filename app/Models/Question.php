@@ -65,4 +65,12 @@ class Question extends Model
     {
         return $this->belongsTo(\App\Models\Project::class);
     }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     **/
+    public function surveyInputs()
+    {
+        return $this->hasMany(\App\Models\SurveyInput::class);
+    }
 }

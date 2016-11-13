@@ -2,10 +2,10 @@
 
 namespace App\Repositories;
 
-use App\Models\Input;
+use App\Models\SurveyInput;
 use InfyOm\Generator\Common\BaseRepository;
 
-class InputRepository extends BaseRepository
+class SurveyInputRepository extends BaseRepository
 {
     /**
      * @var array
@@ -14,7 +14,7 @@ class InputRepository extends BaseRepository
         'type',
         'name',
         'label',
-        'default',
+        'value',
         'sort',
         'question_id'
     ];
@@ -24,6 +24,6 @@ class InputRepository extends BaseRepository
      **/
     public function model()
     {
-        return Input::class;
+        return SurveyInput::class;
     }
 }

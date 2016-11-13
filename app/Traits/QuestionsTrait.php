@@ -22,7 +22,7 @@ trait QuestionsTrait {
             /**
              * create unique name attribute for each input
              */
-            $param = strtolower('p'.$project_id.'-s'.$section.'-'.$qnum.'-i'.$k);
+            $param = str_slug('p'.$project_id.'-s'.$section.'-'.$qnum.'-i'.$k);
             /**
              * assign name attribute using format_name method
              */
@@ -54,7 +54,11 @@ trait QuestionsTrait {
                 
                 $answer[] = $a;
 
-            } else {
+            } elseif($a['type'] == 'radio') {
+                $a['id'] = $param;
+                $a['name'] = str_slug('p'.$project_id.'-s'.$section.'-'.$qnum.'-r');
+                $answer[] = $a;
+            }else {
                 $a['id'] = $param;
                 $answer[] = $a;
             }

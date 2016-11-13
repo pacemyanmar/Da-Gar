@@ -6,7 +6,9 @@ use App\Http\Controllers\AppBaseController;
 use App\Http\Requests\API\CreateQuestionAPIRequest;
 use App\Http\Requests\API\UpdateQuestionAPIRequest;
 use App\Models\Question;
+use App\Models\SurveyInput;
 use App\Repositories\QuestionRepository;
+use App\Repositories\SurveyInputRepository;
 use App\Traits\QuestionsTrait;
 use Illuminate\Http\Request;
 use InfyOm\Generator\Criteria\LimitOffsetCriteria;
@@ -24,9 +26,10 @@ class QuestionAPIController extends AppBaseController
     /** @var  QuestionRepository */
     private $questionRepository;
 
-    public function __construct(QuestionRepository $questionRepo)
+    public function __construct(QuestionRepository $questionRepo, SurveyInputRepository $inputRepo)
     {
         $this->questionRepository = $questionRepo;
+        $this->inputRepository = $inputRepo;
     }
 
     /**
@@ -64,9 +67,26 @@ class QuestionAPIController extends AppBaseController
                 'project_id' => $request->only('project_id')['project_id'],
                 'section' => $request->only('section')['section']
                 ];
-        $input['render'] = $this->to_render($args);       
+        $render = $input['render'] = $this->to_render($args);       
 
         $questions = $this->questionRepository->create($input);
+        $inputs = [];
+        foreach($render as $k => $input) {
+
+            if($input['type'] == 'radio-group') {
+                foreach($input['values'] as $i => $value) {
+                    $value['name'] = $input['name'];
+                    $value['sort'] = $k.$i;
+                    $inputs[] = new SurveyInput($value);
+                } 
+            } else {
+                if(!isset($input['value'])) $input['value'] = $k;
+                if(!isset($input['sort'])) $input['sort'] = $k;
+                $inputs[] = new SurveyInput($input);
+            }
+        }
+        
+        $question->surveyInputs()->saveMany($inputs);
         /**
         if(!empty($raw_answers)) {
             $answers = [];
@@ -122,7 +142,7 @@ class QuestionAPIController extends AppBaseController
             return $this->sendError('Question not found');
         }
         $project_id = $request->only('project_id')['project_id'];
-        $input = $request->all();
+        $form_input = $request->all();
         $args = [
                 'raw_ans' => $request->only('raw_ans')['raw_ans'],
                 'qnum' => $request->only('qnum')['qnum'],
@@ -130,9 +150,28 @@ class QuestionAPIController extends AppBaseController
                 'project_id' => $request->only('project_id')['project_id'],
                 'section' => $request->only('section')['section']
                 ];
-        $input['render'] = $this->to_render($args);
+        $render = $form_input['render'] = $this->to_render($args);
 
-        $question = $this->questionRepository->update($input, $id);
+        $question = $this->questionRepository->update($form_input, $id);
+
+        $inputs = [];
+        foreach($render as $k => $input) {
+
+            if($input['type'] == 'radio-group') {
+                foreach($input['values'] as $i => $value) {
+                    $value['name'] = $input['name'];
+                    $value['sort'] = $k.$i;
+                    $inputs[] = new SurveyInput($value);
+                } 
+            } else {
+                if(!isset($input['value'])) $input['value'] = $k;
+                if(!isset($input['sort'])) $input['sort'] = $k;
+                $inputs[] = new SurveyInput($input);
+            }
+        }
+
+        $question->surveyInputs()->delete();
+        $question->surveyInputs()->saveMany($inputs);
 
         return $this->sendResponse($question->toArray(), 'Question updated successfully');
     }

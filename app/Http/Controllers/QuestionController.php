@@ -7,7 +7,9 @@ use App\Http\Controllers\AppBaseController;
 use App\Http\Requests;
 use App\Http\Requests\CreateQuestionRequest;
 use App\Http\Requests\UpdateQuestionRequest;
+use App\Models\SurveyInput;
 use App\Repositories\QuestionRepository;
+use App\Repositories\SurveyInputRepository;
 use App\Traits\QuestionsTrait;
 use Flash;
 use Response;
@@ -18,9 +20,12 @@ class QuestionController extends AppBaseController
     /** @var  QuestionRepository */
     private $questionRepository;
 
-    public function __construct(QuestionRepository $questionRepo)
+    private $inputRepository;
+
+    public function __construct(QuestionRepository $questionRepo, SurveyInputRepository $inputRepo)
     {
         $this->questionRepository = $questionRepo;
+        $this->inputRepository = $inputRepo;
     }
 
     /**
@@ -62,9 +67,26 @@ class QuestionController extends AppBaseController
                 'project_id' => $request->only('project_id')['project_id'],
                 'section' => $request->only('section')['section']
                 ];
-        $input['render'] = $this->to_render($args);
+        $render = $input['render'] = $this->to_render($args);
 
         $question = $this->questionRepository->create($input);
+
+        $inputs = [];
+        foreach($render as $k => $input) {
+
+            if($input['type'] == 'radio-group') {
+                foreach($input['values'] as $i => $value) {
+                    $value['name'] = $input['name'];
+                    $value['sort'] = $k.$i;
+                    $inputs[] = new SurveyInput($value);
+                } 
+            } else {
+                if(!isset($input['value'])) $input['value'] = $k;
+                if(!isset($input['sort'])) $input['sort'] = $k;
+                $inputs[] = new SurveyInput($input);
+            }
+        }
+        $question->surveyInputs()->saveMany($inputs);
         /**
         if(!empty($raw_answers)) {
             $answers = [];
@@ -143,7 +165,37 @@ class QuestionController extends AppBaseController
             return redirect(route('questions.index'));
         }
 
-        $question = $this->questionRepository->update($request->all(), $id);
+        $input = $request->all();
+
+        $args = [
+                'raw_ans' => $request->only('raw_ans')['raw_ans'],
+                'qnum' => $request->only('qnum')['qnum'],
+                'layout' => $request->only('layout')['layout'],
+                'project_id' => $request->only('project_id')['project_id'],
+                'section' => $request->only('section')['section']
+                ];
+        $render = $input['render'] = $this->to_render($args);
+
+        $question = $this->questionRepository->update($input, $id);
+
+        $inputs = [];
+        foreach($render as $k => $input) {
+
+            if($input['type'] == 'radio-group') {
+                foreach($input['values'] as $i => $value) {
+                    $value['name'] = $input['name'];
+                    $value['sort'] = $k.$i;
+                    $inputs[] = new SurveyInput($value);
+                } 
+            } else {
+                if(!isset($input['value'])) $input['value'] = $k;
+                if(!isset($input['sort'])) $input['sort'] = $k;
+                $inputs[] = new SurveyInput($input);
+            }
+        }
+        
+        $question->surveyInputs()->delete();
+        $question->surveyInputs()->saveMany($inputs);
 
         Flash::success('Question updated successfully.');
 

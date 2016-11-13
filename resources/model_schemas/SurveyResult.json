@@ -52,27 +52,15 @@
         "dbType": "string",
     },
     {
-        "name": "input_id",
-        "dbType": "integer:unsigned:foreign,inputs,id",
-        "relation": "mt1,input",
-        "htmlType": "number",
-        "validations": "",
-        "searchable": true,
-        "fillable": true,
-        "primary": false,
-        "inForm": false,
-        "inIndex": false
+        "name": "survey_input_id",
+        "dbType": "integer:unsigned:foreign,survey_inputs,id",
+        "relation": "mt1,SurveyInput"
     },
     {
         "name": "project_id",
         "dbType": "integer:unsigned:foreign,projects,id",
-        "relation": "mt1,project",
+        "relation": "mt1,Project",
         "htmlType": "number",
-        "validations": "",
-        "searchable": true,
-        "fillable": true,
-        "primary": false,
-        "inForm": false,
-        "inIndex": false
+        "validations": ""
     }
 ]
