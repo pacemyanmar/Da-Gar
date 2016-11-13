@@ -1,13 +1,7 @@
 <div id="checktable">
-@if($project->type==="p2l")
-@endif
 	<div class="table-responsive">
           <v-server-table url="{!! route('voters.search') !!}" :columns="columns" :options="options"></v-server-table>
-  </div>
-@if($project->type==="l2p")
-	voterlist l2p
-@endif
-	
+  </div>	
 </div>
 
 

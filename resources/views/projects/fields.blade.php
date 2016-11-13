@@ -25,17 +25,15 @@
     @if(isset($project))
     <p class="toggle" style="display:initial">{!! $db2name["$project->type"] !!}</p>
     @endif
-    {!! Form::select('type', ['p2l' => 'People to List', 'l2p' => 'List to People'],null, ['class' => 'form-control toggle']) !!}
+    {!! Form::select('type', [
+                                'p2l' => 'People to List', 
+                                'l2p' => 'List to People',
+                                'voterlist' => 'Check by Voter List',
+                                'location' => 'Check by Location', 
+                                'enumerator' => 'Check by Enumerator'
+                                ],null, ['class' => 'form-control toggle']) !!}
 </div>
 
-<!-- Validation Database Field -->
-<div class="form-group col-sm-6">
-    {!! Form::label('dblink', 'Validation Database:') !!}
-    @if(isset($project))
-    <p class="toggle" style="display:initial">{!! $db2name["$project->dblink"] !!}</p>
-    @endif
-    {!! Form::select('dblink', ['voterlist' => 'Voter List', 'location' => 'Location', 'enumerator' => 'Enumerator'],null, ['class' => 'form-control toggle']) !!}
-</div>
 <!-- sections Field -->
 <div class="form-group col-sm-12 col-lg-12 toggle">    
 

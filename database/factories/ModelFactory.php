@@ -73,7 +73,7 @@ $factory->define(App\Models\Project::class, function (Faker\Generator $faker) {
     $date = $faker->dateTimeThisMonth($max = 'now');
     return [
         'project' => $faker->words($nb = 3, $asText = true).' Project',
-        'type' => $faker->randomElement(['p2l','l2p']),
+        'type' => $faker->randomElement(['p2l','l2p','voterlist','location','enumerator']),
         'sections' => [
                         [ 
                         "sectionname" => "Section One ",
@@ -83,7 +83,6 @@ $factory->define(App\Models\Project::class, function (Faker\Generator $faker) {
                         "descriptions" => "Section Two Test"
                         ]
                     ],
-        'dblink' => $faker->randomElement(['voterlist','location','enumerator']),
         'created_at' => $date,
         'updated_at' => $date
     ];

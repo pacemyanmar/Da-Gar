@@ -54,7 +54,11 @@ trait VueTablesTrait
             }
 
 	        if (is_string($query)) {
-	            $model = $model->where($field, 'LIKE', "%{$query}%");
+                if($field == $model->getKeyName()) {
+                    $model = $model->where($field, '=', "{$query}");
+                } else {
+                    $model = $model->where($field, 'LIKE', "%{$query}%");
+                }	            
 	        } else {
 	            $start = Carbon::createFromFormat('Y-m-d', $query['start'])->startOfDay();
 	            $end = Carbon::createFromFormat('Y-m-d', $query['end'])->endOfDay();

@@ -73,8 +73,7 @@ class ProjectDataTable extends DataTable
     {
         return [
             'project' => ['name' => 'project', 'data' => 'project'],
-            'type' => ['name' => 'type', 'data' => 'type'],
-            'dblink' => ['name' => 'dblink', 'data' => 'dblink']
+            'type' => ['name' => 'type', 'data' => 'type']
         ];
     }
 

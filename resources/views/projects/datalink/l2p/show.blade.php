@@ -7,16 +7,18 @@
         </h1>
     </section>
     <div class="content">
+        @foreach($project->sections as $section_key => $section)
         <div class="panel panel-primary">
             <div class="panel-heading">
                 <div class="panel-title">
-                    Information | Validation
+                    {!! $section['sectionname'] !!} <small> {!! (!empty($section['descriptions']))?" | ".$section['descriptions']:"" !!}</small>
                 </div>                  
             </div>
             <div class="panel-body">
-                @include("projects.datalink.$project->type")
+                @include('projects.show_fields')
             </div>
-        </div>
+        </div> 
+        @endforeach
     </div>
 @endsection
 

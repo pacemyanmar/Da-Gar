@@ -18,7 +18,6 @@ class CreateProjectsTable extends Migration
             $table->string('project');
             $table->string('type');
             $table->text('sections');
-            $table->string('dblink');
             $table->timestamps();
         });
     }
