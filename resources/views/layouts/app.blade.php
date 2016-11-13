@@ -19,7 +19,7 @@
     </script>
 </head>
 
-<body class="skin-blue sidebar-mini">
+<body class="skin-blue sidebar-mini sidebar-collapse">
 @if (!Auth::guest())
     <div class="wrapper" id="app">
         <!-- Main Header -->

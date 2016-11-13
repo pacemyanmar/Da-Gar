@@ -55,7 +55,7 @@
     },
     {
         "name": "survey_input_id",
-        "dbType": "integer:unsigned:foreign,survey_inputs,id",
+        "dbType": "string:index:foreign,survey_inputs,id",
         "htmlType": "text",
         "relation": "mt1,SurveyInput"
     },

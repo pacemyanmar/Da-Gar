@@ -20,7 +20,7 @@ class CreateSurveyResultsTable extends Migration
             $table->integer('sort')->index();
             $table->integer('samplable_id')->unsigned();
             $table->string('samplable_type');
-            $table->integer('survey_input_id')->unsigned();
+            $table->string('survey_input_id')->index();
             $table->integer('project_id')->unsigned();
             $table->foreign('survey_input_id')->references('id')->on('survey_inputs');
             $table->foreign('project_id')->references('id')->on('projects');
