@@ -25,6 +25,9 @@
 	 */
 	$ans_in_col = round($anscount / $col_group_count);
 
+	//section as css class name
+	$sectionClass = str_slug($section['sectionname'], $separator = "-")
+
 	/**
 	 * $i => increment to total column count
 	 * $j => increment for outside use from input field loop

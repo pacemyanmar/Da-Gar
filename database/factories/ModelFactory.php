@@ -25,7 +25,7 @@ class MyFaker {
             $name = str_slug($n).'-'.$faker->randomNumber($nbDigits = 9);
 
             $string .= '{'.$return.$tab.$tab;
-            $string .= '"type": "'.$type.'",'.$return.$tab.$tab.'"label": "'.$label.'",'.$return.$tab.$tab.'"className": "'.$type;
+            $string .= '"type": "'.$type.'",'.$return.$tab.$tab.'"label": "'.$label.'",'.$return.$tab.$tab.'"className": "';
             $string .= '",'.$return.$tab.$tab.'"name": "'.$name.'"';
             $string .= "$return$tab}";
 

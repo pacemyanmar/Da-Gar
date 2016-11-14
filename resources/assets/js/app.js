@@ -23,3 +23,37 @@ global.resetForm = function ($form) {
     $form.find('input:radio, input:checkbox')
          .removeAttr('checked').removeAttr('selected');
 }
+
+jQuery(document).ready(function() {
+ 
+var offset = 150;
+ 
+var duration = 300;
+ 
+jQuery(window).scroll(function() {
+ 
+if (jQuery(this).scrollTop() > offset) {
+ 
+jQuery('.btn-float').fadeIn(duration);
+ 
+} else {
+ 
+jQuery('.btn-float').fadeOut(duration);
+ 
+}
+ 
+});
+ 
+ 
+ 
+jQuery('.btn-float').click(function(event) {
+ 
+event.preventDefault();
+ 
+jQuery('html, body').animate({scrollTop: 0}, duration);
+ 
+return false;
+ 
+})
+ 
+});

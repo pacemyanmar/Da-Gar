@@ -24,9 +24,14 @@ trait QuestionsTrait {
              */
             $param = str_slug('p'.$project_id.'-s'.$section.'-'.$qnum.'-i'.$k);
             /**
-             * assign name attribute using format_name method
+             * assign name attribute using format_input method
+             * remove checkbox or radio class name
              */
-            array_walk_recursive($a, array(&$this,'format_name'), $param);
+            array_walk_recursive($a, array(&$this,'format_input'), $param);
+
+            if(!array_key_exists('className', $a)) {
+                $a['className'] = '';
+            }
             /**
              * if input type is radio-group and layout is not matrix, change input type to "radio" and
              * assign unique id attribute.
@@ -72,9 +77,13 @@ trait QuestionsTrait {
      * @param string $key 
      * @return array
      */
-    private static function format_name(&$value, $key, $param) {
+    private static function format_input(&$value, $key, $param) {
         if($key == 'name') {
             $value = $param;
+        }
+
+        if($key == 'className') {
+            $value = preg_replace('/[checkbox|radio]/', '', $value);
         }
     }
 }

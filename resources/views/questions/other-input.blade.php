@@ -2,7 +2,7 @@
 if($element['type'] == 'date') $element['className'] .= ' form-control';
 
 $options = [
-'class' => $element['className'].' form-control',
+'class' => $element['className'].' form-control '.$sectionClass,
 'id' => $element['id'],
 'placeholder' => $element['label'],
 'aria-describedby'=> $element['id'].'-addons'

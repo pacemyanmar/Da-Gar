@@ -20,6 +20,7 @@
 </head>
 
 <body class="skin-blue sidebar-mini sidebar-collapse">
+@stack('after-body-start')
 @if (!Auth::guest())
     <div class="wrapper" id="app">
         <!-- Main Header -->
@@ -149,5 +150,6 @@
     @yield('scripts')
 
     @stack('vue-scripts')
+    @stack('before-body-end')
 </body>
 </html>
