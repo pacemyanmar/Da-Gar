@@ -29,6 +29,10 @@
   {!! Form::open(['url' => '#', 'id' => 'qaForm', 'class'=>'form-horizontal']) !!}
   @if(is_array($project->sections))
   @foreach($project->sections as $section_key => $section)
+  @php
+            //section as css class name
+            $sectionClass = str_slug($section['sectionname'], $separator = "-")
+  @endphp
   <div class="panel panel-primary">
     <div class="panel-heading">
       <div class="panel-title">

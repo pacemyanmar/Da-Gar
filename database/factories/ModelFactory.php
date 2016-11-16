@@ -99,16 +99,20 @@ $factory->define(App\Models\Question::class, function (Faker\Generator $faker) u
     /**
      * run closure function to get project id
      */
-    $qnum = 'Q'.$faker->unique()->numberBetween($min = 1, $max = 99);
+    
     $layout = '';
-    $section = $faker->numberBetween($min = 0, $max = 1);
+
+    $unique_num = $faker->unique()->numberBetween($min = 1, $max = 30);
+
+    $section = ($unique_num > 16)? 1:0;
+    $qnum = 'Q'.$unique_num;
     return [
         'qnum' => $qnum,
         'question' => $faker->realText($maxNbChars = 100, $indexSize = 5).'?',
         'raw_ans' => $raw_ans,
         'layout' => $layout,
         'section' => $section,
-        'sort' => $faker->unique()->numberBetween($min = 1, $max = 99),
+        'sort' => $unique_num,
         'project_id' => function () {
             return factory(App\Models\Project::class)->create()->id;
         },

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Scopes\OrderByScope;
 use Eloquent as Model;
 
 /**
@@ -57,6 +58,14 @@ class Question extends Model
         'raw_ans' => 'required',
         'sort' => 'required'
     ];
+
+    /**
+     * add global scope for ordering
+     */
+    protected static function boot() {
+        parent::boot();
+        static::addGlobalScope(new OrderByScope('sort', 'asc'));
+    }
 
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
