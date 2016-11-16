@@ -8,7 +8,7 @@
     </section>
     <div class="content">
         @foreach($project->sections as $section_key => $section)
-        <div class="panel panel-primary">
+        <div class="panel panel-primary section" id="{!! !!}">
             <div class="panel-heading">
                 <div class="panel-title">
                     {!! $section['sectionname'] !!} <small> {!! (!empty($section['descriptions']))?" | ".$section['descriptions']:"" !!}</small>

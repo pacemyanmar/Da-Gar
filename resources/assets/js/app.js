@@ -42,11 +42,10 @@ jQuery('.btn-float').fadeOut(duration);
  
 }
  
-});
+}); 
  
  
- 
-jQuery('.btn-float').click(function(event) {
+jQuery('.btn-float-to-up').click(function(event) {
  
 event.preventDefault();
  

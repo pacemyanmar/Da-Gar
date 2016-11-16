@@ -44,7 +44,12 @@ trait VueTablesTrait
                 'count'=>$count];
     }
 
-
+    /**
+     * [filterByColumn description]
+     * @param  VueTablesTrait->model $model [model object from current accessing model]
+     * @param  array $query array of query fields and keywords
+     * @return VueTablesTrait->model $model 
+     */
     protected function filterByColumn($model, $query)
     {
         foreach ($query as $field => $query):
