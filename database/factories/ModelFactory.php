@@ -99,10 +99,6 @@ $factory->define(App\Models\Question::class, function (Faker\Generator $faker) u
     /**
      * run closure function to get project id
      */
-    $project = function () {
-            return factory(App\Models\Project::class)->make()->id;
-        };
-    $project_id = $project();
     $qnum = 'Q'.$faker->unique()->numberBetween($min = 1, $max = 99);
     $layout = '';
     $section = $faker->numberBetween($min = 0, $max = 1);
@@ -113,17 +109,13 @@ $factory->define(App\Models\Question::class, function (Faker\Generator $faker) u
         'layout' => $layout,
         'section' => $section,
         'sort' => $faker->unique()->numberBetween($min = 1, $max = 99),
-        'project_id' => $project_id,
+        'project_id' => function () {
+            return factory(App\Models\Project::class)->create()->id;
+        },
 
-        'render' => $myfaker->render([
-                'raw_ans' => $raw_ans,
-                'qnum' => $qnum,
-                'layout' => $layout,
-                'section' => $section,
-                'project_id' => $project_id
-            ]),
+        'render' => [],
     ];
-});
+},'question');
 
 
 /**

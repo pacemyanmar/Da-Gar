@@ -9,7 +9,7 @@ trait QuestionsTrait {
      */
     private function to_render($args = []) {
     	$raw_ans = $args['raw_ans'];
-    	$project_id = $args['project_id'];dd($project_id);
+    	$project_id = $args['project_id'];
     	$qnum = $args['qnum'];
     	$layout = $args['layout'];
     	$section = $args['section'];
