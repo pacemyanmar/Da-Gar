@@ -57,14 +57,18 @@ $(document).ready(function() {
         event.preventDefault();
 
         var id = $(this).data('id');
-        var section_data = $('#'+id+' :input').serialize();
+        var section_data = $('#'+id+' :input').serializeArray();
+        section_data.push({name: 'wordlist', value: 'test'});
+        sendAjax(url,section_data);
         console.log(section_data);
     });
     $('.save-all').click(function(event){
         event.preventDefault();
 
         var id = $(this).data('id');
-        var section_data = $('#'+id+' :input').serialize();
+        var section_data = $('#'+id+' :input').serializeArray();
+        section_data.push({name: 'wordlist', value: 'test'});
+        sendAjax(url,section_data);
         console.log(section_data);
     });
 });

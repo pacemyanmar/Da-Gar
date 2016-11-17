@@ -1,4 +1,9 @@
 @extends('projects.datalink.create')
+@section('before-head-end')
+<script type="text/javascript">
+window.url="{!! route('projects.voters.save', ['project' => $project->id, 'voter' => $voter->id]) !!}"
+</script>
+@endsection
 @section('info-table')
         <div class="panel panel-primary">
             <div class="panel-heading">
@@ -31,7 +36,9 @@
         </div>
 @endsection
 @section('script')
+<script type="text/javascript">
 jQuery(document).ready(function($) {
     
 });
+</script>
 @endsection 

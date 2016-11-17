@@ -17,6 +17,7 @@
             'csrfToken' => csrf_token(),
         ]); ?>
     </script>
+    @yield('before-head-end')
 </head>
 
 <body class="skin-blue sidebar-mini sidebar-collapse">
@@ -151,5 +152,6 @@
 
     @stack('vue-scripts')
     @stack('before-body-end')
+    <div class="loading hidden">Loading&#8230;</div>
 </body>
 </html>

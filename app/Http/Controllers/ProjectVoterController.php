@@ -39,8 +39,8 @@ class ProjectVoterController extends Controller
 				->with('voter', $voter);
     }
 
-    public function save() {
-
+    public function save(Request $request) {
+    	return json_encode($request->all());
     }
 
     public function show($project_id, $voter_id) {

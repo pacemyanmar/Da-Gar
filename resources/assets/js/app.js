@@ -18,41 +18,64 @@ Vue.component('example', require('./components/Example.vue'));
 
 // Form reset method from stackoverflow
 // http://stackoverflow.com/questions/680241/resetting-a-multi-stage-form-with-jquery
-global.resetForm = function ($form) {
-    $form.find('input:text, input:password, input:file, select, textarea').val('');
-    $form.find('input:radio, input:checkbox')
+global.resetForm = function (form) {
+    form.find('input:text, input:password, input:file, select, textarea').val('');
+    form.find('input:radio, input:checkbox')
          .removeAttr('checked').removeAttr('selected');
 }
 
-jQuery(document).ready(function() {
- 
-var offset = 150;
- 
-var duration = 300;
- 
-jQuery(window).scroll(function() {
- 
-if (jQuery(this).scrollTop() > offset) {
- 
-jQuery('.btn-float').fadeIn(duration);
- 
-} else {
- 
-jQuery('.btn-float').fadeOut(duration);
- 
+global.sendAjax = function (url,data) {
+	var request = $.ajax({
+		  url: url,
+		  method: "POST",
+		  data: data
+		});
+		 
+		request.done(function( msg ) {
+			console.log(msg);		  
+		});
+		 
+		request.fail(function( jqXHR, textStatus ) {
+		  	console.log( "Request failed: " + textStatus );
+		});
+
+		request.always(function(){
+			$('.loading').addClass("hidden");
+		});
 }
- 
-}); 
- 
- 
-jQuery('.btn-float-to-up').click(function(event) {
- 
-event.preventDefault();
- 
-jQuery('html, body').animate({scrollTop: 0}, duration);
- 
-return false;
- 
-})
+
+jQuery(document).ready(function() {
+ 		$.ajaxSetup({
+			headers:
+			{ 'X-CSRF-TOKEN': Laravel.csrfToken }
+		});
+	var offset = 150;
+	 
+	var duration = 300;
+	 
+	jQuery(window).scroll(function() {
+	 
+	if (jQuery(this).scrollTop() > offset) {
+	 
+	jQuery('.btn-float').fadeIn(duration);
+	 
+	} else {
+	 
+	jQuery('.btn-float').fadeOut(duration);
+	 
+	}
+	 
+	}); 
+	 
+	 
+	jQuery('.btn-float-to-up').click(function(event) {
+	 
+	event.preventDefault();
+	 
+	jQuery('html, body').animate({scrollTop: 0}, duration);
+	 
+	return false;
+	 
+	})
  
 });
