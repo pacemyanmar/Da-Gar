@@ -23,7 +23,7 @@ if(isset($element['step'])) $options['step'] = $element['step'];
 				{!! $element['label'] !!}
     		@endif
     		</span>
-    		{!! Form::input($element['type'],$element['name'], null, $options) !!}
+    		{!! Form::input($element['type'],"result[".$element['name']."]", null, $options) !!}
     	</div>
     	
     </div>

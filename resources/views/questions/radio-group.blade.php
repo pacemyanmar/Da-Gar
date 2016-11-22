@@ -19,7 +19,7 @@ $layoutError = false;
 		@if(isset($av['values']))
 		<td>{!! $av['label'] !!}</td>		
 		@foreach($av['values'] as $value)
-		<td>{!! Form::radio($av['name'], $value['value'], null, ['id' => $value['id'],'class' => ' magic-radio '.$av['name'].' '.$sectionClass]) !!}<label class="normal-text" for='{{ $value['id'] }}'><!-- dummy for magic radio --></label></td>
+		<td>{!! Form::radio("result[".$av['name']."]", $value['value'], null, ['id' => $value['id'],'class' => ' magic-radio '.$av['name'].' '.$sectionClass]) !!}<label class="normal-text" for='{{ $value['id'] }}'><!-- dummy for magic radio --></label></td>
 		@endforeach
 		@else
 		@php
