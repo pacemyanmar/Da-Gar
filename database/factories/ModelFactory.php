@@ -83,6 +83,15 @@ $factory->define(App\Models\Project::class, function (Faker\Generator $faker) {
                         "descriptions" => "Section Two Test"
                         ]
                     ],
+        'samples' => [
+                        [ 
+                        "name" => "Country",
+                        "id" => "1"],
+                        [
+                        "name" => "Region",
+                        "id" => "2"
+                        ]
+                    ],
         'created_at' => $date,
         'updated_at' => $date
     ];

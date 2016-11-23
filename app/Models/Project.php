@@ -20,6 +20,7 @@ class Project extends Model
         'project',
         'type',
         'sections',
+        'samples',
         'dblink'
     ];
 
@@ -32,6 +33,7 @@ class Project extends Model
         'project' => 'string',
         'type' => 'string',
         'sections' => 'array',
+        'samples' => 'array',
         'dblink' => 'string'
     ];
 

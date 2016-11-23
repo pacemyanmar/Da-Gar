@@ -58,7 +58,7 @@ $(document).ready(function() {
 
         var id = $(this).data('id');
         var section_data = $('#'+id+' :input').serializeArray();
-        section_data.push({name: 'wordlist', value: 'test'});
+        section_data.push({name: 'samplable_type', value: 'voters'});
         sendAjax(url,section_data);
         console.log(section_data);
     });
@@ -67,7 +67,7 @@ $(document).ready(function() {
 
         var id = $(this).data('id');
         var section_data = $('#'+id+' :input').serializeArray();
-        section_data.push({name: 'wordlist', value: 'test'});
+        section_data.push({name: 'samplable_type', value: 'voters'});
         sendAjax(url,section_data);
         console.log(section_data);
     });
