@@ -7,7 +7,7 @@ use App\Repositories\QuestionRepository;
 use App\Repositories\VoterRepository;
 use Illuminate\Http\Request;
 
-class ProjectVoterController extends Controller
+class ProjectResultsController extends Controller
 {
 	/** @var  ProjectRepository */
     private $projectRepository;
