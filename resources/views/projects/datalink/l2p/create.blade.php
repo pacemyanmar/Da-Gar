@@ -1,7 +1,7 @@
 @extends('projects.datalink.create')
 @section('before-head-end')
 <script type="text/javascript">
-window.url="{!! route('projects.voters.save', ['project' => $project->id, 'voter' => $voter->id]) !!}"
+window.url="{!! route('projects.voters.save', ['project' => $project->id, 'sample' => $sample->id]) !!}"
 </script>
 @endsection
 @section('info-table')
@@ -20,13 +20,27 @@ window.url="{!! route('projects.voters.save', ['project' => $project->id, 'voter
                                 <th>Name</th>
                                 <th>Father</th>
                                 <th>Address</th>
+                                @if(count($project->samples) > 1)
+                                <th>Sample</th>
+                                @endif
                             </tr>
                         </thead>
                         <tbody>
                             <tr>
-                                <td>{!! $voter->name !!}</td>
-                                <td>{!! $voter->father !!}</td>
-                                <td>{!! $voter->address !!}</td> 
+                                <td>{!! $sample->name !!}</td>
+                                <td>{!! $sample->father !!}</td>
+                                <td>{!! $sample->address !!}</td>
+                                 @if(count($project->samples) > 1)
+                                <td>                                   
+                                        <select id="sample" class="form-control">
+                                        @foreach($project->samples as $sample)
+                                                <option value="{!! $sample['id'] !!}">{!! $sample['name'] !!}</option>
+                                        @endforeach
+                                        </select>
+                                </td>
+                                @else
+                                    <input type="hidden" id="sample" value="{!! $project->samples[0]['id']!!}">
+                                @endif
                             </tr>
                         </tbody>
                     </table>

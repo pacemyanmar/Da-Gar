@@ -25,15 +25,15 @@ Route::group(['prefix' => 'projects/{project}/surveys'], function () {
     
 	Route::get('/{survey}',['as' => 'projects.voters.index', 'uses' => 'ProjectResultsController@index']);
 
-	Route::get('/{voter}/create',['as' => 'projects.voters.create', 'uses' => 'ProjectResultsController@create']);
+	Route::get('/{sample_id}/create/{sample_type?}',['as' => 'projects.voters.create', 'uses' => 'ProjectResultsController@create']);
 
-	Route::post('/{voter}',['as' => 'projects.voters.save', 'uses' => 'ProjectResultsController@save']);
+	Route::post('/{voter_sample}',['as' => 'projects.voters.save', 'uses' => 'ProjectResultsController@save']);
 
-	Route::get('/{voter}/results/{result}',['as' => 'projects.voters.results.show', 'uses' => 'ProjectResultsController@show']);
+	Route::get('/{voter_sample}/results/{result}',['as' => 'projects.voters.results.show', 'uses' => 'ProjectResultsController@show']);
 
-	Route::get('/{voter}/results/{result}/edit',['as' => 'projects.voters.results.edit', 'uses' => 'ProjectResultsController@edit']);
+	Route::get('/{voter_sample}/results/{result}/edit',['as' => 'projects.voters.results.edit', 'uses' => 'ProjectResultsController@edit']);
 
-	Route::match(['put', 'patch'],'/{voter}/results/{result}',['as' => 'projects.voters.results.update', 'uses' => 'ProjectResultsController@update']);
+	Route::match(['put', 'patch'],'/{voter_sample}/results/{result}',['as' => 'projects.voters.results.update', 'uses' => 'ProjectResultsController@update']);
 
 });
 

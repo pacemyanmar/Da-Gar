@@ -32,7 +32,7 @@ new Vue({
           edit: function(createElement, row) {
             return createElement('a', {
                 attrs:{
-                    'href': '{!! url('projects/'.$project->id.'/surveys'); !!}/'+row.id+'/create'
+                    'href': '{!! url('projects/'.$project->id.'/surveys'); !!}/'+row.id+'/create/voter'
                 }
             }, 'Open');
           }

@@ -52,7 +52,11 @@ class ProjectController extends AppBaseController
     public function store(CreateProjectRequest $request)
     {
         $input = $request->all();
-
+        if(!isset($input['sections'])) {
+            $input['sections'][0] = [
+                    'sectionname' => 'Survey'
+                ];
+        }
         $project = $this->projectRepository->create($input);
 
         Flash::success('Project saved successfully.');
@@ -121,7 +125,14 @@ class ProjectController extends AppBaseController
             return redirect(route('projects.index'));
         }
 
-        $project = $this->projectRepository->update($request->all(), $id);
+        $input = $request->all();
+        if(!isset($input['sections'])) {
+            $input['sections'][0] = [
+                    'sectionname' => 'Survey'
+                ];
+        }
+
+        $project = $this->projectRepository->update($input, $id);
 
         Flash::success('Project updated successfully.');
 

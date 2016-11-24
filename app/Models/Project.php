@@ -43,7 +43,7 @@ class Project extends Model
      * @var array
      */
     public static $rules = [
-        
+        'project' => 'required',
     ];
 
     /**

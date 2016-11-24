@@ -58,18 +58,18 @@ $(document).ready(function() {
 
         var id = $(this).data('id');
         var section_data = $('#'+id+' :input').serializeArray();
-        section_data.push({name: 'samplable_type', value: 'voters'});
+        section_data.push({name: 'samplable_type', value: $('#sample').val()});
         sendAjax(url,section_data);
-        console.log(section_data);
+        //console.log(section_data);
     });
     $('.save-all').click(function(event){
         event.preventDefault();
 
         var id = $(this).data('id');
         var section_data = $('#'+id+' :input').serializeArray();
-        section_data.push({name: 'samplable_type', value: 'voters'});
+        section_data.push({name: 'samplable_type', value: $('#sample').val()});
         sendAjax(url,section_data);
-        console.log(section_data);
+        //console.log(section_data);
     });
 });
 </script>

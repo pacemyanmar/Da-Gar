@@ -13,9 +13,9 @@
 @endphp
 <!-- Name Field -->
 <div class="form-group col-sm-6">
-    {!! Form::label('project', 'Name:') !!}
+    {!! Form::label('project', 'Name:', ['class' => 'toggle']) !!}
     @if(isset($project))
-    <p class="toggle" style="display:initial">{!! $project->project !!}</p>
+    <h3 class="toggle" style="display:initial">{!! $project->project !!}</h3>
     @endif
     {!! Form::text('project', null, ['class' => 'form-control toggle']) !!}
 </div>
@@ -35,7 +35,7 @@
     <table class="table table-striped table-bordered" id="table">
         <thead class="no-border">
             <tr>
-                <th>Sample Name</th>
+                <th>Sample Label</th>
                 <th>Sample ID</th>
                 <th><i class=" fa fa-plus btn btn-sm btn-success btn-flat btn-green toggle" id="btnAddSample"></i></th>
             </tr>
@@ -46,12 +46,12 @@
             @foreach($project->samples as $sample_key => $sample)
             <tr class="sample" style="display: table-row;">
                 <td style="vertical-align: middle">
-                    <p class="toggle" style="display:initial">{!! $sample['name'] !!}</p>
-                    <input value="{!! $sample['name'] !!}" required="" class="form-control samplename toggle" type="text">
+                    <p class="toggle" style="display:initial">{!! (isset($sample['name']))?$sample['name']:'' !!}</p>
+                    <input value="{!! (isset($sample['name']))?$sample['name']:'' !!}" class="form-control samplename toggle" type="text">
                 </td>
                 <td style="vertical-align: middle">
-                    <p class="toggle" style="display:initial">{!! $sample['id'] !!}</p>
-                    <input value="{!! $sample['id'] !!}" class="form-control sampleid toggle" type="text">
+                    <p class="toggle" style="display:initial">{!! (isset($sample['id']))?$sample['id']:'' !!}</p>
+                    <input value="{!! (isset($sample['id']))?$sample['id']:'' !!}" class="form-control sampleid toggle" type="text">
                 </td>
                 <td style="vertical-align: middle">
                     <i onclick="removeItem(this)" class="remove fa fa-trash-o toggle" style="cursor: pointer;font-size: 20px;color: red;"></i>
@@ -63,7 +63,7 @@
             @else
             <tr class="sample" style="display: table-row;">
                 <td style="vertical-align: middle">
-                    <input required="" class="form-control samplename toggle" type="text">
+                    <input class="form-control samplename toggle" type="text">
                 </td>
                 <td style="vertical-align: middle">
                     <input class="form-control sampleid toggle" type="text" placeholder="Unique number or word">
@@ -83,7 +83,7 @@
     <table class="table table-striped table-bordered" id="table">
         <thead class="no-border">
             <tr>
-                <th>Section Name</th>
+                <th>Section</th>
                 <th>Descriptions</th>
                 <th><i class=" fa fa-plus btn btn-sm btn-success btn-flat btn-green toggle" id="btnAdd"></i></th>
             </tr>
@@ -94,12 +94,12 @@
             @foreach($project->sections as $section_key => $section)
             <tr class="item" style="display: table-row;">
                 <td style="vertical-align: middle">
-                    <p class="toggle" style="display:initial">{!! $section['sectionname'] !!}</p>
-                    <input value="{!! $section['sectionname'] !!}" required="" class="form-control sectionname toggle" type="text">
+                    <p class="toggle" style="display:initial">{!! (isset($section['sectionname']))?$section['sectionname']:'' !!}</p>
+                    <input value="{!! (isset($section['sectionname']))?$section['sectionname']:'' !!}" class="form-control sectionname toggle" type="text">
                 </td>
                 <td style="vertical-align: middle">
-                    <p class="toggle" style="display:initial">{!! $section['descriptions'] !!}</p>
-                    <input value="{!! $section['descriptions'] !!}" class="form-control descriptions toggle" type="text">
+                    <p class="toggle" style="display:initial">{!! (isset($section['descriptions']))?$section['descriptions']:'' !!}</p>
+                    <input value="{!! (isset($section['descriptions']))?$section['descriptions']:'' !!}" class="form-control descriptions toggle" type="text">
                 </td>
                 <td style="vertical-align: middle">
                     <i onclick="removeItem(this)" class="remove fa fa-trash-o toggle" style="cursor: pointer;font-size: 20px;color: red;"></i>
@@ -111,7 +111,7 @@
             @else
             <tr class="item" style="display: table-row;">
                 <td style="vertical-align: middle">
-                    <input required="" class="form-control sectionname toggle" type="text">
+                    <input class="form-control sectionname toggle" type="text">
                 </td>
                 <td style="vertical-align: middle">
                     <input class="form-control descriptions toggle" type="text">
@@ -137,7 +137,7 @@
 
   $(document).ready(function(){
     var htmlStr =   '<tr class="item" style="display: table-row;"><td style="vertical-align: middle">';
-    htmlStr +=  '<input type="text" style="width: 100%" required class="form-control sectionname"/>';
+    htmlStr +=  '<input type="text" style="width: 100%" class="form-control sectionname"/>';
     htmlStr +=  '</td>';
     htmlStr +=  '<td style="vertical-align: middle">';
     htmlStr +=  '<input type="text" class="form-control descriptions"/>';
@@ -153,7 +153,7 @@
     });
 
     var sampleStr =   '<tr class="sample" style="display: table-row;"><td style="vertical-align: middle">';
-    sampleStr +=  '<input type="text" style="width: 100%" required class="form-control sectionname"/>';
+    sampleStr +=  '<input type="text" style="width: 100%" class="form-control samplename"/>';
     sampleStr +=  '</td>';
     sampleStr +=  '<td style="vertical-align: middle">';
     sampleStr +=  '<input type="text" class="form-control sampleid" placeholder="Unique number or word"/>';
@@ -172,10 +172,10 @@
     $(".editProject").on("click", function () {
       $(".toggle").toggle();
     });
+    $("#project").find(":input").filter(function(){ return !this.value; }).removeAttr("disabled");
+    $("#project").on("submit", function(e) {      
 
-    $("#project").on("submit", function(e) {
       $('.item').each(function (index,value) {
-        var sectionname = $(this).find('.sectionname').val();
         $(this).find('.sectionname').attr('name','sections['+index+'][sectionname]');
         $(this).find('.descriptions').attr('name','sections['+index+'][descriptions]');
       });
@@ -183,6 +183,8 @@
         $(this).find('.samplename').attr('name','samples['+index+'][name]');
         $(this).find('.sampleid').attr('name','samples['+index+'][id]');
       });
+
+        $(this).find(":input").filter(function(){ return !this.value; }).attr("disabled", "disabled");
     });
 
   });
