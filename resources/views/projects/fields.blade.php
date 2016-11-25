@@ -2,14 +2,17 @@
 /**
  *  db value to name array
  */
- $db2name = [
-    '' => 'None',
-    'p2l' => 'People to List',
-    'l2p' => 'List to People',
-    'voters' => 'Voter List',
+ $dblink = [
+    '' => 'None',    
+    'voter' => 'Voter List',
     'location' => 'Location',
     'enumerator' => 'Enumerator',
  ];
+ $type = [
+    '' => 'None',
+    'sample2db' => 'Sample to Database',
+    'db2sample' => 'Database to sample',
+ ]
 @endphp
 <!-- Name Field -->
 <div class="form-group col-sm-6">
@@ -20,13 +23,23 @@
     {!! Form::text('project', null, ['class' => 'form-control toggle']) !!}
 </div>
 
+
+<!-- DB Link Field -->
+<div class="form-group col-sm-6">
+    {!! Form::label('dblink', 'Related database name: ') !!}
+    @if(isset($project))
+    <p class="toggle" style="display:initial">{!! $dblink["$project->dblink"] !!}</p>
+    @endif
+    {!! Form::select('dblink', $dblink,null, ['class' => 'form-control toggle']) !!}
+</div>
+
 <!-- Type Field -->
 <div class="form-group col-sm-6">
     {!! Form::label('type', 'Related database type: ') !!}
     @if(isset($project))
-    <p class="toggle" style="display:initial">{!! $db2name["$project->type"] !!}</p>
+    <p class="toggle" style="display:initial">{!! $type["$project->type"] !!}</p>
     @endif
-    {!! Form::select('type', $db2name,null, ['class' => 'form-control toggle']) !!}
+    {!! Form::select('type', $type,null, ['class' => 'form-control toggle']) !!}
 </div>
 
 <!-- sections Field -->

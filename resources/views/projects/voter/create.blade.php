@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @push('after-body-start')
-<a class="btn btn-primary pull-right btn-float btn-float-up save-all" style="display:inline;margin-right:15px;" href="#" data-id="survey-form"> Save All</a>
+<a class="btn btn-primary pull-right btn-float btn-float-up save" style="display:inline;margin-right:15px;" href="#" data-id="survey-form"> Save All</a>
            <a class="pull-right btn-float btn-float-bottom btn-float-to-up" style="display:inline;font-size: 40px;" href="#"><i class="fa fa-arrow-circle-up"></i></a>
 @endpush
 @section('content')
@@ -9,7 +9,7 @@
     <section class="content-header">
         <h1 class="pull-left">{!! Form::label('name', $project->project) !!}</h1>
         <h1 class="pull-right">
-           <a class="btn btn-primary pull-right save-all" style="display:inline;margin-top: -10px;margin-bottom: 5" href="#" data-id="survey-form"> Save All</a>
+           <a class="btn btn-primary pull-right save" style="display:inline;margin-top: -10px;margin-bottom: 5" href="#" data-id="survey-form"> Save All</a>
         </h1>
     </section>
     <div class="content">
@@ -17,8 +17,7 @@
         @include('flash::message')
 
         <div class="clearfix"></div>
-        @yield('info-table')
-
+        @include('projects.'.$project->dblink.'.'.$project->type.'.info_table')
         <div id="survey-form">
         @foreach($project->sections as $section_key => $section)
         @php
@@ -34,7 +33,7 @@
             <div class="panel-body">
                 @include('projects.show_fields')
                 <h1 class="pull-right">
-                   <a class="btn btn-sm btn-info pull-right save-section" data-id="{!! $sectionClass !!}" style="display:inline;margin-top: -10px;margin-bottom: 5" href="#"> Save this section</a>
+                   <a class="btn btn-sm btn-info pull-right save" data-id="{!! $sectionClass !!}" style="display:inline;margin-top: -10px;margin-bottom: 5" href="#"> Save this section</a>
                 </h1>
             </div>
         </div> 
@@ -53,22 +52,16 @@
 @push('vue-scripts')
 <script type='text/javascript'>
 $(document).ready(function() {
-    $('.save-section').click(function(event){
+    
+    $('.save').click(function(event){
         event.preventDefault();
 
-        var id = $(this).data('id');
+        var id = $(this).data('id');        
+        $('#'+id).find(":input").filter(function(){ return !this.value; }).attr("disabled", "disabled");
         var section_data = $('#'+id+' :input').serializeArray();
         section_data.push({name: 'samplable_type', value: $('#sample').val()});
         sendAjax(url,section_data);
-        //console.log(section_data);
-    });
-    $('.save-all').click(function(event){
-        event.preventDefault();
-
-        var id = $(this).data('id');
-        var section_data = $('#'+id+' :input').serializeArray();
-        section_data.push({name: 'samplable_type', value: $('#sample').val()});
-        sendAjax(url,section_data);
+        $('#'+id).find(":input").removeAttr("disabled");
         //console.log(section_data);
     });
 });

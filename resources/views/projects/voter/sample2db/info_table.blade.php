@@ -1,4 +1,3 @@
-@extends('projects.datalink.create')
 @section('before-head-end')
 <script type="text/javascript">
 window.url="{!! route('projects.voters.save', ['project' => $project->id, 'sample' => $sample->id]) !!}"

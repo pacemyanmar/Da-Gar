@@ -14,14 +14,15 @@ class SurveyResult extends Model
 
     public $table = 'survey_results';
     
-
+    public $timestamps = false; 
 
     public $fillable = [
         'value',
-        'qnum',
+        'inputid',
         'sort',
         'samplable_id',
         'samplable_type',
+        'samplable_data',
         'survey_input_id',
         'project_id'
     ];
@@ -33,10 +34,11 @@ class SurveyResult extends Model
      */
     protected $casts = [
         'value' => 'string',
-        'qnum' => 'string',
+        'inputid' => 'string',
         'sort' => 'integer',
         'samplable_id' => 'integer',
         'samplable_type' => 'string',
+        'samplable_data' => 'array',
         'survey_input_id' => 'integer',
         'project_id' => 'integer'
     ];
@@ -47,7 +49,6 @@ class SurveyResult extends Model
      * @var array
      */
     public static $rules = [
-        
     ];
 
     /**

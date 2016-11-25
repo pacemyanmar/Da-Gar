@@ -14,7 +14,7 @@
                 </div>                  
             </div>
             <div class="panel-body">
-                @include("projects.datalink.$project->type")
+                @include("projects.$project->dblink.$project->type.search")
             </div>
         </div>
     </div>

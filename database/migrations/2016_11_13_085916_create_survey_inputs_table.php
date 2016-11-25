@@ -15,6 +15,7 @@ class CreateSurveyInputsTable extends Migration
     {
         Schema::create('survey_inputs', function (Blueprint $table) {
             $table->string('id')->primary();
+            $table->string('inputid')->index();
             $table->string('type')->index();
             $table->string('name')->index();
             $table->string('label')->index();

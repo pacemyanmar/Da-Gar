@@ -56,17 +56,15 @@ trait QuestionsTrait {
                     $a['values'][$j] = array_merge($option,$av);
                 }
 
-                
-                $answer[] = $a;
-
             } elseif($a['type'] == 'radio') {
                 $a['id'] = $param;
                 $a['name'] = str_slug('p'.$project_id.'-s'.$section.'-'.$qnum.'-r');
-                $answer[] = $a;
             }else {
-                $a['id'] = $param;
-                $answer[] = $a;
+                $a['id'] = $param;                
             }
+            $i = $k + 1;
+            $a['inputid'] = $qnum.'-'.$i;
+            $answer[] = $a;
         }
         return $answer;
     }

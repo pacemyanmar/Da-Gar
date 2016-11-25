@@ -21,6 +21,7 @@ class SurveyInput extends Model
 
     public $fillable = [
         'id',
+        'inputid',
         'type',
         'name',
         'label',
@@ -36,6 +37,7 @@ class SurveyInput extends Model
      */
     protected $casts = [
         'id' => 'string',
+        'inputid' => 'string',
         'type' => 'string',
         'name' => 'string',
         'label' => 'string',

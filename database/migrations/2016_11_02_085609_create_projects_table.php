@@ -16,7 +16,8 @@ class CreateProjectsTable extends Migration
         Schema::create('projects', function (Blueprint $table) {
             $table->increments('id');
             $table->string('project');
-            $table->string('type')->nullable();
+            $table->string('dblink')->nullable(); // voter | location | enumerator | none
+            $table->string('type')->nullable();// db2sample | sample2db | none
             $table->text('sections');
             $table->text('samples');
             $table->timestamps();
