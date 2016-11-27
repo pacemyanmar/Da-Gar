@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\DataTables\SurveyResultDataTable;
 use App\Repositories\ProjectRepository;
 use App\Repositories\QuestionRepository;
 use App\Repositories\SurveyInputRepository;
@@ -32,8 +33,11 @@ class ProjectResultsController extends Controller
         $this->surveyInputRepo = $surveyInputRepo;
     }
 
-    public function index() {
-
+    public function index($project_id, $samplable = null, SurveyResultDataTable $resultDataTable = null) {
+            $project = $this->projectRepository->findWithoutFail($project_id);
+            $resultDataTable = ($resultDataTable)?$resultDataTable:($samplable instanceof SurveyResultDataTable)?$samplable:null;
+            return $resultDataTable
+                    ->render('projects.'.$project->dblink.'.'.$project->type.'.index', compact('project'));
     }
     
     /**

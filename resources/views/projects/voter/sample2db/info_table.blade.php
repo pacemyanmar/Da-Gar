@@ -1,6 +1,6 @@
 @section('before-head-end')
 <script type="text/javascript">
-window.url="{!! route('projects.voters.save', ['project' => $project->id, 'sample' => $sample->id]) !!}"
+window.url="{!! route('projects.surveys.result.save', ['project' => $project->id, 'sample' => $sample->id]) !!}"
 </script>
 @endsection
 @section('info-table')

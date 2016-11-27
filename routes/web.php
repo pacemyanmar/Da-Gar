@@ -23,17 +23,19 @@ Route::get('/home', 'HomeController@index');
 
 Route::group(['prefix' => 'projects/{project}/surveys'], function () {
     
-	Route::get('/{survey}',['as' => 'projects.voters.index', 'uses' => 'ProjectResultsController@index']);
+	Route::get('/{sample_id?}',['as' => 'projects.surveys.index', 'uses' => 'ProjectResultsController@index']);
 
-	Route::get('/{sample_id}/create/{sample_type?}',['as' => 'projects.voters.create', 'uses' => 'ProjectResultsController@create']);
+	Route::get('/{sample_id}/create/{sample_type?}',['as' => 'projects.surveys.result.create', 'uses' => 'ProjectResultsController@create']);
 
-	Route::post('/{voter_sample}',['as' => 'projects.voters.save', 'uses' => 'ProjectResultsController@save']);
+	Route::post('/{sample_id}',['as' => 'projects.surveys.result.save', 'uses' => 'ProjectResultsController@save']);
 
-	Route::get('/{voter_sample}/results/{result}',['as' => 'projects.voters.results.show', 'uses' => 'ProjectResultsController@show']);
+	Route::get('/{sample_id}/results/{result}',['as' => 'projects.surveys.result.show', 'uses' => 'ProjectResultsController@show']);
 
-	Route::get('/{voter_sample}/results/{result}/edit',['as' => 'projects.voters.results.edit', 'uses' => 'ProjectResultsController@edit']);
+	Route::get('/{sample_id}/results/{result}/edit',['as' => 'projects.surveys.result.edit', 'uses' => 'ProjectResultsController@edit']);
 
-	Route::match(['put', 'patch'],'/{voter_sample}/results/{result}',['as' => 'projects.voters.results.update', 'uses' => 'ProjectResultsController@update']);
+	Route::match(['put', 'patch'],'/{sample_id}/results/{result}',['as' => 'projects.surveys.result.update', 'uses' => 'ProjectResultsController@update']);
+
+	Route::delete('/{sample_id}/results/{result}',['as' => 'projects.surveys.result.destroy', 'uses' => 'ProjectResultsController@destroy']);
 
 });
 
