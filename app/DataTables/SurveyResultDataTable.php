@@ -7,6 +7,16 @@ use Yajra\Datatables\Services\DataTable;
 
 class SurveyResultDataTable extends DataTable
 {
+    protected $project;
+    /**
+     * Project Setter
+     * @param  App\Models\Project $project [Project Models from route]
+     * @return App\DataTables\SurveyResultDataTable          [this datatable object]
+     */
+    public function forProject($project) {
+            $this->project = $project;
+            return $this;
+    }
     /**
      * Display ajax response.
      *
@@ -27,8 +37,7 @@ class SurveyResultDataTable extends DataTable
      */
     public function query()
     {
-        $query = SurveyResult::query()->with('project');
-
+        $query = SurveyResult::query()->where('project_id',$this->project->id)->with('project');
         return $this->applyScopes($query);
     }
 

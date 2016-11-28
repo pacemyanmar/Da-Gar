@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\DataTables\Scopes\SurveyResultByProjectScope;
 use App\DataTables\SurveyResultDataTable;
 use App\Repositories\ProjectRepository;
 use App\Repositories\QuestionRepository;
@@ -37,6 +38,7 @@ class ProjectResultsController extends Controller
             $project = $this->projectRepository->findWithoutFail($project_id);
             $resultDataTable = ($resultDataTable)?$resultDataTable:($samplable instanceof SurveyResultDataTable)?$samplable:null;
             return $resultDataTable
+                    ->forProject($project)
                     ->render('projects.'.$project->dblink.'.'.$project->type.'.index', compact('project'));
     }
     
