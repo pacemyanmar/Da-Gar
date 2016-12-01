@@ -8,6 +8,8 @@ use Yajra\Datatables\Services\DataTable;
 class SurveyResultDataTable extends DataTable
 {
     protected $project;
+
+    protected $tableColumns;
     /**
      * Project Setter
      * @param  App\Models\Project $project [Project Models from route]
@@ -16,6 +18,10 @@ class SurveyResultDataTable extends DataTable
     public function forProject($project) {
             $this->project = $project;
             return $this;
+    }
+
+    public function setColumns($columns) {
+            $this->tableColumns = $columns;
     }
     /**
      * Display ajax response.
@@ -62,10 +68,14 @@ class SurveyResultDataTable extends DataTable
      */
     protected function getColumns()
     {
-        return [
-            'inputid' => ['name' => 'inputid', 'data' => 'inputid', 'title' => 'No.'],
-            'samplable_id' => ['name' => 'samplable_id', 'data' => 'samplable_id', 'title' => 'Sample ID'],
-        ];
+        if(!empty($this->tableColumns) && is_array($this->tableColumns)) {
+            return $this->tableColumns;
+        } else {
+            return [
+                'inputid' => ['name' => 'inputid', 'data' => 'inputid', 'title' => 'No.'],
+                'samplable_id' => ['name' => 'samplable_id', 'data' => 'samplable_id', 'title' => 'ID', 'defaultContent' => ''],
+            ];
+        }        
     }
 
     /**
