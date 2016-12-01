@@ -10,19 +10,41 @@ class SurveyResultDataTable extends DataTable
     protected $project;
 
     protected $tableColumns;
+
+    protected $surveyType;
     /**
      * Project Setter
      * @param  App\Models\Project $project [Project Models from route]
-     * @return App\DataTables\SurveyResultDataTable          [this datatable object]
+     * @return $this ( App\DataTables\SurveyResultDataTable )
      */
-    public function forProject($project) {
-            $this->project = $project;
-            return $this;
+    public function forProject($project)
+    {
+        $this->project = $project;
+        return $this;
     }
 
-    public function setColumns($columns) {
-            $this->tableColumns = $columns;
+    /**
+     * Columns Setter
+     * @param array $columns [array of columns to use by datatables]
+     * @return $this ( App\DataTables\SurveyResultDataTable )
+     */
+    public function setColumns($columns)
+    {
+        $this->tableColumns = $columns;
+        return $this;
     }
+
+    /**
+     * Survey type setter (voter|location|enumerator)
+     * @param string $surveyType [voter|location|enumerator]
+     * @return $this ( App\DataTables\SurveyResultDataTable )
+     */
+    public function setSurveyType($surveyType)
+    {
+        $this->surveyType = $surveyType;
+        return $this;
+    }
+
     /**
      * Display ajax response.
      *
@@ -43,7 +65,7 @@ class SurveyResultDataTable extends DataTable
      */
     public function query()
     {
-        $query = SurveyResult::query()->where('project_id',$this->project->id)->with('project');
+        $query = SurveyResult::query()->where('project_id', $this->project->id)->with('project');
         return $this->applyScopes($query);
     }
 
@@ -55,10 +77,10 @@ class SurveyResultDataTable extends DataTable
     public function html()
     {
         return $this->builder()
-                    ->columns($this->getColumns())
-                    ->ajax('')
-                    ->addAction(['width' => '80px'])
-                    ->parameters($this->getBuilderParameters());
+            ->columns($this->getColumns())
+            ->ajax('')
+            ->addAction(['width' => '80px'])
+            ->parameters($this->getBuilderParameters());
     }
 
     /**
@@ -68,7 +90,7 @@ class SurveyResultDataTable extends DataTable
      */
     protected function getColumns()
     {
-        if(!empty($this->tableColumns) && is_array($this->tableColumns)) {
+        if (!empty($this->tableColumns) && is_array($this->tableColumns)) {
             return $this->tableColumns;
         } else {
             return [
@@ -76,7 +98,7 @@ class SurveyResultDataTable extends DataTable
                 'samplable_id' => ['name' => 'samplable_id', 'data' => 'samplable_id', 'title' => 'ID', 'defaultContent' => ''],
                 'value' => ['name' => 'value', 'data' => 'value', 'title' => 'Value', 'defaultContent' => ''],
             ];
-        }        
+        }
     }
 
     /**
@@ -97,23 +119,23 @@ class SurveyResultDataTable extends DataTable
     protected function getBuilderParameters()
     {
         return [
-                'dom' => 'rtip',
-                'scrollX' => false,
-                'buttons' => [
-                    'print',
-                    'reset',
-                    'reload',
-                    [
-                         'extend'  => 'collection',
-                         'text'    => '<i class="fa fa-download"></i> Export',
-                         'buttons' => [
-                             'csv',
-                             'excel',
-                             'pdf',
-                         ],
+            'dom' => 'rtip',
+            'scrollX' => false,
+            'buttons' => [
+                'print',
+                'reset',
+                'reload',
+                [
+                    'extend' => 'collection',
+                    'text' => '<i class="fa fa-download"></i> Export',
+                    'buttons' => [
+                        'csv',
+                        'excel',
+                        'pdf',
                     ],
-                    //'colvis'
-                ]
-            ];
+                ],
+                //'colvis'
+            ],
+        ];
     }
 }
