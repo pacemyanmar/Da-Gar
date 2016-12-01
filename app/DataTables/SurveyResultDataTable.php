@@ -74,6 +74,7 @@ class SurveyResultDataTable extends DataTable
             return [
                 'inputid' => ['name' => 'inputid', 'data' => 'inputid', 'title' => 'No.'],
                 'samplable_id' => ['name' => 'samplable_id', 'data' => 'samplable_id', 'title' => 'ID', 'defaultContent' => ''],
+                'value' => ['name' => 'value', 'data' => 'value', 'title' => 'Value', 'defaultContent' => ''],
             ];
         }        
     }
