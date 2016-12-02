@@ -45,7 +45,7 @@ global.sendAjax = function (url,data) {
 }
 
 jQuery(document).ready(function() {
- 		$.ajaxSetup({
+ 		jQuery.ajaxSetup({
 			headers:
 			{ 'X-CSRF-TOKEN': Laravel.csrfToken }
 		});

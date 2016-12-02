@@ -13,7 +13,7 @@ class Voter extends Model
 {
 
     public $table = 'voters';
-    
+
     public $timestamps = false;
 
     public $fillable = [
@@ -23,7 +23,7 @@ class Voter extends Model
         'father',
         'mother',
         'address',
-        'dob'
+        'dob',
     ];
 
     /**
@@ -37,7 +37,7 @@ class Voter extends Model
         'nrc_id' => 'string',
         'father' => 'string',
         'mother' => 'string',
-        'address' => 'string'
+        'address' => 'string',
     ];
 
     /**
@@ -46,8 +46,12 @@ class Voter extends Model
      * @var array
      */
     public static $rules = [
-        
+
     ];
 
-    
+    public function survey_results()
+    {
+        return $this->morphMany(SurveyResult::class, 'samplable');
+    }
+
 }

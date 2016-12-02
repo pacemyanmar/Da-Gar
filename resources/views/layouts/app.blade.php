@@ -5,7 +5,7 @@
     <title>SMS Generator</title>
     <meta content='width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no' name='viewport'>
     @yield('meta')
-    
+
     <link rel="stylesheet" href="{{ elixir('css/vendor.css') }}">
     <link rel="stylesheet" href="{{ elixir('css/app.css') }}">
 
@@ -14,8 +14,8 @@
     <!-- Scripts -->
     <script>
         window.Laravel = <?php echo json_encode([
-            'csrfToken' => csrf_token(),
-        ]); ?>
+    'csrfToken' => csrf_token(),
+]); ?>
     </script>
     @yield('before-head-end')
 </head>
@@ -144,7 +144,7 @@
     @endif
     <!-- Combined vendor js -->
     <script src="{{ elixir('js/vendor.js') }}"></script>
-    
+
     <!-- app script -->
     <script src="{{ elixir('js/app.js') }}"></script>
 

@@ -2,7 +2,9 @@
 
 namespace App\DataTables;
 
+use App\Models\Project;
 use App\Models\SurveyResult;
+use Illuminate\Support\Facades\DB;
 use Yajra\Datatables\Services\DataTable;
 
 class SurveyResultDataTable extends DataTable
@@ -17,7 +19,7 @@ class SurveyResultDataTable extends DataTable
      * @param  App\Models\Project $project [Project Models from route]
      * @return $this ( App\DataTables\SurveyResultDataTable )
      */
-    public function forProject($project)
+    public function forProject(Project $project)
     {
         $this->project = $project;
         return $this;
@@ -52,10 +54,13 @@ class SurveyResultDataTable extends DataTable
      */
     public function ajax()
     {
-        return $this->datatables
-            ->eloquent($this->query())
-            ->addColumn('action', 'projects.sample_datatables_actions')
-            ->make(true);
+        $table = $this->datatables
+            ->eloquent($this->query());
+        if (empty($this->surveyType)) {
+            $table->addColumn('action', 'projects.sample_datatables_actions');
+        }
+
+        return $table->make(true);
     }
 
     /**
@@ -65,7 +70,30 @@ class SurveyResultDataTable extends DataTable
      */
     public function query()
     {
-        $query = SurveyResult::query()->where('project_id', $this->project->id)->with('project');
+        // $this->surveyType = 'voter|location|enumerator'
+        if (!empty($this->surveyType) && class_exists('App\Models\\' . ucfirst($this->surveyType))) {
+
+            $input_columns = '';
+            foreach ($this->project->inputs as $k => $input) {
+                $input_columns .= "MAX(IF(survey_results.inputid = '$input->inputid', survey_results.value, NULL)) AS " . camel_case($input->inputid) . ",";
+            }
+            //dd($input_columns);
+            $class = 'App\Models\\' . ucfirst($this->surveyType);
+            $table = str_plural($this->surveyType);
+            $type = $this->surveyType;
+            $query = $class::query()
+                ->select(
+                    DB::raw($input_columns . 'GROUP_CONCAT(DISTINCT(samplable_id)) AS id, GROUP_CONCAT(DISTINCT(name)) AS name')
+                )
+                ->join('survey_results', function ($join) use ($table, $type) {
+                    $join->on('survey_results.samplable_id', '=', $table . '.id')->where('survey_results.samplable_type', '=', $type);
+                })->groupBy('voters.id');
+        } else {
+            $query = SurveyResult::query();
+            $query->where('project_id', $this->project->id)->with('project');
+        }
+        //dd($query->get());
+
         return $this->applyScopes($query);
     }
 
@@ -76,11 +104,14 @@ class SurveyResultDataTable extends DataTable
      */
     public function html()
     {
-        return $this->builder()
+        $table = $this->builder()
             ->columns($this->getColumns())
-            ->ajax('')
-            ->addAction(['width' => '80px'])
-            ->parameters($this->getBuilderParameters());
+            ->ajax(['type' => 'POST', 'data' => '{"_method":"GET"}']);
+        if (empty($this->surveyType)) {
+            $table->addAction(['width' => '80px']);
+        }
+
+        return $table->parameters($this->getBuilderParameters());
     }
 
     /**
@@ -119,7 +150,8 @@ class SurveyResultDataTable extends DataTable
     protected function getBuilderParameters()
     {
         return [
-            'dom' => 'rtip',
+            'dom' => 'Brtip',
+            //'sServerMethod' => 'POST',
             'scrollX' => false,
             'buttons' => [
                 'print',
@@ -129,9 +161,9 @@ class SurveyResultDataTable extends DataTable
                     'extend' => 'collection',
                     'text' => '<i class="fa fa-download"></i> Export',
                     'buttons' => [
-                        'csv',
-                        'excel',
-                        'pdf',
+                        'exportPostCsv',
+                        'exportPostExcel',
+                        'exportPostPdf',
                     ],
                 ],
                 //'colvis'

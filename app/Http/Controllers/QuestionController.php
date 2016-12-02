@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\DataTables\QuestionDataTable;
 use App\Http\Controllers\AppBaseController;
-use App\Http\Requests;
 use App\Http\Requests\CreateQuestionRequest;
 use App\Http\Requests\UpdateQuestionRequest;
 use App\Models\SurveyInput;
@@ -58,49 +57,55 @@ class QuestionController extends AppBaseController
      */
     public function store(CreateQuestionRequest $request)
     {
-        $input = $request->all();
+        $formInput = $request->all();
 
         $args = [
-                'raw_ans' => $request->only('raw_ans')['raw_ans'],
-                'qnum' => $request->only('qnum')['qnum'],
-                'layout' => $request->only('layout')['layout'],
-                'project_id' => $request->only('project_id')['project_id'],
-                'section' => $request->only('section')['section']
-                ];
-        $render = $input['render'] = $this->to_render($args);
+            'raw_ans' => $request->only('raw_ans')['raw_ans'],
+            'qnum' => $request->only('qnum')['qnum'],
+            'layout' => $request->only('layout')['layout'],
+            'project_id' => $request->only('project_id')['project_id'],
+            'section' => $request->only('section')['section'],
+        ];
+        $render = $formInput['render'] = $this->to_render($args);
 
-        $question = $this->questionRepository->create($input);
+        $question = $this->questionRepository->create($formInput);
 
         $inputs = [];
-        foreach($render as $k => $input) {
+        foreach ($render as $k => $input) {
 
-            if($input['type'] == 'radio-group') {
-                foreach($input['values'] as $i => $value) {
+            if ($input['type'] == 'radio-group') {
+                foreach ($input['values'] as $i => $value) {
                     $value['name'] = $input['name'];
-                    $value['sort'] = $k.$i;
+                    $value['sort'] = $question->sort . $k;
                     $inputs[] = new SurveyInput($value);
-                } 
+                }
             } else {
-                if(!isset($input['value'])) $input['value'] = $k;
-                if(!isset($input['sort'])) $input['sort'] = $k;
+                if (!isset($input['value'])) {
+                    $input['value'] = $k;
+                }
+
+                if (!isset($input['sort'])) {
+                    $input['sort'] = $question->sort . $k;
+                }
+
                 $inputs[] = new SurveyInput($input);
             }
         }
         $question->surveyInputs()->saveMany($inputs);
         /**
         if(!empty($raw_answers)) {
-            $answers = [];
-            foreach($raw_answers as $answer) {
-                $answer['class_name'] = $answer['className'];
-                $answer['project_id'] = $question->project->id;
-                $answer['question_id'] = $question->id;
-                $answer['user_id'] = Auth::user()->getAuthIdentifier(); 
-                $answers[] = $answer;
-            }
-
-            DB::table('answers')->insert($answers);
+        $answers = [];
+        foreach($raw_answers as $answer) {
+        $answer['class_name'] = $answer['className'];
+        $answer['project_id'] = $question->project->id;
+        $answer['question_id'] = $question->id;
+        $answer['user_id'] = Auth::user()->getAuthIdentifier();
+        $answers[] = $answer;
         }
-        */
+
+        DB::table('answers')->insert($answers);
+        }
+         */
 
         Flash::success('Questions saved successfully.');
 
@@ -168,32 +173,38 @@ class QuestionController extends AppBaseController
         $input = $request->all();
 
         $args = [
-                'raw_ans' => $request->only('raw_ans')['raw_ans'],
-                'qnum' => $request->only('qnum')['qnum'],
-                'layout' => $request->only('layout')['layout'],
-                'project_id' => $request->only('project_id')['project_id'],
-                'section' => $request->only('section')['section']
-                ];
+            'raw_ans' => $request->only('raw_ans')['raw_ans'],
+            'qnum' => $request->only('qnum')['qnum'],
+            'layout' => $request->only('layout')['layout'],
+            'project_id' => $request->only('project_id')['project_id'],
+            'section' => $request->only('section')['section'],
+        ];
         $render = $input['render'] = $this->to_render($args);
 
         $question = $this->questionRepository->update($input, $id);
 
         $inputs = [];
-        foreach($render as $k => $input) {
+        foreach ($render as $k => $input) {
 
-            if($input['type'] == 'radio-group') {
-                foreach($input['values'] as $i => $value) {
+            if ($input['type'] == 'radio-group') {
+                foreach ($input['values'] as $i => $value) {
                     $value['name'] = $input['name'];
-                    $value['sort'] = $k.$i;
+                    $value['sort'] = $question->sort . $k;
                     $inputs[] = new SurveyInput($value);
-                } 
+                }
             } else {
-                if(!isset($input['value'])) $input['value'] = $k;
-                if(!isset($input['sort'])) $input['sort'] = $k;
+                if (!isset($input['value'])) {
+                    $input['value'] = $k;
+                }
+
+                if (!isset($input['sort'])) {
+                    $input['sort'] = $question->sort . $k;
+                }
+
                 $inputs[] = new SurveyInput($input);
             }
         }
-        
+
         $question->surveyInputs()->delete();
         $question->surveyInputs()->saveMany($inputs);
 

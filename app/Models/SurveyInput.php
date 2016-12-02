@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Scopes\OrderByScope;
 use Eloquent as Model;
 
 /**
@@ -16,7 +17,7 @@ class SurveyInput extends Model
     public $incrementing = false;
 
     protected $keyType = 'varchar';
-    
+
     public $timestamps = false;
 
     public $fillable = [
@@ -27,7 +28,7 @@ class SurveyInput extends Model
         'label',
         'value',
         'sort',
-        'question_id'
+        'question_id',
     ];
 
     /**
@@ -43,7 +44,7 @@ class SurveyInput extends Model
         'label' => 'string',
         'value' => 'string',
         'sort' => 'integer',
-        'question_id' => 'integer'
+        'question_id' => 'integer',
     ];
 
     /**
@@ -52,9 +53,17 @@ class SurveyInput extends Model
      * @var array
      */
     public static $rules = [
-        'id' => 'required|unique'        
+        'id' => 'required|unique',
     ];
 
+    /**
+     * add global scope for ordering
+     */
+    protected static function boot()
+    {
+        parent::boot();
+        static::addGlobalScope(new OrderByScope('sort', 'asc'));
+    }
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      **/

@@ -13,15 +13,13 @@ class Project extends Model
 {
 
     public $table = 'projects';
-    
-
 
     public $fillable = [
         'project',
         'type',
         'sections',
         'samples',
-        'dblink'
+        'dblink',
     ];
 
     /**
@@ -34,7 +32,7 @@ class Project extends Model
         'type' => 'string',
         'sections' => 'array',
         'samples' => 'array',
-        'dblink' => 'string'
+        'dblink' => 'string',
     ];
 
     /**
@@ -51,8 +49,17 @@ class Project extends Model
      **/
     public function questions()
     {
-        return $this->HasMany(\App\Models\Question::class);
+        return $this->HasMany(Question::class);
     }
 
-    
+    /**
+     * { Distance children inputs for project }
+     *
+     * @return     \Illuminate\Database\Eloquent\Relations\HasManyThrouth
+     */
+    public function inputs()
+    {
+        return $this->HasManyThrough(SurveyInput::class, Question::class);
+    }
+
 }
