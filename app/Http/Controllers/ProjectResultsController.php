@@ -9,6 +9,7 @@ use App\Repositories\SurveyInputRepository;
 use App\Repositories\SurveyResultRepository;
 use App\Repositories\VoterRepository;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Schema;
 
 class ProjectResultsController extends Controller
 {
@@ -45,18 +46,20 @@ class ProjectResultsController extends Controller
             return redirect()->back()->withErrors('No datatable object found!');
         }
         $table->forProject($project);
+        $table->setJoinMethod('leftjoin');
         if (!empty($samplable) && !$samplable instanceof SurveyResultDataTable) {
             $table->setSurveyType($samplable);
             if ($samplable == 'voter') {
                 $columns = [
                     'id' => ['name' => 'id', 'data' => 'id', 'title' => 'Voter ID'],
                     'name' => ['name' => 'name', 'data' => 'name', 'title' => 'Name'],
+                    'section' => ['name' => 'section', 'data' => 'section', 'title' => 'Section'],
                 ];
             }
             $input_columns = [];
             foreach ($project->inputs as $k => $input) {
-                $column = camel_case($input->inputid);
-                $input_columns[$column] = ['name' => $column, 'data' => $column, 'title' => $input->inputid];
+                $column = camel_case($input->name);
+                $input_columns[$column] = ['name' => $column, 'data' => $column, 'title' => $column];
                 if ($k > 5) {
                     $input_columns[$column]['visible'] = false;
                 }
@@ -126,33 +129,51 @@ class ProjectResultsController extends Controller
         $dblink = strtolower($project->dblink);
         $repository = $dblink . 'Repository';
 
-        // check repository exists or defined
+        // check dblink repository exists or defined
         if (property_exists($this, $repository)) {
-            $sample = $this->$repository->findWithoutFail($samplable);
+            $sample_dblink = $this->$repository->findWithoutFail($samplable);
         } else {
             // if no repository exists, $sample should be empty array
-            $sample = [];
+            $sample_dblink = [];
         }
 
+        // get all result array from form
         $results = $request->only('result')['result'];
         if (empty($results)) {
             return json_encode(['status' => 'error', 'message' => 'No result submitted!']);
         }
 
-        $samplable_type = (empty($request->only('samplable_type')['samplable_type'])) ? $project->dblink : $request->only('samplable_type')['samplable_type'];
+        // sample (country|region|1|2)
+        $sample = (!empty($request->only('samplable_type')['samplable_type'])) ? $request->only('samplable_type')['samplable_type'] : '';
+
+        // for each result row
         $each = [
             'project_id' => $project->id,
-            'samplable_id' => $sample->id,
-            'samplable_type' => $samplable_type,
-            'samplable_data' => $sample,
+            'samplable_id' => $sample_dblink->id,
+            'samplable_type' => $project->dblink,
+            'sample' => $sample,
         ];
 
-        $getQuestion = function ($key) use ($each, $results) {
+        // get dblink column count and listing
+        $dblinkColumns = Schema::getColumnListing($project->dblink);
+        if (($key = array_search('id', $dblinkColumns)) !== false) {
+            unset($dblinkColumns[$key]);
+        }
+
+        $datacolumn = ['data_one', 'data_two', 'data_three', 'data_four', 'data_five', 'data_six', 'data_seven', 'data_eight', 'data_nine', 'data_ten'];
+        foreach ($dblinkColumns as $k => $column) {
+            if (property_exists($sample_dblink->$column)) {
+                $each[$datacolumn[$k]] = $sample_dblink->$column;
+            }
+        }
+
+        $getQuestion = function ($key) use ($each, $results, $sample) {
             $inputRow = $this->surveyInputRepo->findWithoutFail($key);
-            $inputid = isset($inputRow->inputid) ? $inputRow->inputid : '';
+            $inputid = isset($inputRow->name) ? $inputRow->name : '';
             $qsort = isset($inputRow->question->sort) ? $inputRow->question->sort : '';
+            $section = isset($inputRow->question->section) ? $inputRow->question->section : 0;
             $isort = isset($inputRow->sort) ? $inputRow->sort : '';
-            $qnumSort = ['inputid' => $inputid, 'sort' => $qsort . $isort, 'value' => $results[$key], 'survey_input_id' => $key];
+            $qnumSort = ['inputid' => $inputid, 'sort' => $qsort . $isort, 'value' => $results[$key], 'survey_input_id' => $key, 'section' => $section, 'sample' => $sample];
             $result = array_merge($qnumSort, $each);
 
             $result = $this->surveyResultRepo->updateOrCreate([
@@ -160,6 +181,7 @@ class ProjectResultsController extends Controller
                 'samplable_id' => $result['samplable_id'],
                 'samplable_type' => $result['samplable_type'],
                 'survey_input_id' => $result['survey_input_id'],
+                'sample' => $sample,
             ], $result);
             return $result;
         };

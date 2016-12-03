@@ -13,8 +13,8 @@ class SurveyResult extends Model
 {
 
     public $table = 'survey_results';
-    
-    public $timestamps = false; 
+
+    public $timestamps = false;
 
     public $fillable = [
         'value',
@@ -22,9 +22,20 @@ class SurveyResult extends Model
         'sort',
         'samplable_id',
         'samplable_type',
-        'samplable_data',
+        'data_one',
+        'data_two',
+        'data_three',
+        'data_four',
+        'data_five',
+        'data_six',
+        'data_seven',
+        'data_eight',
+        'data_nine',
+        'data_ten',
+        'sample',
+        'section',
         'survey_input_id',
-        'project_id'
+        'project_id',
     ];
 
     /**
@@ -40,7 +51,7 @@ class SurveyResult extends Model
         'samplable_type' => 'string',
         'samplable_data' => 'array',
         'survey_input_id' => 'integer',
-        'project_id' => 'integer'
+        'project_id' => 'integer',
     ];
 
     /**

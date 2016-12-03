@@ -14,6 +14,8 @@ class SurveyResultDataTable extends DataTable
     protected $tableColumns;
 
     protected $surveyType;
+
+    protected $joinMethod;
     /**
      * Project Setter
      * @param  App\Models\Project $project [Project Models from route]
@@ -47,6 +49,12 @@ class SurveyResultDataTable extends DataTable
         return $this;
     }
 
+    public function setJoinMethod($join)
+    {
+        $this->joinMethod = $join;
+        return $this;
+    }
+
     /**
      * Display ajax response.
      *
@@ -74,20 +82,39 @@ class SurveyResultDataTable extends DataTable
         if (!empty($this->surveyType) && class_exists('App\Models\\' . ucfirst($this->surveyType))) {
 
             $input_columns = '';
-            foreach ($this->project->inputs as $k => $input) {
-                $input_columns .= "MAX(IF(survey_results.inputid = '$input->inputid', survey_results.value, NULL)) AS " . camel_case($input->inputid) . ",";
+
+            // get all inputs for a project form by name key index
+            $inputs = $this->project->inputs->keyBy('name');
+
+            // make unique array to remove duplicate entry for radio inputs
+            $unique_inputs = array_unique($inputs->all());
+
+            //$count = sizeof($unique_inputs);
+
+            // Loop through to convert rows to columns query string for DB
+            foreach ($unique_inputs as $input) {
+                $input_columns .= "MAX(IF(survey_results.inputid = '" . $input->name . "', survey_results.value, NULL)) AS '" . camel_case($input->name) . "', ";
             }
-            //dd($input_columns);
+
+            // set dblink model class
             $class = 'App\Models\\' . ucfirst($this->surveyType);
+
+            // create table name
             $table = str_plural($this->surveyType);
+
+            // dblink
             $type = $this->surveyType;
+
+            $joinMethod = (isset($this->joinMethod)) ? $this->joinMethod : 'join';
+            // run query
             $query = $class::query()
                 ->select(
-                    DB::raw($input_columns . 'GROUP_CONCAT(DISTINCT(samplable_id)) AS id, GROUP_CONCAT(DISTINCT(name)) AS name')
-                )
-                ->join('survey_results', function ($join) use ($table, $type) {
-                    $join->on('survey_results.samplable_id', '=', $table . '.id')->where('survey_results.samplable_type', '=', $type);
-                })->groupBy('voters.id');
+                    DB::raw($input_columns . ' GROUP_CONCAT(DISTINCT(' . $table . '.id)) AS id, GROUP_CONCAT(DISTINCT(name)) AS name, GROUP_CONCAT(DISTINCT(section)) AS section')
+                );
+            $query->$joinMethod('survey_results', function ($join) use ($table, $type) {
+                $join->on('survey_results.samplable_id', '=', $table . '.id')->where('survey_results.samplable_type', '=', $type);
+            });
+            $query->groupBy('voters.id');
         } else {
             $query = SurveyResult::query();
             $query->where('project_id', $this->project->id)->with('project');
@@ -152,7 +179,7 @@ class SurveyResultDataTable extends DataTable
         return [
             'dom' => 'Brtip',
             //'sServerMethod' => 'POST',
-            'scrollX' => false,
+            'scrollX' => true,
             'buttons' => [
                 'print',
                 'reset',
