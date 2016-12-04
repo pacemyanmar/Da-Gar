@@ -106,6 +106,9 @@ class SurveyResultDataTable extends DataTable
             $type = $this->surveyType;
 
             $joinMethod = (isset($this->joinMethod)) ? $this->joinMethod : 'join';
+
+            $orderBy = (isset($this->orderBy)) ? $this->orderBy : 'id';
+            $order = (isset($this->order)) ? $this->order : 'asc';
             // run query
             $query = $class::query()
                 ->select(
@@ -166,7 +169,7 @@ class SurveyResultDataTable extends DataTable
      */
     protected function filename()
     {
-        return 'surveyresultdatatables_' . time();
+        return $this->project->project . time();
     }
 
     /**
