@@ -50,12 +50,13 @@ class ProjectResultsController extends Controller
         if (!empty($samplable) && !$samplable instanceof SurveyResultDataTable) {
             $table->setSurveyType($samplable);
             if ($samplable == 'voter') {
-                $columns = [
+                $baseColumns = $columns = [
                     'id' => ['name' => 'id', 'data' => 'id', 'title' => 'Voter ID'],
                     'name' => ['name' => 'name', 'data' => 'name', 'title' => 'Name'],
-                    //'section' => ['name' => 'section', 'data' => 'section', 'title' => 'Section'],
+                    'nrc_id' => ['name' => 'nrc_id', 'data' => 'nrc_id', 'title' => 'NRC ID'],
                 ];
             }
+            $table->setBaseColumns($baseColumns);
             $input_columns = [];
             foreach ($project->inputs as $k => $input) {
                 $column = camel_case($input->name);

@@ -13,6 +13,8 @@ class SurveyResultDataTable extends DataTable
 
     protected $tableColumns;
 
+    protected $tableBaseColumns;
+
     protected $surveyType;
 
     protected $joinMethod;
@@ -35,6 +37,17 @@ class SurveyResultDataTable extends DataTable
     public function setColumns($columns)
     {
         $this->tableColumns = $columns;
+        return $this;
+    }
+
+    /**
+     * Columns Setter
+     * @param array $columns [array of columns to use by datatables]
+     * @return $this ( App\DataTables\SurveyResultDataTable )
+     */
+    public function setBaseColumns($columns)
+    {
+        $this->tableBaseColumns = $columns;
         return $this;
     }
 
@@ -65,11 +78,14 @@ class SurveyResultDataTable extends DataTable
         $orderTable = str_plural($this->surveyType);
         $orderBy = (isset($this->orderBy)) ? $orderTable . '.' . $this->orderBy : $orderTable . '.id';
         $order = (isset($this->order)) ? $this->order : 'asc';
+
         $table = $this->datatables
             ->eloquent($this->query());
+
         if (empty($this->surveyType)) {
             $table->addColumn('action', 'projects.sample_datatables_actions');
         }
+
         $table->orderColumn($orderBy, DB::raw('LENGTH(' . $orderBy . ')') . " $1");
 
         return $table->make(true);
@@ -113,16 +129,29 @@ class SurveyResultDataTable extends DataTable
 
             $joinMethod = (isset($this->joinMethod)) ? $this->joinMethod : 'join';
 
+            // get dblink table base columns
+            $tableColumnsArray = array_keys($this->tableBaseColumns);
+            // modify column name to use in sql query TABLE.COLUMN format
+            array_walk($tableColumnsArray, function (&$column, $index) use ($table) {
+                $column = $table . '.' . $column;
+            });
+            // concat all columns with comma
+            $dbLinkTableColumns = implode(', ', $tableColumnsArray);
             // run query
             $query = $class::query()
                 ->select(
-                    DB::raw($input_columns . $orderBy), $table . '.name'
+                    // select columns
+                    DB::raw($input_columns . $dbLinkTableColumns)
                 );
+
             $query->$joinMethod('survey_results', function ($join) use ($table, $type) {
                 $join->on('survey_results.samplable_id', '=', $table . '.id')->where('survey_results.samplable_type', '=', $type);
             });
-            $query->groupBy($table . '.id');
-            $query->groupBy($table . '.name');
+
+            // loop to set groupBy columns
+            foreach ($tableColumnsArray as $column) {
+                $query->groupBy($column);
+            }
             //$query->orderBy(DB::raw('LENGTH(' . $orderBy . ')'), $order);
         } else {
             $query = SurveyResult::query();
