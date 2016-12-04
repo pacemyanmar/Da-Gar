@@ -53,7 +53,7 @@ class ProjectResultsController extends Controller
                 $columns = [
                     'id' => ['name' => 'id', 'data' => 'id', 'title' => 'Voter ID'],
                     'name' => ['name' => 'name', 'data' => 'name', 'title' => 'Name'],
-                    'section' => ['name' => 'section', 'data' => 'section', 'title' => 'Section'],
+                    //'section' => ['name' => 'section', 'data' => 'section', 'title' => 'Section'],
                 ];
             }
             $input_columns = [];

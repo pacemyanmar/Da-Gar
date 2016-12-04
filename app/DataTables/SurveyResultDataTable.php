@@ -62,11 +62,15 @@ class SurveyResultDataTable extends DataTable
      */
     public function ajax()
     {
+        $orderTable = str_plural($this->surveyType);
+        $orderBy = (isset($this->orderBy)) ? $orderTable . '.' . $this->orderBy : $orderTable . '.id';
+        $order = (isset($this->order)) ? $this->order : 'asc';
         $table = $this->datatables
             ->eloquent($this->query());
         if (empty($this->surveyType)) {
             $table->addColumn('action', 'projects.sample_datatables_actions');
         }
+        $table->orderColumn($orderBy, DB::raw('LENGTH(' . $orderBy . ')') . " $1");
 
         return $table->make(true);
     }
@@ -101,23 +105,25 @@ class SurveyResultDataTable extends DataTable
 
             // create table name
             $table = str_plural($this->surveyType);
+            $orderBy = (isset($this->orderBy)) ? $table . '.' . $this->orderBy : $table . '.id';
+            $order = (isset($this->order)) ? $this->order : 'asc';
 
             // dblink
             $type = $this->surveyType;
 
             $joinMethod = (isset($this->joinMethod)) ? $this->joinMethod : 'join';
 
-            $orderBy = (isset($this->orderBy)) ? $this->orderBy : 'id';
-            $order = (isset($this->order)) ? $this->order : 'asc';
             // run query
             $query = $class::query()
                 ->select(
-                    DB::raw($input_columns . ' GROUP_CONCAT(DISTINCT(' . $table . '.id)) AS id, GROUP_CONCAT(DISTINCT(name)) AS name, GROUP_CONCAT(DISTINCT(section)) AS section')
+                    DB::raw($input_columns . $orderBy), $table . '.name'
                 );
             $query->$joinMethod('survey_results', function ($join) use ($table, $type) {
                 $join->on('survey_results.samplable_id', '=', $table . '.id')->where('survey_results.samplable_type', '=', $type);
             });
-            $query->groupBy('voters.id');
+            $query->groupBy($table . '.id');
+            $query->groupBy($table . '.name');
+            //$query->orderBy(DB::raw('LENGTH(' . $orderBy . ')'), $order);
         } else {
             $query = SurveyResult::query();
             $query->where('project_id', $this->project->id)->with('project');
