@@ -42,7 +42,7 @@ class SmsLog extends Model
         'content' => 'string',
         'error_message' => 'array',
         'search_result' => 'array',
-        'phone' => 'string',
+        'phone' => 'array',
     ];
 
     /**
