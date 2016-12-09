@@ -1,0 +1,48 @@
+[
+    {
+        "name": "id",
+        "dbType": "string:index",
+        "primary": true,
+        "inIndex": true
+    },
+    {
+        "name": "service_id",
+        "dbType": "string:index",
+        "inIndex": true
+    },
+    {
+        "name": "from_number",
+        "dbType": "string:index",
+        "inIndex": true
+    },    
+    {
+        "name": "to_number",
+        "dbType": "string:index",
+        "inIndex": true
+    },
+    {
+        "name": "name",
+        "dbType": "string:index",
+        "inIndex": true
+    },
+    {
+        "name": "content",
+        "dbType": "string:index",
+        "inIndex": true
+    },    
+    {
+        "name": "error_message",
+        "dbType": "text",
+        "inIndex": true
+    },       
+    {
+        "name": "search_result",
+        "dbType": "text",
+        "inIndex": true
+    },
+    {
+        "name": "phone",
+        "dbType": "text",
+        "inIndex": true
+    }
+]

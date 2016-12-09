@@ -15,7 +15,8 @@
         "infyomlabs/swagger-generator": "dev-master",
         "jlapp/swaggervel": "dev-master",
         "doctrine/dbal": "~2.3",
-        "jenssegers/mongodb": "~3.1"
+        "jenssegers/mongodb": "~3.1",
+        "telerivet/telerivet-php-client": "^1.1"
     },
     "require-dev": {
         "fzaninotto/faker": "~1.4",
