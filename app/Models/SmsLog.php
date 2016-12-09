@@ -40,8 +40,8 @@ class SmsLog extends Model
         'to_number' => 'string',
         'name' => 'string',
         'content' => 'string',
-        'error_message' => 'string',
-        'search_result' => 'string',
+        'error_message' => 'array',
+        'search_result' => 'array',
         'phone' => 'string',
     ];
 
