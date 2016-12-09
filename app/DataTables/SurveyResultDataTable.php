@@ -82,6 +82,21 @@ class SurveyResultDataTable extends DataTable
         $table = $this->datatables
             ->eloquent($this->query());
 
+        $project_id = $this->project->id;
+
+        $dblink = $this->surveyType;
+        // get all inputs for a project form by name key index
+        $inputs = $this->project->inputs->pluck('name');
+
+        // make unique array to remove duplicate entry for radio inputs
+        $unique_inputs = array_unique($inputs->all());
+        foreach ($unique_inputs as $input) {
+
+            $table->addColumn($input, function ($model) use ($project_id, $input, $dblink) {
+                return $model->survey_results()->where('project_id', $project_id)->where('samplable_type', $dblink)->first()[$input];
+            });
+        }
+
         if (empty($this->surveyType)) {
             $table->addColumn('action', 'projects.sample_datatables_actions');
         }
@@ -104,17 +119,13 @@ class SurveyResultDataTable extends DataTable
             $input_columns = '';
 
             // get all inputs for a project form by name key index
-            $inputs = $this->project->inputs->keyBy('name');
+            $inputs = $this->project->inputs->pluck('name');
 
             // make unique array to remove duplicate entry for radio inputs
             $unique_inputs = array_unique($inputs->all());
 
+            $input_columns = implode(',', $unique_inputs);
             //$count = sizeof($unique_inputs);
-
-            // Loop through to convert rows to columns query string for DB
-            foreach ($unique_inputs as $input) {
-                $input_columns .= "MAX(IF(survey_results.inputid = '" . $input->name . "', survey_results.value, NULL)) AS '" . camel_case($input->name) . "', ";
-            }
 
             // set dblink model class
             $class = 'App\Models\\' . ucfirst($this->surveyType);
@@ -137,21 +148,11 @@ class SurveyResultDataTable extends DataTable
             });
             // concat all columns with comma
             $dbLinkTableColumns = implode(', ', $tableColumnsArray);
+
+            $project_id = $this->project->id;
             // run query
-            $query = $class::query()
-                ->select(
-                    // select columns
-                    DB::raw($input_columns . $dbLinkTableColumns)
-                );
+            $query = $class::query();
 
-            $query->$joinMethod('survey_results', function ($join) use ($table, $type) {
-                $join->on('survey_results.samplable_id', '=', $table . '.id')->where('survey_results.samplable_type', '=', $type);
-            });
-
-            // loop to set groupBy columns
-            foreach ($tableColumnsArray as $column) {
-                $query->groupBy($column);
-            }
             //$query->orderBy(DB::raw('LENGTH(' . $orderBy . ')'), $order);
         } else {
             $query = SurveyResult::query();

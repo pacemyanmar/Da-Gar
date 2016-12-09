@@ -3,13 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\DataTables\SurveyResultDataTable;
+use App\Models\SurveyResult;
 use App\Repositories\ProjectRepository;
 use App\Repositories\QuestionRepository;
 use App\Repositories\SurveyInputRepository;
-use App\Repositories\SurveyResultRepository;
 use App\Repositories\VoterRepository;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Schema;
 
 class ProjectResultsController extends Controller
 {
@@ -20,16 +19,16 @@ class ProjectResultsController extends Controller
 
     private $voterRepository;
 
-    private $surveyResultRepo;
+    private $surveyResultModel;
 
     private $surveyInputRepo;
 
-    public function __construct(ProjectRepository $projectRepo, VoterRepository $voterRepo, QuestionRepository $questionRepo, SurveyResultRepository $surveyResultRepo, SurveyInputRepository $surveyInputRepo)
+    public function __construct(ProjectRepository $projectRepo, VoterRepository $voterRepo, QuestionRepository $questionRepo, SurveyResult $surveyResultModel, SurveyInputRepository $surveyInputRepo)
     {
         $this->projectRepository = $projectRepo;
         $this->questionRepository = $questionRepo;
         $this->voterRepository = $voterRepo;
-        $this->surveyResultRepo = $surveyResultRepo;
+        $this->surveyResultModel = $surveyResultModel;
         $this->surveyInputRepo = $surveyInputRepo;
     }
 
@@ -59,7 +58,7 @@ class ProjectResultsController extends Controller
             $table->setBaseColumns($baseColumns);
             $input_columns = [];
             foreach ($project->inputs as $k => $input) {
-                $column = camel_case($input->name);
+                $column = $input->name;
                 $input_columns[$column] = ['name' => $column, 'data' => $column, 'title' => $column];
                 if ($k > 5) {
                     $input_columns[$column]['visible'] = false;
@@ -140,6 +139,8 @@ class ProjectResultsController extends Controller
 
         // get all result array from form
         $results = $request->only('result')['result'];
+        //dd($results);
+
         if (empty($results)) {
             return json_encode(['status' => 'error', 'message' => 'No result submitted!']);
         }
@@ -154,41 +155,36 @@ class ProjectResultsController extends Controller
             'samplable_type' => $project->dblink,
             'sample' => $sample,
         ];
+        $fillableColumns = $sample_dblink->getFillable();
+        // Another option is to get all columns for the table like so:
+        // $columns = \Schema::getColumnListing($this->table);
+        // but it's safer to just get the fillable fields
 
-        // get dblink column count and listing
-        $dblinkColumns = Schema::getColumnListing($project->dblink);
-        if (($key = array_search('id', $dblinkColumns)) !== false) {
-            unset($dblinkColumns[$key]);
-        }
+        $dblinkColumns = $sample_dblink->getAttributes();
 
-        $datacolumn = ['data_one', 'data_two', 'data_three', 'data_four', 'data_five', 'data_six', 'data_seven', 'data_eight', 'data_nine', 'data_ten'];
-        foreach ($dblinkColumns as $k => $column) {
-            if (property_exists($sample_dblink->$column)) {
-                $each[$datacolumn[$k]] = $sample_dblink->$column;
+        foreach ($fillableColumns as $column) {
+            if (!array_key_exists($column, $dblinkColumns)) {
+                $dblinkColumns[$column] = null;
             }
         }
 
-        $getQuestion = function ($key) use ($each, $results, $sample) {
-            $inputRow = $this->surveyInputRepo->findWithoutFail($key);
-            $inputid = isset($inputRow->name) ? $inputRow->name : '';
-            $qsort = isset($inputRow->question->sort) ? $inputRow->question->sort : '';
-            $section = isset($inputRow->question->section) ? $inputRow->question->section : 0;
-            $isort = isset($inputRow->sort) ? $inputRow->sort : '';
-            $qnumSort = ['inputid' => $inputid, 'sort' => $qsort . $isort, 'value' => $results[$key], 'survey_input_id' => $key, 'section' => $section, 'sample' => $sample];
-            $result = array_merge($qnumSort, $each);
+        if (array_key_exists('id', $dblinkColumns)) {
+            // set id to $dblink underscore id (e.g: voter_id)
+            $dblinkColumns[$dblink . '_id'] = $dblinkColumns['id'];
+            // remove incremental id column from array
+            unset($dblinkColumns['id']);
+        }
 
-            $result = $this->surveyResultRepo->updateOrCreate([
-                'project_id' => $result['project_id'],
-                'samplable_id' => $result['samplable_id'],
-                'samplable_type' => $result['samplable_type'],
-                'survey_input_id' => $result['survey_input_id'],
-                'sample' => $sample,
-            ], $result);
-            return $result;
-        };
+        $flatResultToMongo = array_merge($each, $dblinkColumns, $results);
+        $result = $this->surveyResultModel
+            ->where('project_id', $flatResultToMongo['project_id'])
+            ->where('samplable_id', $flatResultToMongo['samplable_id'])
+            ->where('samplable_type', $flatResultToMongo['samplable_type'])
+            ->where('sample', $sample)
+            ->update($flatResultToMongo, ['upsert' => true]);
 
-        $qnumSort = array_map($getQuestion, array_keys($results));
-        return json_encode(['status' => 'success', 'message' => 'Saved!', 'data' => $qnumSort]);
+        //$qnumSort = array_map($getQuestion, array_keys($results));
+        return json_encode(['status' => 'success', 'message' => 'Saved!', 'data' => $result]);
     }
 
     public function show($project_id, $voter_id)
