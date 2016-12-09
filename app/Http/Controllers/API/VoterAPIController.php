@@ -7,6 +7,7 @@ use App\Http\Requests\API\CreateVoterAPIRequest;
 use App\Http\Requests\API\SmsRequest;
 use App\Http\Requests\API\UpdateVoterAPIRequest;
 use App\Models\Voter;
+use App\Repositories\SmsLogRepository;
 use App\Repositories\VoterRepository;
 use Illuminate\Http\Request;
 use InfyOm\Generator\Criteria\LimitOffsetCriteria;
@@ -23,9 +24,12 @@ class VoterAPIController extends AppBaseController
     /** @var  VoterRepository */
     private $voterRepository;
 
-    public function __construct(VoterRepository $voterRepo)
+    private $smsRepository;
+
+    public function __construct(VoterRepository $voterRepo, SmsLogRepository $smsRepo)
     {
         $this->voterRepository = $voterRepo;
+        $this->smsRepository = $smsRepo;
     }
 
     /**
@@ -150,6 +154,12 @@ class VoterAPIController extends AppBaseController
                 $query->whereIn('nrc_id', $args_array);
             }
             )->get();
+            $input = $request->all();
+
+            $input['name'] = $input['contact']['name'];
+            $input['search_result'] = $voters;
+            $input['error_message'] = (!empty($input['error_message'])) ? $input['error_message'] : 'No error';
+            $voters = $this->smsRepository->create($input);
             return $this->sendResponse($voters, 'Voter Found');
         } else {
             return $this->sendError('Message content not found!');

@@ -13,8 +13,8 @@ class SmsLog extends Model
 {
 
     public $table = 'sms_logs';
-    
 
+    public $incrementing = false;
 
     public $fillable = [
         'id',
@@ -25,7 +25,7 @@ class SmsLog extends Model
         'content',
         'error_message',
         'search_result',
-        'phone'
+        'phone',
     ];
 
     /**
@@ -42,7 +42,7 @@ class SmsLog extends Model
         'content' => 'string',
         'error_message' => 'string',
         'search_result' => 'string',
-        'phone' => 'string'
+        'phone' => 'string',
     ];
 
     /**
@@ -51,8 +51,7 @@ class SmsLog extends Model
      * @var array
      */
     public static $rules = [
-        
+
     ];
 
-    
 }
