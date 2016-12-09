@@ -2,12 +2,13 @@
 
 namespace App\Http\Controllers\API;
 
+use App\Http\Controllers\AppBaseController;
 use App\Http\Requests\API\CreateVoterAPIRequest;
+use App\Http\Requests\API\SmsRequest;
 use App\Http\Requests\API\UpdateVoterAPIRequest;
 use App\Models\Voter;
 use App\Repositories\VoterRepository;
 use Illuminate\Http\Request;
-use App\Http\Controllers\AppBaseController;
 use InfyOm\Generator\Criteria\LimitOffsetCriteria;
 use Prettus\Repository\Criteria\RequestCriteria;
 use Response;
@@ -134,5 +135,25 @@ class VoterAPIController extends AppBaseController
     public function search(Request $request)
     {
         return $this->voterRepository->vueTables($request);
+    }
+
+    public function sms(SmsRequest $request)
+    {
+        $secret = $request->only('secret');
+        if ($secret['secret'] !== 'forever') {
+            return $this->sendError('API Key is incorrect');
+        }
+        $content = $request->only('content');
+        if (!empty($content['content'])) {
+            $args_array = preg_split("/(name)|(nrc)|([,])+/im", $content['content'], null, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_OFFSET_CAPTURE);
+            $voters = Voter::whereIn('name', $args_array)->orWhere(function ($query) use ($args_array) {
+                $query->whereIn('nrc_id', $args_array);
+            }
+            )->get();
+            return $this->sendResponse($voters, 'Voter Found');
+        } else {
+            return $this->sendError('Message content not found!');
+        }
+
     }
 }

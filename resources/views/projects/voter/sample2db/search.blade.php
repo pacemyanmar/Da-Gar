@@ -13,17 +13,17 @@ Vue.use(VueTables.server, [options], false);
 new Vue({
     el:"#app",
     data: {
-      columns:['name','father','address', 'edit'],
+      columns:['name','nrc_id', 'father','address', 'edit'],
       options: {
         initFilters: 'GENERIC',
-        params: {'all':true},        
+        params: {'all':true},
         texts:{
           count:'Showing {from} to {to} of {count} records|{count} records|One record',
           filter:'Search for records: ',
           filterPlaceholder:'Search query',
           limit:'Records:',
           noResults:'No matching records',
-          page:'Page:', // for dropdown pagination, 
+          page:'Page:', // for dropdown pagination,
           filterBy: 'Filter by {column}', // Placeholder for search fields when filtering by column
           loading:'Loading...', // First request to server
           defaultOption:'Select {column}' // default option for list filters
@@ -41,13 +41,13 @@ new Vue({
     },
     methods: {
       formatDate: function(value, fmt) {
-          
+
       },
       setFilter: function() {
-          
+
       },
       resetFilter: function() {
-          
+
       },
     }
 });

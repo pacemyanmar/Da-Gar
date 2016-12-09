@@ -157,12 +157,12 @@ class VoterController extends AppBaseController
     {
         $listall = $request->only('listall')['listall'];
         $query = $request->only('query')['query'];
-        if(!$listall && empty($query) ) {
-            return ['data'=> [],
-                    'count'=>0];
+        if (!$listall && empty($query)) {
+            return ['data' => [],
+                'count' => 0];
         }
         $fields = [
-            'name', 'father', 'address'
+            'name', 'nrc_id', 'father', 'address',
         ];
         return $this->voterRepository->vueTables($request, $fields);
     }
