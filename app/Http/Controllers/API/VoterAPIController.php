@@ -150,16 +150,29 @@ class VoterAPIController extends AppBaseController
         $content = $request->only('content');
         if (!empty($content['content'])) {
             $args_array = preg_split("/(name)|(nrc)|([,])+/im", $content['content'], null, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_OFFSET_CAPTURE);
+
             $voters = Voter::whereIn('name', $args_array)->orWhere(function ($query) use ($args_array) {
                 $query->whereIn('nrc_id', $args_array);
-            }
-            )->get();
+            })->get();
+
             $input = $request->all();
 
             $input['name'] = $input['contact']['name'];
             $input['search_result'] = $voters;
             $input['error_message'] = (!empty($input['error_message'])) ? $input['error_message'] : 'No error';
-            $voters = $this->smsRepository->create($input);
+            $sms_log = $this->smsRepository->create($input);
+            $API_KEY = 'Vdb7rmfRA3B52lr4BRjTFAmEnrf8UH60'; // from https://telerivet.com/api/keys
+            $PROJECT_ID = 'PJf516b1b959d05547';
+
+            $telerivet = new \Telerivet_API($API_KEY);
+
+            $project = $telerivet->initProjectById($PROJECT_ID);
+
+// Send a SMS message
+            $project->sendMessage(array(
+                'to_number' => $input['from_number'],
+                'content' => json_encode($voters, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES),
+            ));
             return $this->sendResponse($voters, 'Voter Found');
         } else {
             return $this->sendError('Message content not found!');
