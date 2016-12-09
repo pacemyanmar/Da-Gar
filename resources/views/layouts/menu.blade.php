@@ -8,3 +8,7 @@
 
 
 
+<li class="{{ Request::is('smsLogs*') ? 'active' : '' }}">
+    <a href="{!! route('smsLogs.index') !!}"><i class="fa fa-edit"></i><span>SmsLogs</span></a>
+</li>
+

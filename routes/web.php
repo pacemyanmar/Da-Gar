@@ -46,3 +46,6 @@ Route::get('voters/search', ['as' => 'voters.search', 'uses' => 'VoterController
 Route::resource('voters', 'VoterController');
 
 
+
+
+Route::resource('smsLogs', 'SmsLogController');
