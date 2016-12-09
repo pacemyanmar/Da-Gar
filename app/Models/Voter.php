@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Eloquent as Model;
+use Jenssegers\Mongodb\Eloquent\HybridRelations;
 
 /**
  * Class Voter
@@ -11,6 +12,9 @@ use Eloquent as Model;
  */
 class Voter extends Model
 {
+    use HybridRelations;
+
+    protected $connection = 'mysql';
 
     public $table = 'voters';
 
@@ -51,7 +55,7 @@ class Voter extends Model
 
     public function survey_results()
     {
-        return $this->morphMany(SurveyResult::class, 'samplable');
+        return $this->hasMany(SurveyResult::class, 'samplable_id');
     }
 
 }
