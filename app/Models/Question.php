@@ -12,12 +12,11 @@ use Eloquent as Model;
  */
 class Question extends Model
 {
+    protected $connection = 'mysql';
 
     public $table = 'questions';
 
-
-    public $timestamps = false; 
-
+    public $timestamps = false;
 
     public $fillable = [
         'qnum',
@@ -27,7 +26,7 @@ class Question extends Model
         'sort',
         'layout',
         'section',
-        'project_id'
+        'project_id',
     ];
 
     /**
@@ -44,7 +43,7 @@ class Question extends Model
         'sort' => 'integer',
         'project_id' => 'integer',
         'section' => 'integer',
-        'layout' => 'string'
+        'layout' => 'string',
     ];
 
     /**
@@ -56,13 +55,14 @@ class Question extends Model
         'qnum' => 'required',
         'question' => 'required',
         'raw_ans' => 'required',
-        'sort' => 'required'
+        'sort' => 'required',
     ];
 
     /**
      * add global scope for ordering
      */
-    protected static function boot() {
+    protected static function boot()
+    {
         parent::boot();
         static::addGlobalScope(new OrderByScope('sort', 'asc'));
     }

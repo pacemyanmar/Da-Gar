@@ -2,17 +2,20 @@
 
 namespace App\Models;
 
-use Eloquent as Model;
+use Jenssegers\Mongodb\Eloquent\Model as Moloquent;
 
 /**
  * Class SurveyResult
  * @package App\Models
  * @version November 13, 2016, 1:34 pm UTC
  */
-class SurveyResult extends Model
+class SurveyResult extends Moloquent
 {
+    protected $connection = 'mongodb';
 
     public $table = 'survey_results';
+
+    public $collection = 'survey_results';
 
     public $timestamps = false;
 
