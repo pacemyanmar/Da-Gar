@@ -48,14 +48,13 @@ class SettingController extends AppBaseController
             $setting = $this->settingRepository->findWithoutFail($key);
 
             if (empty($setting)) {
-                Flash::error('Setting not found');
-
-                return redirect(route('settings.index'));
+                $input = ['key' => $key, 'value' => $value];
+                $setting = $this->settingRepository->create($input);
             }
 
             $setting = $this->settingRepository->update($request->all(), $key);
         }
-        Flash::info('Setting updated successfully.');
+        Flash::info('Settings updated successfully.');
         return redirect()->back();
     }
 

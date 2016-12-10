@@ -16,19 +16,48 @@
         <div class="box box-primary">
             <div class="box-body">
                     {!! Form::open(['route' => 'settings.save']) !!}
-
-                        @foreach($settings as $setting)
-                            <!-- Setting Field -->
+                        @if($settings->isEmpty())
+                            <!-- APP Name Field -->
                             <div class="form-group">
                                 <div class="input-group">
                                     <!-- if string long to show in label show as tooltip -->
                                     <span class="input-group-addon">
-                                        {!! ucfirst($setting->key).':' !!}
+                                        {!! 'App_Name :' !!}
+                                    </span>
+                                    {!! Form::text("settings[app_name]", null, ['class' => 'form-control']) !!}
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="input-group">
+                                    <!-- if string long to show in label show as tooltip -->
+                                    <span class="input-group-addon">
+                                        {!! 'Api_Name :' !!}
+                                    </span>
+                                    {!! Form::text("settings[api_key]", null, ['class' => 'form-control']) !!}
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="input-group">
+                                    <!-- if string long to show in label show as tooltip -->
+                                    <span class="input-group-addon">
+                                        {!! 'Project_Id :' !!}
+                                    </span>
+                                    {!! Form::text("settings[project_id]", null, ['class' => 'form-control']) !!}
+                                </div>
+                            </div>
+                        @else
+                        @foreach($settings as $setting)
+                            <div class="form-group">
+                                <div class="input-group">
+                                    <!-- if string long to show in label show as tooltip -->
+                                    <span class="input-group-addon">
+                                        {!! title_case($setting->key).':' !!}
                                     </span>
                                     {!! Form::text("settings[$setting->key]", $setting->value, ['class' => 'form-control']) !!}
                                 </div>
                             </div>
                         @endforeach
+                        @endif
                         <!-- Submit Field -->
                         <div class="form-group col-sm-12">
                             {!! Form::submit('Save', ['class' => 'btn btn-primary']) !!}

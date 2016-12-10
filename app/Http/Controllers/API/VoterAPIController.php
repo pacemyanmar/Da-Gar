@@ -163,14 +163,14 @@ class VoterAPIController extends AppBaseController
             $input['error_message'] = (!empty($input['error_message'])) ? $input['error_message'] : 'No error';
             $sms_log = $this->smsRepository->create($input);
 
-            if (Settings::has('API_KEY')) {
-                $API_KEY = Settings::get('API_KEY');
+            if (Settings::has('api_key')) {
+                $API_KEY = Settings::get('api_key');
             } else {
                 return $this->sendError('API_KEY not found in your settings!');
             }
 
-            if (Settings::has('PROJECT_ID')) {
-                $PROJECT_ID = Settings::get('PROJECT_ID');
+            if (Settings::has('project_id')) {
+                $PROJECT_ID = Settings::get('project_id');
             } else {
                 return $this->sendError('SMS PROJECT_ID not found in your settings!');
             }
