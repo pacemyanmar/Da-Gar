@@ -176,6 +176,12 @@ return [
         InfyOm\AdminLTETemplates\AdminLTETemplatesServiceProvider::class,
         Jenssegers\Mongodb\MongodbServiceProvider::class,
 
+        /**
+         * https://github.com/edvinaskrucas/settings
+         * settings provider
+         */
+        Krucas\Settings\Providers\SettingsServiceProvider::class,
+
         /*
          * Application Service Providers...
          */
@@ -237,6 +243,8 @@ return [
 
         'Moloquent' => Jenssegers\Mongodb\Eloquent\Model::class,
         'Debugbar' => Barryvdh\Debugbar\Facade::class,
+
+        'Settings' => Krucas\Settings\Facades\Settings::class,
     ],
 
 ];

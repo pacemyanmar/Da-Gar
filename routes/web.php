@@ -45,7 +45,8 @@ Route::get('voters/search', ['as' => 'voters.search', 'uses' => 'VoterController
 
 Route::resource('voters', 'VoterController');
 
-
-
-
 Route::resource('smsLogs', 'SmsLogController');
+
+Route::post('settings/save', ['as' => 'settings.save', 'uses' => 'SettingController@save']);
+
+Route::resource('settings', 'SettingController');

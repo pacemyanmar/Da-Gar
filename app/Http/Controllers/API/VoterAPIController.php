@@ -11,6 +11,7 @@ use App\Repositories\SmsLogRepository;
 use App\Repositories\VoterRepository;
 use Illuminate\Http\Request;
 use InfyOm\Generator\Criteria\LimitOffsetCriteria;
+use Krucas\Settings\Facades\Settings;
 use Prettus\Repository\Criteria\RequestCriteria;
 use Response;
 
@@ -161,14 +162,27 @@ class VoterAPIController extends AppBaseController
             $input['search_result'] = $voters;
             $input['error_message'] = (!empty($input['error_message'])) ? $input['error_message'] : 'No error';
             $sms_log = $this->smsRepository->create($input);
-            $API_KEY = 'Vdb7rmfRA3B52lr4BRjTFAmEnrf8UH60'; // from https://telerivet.com/api/keys
-            $PROJECT_ID = 'PJf516b1b959d05547';
+
+            if (Settings::has('API_KEY')) {
+                $API_KEY = Settings::get('API_KEY');
+            } else {
+                return $this->sendError('API_KEY not found in your settings!');
+            }
+
+            if (Settings::has('PROJECT_ID')) {
+                $PROJECT_ID = Settings::get('PROJECT_ID');
+            } else {
+                return $this->sendError('SMS PROJECT_ID not found in your settings!');
+            }
+
+            //$API_KEY = 'Vdb7rmfRA3B52lr4BRjTFAmEnrf8UH60'; // from https://telerivet.com/api/keys
+            //$PROJECT_ID = 'PJf516b1b959d05547';
 
             $telerivet = new \Telerivet_API($API_KEY);
 
             $project = $telerivet->initProjectById($PROJECT_ID);
 
-// Send a SMS message
+            // Send a SMS message
             $project->sendMessage(array(
                 'to_number' => $input['from_number'],
                 'content' => json_encode($voters, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES),

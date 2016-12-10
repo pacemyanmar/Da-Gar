@@ -12,3 +12,8 @@
     <a href="{!! route('smsLogs.index') !!}"><i class="fa fa-edit"></i><span>SmsLogs</span></a>
 </li>
 
+
+<li class="{{ Request::is('settings*') ? 'active' : '' }}">
+    <a href="{!! route('settings.index') !!}"><i class="fa fa-edit"></i><span>Settings</span></a>
+</li>
+
