@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "f5fcf7073ae1854281fe4d58175ec683",
-    "content-hash": "ff84a556269ce9871491ae1f21b46ff5",
+    "hash": "6a49496c22bc7a2f53db2dc2662381e4",
+    "content-hash": "4d0d8bbc1a836e283635e0a4666a4ea1",
     "packages": [
         {
             "name": "barryvdh/laravel-ide-helper",
@@ -1540,16 +1540,16 @@
         },
         {
             "name": "maatwebsite/excel",
-            "version": "2.1.7",
+            "version": "2.1.8",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Maatwebsite/Laravel-Excel.git",
-                "reference": "55d18b6a99b30b9003c2f174cc3ecd9ca79f1bf5"
+                "reference": "d9c398f7eba0ac9caf9c104dd0d55bd6a5ff231e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Maatwebsite/Laravel-Excel/zipball/55d18b6a99b30b9003c2f174cc3ecd9ca79f1bf5",
-                "reference": "55d18b6a99b30b9003c2f174cc3ecd9ca79f1bf5",
+                "url": "https://api.github.com/repos/Maatwebsite/Laravel-Excel/zipball/d9c398f7eba0ac9caf9c104dd0d55bd6a5ff231e",
+                "reference": "d9c398f7eba0ac9caf9c104dd0d55bd6a5ff231e",
                 "shasum": ""
             },
             "require": {
@@ -1603,7 +1603,7 @@
                 "import",
                 "laravel"
             ],
-            "time": "2016-10-18 16:43:26"
+            "time": "2016-12-09 19:11:09"
         },
         {
             "name": "mongodb/mongodb",
@@ -3261,6 +3261,37 @@
                 "dump"
             ],
             "time": "2016-11-03 08:04:31"
+        },
+        {
+            "name": "telerivet-psr/telerivet-php-client",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/herzcthu/telerivet-php-client.git",
+                "reference": "97e1e06a2d9a6d7a2d92f59144860384f50583a2"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/herzcthu/telerivet-php-client/zipball/97e1e06a2d9a6d7a2d92f59144860384f50583a2",
+                "reference": "97e1e06a2d9a6d7a2d92f59144860384f50583a2",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Telerivet\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "PHP client library for Telerivet REST API",
+            "homepage": "https://telerivet.com/api",
+            "time": "2016-12-10 18:27:05"
         },
         {
             "name": "telerivet/telerivet-php-client",
@@ -5153,7 +5184,8 @@
         "laravelcollective/html": 20,
         "infyomlabs/adminlte-templates": 20,
         "infyomlabs/swagger-generator": 20,
-        "jlapp/swaggervel": 20
+        "jlapp/swaggervel": 20,
+        "telerivet-psr/telerivet-php-client": 20
     },
     "prefer-stable": false,
     "prefer-lowest": false,

@@ -14,6 +14,8 @@ use InfyOm\Generator\Criteria\LimitOffsetCriteria;
 use Krucas\Settings\Facades\Settings;
 use Prettus\Repository\Criteria\RequestCriteria;
 use Response;
+use Telerivet\Exceptions\TelerivetAPIException;
+use Telerivet\TelerivetAPI;
 
 /**
  * Class VoterController
@@ -177,16 +179,18 @@ class VoterAPIController extends AppBaseController
 
             //$API_KEY = 'Vdb7rmfRA3B52lr4BRjTFAmEnrf8UH60'; // from https://telerivet.com/api/keys
             //$PROJECT_ID = 'PJf516b1b959d05547';
-
-            $telerivet = new \Telerivet_API($API_KEY);
-
+            $telerivet = new TelerivetAPI($API_KEY);
             $project = $telerivet->initProjectById($PROJECT_ID);
+            try {
+                // Send a SMS message
+                $project->sendMessage(array(
+                    'to_number' => $input['from_number'],
+                    'content' => json_encode($voters, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES),
+                ));
+            } catch (TelerivetAPIException $e) {
+                return $this->sendError($e->getMessage());
+            }
 
-            // Send a SMS message
-            $project->sendMessage(array(
-                'to_number' => $input['from_number'],
-                'content' => json_encode($voters, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES),
-            ));
             return $this->sendResponse($voters, 'Voter Found');
         } else {
             return $this->sendError('Message content not found!');

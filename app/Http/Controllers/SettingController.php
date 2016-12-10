@@ -8,6 +8,7 @@ use App\Http\Requests\SaveSettingRequest;
 use App\Http\Requests\UpdateSettingRequest;
 use App\Repositories\SettingRepository;
 use Flash;
+use Krucas\Settings\Facades\Settings;
 use Response;
 
 class SettingController extends AppBaseController
@@ -42,17 +43,10 @@ class SettingController extends AppBaseController
      */
     public function save(SaveSettingRequest $request)
     {
-        $settings = $request->only('settings');
+        $settings = $request->only('configs');
 
-        foreach ($settings['settings'] as $key => $value) {
-            $setting = $this->settingRepository->findWithoutFail($key);
-
-            if (empty($setting)) {
-                $input = ['key' => $key, 'value' => $value];
-                $setting = $this->settingRepository->create($input);
-            }
-
-            $setting = $this->settingRepository->update($request->all(), $key);
+        foreach ($settings['configs'] as $key => $value) {
+            Settings::set($key, $value);
         }
         Flash::info('Settings updated successfully.');
         return redirect()->back();
@@ -77,9 +71,10 @@ class SettingController extends AppBaseController
      */
     public function store(CreateSettingRequest $request)
     {
-        $input = $request->all();
+        $key = $request->only('key');
+        $value = $request->only('value');
 
-        $setting = $this->settingRepository->create($input);
+        $setting = Settings::set($key['key'], $value['value']);
 
         Flash::success('Setting saved successfully.');
 
@@ -136,15 +131,10 @@ class SettingController extends AppBaseController
      */
     public function update($id, UpdateSettingRequest $request)
     {
-        $setting = $this->settingRepository->findWithoutFail($id);
+        $key = $request->only('key');
+        $value = $request->only('value');
 
-        if (empty($setting)) {
-            Flash::error('Setting not found');
-
-            return redirect(route('settings.index'));
-        }
-
-        $setting = $this->settingRepository->update($request->all(), $id);
+        $setting = Settings::set($key['key'], $value['value']);
 
         Flash::success('Setting updated successfully.');
 

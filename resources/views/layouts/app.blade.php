@@ -92,7 +92,7 @@
 
         <!-- Main Footer -->
         <footer class="main-footer" style="max-height: 100px;text-align: center">
-            <strong>Copyright © 2016 <a href="#">{!! settings('App_Name', 'Kanaung SMS'); !!}</a>.</strong> All rights reserved.
+            <strong>Copyright © 2016 <a href="#">{!! settings('app_name', 'Kanaung SMS Default'); !!}</a>.</strong> All rights reserved.
         </footer>
 
     </div>

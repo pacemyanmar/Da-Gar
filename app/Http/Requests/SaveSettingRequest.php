@@ -24,7 +24,7 @@ class SaveSettingRequest extends FormRequest
     public function rules()
     {
         return [
-            //
+            'configs' => 'required',
         ];
     }
 }
