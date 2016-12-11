@@ -162,8 +162,16 @@ class VoterAPIController extends AppBaseController
             }
 
             //$args_array = preg_split("/(name)|(nrc)|([,])+/im", $content['content'], null, PREG_SPLIT_NO_EMPTY);
-
-            $voters = Voter::select('*');
+            /**
+             * name:"Abner Lueilwitz"
+            gender:"female"
+            nrc_id:"\u1044\/\u101b\u1017\u101e(\u1014\u102d\u102f\u1004\u103a)\u1044\u1046\u1049\u1047\u1044\u1049"
+            father:"Mason Berge IV"
+            mother:"Vella Brakus Sr."
+            address:"21624 Rippin Mill\nNew Alex, UT 97477-8466"
+            dob:"1978-05-20 12:17:23""
+             */
+            $voters = Voter::select('name', 'gender', 'nrc_id', 'father', 'mother', 'address', 'dob');
             if (array_key_exists('name', $args_array)) {
                 $voters = $voters->where('name', 'like', '%' . $args_array['name'] . '%');
             }
@@ -196,7 +204,15 @@ class VoterAPIController extends AppBaseController
             //$PROJECT_ID = 'PJf516b1b959d05547';
             $telerivet = new TelerivetAPI($API_KEY);
             $project = $telerivet->initProjectById($PROJECT_ID);
-            $search_result = implode("\r\n", $voters);
+
+            $search_result = $sep = '';
+            foreach ($voters->toArray() as $voter) {
+                foreach ($voter as $key => $value) {
+                    $search_result .= $sep . $key . ':' . json_encode($value);
+                    $sep = "\r\n";
+                }
+            }
+
             try {
                 // Send a SMS message
                 $project->sendMessage(array(
