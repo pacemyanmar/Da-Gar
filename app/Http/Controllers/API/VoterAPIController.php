@@ -196,17 +196,18 @@ class VoterAPIController extends AppBaseController
             //$PROJECT_ID = 'PJf516b1b959d05547';
             $telerivet = new TelerivetAPI($API_KEY);
             $project = $telerivet->initProjectById($PROJECT_ID);
+            $search_result = implode("\r\n", $voters);
             try {
                 // Send a SMS message
                 $project->sendMessage(array(
                     'to_number' => $input['from_number'],
-                    'content' => implode("\r\n", $voters),
+                    'content' => $search_result,
                 ));
             } catch (TelerivetAPIException $e) {
                 return $this->sendError($e->getMessage());
             }
 
-            return $this->sendResponse($voters, 'Voter Found');
+            return $this->sendResponse($search_result, 'Voter Found');
         } else {
             return $this->sendError('Message content not found!');
         }
