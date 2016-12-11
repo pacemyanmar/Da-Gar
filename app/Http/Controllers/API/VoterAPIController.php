@@ -205,10 +205,11 @@ class VoterAPIController extends AppBaseController
             $telerivet = new TelerivetAPI($API_KEY);
             $project = $telerivet->initProjectById($PROJECT_ID);
 
+            $voters_array = json_decode($voters, true);
             $search_result = $sep = '';
-            foreach ($voters->toArray() as $voter) {
+            foreach ($voters_array as $voter) {
                 foreach ($voter as $key => $value) {
-                    $search_result .= $sep . $key . ':' . json_encode($value);
+                    $search_result .= $sep . $key . ':' . $value;
                     $sep = "\r\n";
                 }
             }
