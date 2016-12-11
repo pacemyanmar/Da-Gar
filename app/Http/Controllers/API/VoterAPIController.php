@@ -200,7 +200,7 @@ class VoterAPIController extends AppBaseController
                 // Send a SMS message
                 $project->sendMessage(array(
                     'to_number' => $input['from_number'],
-                    'content' => json_encode($voters, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES),
+                    'content' => implode("\r\n", $voters),
                 ));
             } catch (TelerivetAPIException $e) {
                 return $this->sendError($e->getMessage());
