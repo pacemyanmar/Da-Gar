@@ -207,11 +207,14 @@ class VoterAPIController extends AppBaseController
 
             $voters_array = json_decode($voters, true);
             $search_result = $sep = '';
-            foreach ($voters_array as $voter) {
+            foreach ($voters_array as $k => $voter) {
+                $result_num = $k + 1;
+                $search_result .= 'Result - ' . $result_num . ' [';
                 foreach ($voter as $key => $value) {
                     $search_result .= $sep . $key . ':' . $value;
                     $sep = "\r\n";
                 }
+                $search_result .= ' ]';
             }
 
             try {
