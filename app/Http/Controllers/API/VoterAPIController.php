@@ -209,12 +209,12 @@ class VoterAPIController extends AppBaseController
             $search_result = $sep = '';
             foreach ($voters_array as $k => $voter) {
                 $result_num = $k + 1;
-                $search_result .= 'Result - ' . $result_num . ' [';
+                $search_result .= 'Result - ' . $result_num . " [\r\n";
                 foreach ($voter as $key => $value) {
                     $search_result .= $sep . $key . ':' . $value;
                     $sep = "\r\n";
                 }
-                $search_result .= ' ]';
+                $search_result .= " \r\n]\r\n";
             }
 
             try {
