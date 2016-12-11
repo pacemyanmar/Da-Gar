@@ -139,11 +139,21 @@ $factory->define(App\Models\Question::class, function (Faker\Generator $faker) u
 
 $factory->define(App\Models\Voter::class, function (Faker\Generator $faker) {
     $date = $faker->dateTimeThisMonth($max = 'now');
+    $nrc = $faker->regexify('[1-9]{1,2}');
+    $nrc .= '/';
+    $nrc .= $faker->regexify('[a-z]{3}');
+    $nrc .= '(နိုင်)';
+    $nrc .= $faker->regexify('[0-9]{6}');
+    $en_my = [
+        'a' => 'က', 'b' => 'စ', 'c' => 'ဋ', 'd' => 'တ', 'e' => 'ပ', 'f' => 'ရ', 'g' => 'ဟ', 'h' => 'ခ', 'i' => 'ဆ', 'j' => 'ဌ', 'k' => 'ထ', 'l' => 'ဖ', 'm' => 'ယ', 'n' => 'ဂ', 'o' => 'ဇ', 'p' => 'ဍ',
+        'q' => 'ဒ', 'r' => 'ဗ', 's' => 'လ', 't' => 'သ', 'u' => 'င', 'v' => 'ည', 'w' => 'ဏ', 'x' => 'န', 'y' => 'ဘ', 'z' => 'မ', '0' => '၀', '1' => '၁', '2' => '၂', '3' => '၃', '4' => '၄', '5' => '၅', '6' => '၆', '7' => '၇', '8' => '၈', '9' => '၉',
+    ];
+    $nrc = strtr($nrc, $en_my);
     return [
         'name' => $faker->name,
         'dob' => $faker->date($format = 'Y-m-d H:i:s', $max = '2000-01-01'),
         'gender' => $faker->randomElement(['male', 'female', 'other']),
-        'nrc_id' => $faker->regexify('[1-9]{1,2}\/[A-Z]a[A-Z]a[A-Z]a-N-[0-9]{6}'),
+        'nrc_id' => $nrc,
         'father' => $faker->name('male'),
         'mother' => $faker->name('female'),
         'address' => $faker->address,

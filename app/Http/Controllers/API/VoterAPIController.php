@@ -147,16 +147,31 @@ class VoterAPIController extends AppBaseController
     public function sms(SmsRequest $request)
     {
         $secret = $request->only('secret');
-        if ($secret['secret'] !== 'forever') {
+        if ($secret['secret'] !== 'LHHNW9CH3UDQXTFKKXGCPGFHQEUCGGG3') {
             return $this->sendError('API Key is incorrect');
         }
         $content = $request->only('content');
         if (!empty($content['content'])) {
-            $args_array = preg_split("/(name)|(nrc)|([,])+/im", $content['content'], null, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_OFFSET_CAPTURE);
+            $lines = preg_split("/[\n\r,]+/m", $content['content']);
+            $args_array = [];
+            foreach ($lines as $line) {
+                list($key, $val) = explode('=', $line);
+                $key = strtolower(trim($key));
+                $val = strtolower(trim($val));
+                $args_array[$key] = $val;
+            }
 
-            $voters = Voter::whereIn('name', $args_array)->orWhere(function ($query) use ($args_array) {
-                $query->whereIn('nrc_id', $args_array);
-            })->get();
+            //$args_array = preg_split("/(name)|(nrc)|([,])+/im", $content['content'], null, PREG_SPLIT_NO_EMPTY);
+
+            $voters = Voter::select('*');
+            if (array_key_exists('name', $args_array)) {
+                $voters = $voters->where('name', 'like', '%' . $args_array['name'] . '%');
+            }
+
+            if (array_key_exists('nrc', $args_array)) {
+                $voters = $voters->where('nrc_id', 'like', '%' . $args_array['nrc'] . '%');
+            }
+            $voters = $voters->get();
 
             $input = $request->all();
 
