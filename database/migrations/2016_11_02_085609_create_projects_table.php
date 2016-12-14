@@ -16,10 +16,12 @@ class CreateProjectsTable extends Migration
         Schema::create('projects', function (Blueprint $table) {
             $table->increments('id');
             $table->string('project');
+            $table->string('dbname');
             $table->string('dblink')->nullable(); // voter | location | enumerator | none
-            $table->string('type')->nullable();// db2sample | sample2db | none
+            $table->string('type')->nullable(); // db2sample | sample2db | none
             $table->text('sections');
             $table->text('samples');
+            $table->text('index_columns')->nullable();
             $table->timestamps();
         });
     }

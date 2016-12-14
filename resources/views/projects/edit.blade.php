@@ -3,12 +3,24 @@
 <meta name="csrf-token" content="{{ csrf_token() }}">
 @endsection
 @section('content')
-<section class="content-header">
-  <h1>
-    Projects
+<section class="content-header" style="margin-bottom:30px;">
+  <h1 class="pull-left">{!! $project->project !!}</h1>
+  <h1 class="pull-right">
+    {!! Form::open(['route' => ['projects.dbcreate', $project->id], 'method' => 'post']) !!}
+    <div class='btn-group'>
+        {!! Form::button('<i class="fa fa-list-alt"></i> Build Form', [
+            'type' => 'submit',
+            'class' => 'btn btn-danger',
+            'onclick' => "return confirm('Are you sure? This will build actual form for data entry!')"
+        ]) !!}
+    </div>
+{!! Form::close() !!}
   </h1>
 </section>
+
+<section>
 <div class="content">
+<div class="clearfix"></div>
   @include('adminlte-templates::common.errors')
   <div class="box box-primary">
     <div class="box-body">
@@ -38,16 +50,17 @@
       <div class="panel-title">
         {!! $section['sectionname'] !!} <small> {!! (!empty($section['descriptions']))?" | ".$section['descriptions']:"" !!}</small>
         <span class="pull-right"><a href="#" class='btn btn-success' data-toggle="modal" data-target="#qModal" data-qurl="{!! route('api.questions.store') !!}" data-section="{!! $section_key !!}" data-method='POST'><i class="glyphicon glyphicon-plus"></i></a></span>
-      </div>          
+      </div>
     </div>
     <div class="panel-body">
       @include('projects.table_questions')
     </div>
-  </div> 
+  </div>
   @endforeach
   @endif
   {!! Form::close() !!}
 </div>
+</section>
 @include('questions.modal')
 @endsection
 @section('css')
@@ -59,8 +72,8 @@
 @endsection
 @section('scripts')
 <script type='text/javascript'>
-  
-  var formData = {'fields':''}; 
+
+  var formData = {'fields':''};
 
   $(document).ready(function(){
 
@@ -68,7 +81,7 @@
       headers:
       { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') }
     });
-    
+
 
     $('#qModal').on('shown.bs.modal', function(event) {
       var button = $(event.relatedTarget) // Button that triggered the modal
@@ -96,7 +109,7 @@
         editOnAdd: true,
         stickyControls: true,
         dataType: 'json',
-        controlOrder: [       
+        controlOrder: [
         'checkbox',
         'radio-group',
         'text',
@@ -108,7 +121,7 @@
       };
       var formBuilder = fbEditor.formBuilder(options).data('formBuilder');
 
-      $('#saveQuest').on('click',function(e){ 
+      $('#saveQuest').on('click',function(e){
         e.preventDefault();
         var payload;
         var message;
@@ -125,19 +138,19 @@
 
           },
           error: function(data) {
-            if(data.status == '401') 
+            if(data.status == '401')
               message = "Your session has expired. You need to log in again!"
             else
               message = data.message
 
             $('#ajaxMesg').text(message).addClass('text-danger').removeClass('hidden').fadeOut(1400);
           },
-          complete: function(){ 
+          complete: function(){
             window.beforeunload = function(){ return void 0;}
             resetForm($( "#qModalForm" ))
-            setTimeout(function(){              
-              window.location.reload(); 
-            }, 1800); 
+            setTimeout(function(){
+              window.location.reload();
+            }, 1800);
           }
         });
         return false;
@@ -146,10 +159,10 @@
     }).on('hidden.bs.modal', function () {
       $("#fb-editor").empty()
     })
-    
+
 
   });
-  
+
 
 </script>
 @endsection

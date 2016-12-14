@@ -37,6 +37,8 @@ Route::group(['prefix' => 'projects/{project}/surveys'], function () {
 
 });
 
+Route::post('projects/{project}/dbcreate', ['as' => 'projects.dbcreate', 'uses' => ProjectController::class . '@dbcreate']);
+
 Route::resource('projects', 'ProjectController');
 
 Route::resource('questions', 'QuestionController');

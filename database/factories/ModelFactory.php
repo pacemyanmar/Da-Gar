@@ -74,8 +74,11 @@ $factory->define(App\User::class, function (Faker\Generator $faker) {
 
 $factory->define(App\Models\Project::class, function (Faker\Generator $faker) {
     $date = $faker->dateTimeThisMonth($max = 'now');
+    $project = $faker->words($nb = 3, $asText = true) . ' Project';
+    $dbname = uniqid(snake_case($project) . '_');
     return [
-        'project' => $faker->words($nb = 3, $asText = true) . ' Project',
+        'project' => $project,
+        'dbname' => $dbname,
         'dblink' => $faker->randomElement(['voter', 'location', 'enumerator']),
         'type' => $faker->randomElement(['sample2db', 'db2sample']),
         'sections' => [

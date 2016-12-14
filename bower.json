@@ -22,6 +22,7 @@
     "magic-check": "^1.0.3",
     "moment": "^2.16.0",
     "rivets": "*",
-    "select2": "*"
+    "select2": "*",
+    "jquery-idletimer": "^1.0.1"
   }
 }
