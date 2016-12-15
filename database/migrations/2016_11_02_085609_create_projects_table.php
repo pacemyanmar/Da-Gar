@@ -22,6 +22,7 @@ class CreateProjectsTable extends Migration
             $table->text('sections');
             $table->text('samples');
             $table->text('index_columns')->nullable();
+            $table->enum('status', ['new', 'modified', 'published'])->default('new');
             $table->timestamps();
         });
     }

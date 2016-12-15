@@ -6,11 +6,11 @@ use App\Http\Controllers\AppBaseController;
 use App\Http\Requests\API\CreateQuestionAPIRequest;
 use App\Http\Requests\API\UpdateQuestionAPIRequest;
 use App\Models\Question;
-use App\Models\SurveyInput;
 use App\Repositories\QuestionRepository;
 use App\Repositories\SurveyInputRepository;
 use App\Traits\QuestionsTrait;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Schema;
 use InfyOm\Generator\Criteria\LimitOffsetCriteria;
 use Prettus\Repository\Criteria\RequestCriteria;
 use Response;
@@ -61,46 +61,33 @@ class QuestionAPIController extends AppBaseController
         $input = $request->all();
 
         $args = [
-                'raw_ans' => $request->only('raw_ans')['raw_ans'],
-                'qnum' => $request->only('qnum')['qnum'],
-                'layout' => $request->only('layout')['layout'],
-                'project_id' => $request->only('project_id')['project_id'],
-                'section' => $request->only('section')['section']
-                ];
-        $render = $input['render'] = $this->to_render($args);       
+            'raw_ans' => $request->only('raw_ans')['raw_ans'],
+            'qnum' => $request->only('qnum')['qnum'],
+            'layout' => $request->only('layout')['layout'],
+            'project_id' => $request->only('project_id')['project_id'],
+            'section' => $request->only('section')['section'],
+        ];
+        $render = $input['render'] = $this->to_render($args);
 
-        $questions = $this->questionRepository->create($input);
-        $inputs = [];
-        foreach($render as $k => $input) {
+        $question = $this->questionRepository->create($input);
 
-            if($input['type'] == 'radio-group') {
-                foreach($input['values'] as $i => $value) {
-                    $value['name'] = $input['name'];
-                    $value['sort'] = $k.$i;
-                    $inputs[] = new SurveyInput($value);
-                } 
-            } else {
-                if(!isset($input['value'])) $input['value'] = $k;
-                if(!isset($input['sort'])) $input['sort'] = $k;
-                $inputs[] = new SurveyInput($input);
-            }
-        }
-        
+        $inputs = $this->getInputs($render);
+
         $question->surveyInputs()->saveMany($inputs);
         /**
         if(!empty($raw_answers)) {
-            $answers = [];
-            foreach($raw_answers as $answer) {
-                $answer['class_name'] = $answer['className'];
-                $answer['project_id'] = $questions->project->id;
-                $answer['question_id'] = $questions->id;
-                $answer['user_id'] = Auth::user()->getAuthIdentifier(); 
-                $answers[] = $answer;
-            }
-
-            DB::table('answers')->insert($answers);
+        $answers = [];
+        foreach($raw_answers as $answer) {
+        $answer['class_name'] = $answer['className'];
+        $answer['project_id'] = $questions->project->id;
+        $answer['question_id'] = $questions->id;
+        $answer['user_id'] = Auth::user()->getAuthIdentifier();
+        $answers[] = $answer;
         }
-        */
+
+        DB::table('answers')->insert($answers);
+        }
+         */
 
         return $this->sendResponse($questions->toArray(), 'Question saved successfully');
     }
@@ -144,34 +131,26 @@ class QuestionAPIController extends AppBaseController
         $project_id = $request->only('project_id')['project_id'];
         $form_input = $request->all();
         $args = [
-                'raw_ans' => $request->only('raw_ans')['raw_ans'],
-                'qnum' => $request->only('qnum')['qnum'],
-                'layout' => $request->only('layout')['layout'],
-                'project_id' => $request->only('project_id')['project_id'],
-                'section' => $request->only('section')['section']
-                ];
+            'raw_ans' => $request->only('raw_ans')['raw_ans'],
+            'qnum' => $request->only('qnum')['qnum'],
+            'layout' => $request->only('layout')['layout'],
+            'project_id' => $request->only('project_id')['project_id'],
+            'section' => $request->only('section')['section'],
+        ];
         $render = $form_input['render'] = $this->to_render($args);
 
         $question = $this->questionRepository->update($form_input, $id);
 
-        $inputs = [];
-        foreach($render as $k => $input) {
-
-            if($input['type'] == 'radio-group') {
-                foreach($input['values'] as $i => $value) {
-                    $value['name'] = $input['name'];
-                    $value['sort'] = $k.$i;
-                    $inputs[] = new SurveyInput($value);
-                } 
-            } else {
-                if(!isset($input['value'])) $input['value'] = $k;
-                if(!isset($input['sort'])) $input['sort'] = $k;
-                $inputs[] = new SurveyInput($input);
-            }
-        }
+        $inputs = $this->getInputs($render);
 
         $question->surveyInputs()->delete();
         $question->surveyInputs()->saveMany($inputs);
+
+        $project = $question->project;
+        if (Schema::hasTable($project->dbname)) {
+            $project->status = 'modified';
+            $project->save();
+        }
 
         return $this->sendResponse($question->toArray(), 'Question updated successfully');
     }

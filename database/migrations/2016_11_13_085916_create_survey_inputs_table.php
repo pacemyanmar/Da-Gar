@@ -21,6 +21,7 @@ class CreateSurveyInputsTable extends Migration
             $table->string('label')->index();
             $table->string('value')->index();
             $table->integer('sort')->index();
+            $table->enum('status', ['new', 'published'])->default('new');
             $table->integer('question_id')->unsigned();
             $table->foreign('question_id')->references('id')->on('questions');
         });

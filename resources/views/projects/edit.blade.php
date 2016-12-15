@@ -6,15 +6,25 @@
 <section class="content-header" style="margin-bottom:30px;">
   <h1 class="pull-left">{!! $project->project !!}</h1>
   <h1 class="pull-right">
+  @if($project->status != 'published')
     {!! Form::open(['route' => ['projects.dbcreate', $project->id], 'method' => 'post']) !!}
     <div class='btn-group'>
+    @if($project->status == 'modified')
+        {!! Form::button('<i class="fa fa-list-alt"></i> Update Form', [
+            'type' => 'submit',
+            'class' => 'btn btn-danger',
+            'onclick' => 'return confirm("Are you sure?\n This will update live form table for data entry!\nSome serious changes are running.\nPlease do not run this frequently if data entry already live.")'
+        ]) !!}
+    @else
         {!! Form::button('<i class="fa fa-list-alt"></i> Build Form', [
             'type' => 'submit',
             'class' => 'btn btn-danger',
-            'onclick' => "return confirm('Are you sure? This will build actual form for data entry!')"
+            'onclick' => 'return confirm("Are you sure?\nThis will build actual form table for data entry!")'
         ]) !!}
+    @endif
     </div>
 {!! Form::close() !!}
+@endif
   </h1>
 </section>
 
@@ -149,7 +159,7 @@
             window.beforeunload = function(){ return void 0;}
             resetForm($( "#qModalForm" ))
             setTimeout(function(){
-              window.location.reload();
+              //window.location.reload();
             }, 1800);
           }
         });

@@ -7,6 +7,7 @@ use App\Http\Controllers\AppBaseController;
 use App\Http\Requests\CreateProjectRequest;
 use App\Http\Requests\UpdateProjectRequest;
 use App\Repositories\ProjectRepository;
+use App\Scopes\OrderByScope;
 use Flash;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -169,81 +170,117 @@ class ProjectController extends AppBaseController
 
     public function dbcreate($id)
     {
+        // get project instance Project::class
         $project = $this->projectRepository->findWithoutFail($id);
+
+        // get unique collection of inputs
         $fields = $project->inputs->unique('name');
+
+        // check if table has already created
         if (Schema::hasTable($project->dbname)) {
+            // if table exists, loop inputs
             foreach ($fields as $input) {
-                if (Schema::hasColumn($project->dbname, $input->name)) {
-                    Schema::table($project->dbname, function ($table) use ($input) {
+                // check if column has created.
+                if (Schema::hasColumn($project->dbname, $input->inputid)) {
+                    // if input status is modified, this means we need to ALTER TABLE COLUMN, else do nothing for 'new' and 'published'.
+                    if ($input->status == 'modified') {
+                        Schema::table($project->dbname, function ($table) use ($input) {
 
-                        switch ($input->type) {
-                            case 'number':
-                                $inputType = 'integer';
-                                $table->$inputType($input->name)->unsigned()->change();
-                                break;
+                            switch ($input->type) {
+                                case 'number':
+                                    $inputType = 'integer';
+                                    $table->$inputType($input->inputid)->unsigned()->change();
+                                    break;
 
-                            case 'text':
-                                $inputType = 'text';
-                                break;
+                                case 'text':
+                                    $inputType = 'text';
+                                    $table->$inputType($input->inputid)->change();
+                                    break;
 
-                            default:
-                                $inputType = 'string';
-                                $table->$inputType($input->name, 20)->change();
-                                break;
-                        }
-                    });
+                                default:
+                                    $inputType = 'string';
+                                    $table->$inputType($input->inputid, 20)->change();
+                                    break;
+                            }
+                            // change input status to published
+                            $project->inputs()->withoutGlobalScope(OrderByScope::class)->where('name', $input->name)->update(['status' => 'published']);
+                        });
+                    }
                 } else {
+                    // if column has not been created, creat now
                     Schema::table($project->dbname, function ($table) use ($input) {
                         switch ($input->type) {
                             case 'number':
                                 $inputType = 'integer';
-                                $table->$inputType($input->name)->unsigned()->change();
+                                $table->$inputType($input->inputid)->unsigned()->nullable()->index();
                                 break;
 
                             case 'text':
                                 $inputType = 'text';
-                                $table->$inputType($input->name)->change();
+                                $table->$inputType($input->inputid)->nullable();
                                 break;
 
                             default:
                                 $inputType = 'string';
-                                $table->$inputType($input->name, 20)->change();
+                                $table->$inputType($input->inputid, 20)->nullable()->index();
                                 break;
                         }
+                        // change input status to published
+                        $project->inputs()->withoutGlobalScope(OrderByScope::class)->where('name', $input->name)->update(['status' => 'published']);
                     });
                 }
             }
 
         } else {
+            // if table is not yet created, create table and inputs columns
             Schema::create($project->dbname, function (Blueprint $table) use ($project, $fields) {
 
                 $table->increments('id');
-                $table->string('form_id')->nullable();
-                $table->string('location_id')->nullable();
-                $table->string('person_id')->nullable();
+                $table->string('form_id', 20)->nullable(); // form code
+                $table->string('location_id', 20)->nullable(); // location code
+                $table->string('person_id', 20)->nullable(); // observer code
+                $table->string('sample', 20)->nullable(); // sample
+                $table->string('location0', 20)->nullable(); // village
+                $table->string('location1', 20)->nullable(); // village tract
+                $table->string('location2', 20)->nullable(); // township
+                $table->string('location3', 20)->nullable(); // district
+                $table->string('location4', 20)->nullable(); // state
+                $table->string('location5', 20)->nullable(); // country
+                $table->string('location6', 20)->nullable(); // world region
+                $table->string('lat_long', 50)->nullable(); // latitude, longitude
                 $table->integer('user_id')->unsigned();
-                $table->integer('update_user_id')->unsigned();
+                $table->integer('update_user_id')->unsigned()->nullable();
+                $table->timestamps();
+                foreach ($project->sections as $key => $section) {
+                    $table->string('section' . $key, 10)->nullable();
+                }
                 foreach ($fields as $input) {
 
                     switch ($input->type) {
                         case 'number':
                             $inputType = 'integer';
-                            $table->$inputType($input->name)->unsigned()->nullable();
+                            $table->$inputType($input->inputid)->unsigned()->nullable();
                             break;
 
                         case 'text':
                             $inputType = 'text';
-                            $table->$inputType($input->name)->nullable();
+                            $table->$inputType($input->inputid)->nullable();
                             break;
 
                         default:
                             $inputType = 'string';
-                            $table->$inputType($input->name, 20)->nullable();
+                            $table->$inputType($input->inputid, 20)->nullable();
                             break;
                     }
+
+                    // change input status to published
+                    $project->inputs()->withoutGlobalScope(OrderByScope::class)->where('name', $input->name)->update(['status' => 'published']);
                 }
             });
         }
+
+        $project->status = 'published';
+        $project->save();
 
         Flash::success('Form built successfully.');
 

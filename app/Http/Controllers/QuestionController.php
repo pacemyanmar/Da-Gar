@@ -6,11 +6,11 @@ use App\DataTables\QuestionDataTable;
 use App\Http\Controllers\AppBaseController;
 use App\Http\Requests\CreateQuestionRequest;
 use App\Http\Requests\UpdateQuestionRequest;
-use App\Models\SurveyInput;
 use App\Repositories\QuestionRepository;
 use App\Repositories\SurveyInputRepository;
 use App\Traits\QuestionsTrait;
 use Flash;
+use Illuminate\Support\Facades\Schema;
 use Response;
 
 class QuestionController extends AppBaseController
@@ -70,28 +70,15 @@ class QuestionController extends AppBaseController
 
         $question = $this->questionRepository->create($formInput);
 
-        $inputs = [];
-        foreach ($render as $k => $input) {
+        $inputs = $this->getInputs($render);
 
-            if ($input['type'] == 'radio-group') {
-                foreach ($input['values'] as $i => $value) {
-                    $value['name'] = $input['name'];
-                    $value['sort'] = $question->sort . $k;
-                    $inputs[] = new SurveyInput($value);
-                }
-            } else {
-                if (!isset($input['value'])) {
-                    $input['value'] = $k;
-                }
-
-                if (!isset($input['sort'])) {
-                    $input['sort'] = $question->sort . $k;
-                }
-
-                $inputs[] = new SurveyInput($input);
-            }
-        }
         $question->surveyInputs()->saveMany($inputs);
+
+        $project = $question->project;
+        if (Schema::hasTable($project->dbname)) {
+            $project->status = 'modified';
+            $project->save();
+        }
         /**
         if(!empty($raw_answers)) {
         $answers = [];
@@ -183,30 +170,16 @@ class QuestionController extends AppBaseController
 
         $question = $this->questionRepository->update($input, $id);
 
-        $inputs = [];
-        foreach ($render as $k => $input) {
-
-            if ($input['type'] == 'radio-group') {
-                foreach ($input['values'] as $i => $value) {
-                    $value['name'] = $input['name'];
-                    $value['sort'] = $question->sort . $k;
-                    $inputs[] = new SurveyInput($value);
-                }
-            } else {
-                if (!isset($input['value'])) {
-                    $input['value'] = $k;
-                }
-
-                if (!isset($input['sort'])) {
-                    $input['sort'] = $question->sort . $k;
-                }
-
-                $inputs[] = new SurveyInput($input);
-            }
-        }
+        $inputs = $this->getInputs($render);
 
         $question->surveyInputs()->delete();
         $question->surveyInputs()->saveMany($inputs);
+
+        $project = $question->project;
+        if (Schema::hasTable($project->dbname)) {
+            $project->status = 'modified';
+            $project->save();
+        }
 
         Flash::success('Question updated successfully.');
 

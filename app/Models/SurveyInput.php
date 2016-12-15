@@ -30,10 +30,12 @@ class SurveyInput extends Model
         'inputid',
         'type',
         'name',
+        'column',
         'label',
         'value',
         'sort',
         'question_id',
+        'status',
     ];
 
     /**
@@ -83,5 +85,10 @@ class SurveyInput extends Model
     public function question()
     {
         return $this->belongsTo(\App\Models\Question::class);
+    }
+
+    public function scopePublished($query)
+    {
+        return $query->where('status', 'published');
     }
 }

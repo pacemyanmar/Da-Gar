@@ -24,6 +24,7 @@ class Project extends Model
         'sections',
         'samples',
         'dblink',
+        'status',
     ];
 
     /**
