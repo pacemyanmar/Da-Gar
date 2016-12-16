@@ -22,6 +22,7 @@ class CreateQuestionsTable extends Migration
             $table->string('layout');
             $table->integer('section')->unsigned();
             $table->integer('sort')->unsigned();
+            $table->boolean('optional')->default(false);
             $table->integer('project_id')->unsigned();
             $table->foreign('project_id')->references('id')->on('projects');
         });

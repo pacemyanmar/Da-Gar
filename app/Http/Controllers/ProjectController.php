@@ -188,11 +188,13 @@ class ProjectController extends AppBaseController
 
                             switch ($input->type) {
                                 case 'number':
-                                    $inputType = 'integer';
-                                    $table->$inputType($input->inputid)->unsigned()->change();
+                                case 'radio':
+                                case 'checkbox':
+                                    $inputType = 'unsignedTinyInteger';
+                                    $table->$inputType($input->inputid)->change();
                                     break;
 
-                                case 'text':
+                                case 'textarea':
                                     $inputType = 'text';
                                     $table->$inputType($input->inputid)->change();
                                     break;
@@ -211,12 +213,14 @@ class ProjectController extends AppBaseController
                     Schema::table($project->dbname, function ($table) use ($input) {
                         switch ($input->type) {
                             case 'number':
-                                $inputType = 'integer';
-                                $table->$inputType($input->inputid)->unsigned()->nullable()->index();
+                            case 'radio':
+                            case 'checkbox':
+                                $inputType = 'unsignedTinyInteger';
+                                $table->$inputType($input->inputid)->nullable()->index();
                                 break;
 
                             case 'text':
-                                $inputType = 'text';
+                                $inputType = 'textarea';
                                 $table->$inputType($input->inputid)->nullable();
                                 break;
 
@@ -240,13 +244,13 @@ class ProjectController extends AppBaseController
                 $table->string('location_id', 20)->nullable(); // location code
                 $table->string('person_id', 20)->nullable(); // observer code
                 $table->string('sample', 20)->nullable(); // sample
-                $table->string('location0', 20)->nullable(); // village
-                $table->string('location1', 20)->nullable(); // village tract
-                $table->string('location2', 20)->nullable(); // township
-                $table->string('location3', 20)->nullable(); // district
-                $table->string('location4', 20)->nullable(); // state
-                $table->string('location5', 20)->nullable(); // country
-                $table->string('location6', 20)->nullable(); // world region
+                $table->unsignedInteger('village')->nullable(); // village
+                $table->unsignedInteger('village_tract')->nullable(); // village tract
+                $table->unsignedMediumInteger('township')->nullable(); // township
+                $table->unsignedMediumInteger('district')->nullable(); // district
+                $table->unsignedSmallInteger('state')->nullable(); // state
+                $table->unsignedSmallInteger('country')->nullable(); // country
+                $table->unsignedTinyInteger('world_region')->nullable(); // world region
                 $table->string('lat_long', 50)->nullable(); // latitude, longitude
                 $table->integer('user_id')->unsigned();
                 $table->integer('update_user_id')->unsigned()->nullable();
@@ -258,11 +262,13 @@ class ProjectController extends AppBaseController
 
                     switch ($input->type) {
                         case 'number':
-                            $inputType = 'integer';
-                            $table->$inputType($input->inputid)->unsigned()->nullable();
+                        case 'radio':
+                        case 'checkbox':
+                            $inputType = 'unsignedTinyInteger';
+                            $table->$inputType($input->inputid)->nullable();
                             break;
 
-                        case 'text':
+                        case 'textarea':
                             $inputType = 'text';
                             $table->$inputType($input->inputid)->nullable();
                             break;

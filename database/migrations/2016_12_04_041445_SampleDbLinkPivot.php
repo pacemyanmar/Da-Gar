@@ -14,11 +14,11 @@ class SampleDbLinkPivot extends Migration
     public function up()
     {
         Schema::create('sample_dblink', function (Blueprint $table) {
-            $table->integer('dblink_id')->unsigned()->index();
-            $table->integer('project_id')->unsigned()->index();
-            $table->string('dblink_type')->index(); // table name to link
-            $table->string('sample')->index();
-            $table->string('code')->nullable()->index();
+            $table->integer('dblink_id')->unsigned()->index(); // primary key from linked database
+            $table->integer('project_id')->unsigned()->index(); // project primary id
+            $table->string('dblink_type')->index(); // database table name to link
+            $table->string('sample')->index(); // sample group
+            $table->string('code')->nullable()->index(); // unique code for project
         });
     }
 

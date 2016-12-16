@@ -20,6 +20,7 @@ class Project extends Model
         'samples',
         'dblink',
         'status',
+        'index_columns',
     ];
 
     /**
@@ -33,6 +34,7 @@ class Project extends Model
         'sections' => 'array',
         'samples' => 'array',
         'dblink' => 'string',
+        'index_columns' => 'array',
     ];
 
     /**
