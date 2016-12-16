@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use Eloquent as Model;
-use Jenssegers\Mongodb\Eloquent\HybridRelations;
 
 /**
  * Class Project
@@ -12,10 +11,6 @@ use Jenssegers\Mongodb\Eloquent\HybridRelations;
  */
 class Project extends Model
 {
-    use HybridRelations;
-
-    protected $connection = 'mysql';
-
     public $table = 'projects';
 
     public $fillable = [

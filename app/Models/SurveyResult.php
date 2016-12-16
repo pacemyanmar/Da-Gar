@@ -2,8 +2,6 @@
 
 namespace App\Models;
 
-use Jenssegers\Mongodb\Eloquent\Model as Moloquent;
-
 /**
  * Class SurveyResult
  * @package App\Models
@@ -11,8 +9,6 @@ use Jenssegers\Mongodb\Eloquent\Model as Moloquent;
  */
 class SurveyResult extends Moloquent
 {
-    protected $connection = 'mongodb';
-
     public $table = 'survey_results';
 
     public $collection = 'survey_results';

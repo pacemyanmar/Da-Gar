@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use Eloquent as Model;
-use Jenssegers\Mongodb\Eloquent\HybridRelations;
 
 /**
  * Class Voter
@@ -12,10 +11,6 @@ use Jenssegers\Mongodb\Eloquent\HybridRelations;
  */
 class Voter extends Model
 {
-    use HybridRelations;
-
-    protected $connection = 'mysql';
-
     public $table = 'voters';
 
     public $timestamps = false;

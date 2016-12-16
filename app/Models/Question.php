@@ -12,8 +12,6 @@ use Eloquent as Model;
  */
 class Question extends Model
 {
-    protected $connection = 'mysql';
-
     public $table = 'questions';
 
     public $timestamps = false;

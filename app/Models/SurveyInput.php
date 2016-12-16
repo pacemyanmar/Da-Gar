@@ -4,7 +4,6 @@ namespace App\Models;
 
 use App\Scopes\OrderByScope;
 use Eloquent as Model;
-use Jenssegers\Mongodb\Eloquent\HybridRelations;
 
 /**
  * Class SurveyInput
@@ -13,10 +12,6 @@ use Jenssegers\Mongodb\Eloquent\HybridRelations;
  */
 class SurveyInput extends Model
 {
-    use HybridRelations;
-
-    protected $connection = 'mysql';
-
     public $table = 'survey_inputs';
 
     public $incrementing = false;
