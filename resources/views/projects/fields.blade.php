@@ -3,7 +3,7 @@
  *  db value to name array
  */
  $dblink = [
-    '' => 'None',    
+    '' => 'None',
     'voter' => 'Voter List',
     'location' => 'Location',
     'enumerator' => 'Enumerator',
@@ -42,8 +42,65 @@
     {!! Form::select('type', $type,null, ['class' => 'form-control toggle']) !!}
 </div>
 
+<!-- Type Field -->
+<div class="form-group col-sm-6">
+    {!! Form::label('index_columns', 'Columns to show in list: ',['class' => 'toggle']) !!}
+    <table class="table toggle">
+        <tr>
+            <td>
+                {!! Form::checkbox("index_columns[state]", 'State', null, ['class' => 'magic-checkbox ', 'id' => 'state']) !!}
+                <label class="normal-text" for="state">State
+                </label>
+            </td>
+            <td>
+                {!! Form::checkbox("index_columns[district]", 'District', null, ['class' => 'magic-checkbox ', 'id' => 'district']) !!}
+                <label class="normal-text" for="district">District
+                </label>
+            </td>
+            <td>
+                {!! Form::checkbox("index_columns[township]", 'Township', null, ['class' => 'magic-checkbox ', 'id' => 'township']) !!}
+                <label class="normal-text" for="township">Township
+                </label>
+            </td>
+            <td>
+                {!! Form::checkbox("index_columns[village_tract]", 'Village Tract', null, ['class' => 'magic-checkbox ', 'id' => 'village_tract']) !!}
+                <label class="normal-text" for="village_tract">Village Tract
+                </label>
+            </td>
+            <td>
+                {!! Form::checkbox("index_columns[village]", 'Village', null, ['class' => 'magic-checkbox ', 'id' => 'village']) !!}
+                <label class="normal-text" for="village">Village
+                </label>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                {!! Form::checkbox("index_columns[observer]", 'Observer', null, ['class' => 'magic-checkbox ', 'id' => 'observer']) !!}
+                <label class="normal-text" for="observer">Observer
+                </label>
+            </td>
+            <td>
+                {!! Form::checkbox("index_columns[nrc_id]", 'NRC ID', null, ['class' => 'magic-checkbox ', 'id' => 'nrc_id']) !!}
+                <label class="normal-text" for="nrc_id">NRC ID
+                </label>
+            </td>
+            <td>
+                {!! Form::checkbox("index_columns[phone]", 'Phone', null, ['class' => 'magic-checkbox ', 'id' => 'phone']) !!}
+                <label class="normal-text" for="phone">Phone
+                </label>
+            </td>
+            <td>
+                {!! Form::checkbox("index_columns[address]", 'Address', null, ['class' => 'magic-checkbox ', 'id' => 'address']) !!}
+                <label class="normal-text" for="address">Address
+                </label>
+            </td>
+        </tr>
+        <tr></tr>
+    </table>
+</div>
+
 <!-- sections Field -->
-<div class="form-group col-sm-12 col-lg-12 toggle">    
+<div class="form-group col-sm-12 col-lg-12 toggle">
 
     <table class="table table-striped table-bordered" id="table">
         <thead class="no-border">
@@ -71,7 +128,7 @@
                 </td>
             </tr>
             @endforeach
-            
+
             @endif
             @else
             <tr class="sample" style="display: table-row;">
@@ -91,7 +148,7 @@
 </div>
 
 <!-- sections Field -->
-<div class="form-group col-sm-12 col-lg-12 toggle">    
+<div class="form-group col-sm-12 col-lg-12 toggle">
 
     <table class="table table-striped table-bordered" id="table">
         <thead class="no-border">
@@ -119,7 +176,7 @@
                 </td>
             </tr>
             @endforeach
-            
+
             @endif
             @else
             <tr class="item" style="display: table-row;">
@@ -186,7 +243,7 @@
       $(".toggle").toggle();
     });
     $("#project").find(":input").filter(function(){ return !this.value; }).removeAttr("disabled");
-    $("#project").on("submit", function(e) {      
+    $("#project").on("submit", function(e) {
 
       $('.item').each(function (index,value) {
         $(this).find('.sectionname').attr('name','sections['+index+'][sectionname]');
