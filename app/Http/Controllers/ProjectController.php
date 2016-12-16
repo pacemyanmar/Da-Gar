@@ -15,7 +15,10 @@ use Response;
 
 class ProjectController extends AppBaseController
 {
-    /** @var  ProjectRepository */
+    /**
+     * @var  ProjectRepository
+     */
+
     private $projectRepository;
 
     public function __construct(ProjectRepository $projectRepo)
@@ -182,7 +185,10 @@ class ProjectController extends AppBaseController
             foreach ($fields as $input) {
                 // check if column has created.
                 if (Schema::hasColumn($project->dbname, $input->inputid)) {
-                    // if input status is modified, this means we need to ALTER TABLE COLUMN, else do nothing for 'new' and 'published'.
+                    /**
+                     * if input status is modified, this means we need to ALTER TABLE COLUMN,
+                     * else do nothing for 'new' and 'published'.
+                     */
                     if ($input->status == 'modified') {
                         Schema::table($project->dbname, function ($table) use ($input) {
 
@@ -205,7 +211,8 @@ class ProjectController extends AppBaseController
                                     break;
                             }
                             // change input status to published
-                            $project->inputs()->withoutGlobalScope(OrderByScope::class)->where('name', $input->name)->update(['status' => 'published']);
+                            $project->inputs()->withoutGlobalScope(OrderByScope::class)
+                                    ->where('name', $input->name)->update(['status' => 'published']);
                         });
                     }
                 } else {
@@ -230,7 +237,8 @@ class ProjectController extends AppBaseController
                                 break;
                         }
                         // change input status to published
-                        $project->inputs()->withoutGlobalScope(OrderByScope::class)->where('name', $input->name)->update(['status' => 'published']);
+                        $project->inputs()->withoutGlobalScope(OrderByScope::class)
+                                ->where('name', $input->name)->update(['status' => 'published']);
                     });
                 }
             }
@@ -280,7 +288,8 @@ class ProjectController extends AppBaseController
                     }
 
                     // change input status to published
-                    $project->inputs()->withoutGlobalScope(OrderByScope::class)->where('name', $input->name)->update(['status' => 'published']);
+                    $project->inputs()->withoutGlobalScope(OrderByScope::class)
+                            ->where('name', $input->name)->update(['status' => 'published']);
                 }
             });
         }
@@ -297,5 +306,4 @@ class ProjectController extends AppBaseController
     {
         Schema::drop($project->dbname);
     }
-
 }

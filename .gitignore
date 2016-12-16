@@ -4,6 +4,7 @@ node_modules/
 nbproject/
 resources/assets/vendor/
 public/*/
+.vscode/
 
 *.sublime-project
 *.sublime-workspace

@@ -155,6 +155,7 @@
             <tr>
                 <th>Section</th>
                 <th>Descriptions</th>
+                <th>Optional</th>
                 <th><i class=" fa fa-plus btn btn-sm btn-success btn-flat btn-green toggle" id="btnAdd"></i></th>
             </tr>
         </thead>
@@ -170,6 +171,12 @@
                 <td style="vertical-align: middle">
                     <p class="toggle" style="display:initial">{!! (isset($section['descriptions']))?$section['descriptions']:'' !!}</p>
                     <input value="{!! (isset($section['descriptions']))?$section['descriptions']:'' !!}" class="form-control descriptions toggle" type="text">
+                </td>
+                <td style="">
+                    <div class="toggle">
+                    <input value="{!! (isset($section['optional']))?$section['optional']:'' !!}" class="magic-checkbox optional" type="checkbox" id="optional{!! $section_key !!}">
+                    <label class="normal-text" for="optional{!! $section_key !!}"></label>
+                    </div>
                 </td>
                 <td style="vertical-align: middle">
                     <i onclick="removeItem(this)" class="remove fa fa-trash-o toggle" style="cursor: pointer;font-size: 20px;color: red;"></i>
@@ -212,6 +219,9 @@
     htmlStr +=  '<td style="vertical-align: middle">';
     htmlStr +=  '<input type="text" class="form-control descriptions"/>';
     htmlStr +=  '</td>';
+    htmlStr +=  '<td style="">';
+    htmlStr +=  '<div><input type="checkbox" class="magic-checkbox optional"/><label class="optional"></label></div>';
+    htmlStr +=  '</td>';
     htmlStr +=  '<td style="vertical-align: middle">';
     htmlStr +=  '<i onclick="removeItem(this)" class="remove fa fa-trash-o" style="cursor: pointer;font-size: 20px;color: red"></i>';
     htmlStr +=  '</td>';
@@ -236,6 +246,10 @@
     $("#btnAddSample").on("click", function () {
       var sample = $(sampleStr).clone();
       $("#samples").append(sample);
+      $('.item').each(function (index,value) {
+        $(this).find('input.optional').attr('id','optional'+index);
+        $(this).find('label.optional').attr('for','optional'+index);
+      });
     });
 
 
@@ -248,6 +262,7 @@
       $('.item').each(function (index,value) {
         $(this).find('.sectionname').attr('name','sections['+index+'][sectionname]');
         $(this).find('.descriptions').attr('name','sections['+index+'][descriptions]');
+        $(this).find('.optional').attr('name','sections['+index+'][optional]');
       });
       $('.sample').each(function (index,value) {
         $(this).find('.samplename').attr('name','samples['+index+'][name]');
