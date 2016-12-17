@@ -18,6 +18,7 @@ class Project extends Model
         'type',
         'sections',
         'samples',
+        'copies',
         'dblink',
         'status',
         'index_columns',
@@ -33,6 +34,7 @@ class Project extends Model
         'type' => 'string',
         'sections' => 'array',
         'samples' => 'array',
+        'copies' => 'integer',
         'dblink' => 'string',
         'index_columns' => 'array',
     ];

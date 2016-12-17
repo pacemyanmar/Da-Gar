@@ -13,6 +13,7 @@
     'sample2db' => 'Sample to Database',
     'db2sample' => 'Database to sample',
  ]
+
 @endphp
 <!-- Name Field -->
 <div class="form-group col-sm-6">
@@ -34,12 +35,23 @@
 </div>
 
 <!-- Type Field -->
-<div class="form-group col-sm-6">
+<div class="form-group col-sm-3">
     {!! Form::label('type', 'Related database type: ') !!}
     @if(isset($project))
+    <br />
     <p class="toggle" style="display:initial">{!! $type["$project->type"] !!}</p>
     @endif
     {!! Form::select('type', $type,null, ['class' => 'form-control toggle']) !!}
+</div>
+<!-- Type Field -->
+<div class="form-group col-sm-3">
+    {!! Form::label('copies', 'Copies per observer or location: ') !!}
+    @if(isset($project))
+    <br />
+    <p class="toggle" style="display:initial">{!! $project->copies !!}</p>
+    @endif
+    {!! Form::select('copies', ['1' => 1,'2' => 2,'3' => 3,'4' => 4,'5' => 5,'6' => 6,'7' => 7,'8' => 8,'9' => 9,'10' => 10,
+    '11' => 11,'12' => 12,'13' => 13,'14' => 14,'15' => 15,'16' => 16,'17' => 17,'18' => 18,'19' => 19,'20' => 20],($project->copies)?$project->copies:1, ['class' => 'form-control toggle']) !!}
 </div>
 
 <!-- Type Field -->
