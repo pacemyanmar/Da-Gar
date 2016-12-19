@@ -21,6 +21,7 @@ trait QuestionsTrait
         $ans = json_decode($raw_ans, true);
         $question = (array_key_exists('question', $args)) ? $args['question'] : null;
         $qsort = (!empty($question)) ? $question->sort : '999'; // set sort prefix to 999 if no question sort
+        $in_index = (!empty($question)) ? $question->report : false;
         $answer = [];
 
         /**
@@ -54,9 +55,14 @@ trait QuestionsTrait
                 $a['section'] = $section_id;
             }
 
+            if (!array_key_exists('in_index', $a)) {
+                $a['in_index'] = $in_index;
+            }
+
             if (!array_key_exists('sort', $a)) {
                 $a['sort'] = $qsort . $k;
             }
+
             /**
              * if input type is radio-group and layout is not matrix, change input type to "radio" and
              * assign unique id attribute.

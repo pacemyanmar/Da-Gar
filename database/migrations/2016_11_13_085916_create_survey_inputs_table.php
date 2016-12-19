@@ -23,7 +23,7 @@ class CreateSurveyInputsTable extends Migration
             $table->unsignedSmallInteger('sort')->index();
             $table->unsignedTinyInteger('section')->index();
             $table->enum('status', ['new', 'published'])->default('new');
-            $table->boolean('index')->default(false);
+            $table->boolean('in_index')->default(false);
             $table->boolean('optional')->default(false);
             $table->text('logic')->nullable();
             $table->integer('question_id')->unsigned();

@@ -285,7 +285,7 @@ class ProjectController extends AppBaseController
                             $inputType = 'string';
                             break;
                     }
-                    if ($input->index) {
+                    if ($input->inIndex) {
                         $table->$inputType($input->inputid)
                             ->storedAs('JSON_UNQUOTE(section' . $input->section . '->' . $input->inputid . ')')
                             ->nullable();
