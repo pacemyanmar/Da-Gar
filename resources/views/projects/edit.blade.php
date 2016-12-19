@@ -109,7 +109,10 @@
       var modal = $(this)
       modal.find( "input[name='qnum']" ).val(qnum)
       modal.find( "input[name='question']" ).val(question)
+
+      if(sort) {
       modal.find( "input[name='sort']" ).val(sort)
+      }
       modal.find( "input[name='section']" ).val(section)
       modal.find( "select[name='layout']" ).val(layout)
       modal.find( "input[name='_method']" ).val(method)
