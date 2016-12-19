@@ -94,7 +94,7 @@ class QuestionAPIController extends AppBaseController
 
         $question->surveyInputs()->saveMany($inputs);
 
-        return $this->sendResponse($questions->toArray(), 'Question saved successfully');
+        return $this->sendResponse($question->toArray(), 'Question saved successfully');
     }
 
     /**
