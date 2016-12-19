@@ -182,6 +182,12 @@ return [
          */
         Krucas\Settings\Providers\SettingsServiceProvider::class,
 
+        /**
+         * unique with validator
+         * https://github.com/felixkiss/uniquewith-validator
+         */
+        Felixkiss\UniqueWithValidator\UniqueWithValidatorServiceProvider::class,
+
         /*
          * Application Service Providers...
          */
