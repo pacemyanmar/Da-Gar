@@ -18,6 +18,7 @@ class VoterController extends AppBaseController
 
     public function __construct(VoterRepository $voterRepo)
     {
+        $this->middleware('auth');
         $this->voterRepository = $voterRepo;
     }
 

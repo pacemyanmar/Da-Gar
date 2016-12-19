@@ -3,12 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\DataTables\SmsLogDataTable;
-use App\Http\Requests;
+use App\Http\Controllers\AppBaseController;
 use App\Http\Requests\CreateSmsLogRequest;
 use App\Http\Requests\UpdateSmsLogRequest;
 use App\Repositories\SmsLogRepository;
 use Flash;
-use App\Http\Controllers\AppBaseController;
 use Response;
 
 class SmsLogController extends AppBaseController
@@ -18,6 +17,7 @@ class SmsLogController extends AppBaseController
 
     public function __construct(SmsLogRepository $smsLogRepo)
     {
+        $this->middleware('auth');
         $this->smsLogRepository = $smsLogRepo;
     }
 

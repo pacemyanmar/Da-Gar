@@ -23,6 +23,7 @@ class ProjectController extends AppBaseController
 
     public function __construct(ProjectRepository $projectRepo)
     {
+        $this->middleware('auth');
         $this->projectRepository = $projectRepo;
     }
 

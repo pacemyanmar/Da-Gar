@@ -25,6 +25,7 @@ class ProjectResultsController extends Controller
 
     public function __construct(ProjectRepository $projectRepo, VoterRepository $voterRepo, QuestionRepository $questionRepo, SurveyResult $surveyResultModel, SurveyInputRepository $surveyInputRepo)
     {
+        $this->middleware('auth');
         $this->projectRepository = $projectRepo;
         $this->questionRepository = $questionRepo;
         $this->voterRepository = $voterRepo;
