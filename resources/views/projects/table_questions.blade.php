@@ -18,13 +18,13 @@
                 <td class="col-xs-2">
                     {!! Form::open(['route' => ['questions.destroy', $question->id], 'method' => 'delete']) !!}
                     <div class='btn-group'>
-                        <a href="#" class='btn btn-default btn-xs' data-toggle="modal" data-target="#qModal" data-qid="{!! $question->id !!}" data-qurl="{!! route('api.questions.update', [$question->id]) !!}" data-qnum="{!! $question->qnum !!}" data-question="{!! $question->question !!}" data-section="{!! $section_key !!}" data-answers='{!! $question->raw_ans !!}' data-layout='{!! $question->layout !!}' data-method='PATCH'><i class="glyphicon glyphicon-edit"></i></a>
-                        
+                        <a href="#" class='btn btn-default btn-xs' data-toggle="modal" data-target="#qModal" data-qid="{!! $question->id !!}" data-qurl="{!! route('api.questions.update', [$question->id]) !!}" data-qnum="{!! $question->qnum !!}" data-question="{!! $question->question !!}" data-section="{!! $section_key !!}" data-sort="{!! $question->sort !!}" data-answers='{!! $question->raw_ans !!}' data-layout='{!! $question->layout !!}' data-method='PATCH'><i class="glyphicon glyphicon-edit"></i></a>
+
                         {!! Form::button('<i class="glyphicon glyphicon-trash"></i>', ['type' => 'submit', 'class' => 'btn btn-danger btn-xs', 'onclick' => "return confirm('Are you sure?')"]) !!}
                     </div>
                     {!! Form::close() !!}
                 </td>
-            </tr>    
+            </tr>
             @endif
         @endforeach
     </tbody>

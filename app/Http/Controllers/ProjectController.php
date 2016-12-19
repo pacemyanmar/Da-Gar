@@ -212,7 +212,7 @@ class ProjectController extends AppBaseController
                             }
                             // change input status to published
                             $project->inputs()->withoutGlobalScope(OrderByScope::class)
-                                    ->where('name', $input->name)->update(['status' => 'published']);
+                                ->where('name', $input->name)->update(['status' => 'published']);
                         });
                     }
                 } else {
@@ -238,7 +238,7 @@ class ProjectController extends AppBaseController
                         }
                         // change input status to published
                         $project->inputs()->withoutGlobalScope(OrderByScope::class)
-                                ->where('name', $input->name)->update(['status' => 'published']);
+                            ->where('name', $input->name)->update(['status' => 'published']);
                     });
                 }
             }
@@ -248,23 +248,24 @@ class ProjectController extends AppBaseController
             Schema::create($project->dbname, function (Blueprint $table) use ($project, $fields) {
 
                 $table->increments('id');
-                $table->string('form_id', 20)->nullable(); // form code
-                $table->string('location_id', 20)->nullable(); // location code
-                $table->string('person_id', 20)->nullable(); // observer code
-                $table->string('sample', 20)->nullable(); // sample
-                $table->unsignedInteger('village')->nullable(); // village
-                $table->unsignedInteger('village_tract')->nullable(); // village tract
-                $table->unsignedMediumInteger('township')->nullable(); // township
-                $table->unsignedMediumInteger('district')->nullable(); // district
-                $table->unsignedSmallInteger('state')->nullable(); // state
-                $table->unsignedSmallInteger('country')->nullable(); // country
-                $table->unsignedTinyInteger('world_region')->nullable(); // world region
-                $table->string('lat_long', 50)->nullable(); // latitude, longitude
-                $table->integer('user_id')->unsigned();
-                $table->integer('update_user_id')->unsigned()->nullable();
+                $table->string('form_id', 20)->index()->nullable(); // form code
+                $table->string('location_id', 20)->index()->nullable(); // location code
+                $table->string('person_id', 20)->index()->nullable(); // observer code
+                $table->string('sample', 20)->index()->nullable(); // sample
+                $table->unsignedInteger('village')->index()->nullable(); // village
+                $table->unsignedInteger('village_tract')->index()->nullable(); // village tract
+                $table->unsignedMediumInteger('township')->index()->nullable(); // township
+                $table->unsignedMediumInteger('district')->index()->nullable(); // district
+                $table->unsignedSmallInteger('state')->index()->nullable(); // state
+                $table->unsignedSmallInteger('country')->index()->nullable(); // country
+                $table->unsignedTinyInteger('world_region')->index()->nullable(); // world region
+                $table->string('lat_long', 50)->index()->nullable(); // latitude, longitude
+                $table->integer('user_id')->index()->unsigned();
+                $table->integer('update_user_id')->index()->unsigned()->nullable();
                 $table->timestamps();
                 foreach ($project->sections as $key => $section) {
-                    $table->string('section' . $key, 10)->nullable();
+                    $table->unsignedTinyInteger('section' . $key . 'status')->index()->default(0); // 0 => missing, 1 => complete, 2 => incomplete, 3 => error
+                    $table->json('section' . $key)->nullable();
                 }
                 foreach ($fields as $input) {
 
@@ -273,23 +274,25 @@ class ProjectController extends AppBaseController
                         case 'radio':
                         case 'checkbox':
                             $inputType = 'unsignedTinyInteger';
-                            $table->$inputType($input->inputid)->nullable();
                             break;
 
                         case 'textarea':
                             $inputType = 'text';
-                            $table->$inputType($input->inputid)->nullable();
                             break;
 
                         default:
                             $inputType = 'string';
-                            $table->$inputType($input->inputid, 20)->nullable();
                             break;
+                    }
+                    if ($input->index) {
+                        $table->$inputType($input->inputid)
+                            ->storedAs('JSON_UNQUOTE(section' . $input->section . '->' . $input->inputid . ')')
+                            ->nullable();
                     }
 
                     // change input status to published
                     $project->inputs()->withoutGlobalScope(OrderByScope::class)
-                            ->where('name', $input->name)->update(['status' => 'published']);
+                        ->where('name', $input->name)->update(['status' => 'published']);
                 }
             });
         }

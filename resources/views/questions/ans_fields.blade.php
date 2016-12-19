@@ -1,52 +1,52 @@
 <?php
-	/**
-	 * count answers
-	 * set array of css class based on column count
-	 */
+/**
+ * count answers
+ * set array of css class based on column count
+ */
 
-	$anscount = count($question->render);
-	$css_class = [
-		'', // empty
-		'col-xs-12', // column count 1
-		'col-xs-6', // column count 2
-		'col-xs-4' // column count 3
-	];
+$anscount = count($question->render);
+$css_class = [
+    '', // empty
+    'col-xs-12', // column count 1
+    'col-xs-6', // column count 2
+    'col-xs-4', // column count 3
+];
 
-	/**
-	 *	Question layout is 2cols, count is 2, if 3 cols, count is 3 else 1
-	 * @var intever column count
-	 */
+/**
+ *    Question layout is 2cols, count is 2, if 3 cols, count is 3 else 1
+ * @var intever column count
+ */
 
-	$col_group_count = ($question->layout == '2cols')? 2:(($question->layout == '3cols')? 3:1);
+$col_group_count = ($question->layout == '2cols') ? 2 : (($question->layout == '3cols') ? 3 : 1);
 
-	$wordcount = 50 - ($col_group_count * 10);
-	/**
-	 * @var integer Total number of input fields in a column
-	 */
-	$ans_in_col = round($anscount / $col_group_count);
+$wordcount = 50 - ($col_group_count * 10);
+/**
+ * @var integer Total number of input fields in a column
+ */
+$ans_in_col = round($anscount / $col_group_count);
 
-	/**
-	 * $i => increment to total column count
-	 * $j => increment for outside use from input field loop
-	 * $k => current input field index	 * 
-	 */ 
+/**
+ * $i => increment to total column count
+ * $j => increment for outside use from input field loop
+ * $k => current input field index     *
+ */
 ?>
-@if($question->layout == 'matrix')	
+@if($question->layout == 'matrix')
 	@include('questions.radio-group')
 @else
 	@for($i=0,$j=0;$i<$col_group_count; $i++)
 		@if($j == ($i * $ans_in_col))
 			<div class="{!! $css_class[$col_group_count] !!} @if($i>0) {{ ' padleft' }}@endif">
 		@endif
-		
-		@foreach ($question->render as $k => $element)
+
+		@foreach ($question->surveyInputs as $k => $element)
 			@if($k >= ($i * $ans_in_col) && $k < (($i + 1) * $ans_in_col))
 				@if(!isset($element['value']))
 					@php
 						$element['value'] = $k;
 					@endphp
 				@endif
-				@if ($element['type'] == 'checkbox')					
+				@if ($element['type'] == 'checkbox')
 					@include('questions.checkbox')
 				@endif
 				@if ($element['type'] == 'radio')

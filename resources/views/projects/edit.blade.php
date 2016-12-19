@@ -99,6 +99,7 @@
       var qid = button.data('qid') // Extract info from data-* attributes
       var qnum = button.data('qnum')
       var question = button.data('question')
+      var sort = button.data('sort')
       var section = button.data('section')
       var layout = button.data('layout')
       var actionurl = button.data('qurl')
@@ -108,6 +109,7 @@
       var modal = $(this)
       modal.find( "input[name='qnum']" ).val(qnum)
       modal.find( "input[name='question']" ).val(question)
+      modal.find( "input[name='sort']" ).val(sort)
       modal.find( "input[name='section']" ).val(section)
       modal.find( "select[name='layout']" ).val(layout)
       modal.find( "input[name='_method']" ).val(method)
@@ -127,8 +129,135 @@
         'number',
         'textarea'
         ],
+        disableFields: ['autocomplete', 'button', 'header', 'checkbox-group', 'file', 'paragraph', 'hidden', 'select'],
+        typeUserEvents: {
+          text: {
+            onadd: function (fld) {
+              $('.name-wrap', fld).remove();
+              $('.required-wrap', fld).remove();
+              $('.access-wrap', fld).remove();
+            },
+            onclone: function (fld) {
+              $('.name-wrap', fld).remove();
+              $('.required-wrap', fld).remove();
+              $('.access-wrap', fld).remove();
+            }
+          },
+          date: {
+            onadd: function (fld) {
+              $('.name-wrap', fld).remove();
+              $('.required-wrap', fld).remove();
+              $('.access-wrap', fld).remove();
+            },
+            onclone: function (fld) {
+              $('.name-wrap', fld).remove();
+              $('.required-wrap', fld).remove();
+              $('.access-wrap', fld).remove();
+            }
+          },
+          number: {
+            onadd: function (fld) {
+              $('.name-wrap', fld).remove();
+              $('.required-wrap', fld).remove();
+              $('.access-wrap', fld).remove();
+            },
+            onclone: function (fld) {
+              $('.name-wrap', fld).remove();
+              $('.required-wrap', fld).remove();
+              $('.access-wrap', fld).remove();
+            }
+          },
+          checkbox: {
+            onadd: function (fld) {
+              $('.name-wrap', fld).remove();
+              $('.required-wrap', fld).remove();
+              $('.access-wrap', fld).remove();
+              $('.toggle-wrap', fld).remove();
+            },
+            onclone: function (fld) {
+              $('.name-wrap', fld).remove();
+              $('.required-wrap', fld).remove();
+              $('.access-wrap', fld).remove();
+              $('.toggle-wrap', fld).remove();
+            }
+          },
+          'radio-group': {
+            onadd: function (fld) {
+              $('.name-wrap', fld).remove();
+              $('.required-wrap', fld).remove();
+              $('.access-wrap', fld).remove();
+              $('.toggle-wrap', fld).remove();
+            },
+            onclone: function (fld) {
+              $('.name-wrap', fld).remove();
+              $('.required-wrap', fld).remove();
+              $('.access-wrap', fld).remove();
+              $('.toggle-wrap', fld).remove();
+            }
+          },
+          textarea: {
+            onadd: function (fld) {
+              $('.name-wrap', fld).remove();
+              $('.required-wrap', fld).remove();
+              $('.access-wrap', fld).remove();
+            },
+            onclone: function (fld) {
+              $('.name-wrap', fld).remove();
+              $('.required-wrap', fld).remove();
+              $('.access-wrap', fld).remove();
+            }
+          }
+        },
+        typeUserAttrs: {
+          text: {
+            optional: {
+              label: 'Optional',
+              type: 'checkbox',
+              name: 'optional'
+            }
+          },
+          date: {
+            optional: {
+              label: 'Optional',
+              type: 'checkbox',
+              name: 'optional'
+            }
+          },
+          number: {
+            optional: {
+              label: 'Optional',
+              type: 'checkbox',
+              name: 'optional'
+            }
+          },
+          checkbox: {
+            optional: {
+              label: 'Optional',
+              type: 'checkbox',
+              name: 'optional'
+            },
+            value: {
+              type: 'number'
+            }
+          },
+          'radio-group': {
+            optional: {
+              label: 'Optional',
+              type: 'checkbox',
+              name: 'optional'
+            }
+          },
+          textarea: {
+            optional: {
+              label: 'Optional',
+              type: 'checkbox',
+              name: 'optional'
+            }
+          }
+        },
         defaultFields: formData
       };
+
       var formBuilder = fbEditor.formBuilder(options).data('formBuilder');
 
       $('#saveQuest').on('click',function(e){

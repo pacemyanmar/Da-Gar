@@ -21,8 +21,8 @@ class CreateProjectsTable extends Migration
             $table->string('type')->nullable(); // db2sample | sample2db | none
             $table->text('sections');
             $table->text('samples');
-            $table->unsignedTinyInteger('copies');
-            $table->text('index_columns')->nullable();
+            $table->unsignedTinyInteger('copies')->default(1);
+            $table->text('index_columns')->nullable(); // array of columns to show in index tables and reporting and for export
             $table->enum('status', ['new', 'modified', 'published'])->default('new');
             $table->timestamps();
         });

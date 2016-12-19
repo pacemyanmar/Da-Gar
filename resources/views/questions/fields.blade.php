@@ -19,10 +19,32 @@
 </select>
 </div>
 
+<div class="form-group col-sm-6">
+    <table class="table">
+    <tr>
+    <td>
+    {!! Form::checkbox("optional", 1, null, ['class' => 'magic-checkbox ', 'id' => 'optionalq']) !!}
+    <label class="normal-text" for="optionalq">Optional
+    </label>
+    </td>
+    <td>
+    {!! Form::checkbox("double_entry", 1, null, ['class' => 'magic-checkbox ', 'id' => 'doubleq']) !!}
+    <label class="normal-text" for="doubleq">Double Entry
+    </label>
+    </td>
+    <td>
+    {!! Form::checkbox("report", 1, null, ['class' => 'magic-checkbox ', 'id' => 'reportq']) !!}
+    <label class="normal-text" for="reportq">Show in report
+    </label>
+    </td>
+    </tr>
+    </table>
+</div>
+
 <!-- Project Id Field -->
 <!--div class="form-group col-sm-6"-->
     {{-- Form::label('answers', 'Answers:') --}}
     {!! Form::hidden('project_id', $project->id) !!}
-    {!! Form::hidden('sort', 0) !!}
+    {!! Form::hidden('sort', count($questions)) !!}
     {!! Form::hidden('raw_ans') !!}
     {!! Form::hidden('section', null) !!}

@@ -24,6 +24,9 @@ class Question extends Model
         'sort',
         'layout',
         'section',
+        'double_entry',
+        'optional',
+        'report',
         'project_id',
     ];
 
@@ -41,6 +44,9 @@ class Question extends Model
         'sort' => 'integer',
         'project_id' => 'integer',
         'section' => 'integer',
+        'double_entry' => 'boolean',
+        'optional' => 'boolean',
+        'report' => 'boolean',
         'layout' => 'string',
     ];
 

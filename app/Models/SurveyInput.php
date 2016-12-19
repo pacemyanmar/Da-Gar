@@ -28,9 +28,12 @@ class SurveyInput extends Model
         'column',
         'label',
         'value',
+        'section',
         'sort',
         'question_id',
         'status',
+        'optional',
+        'logic',
     ];
 
     /**

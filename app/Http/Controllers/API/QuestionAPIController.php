@@ -6,6 +6,7 @@ use App\Http\Controllers\AppBaseController;
 use App\Http\Requests\API\CreateQuestionAPIRequest;
 use App\Http\Requests\API\UpdateQuestionAPIRequest;
 use App\Models\Question;
+use App\Repositories\ProjectRepository;
 use App\Repositories\QuestionRepository;
 use App\Repositories\SurveyInputRepository;
 use App\Traits\QuestionsTrait;
@@ -23,11 +24,16 @@ use Response;
 class QuestionAPIController extends AppBaseController
 {
     use QuestionsTrait;
+
+    private $projectRepository;
     /** @var  QuestionRepository */
     private $questionRepository;
 
-    public function __construct(QuestionRepository $questionRepo, SurveyInputRepository $inputRepo)
+    private $inputRepository;
+
+    public function __construct(ProjectRepository $projectRepo, QuestionRepository $questionRepo, SurveyInputRepository $inputRepo)
     {
+        $this->projectRepository = $projectRepo;
         $this->questionRepository = $questionRepo;
         $this->inputRepository = $inputRepo;
     }
@@ -59,13 +65,26 @@ class QuestionAPIController extends AppBaseController
     public function store(CreateQuestionAPIRequest $request)
     {
         $input = $request->all();
+        $project_id = $request->only('project_id')['project_id'];
+        $project = $this->projectRepository->findWithoutFail($project_id);
+
+        if (empty($project)) {
+            return $this->sendResponse($project_id, 'Project not found.');
+        }
+        $section_id = $request->only('section')['section'];
+
+        $section = (isset($project->sections[$section_id])) ? $project->sections[$section_id] : '';
+
+        if (!empty($section)) {
+            $input['double'] = (isset($section['double'])) ? $section['double'] : false;
+        }
 
         $args = [
             'raw_ans' => $request->only('raw_ans')['raw_ans'],
             'qnum' => $request->only('qnum')['qnum'],
             'layout' => $request->only('layout')['layout'],
-            'project_id' => $request->only('project_id')['project_id'],
-            'section' => $request->only('section')['section'],
+            'project' => $project,
+            'section' => $section_id,
         ];
         $render = $input['render'] = $this->to_render($args);
 
@@ -74,20 +93,6 @@ class QuestionAPIController extends AppBaseController
         $inputs = $this->getInputs($render);
 
         $question->surveyInputs()->saveMany($inputs);
-        /**
-        if(!empty($raw_answers)) {
-        $answers = [];
-        foreach($raw_answers as $answer) {
-        $answer['class_name'] = $answer['className'];
-        $answer['project_id'] = $questions->project->id;
-        $answer['question_id'] = $questions->id;
-        $answer['user_id'] = Auth::user()->getAuthIdentifier();
-        $answers[] = $answer;
-        }
-
-        DB::table('answers')->insert($answers);
-        }
-         */
 
         return $this->sendResponse($questions->toArray(), 'Question saved successfully');
     }
@@ -123,30 +128,49 @@ class QuestionAPIController extends AppBaseController
      */
     public function update($id, UpdateQuestionAPIRequest $request)
     {
-        $questions = $this->questionRepository->findWithoutFail($id);
+        $question = $this->questionRepository->findWithoutFail($id);
 
-        if (empty($questions)) {
+        if (empty($question)) {
             return $this->sendError('Question not found');
         }
-        $project_id = $request->only('project_id')['project_id'];
+
         $form_input = $request->all();
+        $input = $request->all();
+
+        $project_id = $request->only('project_id')['project_id'];
+        $project = $this->projectRepository->findWithoutFail($project_id);
+
+        if (empty($project)) {
+            return $this->sendResponse($project_id, 'Project not found.');
+        }
+
+        $section_id = $request->only('section')['section'];
+
+        $section = (isset($project->sections[$section_id])) ? $project->sections[$section_id] : '';
+
+        if (!empty($section)) {
+            $input['double'] = (isset($section['double'])) ? $section['double'] : false;
+        }
+
         $args = [
             'raw_ans' => $request->only('raw_ans')['raw_ans'],
+            'question' => $question,
             'qnum' => $request->only('qnum')['qnum'],
             'layout' => $request->only('layout')['layout'],
-            'project_id' => $request->only('project_id')['project_id'],
-            'section' => $request->only('section')['section'],
+            'project' => $project,
+            'section' => $section_id,
         ];
+
         $render = $form_input['render'] = $this->to_render($args);
 
-        $question = $this->questionRepository->update($form_input, $id);
+        $new_question = $this->questionRepository->update($form_input, $id);
 
         $inputs = $this->getInputs($render);
 
-        $question->surveyInputs()->delete();
-        $question->surveyInputs()->saveMany($inputs);
+        $new_question->surveyInputs()->delete();
+        $new_question->surveyInputs()->saveMany($inputs);
 
-        $project = $question->project;
+        $project = $new_question->project;
         if (Schema::hasTable($project->dbname)) {
             $project->status = 'modified';
             $project->save();

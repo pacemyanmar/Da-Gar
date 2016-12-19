@@ -51,7 +51,7 @@
     <p class="toggle" style="display:initial">{!! $project->copies !!}</p>
     @endif
     {!! Form::select('copies', ['1' => 1,'2' => 2,'3' => 3,'4' => 4,'5' => 5,'6' => 6,'7' => 7,'8' => 8,'9' => 9,'10' => 10,
-    '11' => 11,'12' => 12,'13' => 13,'14' => 14,'15' => 15,'16' => 16,'17' => 17,'18' => 18,'19' => 19,'20' => 20],($project->copies)?$project->copies:1, ['class' => 'form-control toggle']) !!}
+    '11' => 11,'12' => 12,'13' => 13,'14' => 14,'15' => 15,'16' => 16,'17' => 17,'18' => 18,'19' => 19,'20' => 20],null, ['class' => 'form-control toggle']) !!}
 </div>
 
 <!-- Type Field -->
@@ -168,6 +168,7 @@
                 <th>Section</th>
                 <th>Descriptions</th>
                 <th>Optional</th>
+                <th>Double Entry</th>
                 <th><i class=" fa fa-plus btn btn-sm btn-success btn-flat btn-green toggle" id="btnAdd"></i></th>
             </tr>
         </thead>
@@ -178,16 +179,22 @@
             <tr class="item" style="display: table-row;">
                 <td style="vertical-align: middle">
                     <p class="toggle" style="display:initial">{!! (isset($section['sectionname']))?$section['sectionname']:'' !!}</p>
-                    <input value="{!! (isset($section['sectionname']))?$section['sectionname']:'' !!}" class="form-control sectionname toggle" type="text">
+                    {!! Form::text("sections[$section_key][sectionname]", null, ['class' => 'form-control sectionname toggle']) !!}
                 </td>
                 <td style="vertical-align: middle">
                     <p class="toggle" style="display:initial">{!! (isset($section['descriptions']))?$section['descriptions']:'' !!}</p>
-                    <input value="{!! (isset($section['descriptions']))?$section['descriptions']:'' !!}" class="form-control descriptions toggle" type="text">
+                    {!! Form::text("sections[$section_key][descriptions]", null, ['class' => 'form-control descriptions toggle']) !!}
                 </td>
                 <td style="">
                     <div class="toggle">
-                    <input value="{!! (isset($section['optional']))?$section['optional']:'' !!}" class="magic-checkbox optional" type="checkbox" id="optional{!! $section_key !!}">
+                    {!! Form::checkbox("sections[$section_key][optional]", 'Optional', null, ['class' => 'magic-checkbox optional ', 'id' => 'optional'.$section_key]) !!}
                     <label class="normal-text" for="optional{!! $section_key !!}"></label>
+                    </div>
+                </td>
+                <td style="">
+                    <div class="toggle">
+                    {!! Form::checkbox("sections[$section_key][double]", 'Double', null, ['class' => 'magic-checkbox double ', 'id' => 'double'.$section_key]) !!}
+                    <label class="normal-text" for="double{!! $section_key !!}"></label>
                     </div>
                 </td>
                 <td style="vertical-align: middle">
@@ -204,6 +211,18 @@
                 </td>
                 <td style="vertical-align: middle">
                     <input class="form-control descriptions toggle" type="text">
+                </td>
+                <td style="">
+                    <div class="toggle">
+                    <input value="1" class="magic-checkbox optional" type="checkbox" id="optional0">
+                    <label class="normal-text" for="optional0"></label>
+                    </div>
+                </td>
+                <td style="">
+                    <div class="toggle">
+                    <input value="1" class="magic-checkbox double" type="checkbox" id="double0">
+                    <label class="normal-text" for="double0"></label>
+                    </div>
                 </td>
                 <td style="vertical-align: middle">
                     <i onclick="removeItem(this)" class="remove fa fa-trash-o toggle" style="cursor: pointer;font-size: 20px;color: red;"></i>
@@ -232,7 +251,10 @@
     htmlStr +=  '<input type="text" class="form-control descriptions"/>';
     htmlStr +=  '</td>';
     htmlStr +=  '<td style="">';
-    htmlStr +=  '<div><input type="checkbox" class="magic-checkbox optional"/><label class="optional"></label></div>';
+    htmlStr +=  '<div><input type="checkbox" value="Optional" class="magic-checkbox optional"/><label class="optional"></label></div>';
+    htmlStr +=  '</td>';
+    htmlStr +=  '<td style="">';
+    htmlStr +=  '<div><input type="checkbox" value="Double" class="magic-checkbox double"/><label class="double"></label></div>';
     htmlStr +=  '</td>';
     htmlStr +=  '<td style="vertical-align: middle">';
     htmlStr +=  '<i onclick="removeItem(this)" class="remove fa fa-trash-o" style="cursor: pointer;font-size: 20px;color: red"></i>';
@@ -242,6 +264,13 @@
     $("#btnAdd").on("click", function () {
       var item = $(htmlStr).clone();
       $("#container").append(item);
+
+      $('.item').each(function (index,value) {
+        $(this).find('input.optional').attr('id','optional'+index);
+        $(this).find('label.optional').attr('for','optional'+index);
+        $(this).find('input.double').attr('id','double'+index);
+        $(this).find('label.double').attr('for','double'+index);
+      });
     });
 
     var sampleStr =   '<tr class="sample" style="display: table-row;"><td style="vertical-align: middle">';
@@ -258,10 +287,6 @@
     $("#btnAddSample").on("click", function () {
       var sample = $(sampleStr).clone();
       $("#samples").append(sample);
-      $('.item').each(function (index,value) {
-        $(this).find('input.optional').attr('id','optional'+index);
-        $(this).find('label.optional').attr('for','optional'+index);
-      });
     });
 
 
@@ -275,6 +300,7 @@
         $(this).find('.sectionname').attr('name','sections['+index+'][sectionname]');
         $(this).find('.descriptions').attr('name','sections['+index+'][descriptions]');
         $(this).find('.optional').attr('name','sections['+index+'][optional]');
+        $(this).find('.double').attr('name','sections['+index+'][double]');
       });
       $('.sample').each(function (index,value) {
         $(this).find('.samplename').attr('name','samples['+index+'][name]');

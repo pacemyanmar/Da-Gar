@@ -58,12 +58,20 @@ class QuestionController extends AppBaseController
     public function store(CreateQuestionRequest $request)
     {
         $formInput = $request->all();
+        $project_id = $request->only('project_id')['project_id'];
+        $project = $this->projectRepository->findWithoutFail($project_id);
+
+        if (empty($project)) {
+            Flash::error('Project not found');
+
+            return redirect(route('questions.index'));
+        }
 
         $args = [
             'raw_ans' => $request->only('raw_ans')['raw_ans'],
             'qnum' => $request->only('qnum')['qnum'],
             'layout' => $request->only('layout')['layout'],
-            'project_id' => $request->only('project_id')['project_id'],
+            'project' => $project,
             'section' => $request->only('section')['section'],
         ];
         $render = $formInput['render'] = $this->to_render($args);

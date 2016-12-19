@@ -19,26 +19,19 @@ class MyFaker
         $return = "\r\n";
         $tab = "\t";
 
-        $string = "[$return$tab";
+        $inputs = [];
 
         for ($i = 1; $i <= $count; $i++) {
             $type = $faker->randomElement($array = array('checkbox', 'radio', 'text', 'number'));
             $n = $faker->words(3, true);
             $label = ucfirst($n);
             $name = str_slug($n) . '-' . $faker->randomNumber($nbDigits = 9);
-
-            $string .= '{' . $return . $tab . $tab;
-            $string .= '"type": "' . $type . '",' . $return . $tab . $tab . '"label": "' . $label . '",' . $return . $tab . $tab . '"className": "';
-            $string .= '",' . $return . $tab . $tab . '"name": "' . $name . '"';
-            $string .= "$return$tab}";
-
-            if ($i != $count) {
-                $string .= ',' . $return . $tab;
-            }
+            $inputs[$i]['type'] = $type;
+            $inputs[$i]['label'] = $label;
+            $inputs[$i]['className'] = "";
         }
 
-        $string .= "$return]";
-        return $string;
+        return json_encode(array_values($inputs), JSON_PRETTY_PRINT);
     }
 }
 

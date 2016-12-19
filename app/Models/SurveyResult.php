@@ -2,12 +2,14 @@
 
 namespace App\Models;
 
+use Eloquent as Model;
+
 /**
  * Class SurveyResult
  * @package App\Models
  * @version November 13, 2016, 1:34 pm UTC
  */
-class SurveyResult extends Moloquent
+class SurveyResult extends Model
 {
     public $table = 'survey_results';
 

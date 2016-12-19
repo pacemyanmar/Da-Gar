@@ -13,12 +13,16 @@ trait QuestionsTrait
     private function to_render($args = [])
     {
         $raw_ans = $args['raw_ans'];
-        $project_id = $args['project_id'];
+        $project = $args['project'];
+        $project_id = $project->id;
         $qnum = $args['qnum'];
         $layout = $args['layout'];
-        $section = $args['section'];
+        $section_id = $args['section'];
         $ans = json_decode($raw_ans, true);
+        $question = (array_key_exists('question', $args)) ? $args['question'] : null;
+        $qsort = (!empty($question)) ? $question->sort : '999'; // set sort prefix to 999 if no question sort
         $answer = [];
+
         /**
          * Loop json decoded key and values pair from input answers
          */
@@ -27,19 +31,31 @@ trait QuestionsTrait
             /**
              * create unique name attribute for each input
              */
-            $param = str_slug('p' . $project_id . '-s' . $section . '-' . $qnum . '-i' . $k);
+            $param = str_slug('p' . $project_id . '-s' . $section_id . '-' . $qnum . '-i' . $k);
             /**
-             * assign name attribute using format_input method
+             * assign className attribute using format_input method
              * remove checkbox or radio class name
              */
             array_walk_recursive($a, array(&$this, 'format_input'), $param);
+
+            if (!array_key_exists('name', $a)) {
+                $a['name'] = $param;
+            }
 
             if (!array_key_exists('className', $a)) {
                 $a['className'] = '';
             }
 
             if (!array_key_exists('inputid', $a)) {
-                $a['inputid'] = strtolower('s' . $section . $qnum . 'i' . $k);
+                $a['inputid'] = strtolower('s' . $section_id . $qnum . 'i' . $k);
+            }
+
+            if (!array_key_exists('section', $a)) {
+                $a['section'] = $section_id;
+            }
+
+            if (!array_key_exists('sort', $a)) {
+                $a['sort'] = $qsort . $k;
             }
             /**
              * if input type is radio-group and layout is not matrix, change input type to "radio" and
@@ -76,8 +92,8 @@ trait QuestionsTrait
 
             } elseif ($a['type'] == 'radio') {
                 $a['id'] = $param;
-                $a['name'] = str_slug('p' . $project_id . '-s' . $section . '-' . $qnum . '-r');
-                $a['inputid'] = strtolower('s' . $section . $qnum . 'ir');
+                $a['name'] = str_slug('p' . $project_id . '-s' . $section_id . '-' . $qnum . '-r');
+                $a['inputid'] = strtolower('s' . $section_id . $qnum . 'ir');
             } else {
                 $a['id'] = $param;
             }
@@ -87,6 +103,11 @@ trait QuestionsTrait
         return $answer;
     }
 
+    /**
+     * get array of inputs Instance
+     * @param  array $render json array of inputs
+     * @return array         array of SurveyInput::class instances
+     */
     public function getInputs($render)
     {
         $inputs = [];
@@ -122,9 +143,11 @@ trait QuestionsTrait
      */
     private static function format_input(&$value, $key, $param)
     {
+        /**
         if ($key == 'name') {
-            $value = $param;
+        $value = $param;
         }
+         */
 
         if ($key == 'className') {
             $value = preg_replace('/\s[checkbox|radio]\s/', ' ', $value);

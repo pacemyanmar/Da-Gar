@@ -22,7 +22,7 @@ class ProjectsTableSeeder extends Seeder
                     'qnum' => $question->qnum,
                     'layout' => $question->layout,
                     'section' => $question->section,
-                    'project_id' => $project->id,
+                    'project' => $project,
                     'raw_ans' => $question->raw_ans,
                 ])]);
             });
