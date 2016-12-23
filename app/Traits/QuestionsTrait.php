@@ -10,18 +10,22 @@ trait QuestionsTrait
      * @param string $qnum question number from input
      * @return array formatted answer
      */
-    private function to_render($args = [])
+    private function to_render($args = [], $request = false)
     {
-        $raw_ans = $args['raw_ans'];
+        $raw_ans = ($request['raw_ans']) ? $request['raw_ans'] : '';
+        $qnum = ($request['qnum']) ? $request['qnum'] : '';
+        $layout = ($request['layout']) ? $request['layout'] : '';
+
         $project = $args['project'];
         $project_id = $project->id;
-        $qnum = $args['qnum'];
-        $layout = $args['layout'];
         $section_id = $args['section'];
+
         $ans = json_decode($raw_ans, true);
         $question = (array_key_exists('question', $args)) ? $args['question'] : null;
         $qsort = (!empty($question)) ? $question->sort : '999'; // set sort prefix to 999 if no question sort
         $in_index = (!empty($question)) ? $question->report : false;
+
+        $double_entry = (!empty($question)) ? $question->double_entry : false;
         $answer = [];
 
         /**
@@ -56,7 +60,11 @@ trait QuestionsTrait
             }
 
             if (!array_key_exists('in_index', $a)) {
-                $a['in_index'] = $in_index;
+                $a['in_index'] = ($in_index) ? $in_index : false;
+            }
+
+            if (!array_key_exists('double_entry', $a)) {
+                $a['double_entry'] = ($double_entry) ? $double_entry : false;
             }
 
             if (!array_key_exists('sort', $a)) {
@@ -117,13 +125,19 @@ trait QuestionsTrait
     public function getInputs($render)
     {
         $inputs = [];
+        $label = [];
         foreach ($render as $k => $input) {
 
             if ($input['type'] == 'matrix') {
                 foreach ($input['values'] as $i => $value) {
-                    $value['name'] = $input['name'];
-                    $value['inputid'] = $input['inputid'];
+                    if ($k == false) {
+                        $label[$i] = $value['label'];
+                    } else {
+                        $value['label'] = $label[$i];
+                    }
                     $value['sort'] = $k . $i;
+                    $value['extras']['group'] = $input['label'];
+                    $value = array_merge($input, $value);
                     $inputs[] = new SurveyInput($value);
                 }
             } else {
