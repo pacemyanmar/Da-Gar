@@ -32,8 +32,11 @@ class SurveyInput extends Model
         'sort',
         'question_id',
         'status',
+        'double_entry',
+        'in_index',
         'optional',
         'logic',
+        'extras',
     ];
 
     /**
@@ -50,6 +53,7 @@ class SurveyInput extends Model
         'value' => 'string',
         'sort' => 'integer',
         'question_id' => 'integer',
+        'extras' => 'array',
     ];
 
     /**
