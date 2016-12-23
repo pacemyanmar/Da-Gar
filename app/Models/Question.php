@@ -87,4 +87,9 @@ class Question extends Model
     {
         return $this->hasMany(\App\Models\SurveyInput::class);
     }
+
+    public function scopeOnlyPublished($query)
+    {
+        return $query->whereQstatus('published');
+    }
 }
