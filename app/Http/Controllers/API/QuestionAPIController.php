@@ -76,19 +76,18 @@ class QuestionAPIController extends AppBaseController
         $section = (isset($project->sections[$section_id])) ? $project->sections[$section_id] : '';
 
         if (!empty($section)) {
-            $input['double'] = (isset($section['double'])) ? $section['double'] : false;
+            $input['double_entry'] = (isset($section['double'])) ? $section['double'] : false;
         }
 
+        $question = $this->questionRepository->create($input);
+
         $args = [
-            'raw_ans' => $request->only('raw_ans')['raw_ans'],
-            'qnum' => $request->only('qnum')['qnum'],
-            'layout' => $request->only('layout')['layout'],
             'project' => $project,
+            'question' => $question,
             'section' => $section_id,
         ];
-        $render = $input['render'] = $this->to_render($args);
 
-        $question = $this->questionRepository->create($input);
+        $render = $input['render'] = $this->to_render($args, $input);
 
         $inputs = $this->getInputs($render);
 
@@ -135,7 +134,6 @@ class QuestionAPIController extends AppBaseController
         }
 
         $form_input = $request->all();
-        $input = $request->all();
 
         $project_id = $request->only('project_id')['project_id'];
         $project = $this->projectRepository->findWithoutFail($project_id);
@@ -147,23 +145,22 @@ class QuestionAPIController extends AppBaseController
         $section_id = $request->only('section')['section'];
 
         $section = (isset($project->sections[$section_id])) ? $project->sections[$section_id] : '';
-
+        $double_entry = $form_input['double_entry'] = (isset($form_input['double_entry'])) ? $form_input['double_entry'] : false;
         if (!empty($section)) {
-            $input['double'] = (isset($section['double'])) ? $section['double'] : false;
+            $form_input['double_entry'] = (isset($section['double'])) ? $section['double'] : $double_entry;
         }
 
+        $form_input['qstatus'] = 'modified';
+
+        $new_question = $this->questionRepository->update($form_input, $id);
+
         $args = [
-            'raw_ans' => $request->only('raw_ans')['raw_ans'],
-            'question' => $question,
-            'qnum' => $request->only('qnum')['qnum'],
-            'layout' => $request->only('layout')['layout'],
+            'question' => $new_question,
             'project' => $project,
             'section' => $section_id,
         ];
 
-        $render = $form_input['render'] = $this->to_render($args);
-
-        $new_question = $this->questionRepository->update($form_input, $id);
+        $render = $this->to_render($args, $form_input);
 
         $inputs = $this->getInputs($render);
 
