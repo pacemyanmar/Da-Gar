@@ -18,13 +18,13 @@ class CreateQuestionsTable extends Migration
             $table->string('qnum');
             $table->string('question');
             $table->text('raw_ans');
-            $table->text('render');
             $table->string('layout');
             $table->integer('section')->unsigned();
             $table->integer('sort')->unsigned();
             $table->boolean('double_entry')->default(false); // should do double entry?
             $table->boolean('report')->default(false); //should be in report index or not?
             $table->boolean('optional')->default(false);
+            $table->enum('qstatus', ['new', 'modified', 'published'])->default('new');
             $table->integer('project_id')->unsigned();
             $table->foreign('project_id')->references('id')->on('projects');
         });
