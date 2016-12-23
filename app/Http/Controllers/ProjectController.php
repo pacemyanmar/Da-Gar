@@ -10,6 +10,7 @@ use App\Repositories\ProjectRepository;
 use App\Scopes\OrderByScope;
 use Flash;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Response;
 
@@ -63,7 +64,9 @@ class ProjectController extends AppBaseController
                 'sectionname' => 'Survey',
             ];
         }
-        $input['dbname'] = uniqid(snake_case($input['project']) . '_');
+        $short_project_name = wordwrap($input['project'], 10, ' ');
+        $input['dbname'] = uniqid(snake_case($short_project_name) . '_');
+
         $project = $this->projectRepository->create($input);
 
         Flash::success('Project saved successfully.');
@@ -143,7 +146,7 @@ class ProjectController extends AppBaseController
 
         Flash::success('Project updated successfully.');
 
-        return redirect(route('projects.index'));
+        return redirect()->back();
     }
 
     /**
@@ -184,66 +187,119 @@ class ProjectController extends AppBaseController
         if (Schema::hasTable($project->dbname)) {
             // if table exists, loop inputs
             foreach ($fields as $input) {
-                // check if column has created.
-                if (Schema::hasColumn($project->dbname, $input->inputid)) {
-                    /**
-                     * if input status is modified, this means we need to ALTER TABLE COLUMN,
-                     * else do nothing for 'new' and 'published'.
-                     */
-                    if ($input->status == 'modified') {
-                        Schema::table($project->dbname, function ($table) use ($input) {
+                $double_column = $input->inputid . '_d';
+                $double_status = $input->inputid . '_ds';
+                /**
+                 * if input status is new or modified, this means we need to change table,
+                 * else do nothing for 'published'.
+                 */
+                if ($input->status != 'published') {
+                    // check if column has created.
+                    if (Schema::hasColumn($project->dbname, $input->inputid)) {
+
+                        Schema::table($project->dbname, function ($table) use ($input, $project, $double_column, $double_status) {
 
                             switch ($input->type) {
                                 case 'number':
                                 case 'radio':
                                 case 'checkbox':
-                                    $inputType = 'unsignedTinyInteger';
-                                    $table->$inputType($input->inputid)->change();
+                                    $inputType = 'unsignedSmallInteger';
                                     break;
 
                                 case 'textarea':
                                     $inputType = 'text';
-                                    $table->$inputType($input->inputid)->change();
                                     break;
 
                                 default:
                                     $inputType = 'string';
-                                    $table->$inputType($input->inputid, 20)->change();
                                     break;
+                            }
+                            $table->$inputType($input->inputid)
+                                ->change();
+
+                            if ($input->in_index) {
+
+                                $table->index($input->inputid);
+
+                            } else {
+
+                                $index = DB::select(DB::raw("show index from $project->dbname where Column_name ='$input->inputid'"));
+
+                                if (!empty($index)) {
+                                    foreach ($index as $keyIndex) {
+                                        $table->dropIndex($keyIndex->Key_name);
+                                    }
+                                }
+                            }
+
+                            if ($input->double_entry) {
+
+                                if (!Schema::hasColumn($project->dbname, $double_column)) {
+
+                                    $table->$inputType($double_column)
+                                        ->after($input->inputid)
+                                        ->nullable();
+                                }
+                                if (!Schema::hasColumn($project->dbname, $double_status)) {
+
+                                    $table->boolean($double_status)
+                                        ->after($double_column)
+                                        ->nullable();
+                                }
+                            } else {
+                                if (Schema::hasColumn($project->dbname, $double_column)) {
+                                    $table->dropColumn($double_column);
+                                }
+                                if (Schema::hasColumn($project->dbname, $double_status)) {
+                                    $table->dropColumn($double_status);
+                                }
+                            }
+                            // change input status to published
+                            $project->inputs()->withoutGlobalScope(OrderByScope::class)
+                                ->where('name', $input->name)->update(['status' => 'published']);
+                        });
+                    } else {
+                        // if column has not been created, creat now
+                        Schema::table($project->dbname, function ($table) use ($input, $project, $double_column, $double_status) {
+                            switch ($input->type) {
+                                case 'number':
+                                case 'radio':
+                                case 'checkbox':
+                                    $inputType = 'unsignedSmallInteger';
+                                    break;
+
+                                case 'textarea':
+                                    $inputType = 'text';
+                                    break;
+
+                                default:
+                                    $inputType = 'string';
+                                    break;
+                            }
+                            if ($input->in_index) {
+                                $table->$inputType($input->inputid)
+                                    ->index()
+                                    ->nullable();
+                            } else {
+                                $table->$inputType($input->inputid)
+                                    ->nullable();
+                            }
+
+                            if ($input->double_entry) {
+                                $table->$inputType($double_column)
+                                    ->after($input->inputid)
+                                    ->nullable();
+                                $table->boolean($double_status)
+                                    ->after($double_column)
+                                    ->nullable();
                             }
                             // change input status to published
                             $project->inputs()->withoutGlobalScope(OrderByScope::class)
                                 ->where('name', $input->name)->update(['status' => 'published']);
                         });
                     }
-                } else {
-                    // if column has not been created, creat now
-                    Schema::table($project->dbname, function ($table) use ($input) {
-                        switch ($input->type) {
-                            case 'number':
-                            case 'radio':
-                            case 'checkbox':
-                                $inputType = 'unsignedTinyInteger';
-                                $table->$inputType($input->inputid)->nullable()->index();
-                                break;
-
-                            case 'text':
-                                $inputType = 'textarea';
-                                $table->$inputType($input->inputid)->nullable();
-                                break;
-
-                            default:
-                                $inputType = 'string';
-                                $table->$inputType($input->inputid, 20)->nullable()->index();
-                                break;
-                        }
-                        // change input status to published
-                        $project->inputs()->withoutGlobalScope(OrderByScope::class)
-                            ->where('name', $input->name)->update(['status' => 'published']);
-                    });
                 }
             }
-
         } else {
             // if table is not yet created, create table and inputs columns
             Schema::create($project->dbname, function (Blueprint $table) use ($project, $fields) {
@@ -259,22 +315,24 @@ class ProjectController extends AppBaseController
                 $table->unsignedMediumInteger('district')->index()->nullable(); // district
                 $table->unsignedSmallInteger('state')->index()->nullable(); // state
                 $table->unsignedSmallInteger('country')->index()->nullable(); // country
-                $table->unsignedTinyInteger('world_region')->index()->nullable(); // world region
+                $table->unsignedSmallInteger('world_region')->index()->nullable(); // world region
                 $table->string('lat_long', 50)->index()->nullable(); // latitude, longitude
                 $table->integer('user_id')->index()->unsigned();
                 $table->integer('update_user_id')->index()->unsigned()->nullable();
                 $table->timestamps();
                 foreach ($project->sections as $key => $section) {
-                    $table->unsignedTinyInteger('section' . $key . 'status')->index()->default(0); // 0 => missing, 1 => complete, 2 => incomplete, 3 => error
-                    $table->json('section' . $key)->nullable();
+                    $section_num = $key + 1;
+                    $table->unsignedSmallInteger('section' . $section_num . 'status')->index()->default(0); // 0 => missing, 1 => complete, 2 => incomplete, 3 => error
+                    //$table->json('section' . $key)->nullable();
                 }
                 foreach ($fields as $input) {
-
+                    $double_column = $input->inputid . '_d';
+                    $double_status = $input->inputid . '_ds';
                     switch ($input->type) {
                         case 'number':
                         case 'radio':
                         case 'checkbox':
-                            $inputType = 'unsignedTinyInteger';
+                            $inputType = 'unsignedSmallInteger';
                             break;
 
                         case 'textarea':
@@ -285,9 +343,21 @@ class ProjectController extends AppBaseController
                             $inputType = 'string';
                             break;
                     }
-                    if ($input->inIndex) {
+                    if ($input->in_index) {
                         $table->$inputType($input->inputid)
-                            ->storedAs('JSON_UNQUOTE(section' . $input->section . '->' . $input->inputid . ')')
+                            ->index()
+                            ->nullable();
+                    } else {
+                        $table->$inputType($input->inputid)
+                            ->nullable();
+                    }
+
+                    if ($input->double_entry) {
+                        $table->$inputType($double_column)
+                            ->after($input->inputid)
+                            ->nullable();
+                        $table->boolean($double_status)
+                            ->after($double_column)
                             ->nullable();
                     }
 
@@ -297,6 +367,7 @@ class ProjectController extends AppBaseController
                 }
             });
         }
+        $project->questions()->update(['qstatus' => 'published']);
 
         $project->status = 'published';
         $project->save();
