@@ -4,36 +4,36 @@ $layoutError = false;
 <table class="table table-responsive" >
 	<thead>
 		<th></th>
-		@if(isset($question->render[0]['values']))
-		@foreach ($question->render[0]['values'] as $header)
-		<th>{!! $header['label'] !!}</th>
+		@foreach ($question->surveyInputs->pluck('extras','inputid') as $element)
+			@if(isset($element['group']))
+				<th>{!! $element['group'] !!}</th>
+			@else
+				@php
+					$layoutError = true;
+				@endphp
+			@endif
 		@endforeach
-		@else
-		@php
-		$layoutError = true;
-		@endphp
-		@endif
 	</thead>
-	@foreach ($question->render as $av)
+	@foreach ($question->surveyInputs->groupBy('label') as $label => $element)
 	<tr>
-		@if(isset($av['values']))
-		<td>{!! $av['label'] !!}</td>		
-		@foreach($av['values'] as $value)
-		<td>{!! Form::radio("result[".$av['name']."]", $value['value'], null, ['id' => $value['id'],'class' => ' magic-radio '.$av['name'].' '.$sectionClass]) !!}<label class="normal-text" for='{{ $value['id'] }}'><!-- dummy for magic radio --></label></td>
+		@if(isset($label))
+		<td>{!! $label !!}</td>
+		@foreach($element as $radio)
+		<td>{!! Form::radio("result[".$radio->name."]", $radio->value, null, ['id' => $radio->id,'class' => ' magic-radio '.$radio->className.' '.$sectionClass]) !!}<label class="normal-text" for='{{ $radio->id }}'><!-- dummy for magic radio --></label></td>
 		@endforeach
 		@else
 		@php
 		$layoutError = true;
 		@endphp
 		@endif
-	</tr>	
+	</tr>
 	@endforeach
 	@if($layoutError === true)
 	<tr>
 		<div class="alert alert-warning">
 			<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
 			<strong>Layout Error!</strong> Something wrong with your question layout. You are not allowed to use "matrix" layout here.
-		</div>		
+		</div>
 	</tr>
 	@endif
 </table>

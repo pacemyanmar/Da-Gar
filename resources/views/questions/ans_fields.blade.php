@@ -4,7 +4,7 @@
  * set array of css class based on column count
  */
 
-$anscount = count($question->render);
+$anscount = count($question->surveyInputs);
 $css_class = [
     '', // empty
     'col-xs-12', // column count 1
@@ -41,18 +41,18 @@ $ans_in_col = round($anscount / $col_group_count);
 
 		@foreach ($question->surveyInputs as $k => $element)
 			@if($k >= ($i * $ans_in_col) && $k < (($i + 1) * $ans_in_col))
-				@if(!isset($element['value']))
+				@if(!isset($element->value))
 					@php
-						$element['value'] = $k;
+						$element->value = $k;
 					@endphp
 				@endif
-				@if ($element['type'] == 'checkbox')
+				@if ($element->type == 'checkbox')
 					@include('questions.checkbox')
 				@endif
-				@if ($element['type'] == 'radio')
+				@if ($element->type == 'radio')
 					@include('questions.radio')
 				@endif
-				@if (in_array($element['type'],['text','number','email','date']))
+				@if (in_array($element->type,['text','number','email','date']))
 					@include('questions.other-input')
 				@endif
 				@php

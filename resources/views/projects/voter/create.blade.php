@@ -7,7 +7,13 @@
 @section('content')
 
     <section class="content-header">
+    @if($project->status != 'published')
+            <div class="alert alert-warning">
+                Project modified. Rebuild to show new changes in this form.
+            </div>
+        @endif
         <h1 class="pull-left">{!! Form::label('name', $project->project) !!}</h1>
+
         <h1 class="pull-right">
            <a class="btn btn-primary pull-right save" style="display:inline;margin-top: -10px;margin-bottom: 5" href="#" data-id="survey-form"> Save All</a>
         </h1>
@@ -28,7 +34,7 @@
             <div class="panel-heading">
                 <div class="panel-title">
                     {!! $section['sectionname'] !!} <small> {!! (!empty($section['descriptions']))?" | ".$section['descriptions']:"" !!}</small>
-                </div>                  
+                </div>
             </div>
             <div class="panel-body">
                 @include('projects.show_fields')
@@ -36,7 +42,7 @@
                    <a class="btn btn-sm btn-info pull-right save" data-id="{!! $sectionClass !!}" style="display:inline;margin-top: -10px;margin-bottom: 5" href="#"> Save this section</a>
                 </h1>
             </div>
-        </div> 
+        </div>
         @endforeach
         </div>
     </div>
@@ -45,18 +51,18 @@
 <!-- copy from https://getflywheel.com/layout/add-sticky-back-top-button-website/ -->
 @section('css')
 <style>
- 
- 
+
+
 </style>
 @endsection
 @push('vue-scripts')
 <script type='text/javascript'>
 $(document).ready(function() {
-    
+
     $('.save').click(function(event){
         event.preventDefault();
 
-        var id = $(this).data('id');        
+        var id = $(this).data('id');
         $('#'+id).find(":input").filter(function(){ return !this.value; }).attr("disabled", "disabled");
         var section_data = $('#'+id+' :input').serializeArray();
         section_data.push({name: 'samplable_type', value: $('#sample').val()});

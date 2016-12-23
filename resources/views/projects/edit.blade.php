@@ -10,7 +10,7 @@
     {!! Form::open(['route' => ['projects.dbcreate', $project->id], 'method' => 'post']) !!}
     <div class='btn-group'>
     @if($project->status == 'modified')
-        {!! Form::button('<i class="fa fa-list-alt"></i> Update Form', [
+        {!! Form::button('<i class="fa fa-list-alt"></i> Rebuild Form', [
             'type' => 'submit',
             'class' => 'btn btn-danger',
             'onclick' => 'return confirm("Are you sure?\n This will update live form table for data entry!\nSome serious changes are running.\nPlease do not run this frequently if data entry already live.")'
@@ -31,6 +31,7 @@
 <section>
 <div class="content">
 <div class="clearfix"></div>
+  @include('flash::message')
   @include('adminlte-templates::common.errors')
   <div class="box box-primary">
     <div class="box-body">
