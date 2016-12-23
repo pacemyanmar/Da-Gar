@@ -17,8 +17,8 @@ class CreateSampleDatasTable extends Migration
             $table->increments('id');
             $table->string('name')->index();
             $table->string('type')->index();
-            $table->string('unique')->index();
-            $table->json('extras');
+            $table->string('unique')->nullable()->index();
+            $table->text('extras')->nullable();
         });
     }
 
