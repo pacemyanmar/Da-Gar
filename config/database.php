@@ -26,7 +26,7 @@ return [
     |
      */
 
-    'default' => env('DB_CONNECTION', 'mysql'),
+    'default' => env('DB_CONNECTION', 'mariadb'),
 
     /*
     |--------------------------------------------------------------------------
@@ -54,13 +54,27 @@ return [
 
         'mysql' => [
             'driver' => 'mysql',
-            'host' => env('DB_HOST', 'mariadb'),
+            'host' => env('DB_HOST', 'mysql'),
             'port' => env('DB_PORT', '3306'),
             'database' => env('DB_DATABASE', 'homestead'),
             'username' => env('DB_USERNAME', 'homestead'),
             'password' => env('DB_PASSWORD', 'secret'),
             'charset' => 'utf8',
             'collation' => 'utf8_unicode_ci',
+            'prefix' => '',
+            'strict' => true,
+            'engine' => null,
+        ],
+
+        'mariadb' => [
+            'driver' => 'mysql',
+            'host' => env('DB_HOST', 'mariadb'),
+            'port' => env('DB_PORT', '3306'),
+            'database' => env('DB_DATABASE', 'homestead'),
+            'username' => env('DB_USERNAME', 'homestead'),
+            'password' => env('DB_PASSWORD', 'secret'),
+            'charset' => 'utf8',
+            'collation' => 'utf8_myanmar_ci',
             'prefix' => '',
             'strict' => true,
             'engine' => null,
