@@ -3,7 +3,6 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
-use App\Models\Question;
 
 class UpdateQuestionRequest extends FormRequest
 {
@@ -25,6 +24,12 @@ class UpdateQuestionRequest extends FormRequest
      */
     public function rules()
     {
-        return Question::$rules;
+        return [
+            'qnum' => 'required|alpha_num|unique_with:questions,section,sort,' . $this->route('question'),
+            'question' => 'required',
+            'raw_ans' => 'required',
+            'section' => 'required',
+            'sort' => 'required',
+        ];
     }
 }

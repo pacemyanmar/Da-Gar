@@ -2,7 +2,6 @@
 
 namespace App\Http\Requests\API;
 
-use App\Models\Question;
 use InfyOm\Generator\Request\APIRequest;
 
 class UpdateQuestionAPIRequest extends APIRequest
@@ -24,6 +23,12 @@ class UpdateQuestionAPIRequest extends APIRequest
      */
     public function rules()
     {
-        return Question::$rules;
+        return [
+            'qnum' => 'required|alpha_num|unique_with:questions,section,sort,' . $this->route('question'),
+            'question' => 'required',
+            'raw_ans' => 'required',
+            'section' => 'required',
+            'sort' => 'required',
+        ];
     }
 }
