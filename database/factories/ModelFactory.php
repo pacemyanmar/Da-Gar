@@ -68,7 +68,8 @@ $factory->define(App\User::class, function (Faker\Generator $faker) {
 $factory->define(App\Models\Project::class, function (Faker\Generator $faker) {
     $date = $faker->dateTimeThisMonth($max = 'now');
     $project = $faker->words($nb = 3, $asText = true) . ' Project';
-    $dbname = uniqid(snake_case($project) . '_');
+    $short_project_name = wordwrap($project, 10, ' ');
+    $dbname = uniqid(snake_case($short_project_name) . '_');
     return [
         'project' => $project,
         'dbname' => $dbname,
@@ -124,8 +125,6 @@ $factory->define(App\Models\Question::class, function (Faker\Generator $faker) u
         'project_id' => function () {
             return factory(App\Models\Project::class)->create()->id;
         },
-
-        'render' => [],
     ];
 }, 'question');
 
