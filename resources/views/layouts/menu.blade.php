@@ -17,7 +17,4 @@
     <a href="{!! route('settings.index') !!}"><i class="fa fa-edit"></i><span>Settings</span></a>
 </li>
 
-<li class="{{ Request::is('sampleDatas*') ? 'active' : '' }}">
-    <a href="{!! route('sampleDatas.index') !!}"><i class="fa fa-edit"></i><span>SampleDatas</span></a>
-</li>
 

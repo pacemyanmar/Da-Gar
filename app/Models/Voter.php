@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Traits\SampleMorphManyTrait;
 use Eloquent as Model;
 
 /**
@@ -11,6 +12,8 @@ use Eloquent as Model;
  */
 class Voter extends Model
 {
+    use SampleMorphManyTrait;
+
     public $table = 'voters';
 
     public $timestamps = false;
@@ -48,9 +51,9 @@ class Voter extends Model
 
     ];
 
-    public function survey_results()
+    public function results($table)
     {
-        return $this->hasMany(SurveyResult::class, 'samplable_id');
+        return $this->morphMany((new SurveyResult)->setTable($table), 'samplable');
     }
 
 }

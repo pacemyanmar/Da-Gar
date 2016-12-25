@@ -11,49 +11,7 @@ use Eloquent as Model;
  */
 class SurveyResult extends Model
 {
-    public $table = 'survey_results';
-
-    public $collection = 'survey_results';
-
-    public $timestamps = false;
-
-    public $fillable = [
-        'value',
-        'inputid',
-        'sort',
-        'samplable_id',
-        'samplable_type',
-        'data_one',
-        'data_two',
-        'data_three',
-        'data_four',
-        'data_five',
-        'data_six',
-        'data_seven',
-        'data_eight',
-        'data_nine',
-        'data_ten',
-        'sample',
-        'section',
-        'survey_input_id',
-        'project_id',
-    ];
-
-    /**
-     * The attributes that should be casted to native types.
-     *
-     * @var array
-     */
-    protected $casts = [
-        'value' => 'string',
-        'inputid' => 'string',
-        'sort' => 'integer',
-        'samplable_id' => 'integer',
-        'samplable_type' => 'string',
-        'samplable_data' => 'array',
-        'survey_input_id' => 'integer',
-        'project_id' => 'integer',
-    ];
+    protected $guarded = ['id'];
 
     /**
      * Validation rules
@@ -77,5 +35,14 @@ class SurveyResult extends Model
     public function project()
     {
         return $this->belongsTo(\App\Models\Project::class);
+    }
+
+    /**
+     * [samplable description]
+     * @return \Illuminate\Database\Eloquent\Relations\MorphTo
+     */
+    public function samplable()
+    {
+        return $this->morphTo();
     }
 }

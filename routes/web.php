@@ -54,4 +54,3 @@ Route::post('settings/save', ['as' => 'settings.save', 'uses' => 'SettingControl
 Route::resource('settings', 'SettingController');
 
 
-Route::resource('sampleDatas', 'SampleDataController');

@@ -8,7 +8,7 @@ window.url="{!! route('projects.surveys.result.save', ['project' => $project->id
             <div class="panel-heading">
                 <div class="panel-title">
                     Information | Validation
-                </div>                  
+                </div>
             </div>
             <div class="panel-body">
                 <div id="checktable">
@@ -30,15 +30,15 @@ window.url="{!! route('projects.surveys.result.save', ['project' => $project->id
                                 <td>{!! $sample->father !!}</td>
                                 <td>{!! $sample->address !!}</td>
                                  @if(count($project->samples) > 1)
-                                <td>                                   
+                                <td>
                                         <select id="sample" class="form-control">
-                                        @foreach($project->samples as $sample)
-                                                <option value="{!! $sample['id'] !!}">{!! $sample['name'] !!}</option>
+                                        @foreach($project->samples as $name => $sample)
+                                                <option value="{!! $sample !!}">{!! $name !!}</option>
                                         @endforeach
                                         </select>
                                 </td>
                                 @else
-                                    <input type="hidden" id="sample" value="{!! $project->samples[0]['id']!!}">
+                                    <input type="hidden" id="sample" value="{!! $project->samples[0]!!}">
                                 @endif
                             </tr>
                         </tbody>
@@ -51,7 +51,7 @@ window.url="{!! route('projects.surveys.result.save', ['project' => $project->id
 @section('script')
 <script type="text/javascript">
 jQuery(document).ready(function($) {
-    
+
 });
 </script>
-@endsection 
+@endsection

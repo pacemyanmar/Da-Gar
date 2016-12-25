@@ -19,7 +19,8 @@
         "telerivet/telerivet-php-client": "^1.1",
         "edvinaskrucas/settings": "^2.0",
         "telerivet-psr/telerivet-php-client": "dev-master",
-        "felixkiss/uniquewith-validator": "2.*"
+        "felixkiss/uniquewith-validator": "2.*",
+        "bluora/laravel-model-json": "^1.4"
     },
     "require-dev": {
         "fzaninotto/faker": "~1.4",

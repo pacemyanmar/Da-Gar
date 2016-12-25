@@ -1,6 +1,6 @@
 {!! Form::open(['route' => ['projects.destroy', $id], 'method' => 'delete']) !!}
 <div class='btn-group'>
-    <a href="{{ route('projects.show', $id) }}" class='btn btn-default btn-xs'>
+    <a href="{{ route('projects.surveys.index', $id) }}" class='btn btn-default btn-xs'>
         <i class="glyphicon glyphicon-eye-open"></i>
     </a>
     <a href="{{ route('projects.edit', $id) }}" class='btn btn-default btn-xs'>

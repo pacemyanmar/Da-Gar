@@ -128,12 +128,12 @@
             @foreach($project->samples as $sample_key => $sample)
             <tr class="sample" style="display: table-row;">
                 <td style="vertical-align: middle">
-                    <p class="toggle" style="display:initial">{!! (isset($sample['name']))?$sample['name']:'' !!}</p>
-                    <input value="{!! (isset($sample['name']))?$sample['name']:'' !!}" class="form-control samplename toggle" type="text">
+                    <p class="toggle" style="display:initial">{!! $sample_key !!}</p>
+                    <input value="{!! $sample_key !!}" class="form-control samplename toggle" type="text">
                 </td>
                 <td style="vertical-align: middle">
-                    <p class="toggle" style="display:initial">{!! (isset($sample['id']))?$sample['id']:'' !!}</p>
-                    <input value="{!! (isset($sample['id']))?$sample['id']:'' !!}" class="form-control sampleid toggle" type="text">
+                    <p class="toggle" style="display:initial">{!! $sample !!}</p>
+                    <input value="{!! $sample !!}" class="form-control sampleid toggle" type="text">
                 </td>
                 <td style="vertical-align: middle">
                     <i onclick="removeItem(this)" class="remove fa fa-trash-o toggle" style="cursor: pointer;font-size: 20px;color: red;"></i>

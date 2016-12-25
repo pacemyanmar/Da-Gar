@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "112567e5b212025cd1884b8e94c6bc2e",
-    "content-hash": "a5cdc7531dff6177986dd424dbcec59e",
+    "hash": "b5d1bfa8ff300a8aefda3ea3c923005a",
+    "content-hash": "9e2d1ab8922435e429651672b4e6c002",
     "packages": [
         {
             "name": "barryvdh/laravel-ide-helper",
@@ -121,6 +121,58 @@
                 }
             ],
             "time": "2016-06-13 19:28:20"
+        },
+        {
+            "name": "bluora/laravel-model-json",
+            "version": "v1.4.8",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/bluora/laravel-model-json.git",
+                "reference": "17544eceb40c1fd59a12b1e5f7e6f1fae86983a2"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/bluora/laravel-model-json/zipball/17544eceb40c1fd59a12b1e5f7e6f1fae86983a2",
+                "reference": "17544eceb40c1fd59a12b1e5f7e6f1fae86983a2",
+                "shasum": ""
+            },
+            "require": {
+                "illuminate/support": "4.*|5.*",
+                "php": ">=5.4.0"
+            },
+            "require-dev": {
+                "codeclimate/php-test-reporter": "dev-master",
+                "illuminate/database": "4.*|5.*",
+                "phpmd/phpmd": "@stable",
+                "phpunit/phpunit": "4.*",
+                "symfony/process": "~2.3"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Bluora\\LaravelModelJson\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Rocco Howard",
+                    "email": "rocco@bluora.com.au"
+                }
+            ],
+            "description": "Provides JSON column support for for Laravel's Eloquent Model.",
+            "keywords": [
+                "eloquent",
+                "illuminate",
+                "json",
+                "laravel",
+                "schema-free",
+                "schemaless"
+            ],
+            "time": "2016-10-26 04:57:08"
         },
         {
             "name": "classpreloader/classpreloader",

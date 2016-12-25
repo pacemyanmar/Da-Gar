@@ -15,7 +15,7 @@ class SurveyResultDataTable extends DataTable
 
     protected $tableBaseColumns;
 
-    protected $surveyType;
+    protected $sampleType;
 
     protected $joinMethod;
     /**
@@ -52,13 +52,13 @@ class SurveyResultDataTable extends DataTable
     }
 
     /**
-     * Survey type setter (voter|location|enumerator)
-     * @param string $surveyType [voter|location|enumerator]
+     * Survey type setter (country|region)
+     * @param string $surveyType [country|region]
      * @return $this ( App\DataTables\SurveyResultDataTable )
      */
-    public function setSurveyType($surveyType)
+    public function setSampleType($sampleType)
     {
-        $this->surveyType = $surveyType;
+        $this->sampleType = $sampleType;
         return $this;
     }
 
@@ -75,31 +75,32 @@ class SurveyResultDataTable extends DataTable
      */
     public function ajax()
     {
-        $orderTable = str_plural($this->surveyType);
+        $orderTable = str_plural($this->project->dblink);
         $orderBy = (isset($this->orderBy)) ? $orderTable . '.' . $this->orderBy : $orderTable . '.id';
         $order = (isset($this->order)) ? $this->order : 'asc';
 
         $table = $this->datatables
             ->eloquent($this->query());
 
-        $project_id = $this->project->id;
-
-        $dblink = $this->surveyType;
-        // get all inputs for a project form by name key index
-        $inputs = $this->project->inputs->pluck('name');
-
-        // make unique array to remove duplicate entry for radio inputs
-        $unique_inputs = array_unique($inputs->all());
-        foreach ($unique_inputs as $input) {
-
-            $table->addColumn($input, function ($model) use ($project_id, $input, $dblink) {
-                return $model->survey_results()->where('project_id', $project_id)->where('samplable_type', $dblink)->first()[$input];
+        $project = $this->project;
+        foreach ($project->sections as $k => $section) {
+            $sectionColumn = 'section' . ($k + 1) . 'status';
+            $table->addColumn($sectionColumn, function ($model) use ($project, $sectionColumn) {
+                $model = $model->results($project->dbname)->where('project_id', $project->id);
+                return $model->first()[$sectionColumn];
             });
         }
 
-        if (empty($this->surveyType)) {
-            $table->addColumn('action', 'projects.sample_datatables_actions');
+        // get all inputs for a project form by name key index
+        $unique_inputs = $project->inputs->pluck('inputid')->unique();
+        foreach ($unique_inputs as $input) {
+            $table->addColumn($input, function ($model) use ($project, $input) {
+                $model = $model->results($project->dbname)->where('project_id', $project->id);
+                return $model->first()[$input];
+            });
         }
+
+        //$table->addColumn('action', 'projects.sample_datatables_actions');
 
         $table->orderColumn($orderBy, DB::raw('LENGTH(' . $orderBy . ')') . " $1");
 
@@ -113,30 +114,26 @@ class SurveyResultDataTable extends DataTable
      */
     public function query()
     {
-        // $this->surveyType = 'voter|location|enumerator'
-        if (!empty($this->surveyType) && class_exists('App\Models\\' . ucfirst($this->surveyType))) {
+        // $this->project->dblink = 'voter|location|enumerator'
+        if (!empty($this->project->dblink) && class_exists('App\Models\\' . ucfirst($this->project->dblink))) {
 
             $input_columns = '';
-
             // get all inputs for a project form by name key index
-            $inputs = $this->project->inputs->pluck('name');
+            $unique_inputs = $this->project->inputs->pluck('inputid')->unique();
 
-            // make unique array to remove duplicate entry for radio inputs
-            $unique_inputs = array_unique($inputs->all());
-
-            $input_columns = implode(',', $unique_inputs);
+            $input_columns = implode(',', $unique_inputs->toArray());
             //$count = sizeof($unique_inputs);
 
             // set dblink model class
-            $class = 'App\Models\\' . ucfirst($this->surveyType);
+            $class = 'App\Models\\' . ucfirst($this->project->dblink);
 
             // create table name
-            $table = str_plural($this->surveyType);
+            $table = str_plural($this->project->dblink);
             $orderBy = (isset($this->orderBy)) ? $table . '.' . $this->orderBy : $table . '.id';
             $order = (isset($this->order)) ? $this->order : 'asc';
 
             // dblink
-            $type = $this->surveyType;
+            $type = $this->project->dblink;
 
             $joinMethod = (isset($this->joinMethod)) ? $this->joinMethod : 'join';
 
@@ -152,13 +149,10 @@ class SurveyResultDataTable extends DataTable
             $project_id = $this->project->id;
             // run query
             $query = $class::query();
-
-            //$query->orderBy(DB::raw('LENGTH(' . $orderBy . ')'), $order);
         } else {
             $query = SurveyResult::query();
             $query->where('project_id', $this->project->id)->with('project');
         }
-        //dd($query->get());
 
         return $this->applyScopes($query);
     }
@@ -173,7 +167,7 @@ class SurveyResultDataTable extends DataTable
         $table = $this->builder()
             ->columns($this->getColumns())
             ->ajax(['type' => 'POST', 'data' => '{"_method":"GET"}']);
-        if (empty($this->surveyType)) {
+        if (empty($this->project->dblink)) {
             $table->addAction(['width' => '80px']);
         }
 
@@ -232,7 +226,7 @@ class SurveyResultDataTable extends DataTable
                         'exportPostPdf',
                     ],
                 ],
-                //'colvis'
+                'colvis',
             ],
         ];
     }

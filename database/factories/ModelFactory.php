@@ -68,8 +68,10 @@ $factory->define(App\User::class, function (Faker\Generator $faker) {
 $factory->define(App\Models\Project::class, function (Faker\Generator $faker) {
     $date = $faker->dateTimeThisMonth($max = 'now');
     $project = $faker->words($nb = 3, $asText = true) . ' Project';
-    $short_project_name = wordwrap($project, 10, ' ');
-    $dbname = uniqid(snake_case($short_project_name) . '_');
+    $short_project_name = substr($project, 0, 10);
+    $unique = uniqid();
+    $short_unique = substr($unique, 0, 5);
+    $dbname = snake_case($short_project_name . '_' . $short_unique);
     return [
         'project' => $project,
         'dbname' => $dbname,
@@ -85,13 +87,8 @@ $factory->define(App\Models\Project::class, function (Faker\Generator $faker) {
             ],
         ],
         'samples' => [
-            [
-                "name" => "Country",
-                "id" => "1"],
-            [
-                "name" => "Region",
-                "id" => "2",
-            ],
+            "Country" => "1",
+            "Region" => "2",
         ],
         'created_at' => $date,
         'updated_at' => $date,

@@ -64,8 +64,17 @@ class ProjectController extends AppBaseController
                 'sectionname' => 'Survey',
             ];
         }
-        $short_project_name = wordwrap($input['project'], 10, ' ');
-        $input['dbname'] = uniqid(snake_case($short_project_name) . '_');
+
+        $samples = $request->only('samples');
+        foreach ($samples['samples'] as $sample) {
+            $key = $sample['name'];
+            $val = $sample['id'];
+            $input['samples'][$key] = $val;
+        }
+        $short_project_name = substr($project, 0, 10);
+        $unique = uniqid();
+        $short_unique = substr($unique, 0, 5);
+        $input['dbname'] = snake_case($short_project_name . '_' . $short_unique);
 
         $project = $this->projectRepository->create($input);
 
@@ -135,11 +144,17 @@ class ProjectController extends AppBaseController
             return redirect(route('projects.index'));
         }
 
-        $input = $request->all();
+        $input = $request->except('samples');
         if (!isset($input['sections'])) {
             $input['sections'][0] = [
                 'sectionname' => 'Survey',
             ];
+        }
+        $samples = $request->only('samples');
+        foreach ($samples['samples'] as $sample) {
+            $key = $sample['name'];
+            $val = $sample['id'];
+            $input['samples'][$key] = $val;
         }
 
         $project = $this->projectRepository->update($input, $id);
@@ -200,10 +215,13 @@ class ProjectController extends AppBaseController
                         Schema::table($project->dbname, function ($table) use ($input, $project, $double_column, $double_status) {
 
                             switch ($input->type) {
-                                case 'number':
                                 case 'radio':
                                 case 'checkbox':
                                     $inputType = 'unsignedSmallInteger';
+                                    break;
+
+                                case 'number':
+                                    $inputType = 'unsignedInteger';
                                     break;
 
                                 case 'textarea':
@@ -262,10 +280,13 @@ class ProjectController extends AppBaseController
                         // if column has not been created, creat now
                         Schema::table($project->dbname, function ($table) use ($input, $project, $double_column, $double_status) {
                             switch ($input->type) {
-                                case 'number':
                                 case 'radio':
                                 case 'checkbox':
                                     $inputType = 'unsignedSmallInteger';
+                                    break;
+
+                                case 'number':
+                                    $inputType = 'unsignedInteger';
                                     break;
 
                                 case 'textarea':
@@ -305,20 +326,12 @@ class ProjectController extends AppBaseController
             Schema::create($project->dbname, function (Blueprint $table) use ($project, $fields) {
 
                 $table->increments('id');
-                $table->string('form_id', 20)->index()->nullable(); // form code
-                $table->string('location_id', 20)->index()->nullable(); // location code
-                $table->string('person_id', 20)->index()->nullable(); // observer code
                 $table->string('sample', 20)->index()->nullable(); // sample
-                $table->unsignedInteger('village')->index()->nullable(); // village
-                $table->unsignedInteger('village_tract')->index()->nullable(); // village tract
-                $table->unsignedMediumInteger('township')->index()->nullable(); // township
-                $table->unsignedMediumInteger('district')->index()->nullable(); // district
-                $table->unsignedSmallInteger('state')->index()->nullable(); // state
-                $table->unsignedSmallInteger('country')->index()->nullable(); // country
-                $table->unsignedSmallInteger('world_region')->index()->nullable(); // world region
-                $table->string('lat_long', 50)->index()->nullable(); // latitude, longitude
-                $table->integer('user_id')->index()->unsigned();
-                $table->integer('update_user_id')->index()->unsigned()->nullable();
+                $table->string('samplable_id')->index();
+                $table->string('samplable_type')->index();
+                $table->unsignedInteger('project_id')->index();
+                $table->unsignedInteger('user_id')->index();
+                $table->unsignedInteger('update_user_id')->index()->nullable();
                 $table->timestamps();
                 foreach ($project->sections as $key => $section) {
                     $section_num = $key + 1;
@@ -329,10 +342,13 @@ class ProjectController extends AppBaseController
                     $double_column = $input->inputid . '_d';
                     $double_status = $input->inputid . '_ds';
                     switch ($input->type) {
-                        case 'number':
                         case 'radio':
                         case 'checkbox':
                             $inputType = 'unsignedSmallInteger';
+                            break;
+
+                        case 'number':
+                            $inputType = 'unsignedInteger';
                             break;
 
                         case 'textarea':
