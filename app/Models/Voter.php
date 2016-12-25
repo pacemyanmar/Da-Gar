@@ -51,9 +51,13 @@ class Voter extends Model
 
     ];
 
-    public function results($table)
+    public function results($table = null)
     {
-        return $this->morphMany((new SurveyResult)->setTable($table), 'samplable');
+        $survey = new SurveyResult;
+        if ($table) {
+            $survey->setTable($table);
+        }
+        return $this->morphMany($survey, 'samplable');
     }
 
 }

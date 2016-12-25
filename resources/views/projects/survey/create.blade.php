@@ -23,7 +23,7 @@
         @include('flash::message')
 
         <div class="clearfix"></div>
-        @include('projects.'.$project->dblink.'.'.$project->type.'.info_table')
+        @include('projects.survey.'.$project->type.'.info_table')
         <div id="survey-form">
         @foreach($project->sections as $section_key => $section)
         @php
@@ -37,7 +37,9 @@
                 </div>
             </div>
             <div class="panel-body">
+
                 @include('projects.show_fields')
+
                 <h1 class="pull-right">
                    <a class="btn btn-sm btn-info pull-right save" data-id="{!! $sectionClass !!}" style="display:inline;margin-top: -10px;margin-bottom: 5" href="#"> Save this section</a>
                 </h1>

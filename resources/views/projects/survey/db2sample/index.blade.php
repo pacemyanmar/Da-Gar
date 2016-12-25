@@ -12,9 +12,8 @@
         <div class="clearfix"></div>
         <div class="box box-primary">
             <div class="box-body">
-                    @include('projects.'.$project->dblink.'.'.$project->type.'.table')
+                    @include('projects.survey.'.$project->type.'.table')
             </div>
         </div>
     </div>
 @endsection
-

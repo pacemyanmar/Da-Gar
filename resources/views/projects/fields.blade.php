@@ -10,8 +10,8 @@
  ];
  $type = [
     '' => 'None',
-    'sample2db' => 'Sample to Database',
-    'db2sample' => 'Database to sample',
+    'sample2db' => 'Sample to Database (inner join)',
+    'db2sample' => 'Database to sample (left join)',
  ]
 
 @endphp

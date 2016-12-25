@@ -68,6 +68,7 @@ class ProjectResultsController extends Controller
                     'name' => $column,
                     'data' => $column,
                     'title' => ucfirst($name),
+                    'orderable' => false,
                 ];
             }
         } else {
@@ -79,6 +80,11 @@ class ProjectResultsController extends Controller
                 ];
             }
         }
+
+        $baseColumns = $columns;
+
+        $table->setBaseColumns($baseColumns);
+
         foreach ($project->sections as $k => $section) {
             $sectionColumn = 'section' . ($k + 1) . 'status';
             $columns[$sectionColumn] = [
@@ -88,9 +94,6 @@ class ProjectResultsController extends Controller
             ];
         }
 
-        $baseColumns = $columns;
-
-        $table->setBaseColumns($baseColumns);
         $input_columns = [];
         foreach ($project->inputs as $k => $input) {
             $column = $input->inputid;
@@ -105,7 +108,7 @@ class ProjectResultsController extends Controller
         $columns = array_merge($columns, $input_columns);
 
         $table->setColumns($columns);
-        return $table->render('projects.' . $project->dblink . '.' . $project->type . '.index', compact('project'));
+        return $table->render('projects.survey.' . $project->type . '.index', compact('project'));
     }
 
     /**
@@ -149,7 +152,7 @@ class ProjectResultsController extends Controller
 
         $questions = $project->questions()->onlyPublished()->get();
 
-        return view('projects.' . $project->dblink . '.create')
+        return view('projects.survey.create')
             ->with('project', $project)
             ->with('questions', $questions)
             ->with('sample', $sample)

@@ -19,7 +19,9 @@
                 <td class="col-xs-11">
                     <div class="row"><label>{!! $question->question !!}</label></div>
                     <div class="row">
+
                         @include('questions.ans_fields')
+
                     </div>
                 </td>
             </tr>

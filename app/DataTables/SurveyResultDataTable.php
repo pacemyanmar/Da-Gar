@@ -81,7 +81,7 @@ class SurveyResultDataTable extends DataTable
 
         $table = $this->datatables
             ->eloquent($this->query());
-
+        return $table->make(true);
         $project = $this->project;
         foreach ($project->sections as $k => $section) {
             $sectionColumn = 'section' . ($k + 1) . 'status';
@@ -117,13 +117,6 @@ class SurveyResultDataTable extends DataTable
         // $this->project->dblink = 'voter|location|enumerator'
         if (!empty($this->project->dblink) && class_exists('App\Models\\' . ucfirst($this->project->dblink))) {
 
-            $input_columns = '';
-            // get all inputs for a project form by name key index
-            $unique_inputs = $this->project->inputs->pluck('inputid')->unique();
-
-            $input_columns = implode(',', $unique_inputs->toArray());
-            //$count = sizeof($unique_inputs);
-
             // set dblink model class
             $class = 'App\Models\\' . ucfirst($this->project->dblink);
 
@@ -146,9 +139,33 @@ class SurveyResultDataTable extends DataTable
             // concat all columns with comma
             $dbLinkTableColumns = implode(', ', $tableColumnsArray);
 
-            $project_id = $this->project->id;
+            $project = $this->project;
+            $childTable = $project->dbname;
+            $sectionColumns = [];
+            foreach ($project->sections as $k => $section) {
+                $sectionColumns[] = 'section' . ($k + 1) . 'status';
+            }
+
+            $input_columns = '';
+            // get all inputs for a project form by name key index
+            $unique_inputs = $this->project->inputs->pluck('inputid')->unique();
+
+            $unique_inputs = $unique_inputs->toArray();
+            $columnsFromResults = array_merge($sectionColumns, $unique_inputs);
+            // modify column name to use in sql query TABLE.COLUMN format
+            array_walk($columnsFromResults, function (&$column, $index) use ($childTable) {
+                $column = $childTable . '.' . $column;
+            });
+
+            $input_columns = implode(',', $columnsFromResults);
+            //$count = sizeof($unique_inputs);
             // run query
-            $query = $class::query();
+            $query = $class::query()
+                ->select(DB::raw($dbLinkTableColumns), DB::raw($input_columns));
+            $query->{$joinMethod}($childTable, function ($join) use ($table, $class, $childTable) {
+                $join->on($table . '.id', '=', $childTable . '.samplable_id')
+                    ->where($childTable . '.samplable_type', '=', $class);
+            });
         } else {
             $query = SurveyResult::query();
             $query->where('project_id', $this->project->id)->with('project');
@@ -209,6 +226,7 @@ class SurveyResultDataTable extends DataTable
      */
     protected function getBuilderParameters()
     {
+        $columns = "1, 2, 3, 4, 5, 6";
         return [
             'dom' => 'Brtip',
             //'sServerMethod' => 'POST',
@@ -228,6 +246,18 @@ class SurveyResultDataTable extends DataTable
                 ],
                 'colvis',
             ],
+            'initComplete' => "function () {
+                            this.api().columns([$columns]).every(function () {
+                                var column = this;
+                                var input = document.createElement(\"input\");
+                                input.className = 'form-control input-sm';
+                                input.style.width = '80px';
+                                $(input).appendTo($(column.header()))
+                                .on('change', function () {
+                                    column.search($(this).val(), false, false, true).draw();
+                                });
+                            });
+                        }",
         ];
     }
 }
