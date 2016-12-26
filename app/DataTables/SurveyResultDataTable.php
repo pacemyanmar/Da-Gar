@@ -81,26 +81,9 @@ class SurveyResultDataTable extends DataTable
 
         $table = $this->datatables
             ->eloquent($this->query());
-        return $table->make(true);
-        $project = $this->project;
-        foreach ($project->sections as $k => $section) {
-            $sectionColumn = 'section' . ($k + 1) . 'status';
-            $table->addColumn($sectionColumn, function ($model) use ($project, $sectionColumn) {
-                $model = $model->results($project->dbname)->where('project_id', $project->id);
-                return $model->first()[$sectionColumn];
-            });
-        }
+        $table->addColumn('project_id', $this->project->id);
 
-        // get all inputs for a project form by name key index
-        $unique_inputs = $project->inputs->pluck('inputid')->unique();
-        foreach ($unique_inputs as $input) {
-            $table->addColumn($input, function ($model) use ($project, $input) {
-                $model = $model->results($project->dbname)->where('project_id', $project->id);
-                return $model->first()[$input];
-            });
-        }
-
-        //$table->addColumn('action', 'projects.sample_datatables_actions');
+        $table->addColumn('action', 'projects.sample_datatables_actions');
 
         $table->orderColumn($orderBy, DB::raw('LENGTH(' . $orderBy . ')') . " $1");
 
@@ -184,9 +167,8 @@ class SurveyResultDataTable extends DataTable
         $table = $this->builder()
             ->columns($this->getColumns())
             ->ajax(['type' => 'POST', 'data' => '{"_method":"GET"}']);
-        if (empty($this->project->dblink)) {
-            $table->addAction(['width' => '80px']);
-        }
+
+        $table->addAction(['width' => '80px']);
 
         return $table->parameters($this->getBuilderParameters());
     }

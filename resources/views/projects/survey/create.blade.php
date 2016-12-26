@@ -1,5 +1,9 @@
 @extends('layouts.app')
-
+@section('before-head-end')
+<script type="text/javascript">
+window.url="{!! route('projects.surveys.save', ['project' => $project->id, 'sample' => $sample->id]) !!}"
+</script>
+@endsection
 @push('after-body-start')
 <a class="btn btn-primary pull-right btn-float btn-float-up save" style="display:inline;margin-right:15px;" href="#" data-id="survey-form"> Save All</a>
            <a class="pull-right btn-float btn-float-bottom btn-float-to-up" style="display:inline;font-size: 40px;" href="#"><i class="fa fa-arrow-circle-up"></i></a>
@@ -23,7 +27,9 @@
         @include('flash::message')
 
         <div class="clearfix"></div>
-        @include('projects.survey.'.$project->type.'.info_table')
+
+        @include('projects.survey.info_table')
+
         <div id="survey-form">
         @foreach($project->sections as $section_key => $section)
         @php
