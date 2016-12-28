@@ -15,11 +15,11 @@ class CreateLocationsTable extends Migration
     {
         Schema::create('locations', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('idcode')->index();
+            $table->string('idcode')->index()->nullable();
             $table->string('name')->index();
             $table->string('type')->index();
             $table->string('lat_long')->index();
-            $table->integer('parent_id')->index();
+            $table->integer('parent_id')->index()->nullable();
         });
     }
 
