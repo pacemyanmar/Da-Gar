@@ -22,3 +22,7 @@
     <a href="{!! route('locations.index') !!}"><i class="fa fa-edit"></i><span>Locations</span></a>
 </li>
 
+<li class="{{ Request::is('enumerators*') ? 'active' : '' }}">
+    <a href="{!! route('enumerators.index') !!}"><i class="fa fa-edit"></i><span>Enumerators</span></a>
+</li>
+

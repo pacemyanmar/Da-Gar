@@ -55,3 +55,5 @@ Route::resource('settings', 'SettingController');
 
 
 Route::resource('locations', 'LocationController');
+
+Route::resource('enumerators', 'EnumeratorController');
