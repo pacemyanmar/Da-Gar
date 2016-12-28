@@ -71,12 +71,20 @@ $(document).ready(function() {
         event.preventDefault();
 
         var id = $(this).data('id');
+
         $('#'+id).find(":input").filter(function(){ return !this.value; }).attr("disabled", "disabled");
+        var info_data = $('.info').serializeArray();
+
         var section_data = $('#'+id+' :input').serializeArray();
+
         section_data.push({name: 'samplable_type', value: $('#sample').val()});
-        sendAjax(url,section_data);
+
+        var ajaxData = $.merge(info_data, section_data);
+
+        sendAjax(url,ajaxData);
+
         $('#'+id).find(":input").removeAttr("disabled");
-        //console.log(section_data);
+
     });
 });
 </script>
