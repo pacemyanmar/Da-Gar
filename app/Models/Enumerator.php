@@ -13,8 +13,6 @@ class Enumerator extends Model
 {
 
     public $table = 'enumerators';
-    
-
 
     public $fillable = [
         'idcode',
@@ -22,7 +20,12 @@ class Enumerator extends Model
         'gender',
         'nrc_id',
         'dob',
-        'address'
+        'address',
+        'village',
+        'village_tract',
+        'township',
+        'district',
+        'state',
     ];
 
     /**
@@ -35,7 +38,7 @@ class Enumerator extends Model
         'name' => 'string',
         'gender' => 'string',
         'nrc_id' => 'string',
-        'address' => 'string'
+        'address' => 'string',
     ];
 
     /**
@@ -44,8 +47,37 @@ class Enumerator extends Model
      * @var array
      */
     public static $rules = [
-        
+
     ];
 
-    
+    public function village()
+    {
+        return $this->belongsTo(Location::class, 'village');
+    }
+
+    public function village_tract()
+    {
+        return $this->belongsTo(Location::class, 'village_tract');
+    }
+
+    public function township()
+    {
+        return $this->belongsTo(Location::class, 'township');
+    }
+
+    public function district()
+    {
+        return $this->belongsTo(Location::class, 'district');
+    }
+
+    public function state()
+    {
+        return $this->belongsTo(Location::class, 'state');
+    }
+
+    public function results()
+    {
+        return $this->morphMany(Sample::class, 'samplable');
+    }
+
 }
