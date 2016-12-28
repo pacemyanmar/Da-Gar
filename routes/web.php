@@ -53,6 +53,7 @@ Route::post('settings/save', ['as' => 'settings.save', 'uses' => 'SettingControl
 
 Route::resource('settings', 'SettingController');
 
+Route::post('sample/import', ['as' => 'sample.import', 'uses' => 'EnumeratorController@import']);
 
 Route::resource('locations', 'LocationController');
 
