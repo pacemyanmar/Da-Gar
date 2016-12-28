@@ -15,12 +15,19 @@ class CreateEnumeratorsTable extends Migration
     {
         Schema::create('enumerators', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('idcode')->index();
+            $table->string('idcode')->index()->nullable();
+            $table->string('type')->default('enumerator');
             $table->string('name')->index();
-            $table->string('gender')->index();
-            $table->string('nrc_id')->index();
-            $table->timestamp('dob')->index();
-            $table->text('address');
+            $table->string('gender')->index()->nullable();
+            $table->string('nrc_id')->index()->nullable();
+            $table->datetime('dob')->index()->nullable();
+            $table->text('address')->nullable();
+            $table->integer('village')->index()->nullable();
+            $table->integer('village_tract')->index()->nullable();
+            $table->integer('township')->index()->nullable();
+            $table->integer('district')->index()->nullable();
+            $table->integer('state')->index()->nullable();
+            $table->timestamps();
         });
     }
 
