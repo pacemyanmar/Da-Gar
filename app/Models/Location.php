@@ -11,17 +11,16 @@ use Eloquent as Model;
  */
 class Location extends Model
 {
-
     public $table = 'locations';
-    
 
+    public $timestamps = false;
 
     public $fillable = [
         'idcode',
         'name',
         'type',
         'lat_long',
-        'parent_id'
+        'parent_id',
     ];
 
     /**
@@ -34,7 +33,7 @@ class Location extends Model
         'name' => 'string',
         'type' => 'string',
         'lat_long' => 'string',
-        'parent_id' => 'integer'
+        'parent_id' => 'integer',
     ];
 
     /**
@@ -43,8 +42,37 @@ class Location extends Model
      * @var array
      */
     public static $rules = [
-        
+
     ];
 
-    
+    public function enuVillage()
+    {
+        return $this->hasMany(Enumerator::class, 'village');
+    }
+
+    public function enuVillageTract()
+    {
+        return $this->hasMany(Enumerator::class, 'village_tract');
+    }
+
+    public function enuTownship()
+    {
+        return $this->hasMany(Enumerator::class, 'township');
+    }
+
+    public function enuDistrict()
+    {
+        return $this->hasMany(Enumerator::class, 'district');
+    }
+
+    public function enuState()
+    {
+        return $this->hasMany(Enumerator::class, 'state');
+    }
+
+    public function results()
+    {
+        return $this->morphMany(Sample::class, 'samplable');
+    }
+
 }
