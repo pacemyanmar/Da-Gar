@@ -17,7 +17,7 @@
     'csrfToken' => csrf_token(),
 ]); ?>
     </script>
-    @yield('before-head-end')
+    @stack('before-head-end')
 </head>
 
 <body class="skin-blue sidebar-mini sidebar-collapse">
