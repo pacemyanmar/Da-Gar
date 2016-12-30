@@ -3,61 +3,84 @@
  *  db value to name array
  */
  $dblink = [
-    '' => 'None',
-    'voter' => 'Voter List',
-    'location' => 'Location',
     'enumerator' => 'Enumerator',
+    'voter' => 'Voter List',
  ];
  $type = [
-    '' => 'None',
-    'sample2db' => 'Sample to Database (inner join)',
     'db2sample' => 'Database to sample (left join)',
+    'sample2db' => 'Sample to Database (inner join)',
  ]
 
 @endphp
 <!-- Name Field -->
-<div class="form-group col-sm-6">
+<div class="form-group col-sm-12 has-warning">
     {!! Form::label('project', 'Name:', ['class' => 'toggle']) !!}
     @if(isset($project))
     <h3 class="toggle" style="display:initial">{!! $project->project !!}</h3>
     @endif
-    {!! Form::text('project', null, ['class' => 'form-control toggle']) !!}
+    {!! Form::text('project', null, ['class' => 'form-control toggle', 'placeholder' => 'Choose carefully.']) !!}
 </div>
 
-
+@if(!isset($project) || (isset($project) && $project->status == 'new'))
 <!-- DB Link Field -->
-<div class="form-group col-sm-6">
-    {!! Form::label('dblink', 'Related database name: ') !!}
-    @if(isset($project))
-    <p class="toggle" style="display:initial">{!! $dblink["$project->dblink"] !!}</p>
-    @endif
-    {!! Form::select('dblink', $dblink,null, ['class' => 'form-control toggle']) !!}
+<div class="form-group col-sm-6 has-error">
+    {!! Form::label('dblink', 'Database name to link: ') !!}
+    {!! Form::select('dblink', $dblink,($project)?$project->dblink:null, ['class' => 'form-control toggle']) !!}
+    <span class="text-red">* Red fields cannot change after form built.</span>
 </div>
 
 <!-- Type Field -->
-<div class="form-group col-sm-3">
-    {!! Form::label('type', 'Related database type: ') !!}
-    @if(isset($project))
-    <br />
-    <p class="toggle" style="display:initial">{!! $type["$project->type"] !!}</p>
-    @endif
-    {!! Form::select('type', $type,null, ['class' => 'form-control toggle']) !!}
+<div class="col-sm-6"'>
+<div class="row">
+<div class="form-group col-sm-6 has-error">
+    {!! Form::label('type', 'Linked database type: ') !!}
+    {!! Form::select('type', $type,($project)?$project->type:null, ['class' => 'form-control toggle']) !!}
 </div>
 <!-- Type Field -->
-<div class="form-group col-sm-3">
-    {!! Form::label('copies', 'Copies per observer or location: ') !!}
-    @if(isset($project))
-    <br />
-    <p class="toggle" style="display:initial">{!! $project->copies !!}</p>
-    @endif
+<div class="form-group col-sm-6 has-error">
+    {!! Form::label('copies', 'Copies of form for a sample: ') !!}
     {!! Form::select('copies', ['1' => 1,'2' => 2,'3' => 3,'4' => 4,'5' => 5,'6' => 6,'7' => 7,'8' => 8,'9' => 9,'10' => 10,
-    '11' => 11,'12' => 12,'13' => 13,'14' => 14,'15' => 15,'16' => 16,'17' => 17,'18' => 18,'19' => 19,'20' => 20],null, ['class' => 'form-control toggle']) !!}
+    '11' => 11,'12' => 12,'13' => 13,'14' => 14,'15' => 15,'16' => 16,'17' => 17,'18' => 18,'19' => 19,'20' => 20],($project)?$project->copies:null, ['class' => 'form-control toggle']) !!}
 </div>
-
+</div>
+</div>
+@endif
 <!-- Type Field -->
-<div class="form-group col-sm-6">
-    {!! Form::label('index_columns', 'Columns to show in list: ',['class' => 'toggle']) !!}
+<div class="form-group col-sm-12">
+    {!! Form::label('index_columns', 'Columns to show in list (Choose appropriate columns): ',['class' => 'toggle']) !!}
     <table class="table toggle">
+    <tr>
+            <td>
+                {!! Form::checkbox("index_columns[idcode]", 'ID Code', null, ['class' => 'magic-checkbox ', 'id' => 'idcode']) !!}
+                <label class="normal-text" for="idcode">ID Code
+                </label>
+            </td>
+            <td>
+                {!! Form::checkbox("index_columns[form_id]", 'Form No.', null, ['class' => 'magic-checkbox ', 'id' => 'form_id']) !!}
+                <label class="normal-text" for="form_id">Form ID
+                </label>
+            </td>
+            <td>
+                {!! Form::checkbox("index_columns[user_id]", 'user', null, ['class' => 'magic-checkbox ', 'id' => 'user']) !!}
+                <label class="normal-text" for="user">Data Clerk
+                </label>
+            </td>
+            <td>
+                {!! Form::checkbox("index_columns[name]", 'Observer', null, ['class' => 'magic-checkbox ', 'id' => 'observer']) !!}
+                <label class="normal-text" for="observer">Observer
+                </label>
+            </td>
+            <td>
+                {!! Form::checkbox("index_columns[nrc_id]", 'NRC ID', null, ['class' => 'magic-checkbox ', 'id' => 'nrc_id']) !!}
+                <label class="normal-text" for="nrc_id">NRC ID
+                </label>
+            </td>
+            <td>
+                {!! Form::checkbox("index_columns[mobile]", 'Phone', null, ['class' => 'magic-checkbox ', 'id' => 'phone']) !!}
+                <label class="normal-text" for="phone">Phone
+                </label>
+            </td>
+        </tr>
         <tr>
             <td>
                 {!! Form::checkbox("index_columns[state]", 'State', null, ['class' => 'magic-checkbox ', 'id' => 'state']) !!}
@@ -82,28 +105,6 @@
             <td>
                 {!! Form::checkbox("index_columns[village]", 'Village', null, ['class' => 'magic-checkbox ', 'id' => 'village']) !!}
                 <label class="normal-text" for="village">Village
-                </label>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                {!! Form::checkbox("index_columns[observer]", 'Observer', null, ['class' => 'magic-checkbox ', 'id' => 'observer']) !!}
-                <label class="normal-text" for="observer">Observer
-                </label>
-            </td>
-            <td>
-                {!! Form::checkbox("index_columns[nrc_id]", 'NRC ID', null, ['class' => 'magic-checkbox ', 'id' => 'nrc_id']) !!}
-                <label class="normal-text" for="nrc_id">NRC ID
-                </label>
-            </td>
-            <td>
-                {!! Form::checkbox("index_columns[phone]", 'Phone', null, ['class' => 'magic-checkbox ', 'id' => 'phone']) !!}
-                <label class="normal-text" for="phone">Phone
-                </label>
-            </td>
-            <td>
-                {!! Form::checkbox("index_columns[address]", 'Address', null, ['class' => 'magic-checkbox ', 'id' => 'address']) !!}
-                <label class="normal-text" for="address">Address
                 </label>
             </td>
         </tr>

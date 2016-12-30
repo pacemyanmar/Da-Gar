@@ -75,7 +75,7 @@ $factory->define(App\Models\Project::class, function (Faker\Generator $faker) {
     return [
         'project' => $project,
         'dbname' => $dbname,
-        'dblink' => $faker->randomElement(['voter', 'location', 'enumerator']),
+        'dblink' => $faker->randomElement(['voter', 'enumerator']),
         'type' => $faker->randomElement(['sample2db', 'db2sample']),
         'sections' => [
             [

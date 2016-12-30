@@ -6,8 +6,8 @@ use App\DataTables\SurveyResultDataTable;
 use App\Models\SurveyResult;
 use App\Repositories\ProjectRepository;
 use App\Repositories\QuestionRepository;
+use App\Repositories\SampleRepository;
 use App\Repositories\SurveyInputRepository;
-use App\Repositories\VoterRepository;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Laracasts\Flash\Flash;
@@ -19,19 +19,19 @@ class ProjectResultsController extends Controller
 
     private $questionRepository;
 
-    private $voterRepository;
-
     private $surveyResultModel;
 
     private $surveyInputRepo;
 
-    public function __construct(ProjectRepository $projectRepo, VoterRepository $voterRepo, QuestionRepository $questionRepo, SurveyInputRepository $surveyInputRepo)
+    private $sampleRepository;
+
+    public function __construct(ProjectRepository $projectRepo, QuestionRepository $questionRepo, SurveyInputRepository $surveyInputRepo, SampleRepository $sampleRepo)
     {
         $this->middleware('auth');
         $this->projectRepository = $projectRepo;
         $this->questionRepository = $questionRepo;
-        $this->voterRepository = $voterRepo;
         $this->surveyInputRepo = $surveyInputRepo;
+        $this->sampleRepository = $sampleRepo;
     }
 
     public function index($project_id, $samplable = null, SurveyResultDataTable $resultDataTable = null)
@@ -60,40 +60,81 @@ class ProjectResultsController extends Controller
         }
 
         $columns = [
-            'id' => ['name' => 'id', 'data' => 'id', 'title' => 'ID'],
         ];
+
         if ($project->index_columns) {
             foreach ($project->index_columns as $column => $name) {
-                $columns[$column] = [
-                    'name' => $column,
-                    'data' => $column,
-                    'title' => ucfirst($name),
-                    'orderable' => false,
-                ];
+                switch ($column) {
+                    case 'user_id':
+                        $columns[$column] = [
+                            'name' => 'user.name',
+                            'data' => 'username',
+                            'title' => ucfirst($name),
+                            'orderable' => false,
+                            'defaultContent' => 'N/A',
+                        ];
+                        break;
+                    case 'name':
+                        $columns[$column] = [
+                            'name' => 'sample_datas.name',
+                            'data' => 'name',
+                            'title' => ucfirst($name),
+                            'orderable' => false,
+                            'defaultContent' => 'N/A',
+                        ];
+                        break;
+
+                    default:
+                        $columns[$column] = [
+                            'name' => $column,
+                            'data' => $column,
+                            'title' => ucfirst($name),
+                            'orderable' => false,
+                        ];
+                        break;
+                }
+
             }
         } else {
-            if ($project->dblink == 'voter') {
-                $columns = [
-                    'id' => ['name' => 'id', 'data' => 'id', 'title' => 'Voter ID'],
-                    'name' => ['name' => 'name', 'data' => 'name', 'title' => 'Name'],
-                    'nrc_id' => ['name' => 'nrc_id', 'data' => 'nrc_id', 'title' => 'NRC ID'],
-                ];
+            switch ($project->dblink) {
+                case 'voter':
+                    $columns = [
+                        'idcode' => ['name' => 'idcode', 'data' => 'idcode', 'title' => 'Voter ID'],
+                        'name' => ['name' => 'name', 'data' => 'name', 'title' => 'Name'],
+                        'nrc_id' => ['name' => 'nrc_id', 'data' => 'nrc_id', 'title' => 'NRC ID'],
+                    ];
+                    break;
+
+                case 'enumerator':
+                    $columns = [
+                        'idcode' => ['name' => 'idcode', 'data' => 'idcode', 'title' => 'Code'],
+                        'form_id' => ['name' => 'form_id', 'data' => 'form_id', 'title' => 'Form No.'],
+                        'name' => ['name' => 'name', 'data' => 'name', 'title' => 'Name'],
+                        'nrc_id' => ['name' => 'nrc_id', 'data' => 'nrc_id', 'title' => 'NRC ID'],
+                    ];
+
+                default:
+                    $columns = [
+                        'idcode' => ['name' => 'idcode', 'data' => 'idcode', 'title' => 'Code'],
+                        'form_id' => ['name' => 'form_id', 'data' => 'form_id', 'title' => 'Form No.'],
+                    ];
+                    break;
             }
         }
 
         $baseColumns = $columns;
 
         $table->setBaseColumns($baseColumns);
+        $section_columns = [];
 
         foreach ($project->sections as $k => $section) {
             $sectionColumn = 'section' . ($k + 1) . 'status';
-            $columns[$sectionColumn] = [
+            $section_columns[$sectionColumn] = [
                 'name' => $sectionColumn,
                 'data' => $sectionColumn,
                 'title' => ucfirst($section['sectionname']),
             ];
         }
-
         $input_columns = [];
         foreach ($project->inputs as $k => $input) {
             $column = $input->inputid;
@@ -104,8 +145,10 @@ class ProjectResultsController extends Controller
 
         }
 
-        ksort($input_columns, SORT_NATURAL);
-        $columns = array_merge($columns, $input_columns);
+        if ($project->status != 'new') {
+            ksort($input_columns, SORT_NATURAL);
+            $columns = array_merge($columns, $section_columns, $input_columns);
+        }
 
         $table->setColumns($columns);
         return $table->render('projects.survey.' . $project->type . '.index', compact('project'));
@@ -115,10 +158,10 @@ class ProjectResultsController extends Controller
      * [create results for project]
      * @param  integer $project_id [current project id from route parameter]
      * @param  integer|string $samplable  [sample id from route parameter]
-     * @param  string $type       [sample type]
+     * @param  string $form_id      [sample form id]
      * @return Illuminate\View\View         [view for result creation]
      */
-    public function create($project_id, $samplable, $type = '')
+    public function create($project_id, $samplable, $form_id = '', $type = '')
     {
         $project = $this->projectRepository->findWithoutFail($project_id);
 
@@ -128,35 +171,31 @@ class ProjectResultsController extends Controller
             return redirect(route('projects.index'));
         }
 
-        $dblink = strtolower($project->dblink);
-
         // find out which repository to use based on $dblink
         // voter | location | enumerator
         $dblink = strtolower($project->dblink);
-        $repository = $dblink . 'Repository';
 
-        // check dblink repository exists or defined
-        if (property_exists($this, $repository)) {
-            $sample = $this->$repository->findWithoutFail($samplable);
-        } else {
-            // if no repository exists, $sample should be empty array
-            $sample = [];
-        }
+        $sample = $this->sampleRepository->findWithoutFail($samplable);
 
-        $results = $sample->results($project->dbname)
-            ->where('project_id', $project->id);
-        if (!empty($type) && in_array($type, array_values($project->samples))) {
-            $results = $results->where('sample', $type);
+        if (empty($sample)) {
+            Flash::error("No sample database found.");
+            return redirect(route('projects.index'));
         }
-        $results = $results->first();
+        $dbname = $project->dbname;
+        $result = $sample->resultWithTable($dbname)->first();
 
         $questions = $project->questions()->onlyPublished()->get();
 
-        return view('projects.survey.create')
+        $view = view('projects.survey.create')
             ->with('project', $project)
             ->with('questions', $questions)
-            ->with('sample', $sample)
-            ->with('results', $results);
+            ->with('sample', $sample);
+
+        if (!empty($result)) {
+            $view->with('results', $result);
+        }
+
+        return $view;
     }
 
     /**
@@ -176,15 +215,7 @@ class ProjectResultsController extends Controller
         // find out which repository to use based on $dblink
         // voter | location | enumerator
         $dblink = strtolower($project->dblink);
-        $repository = $dblink . 'Repository';
-
-        // check dblink repository exists or defined
-        if (property_exists($this, $repository)) {
-            $sample = $this->$repository->findWithoutFail($samplable);
-        } else {
-            // if no repository exists, $sample should be empty array
-            $sample = [];
-        }
+        $sample = $this->sampleRepository->findWithoutFail($samplable);
 
         $surveyResult = new SurveyResult();
 
@@ -201,17 +232,21 @@ class ProjectResultsController extends Controller
         }
 
         // sample (country|region|1|2)
-        $results['sample'] = (!empty($request->only('samplable_type')['samplable_type'])) ? $request->only('samplable_type')['samplable_type'] : '';
+        //$results['sample'] = (!empty($request->only('samplable_type')['samplable_type'])) ? $request->only('samplable_type')['samplable_type'] : '';
 
-        $results['user_id'] = Auth::user()->id;
-        $results['project_id'] = $project->id;
+        $auth_user = Auth::user()->id;
+        //$results['project_id'] = $project->id;
 
-        $old_result = $sample->results($project->dbname)
-            ->where('project_id', $project->id);
-
-        if (!empty($type) && in_array($type, array_values($project->samples))) {
-            $old_result = $old_result->where('sample', $type);
+        if (!empty($sample->user_id) && $sample->user_id != $auth_user) {
+            $sample->update_user_id = $auth_user;
+        } else {
+            $sample->user_id = $auth_user;
         }
+
+        $results['user_id'] = $auth_user;
+
+        $old_result = $sample->resultWithTable($project->dbname);
+
         $old_result = $old_result->first();
 
         if (!empty($old_result)) {
@@ -222,8 +257,9 @@ class ProjectResultsController extends Controller
         } else {
             $surveyResult->fill($results);
 
-            $result = $sample->results($project->dbname)->save($surveyResult);
+            $result = $sample->resultWithTable($project->dbname)->save($surveyResult);
         }
+        $sample->save(); // update Sample::class
 
         //$qnumSort = array_map($getQuestion, array_keys($results));
         return json_encode(['status' => 'success', 'message' => 'Saved!', 'data' => $result]);

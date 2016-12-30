@@ -2,9 +2,6 @@
     <a href="{!! route('projects.index') !!}"><i class="fa fa-edit"></i><span>Projects</span></a>
 </li>
 
-<li class="{{ Request::is('voters*') ? 'active' : '' }}">
-    <a href="{!! route('voters.index') !!}"><i class="fa fa-edit"></i><span>Voters</span></a>
-</li>
 
 
 
@@ -16,13 +13,7 @@
 <li class="{{ Request::is('settings*') ? 'active' : '' }}">
     <a href="{!! route('settings.index') !!}"><i class="fa fa-edit"></i><span>Settings</span></a>
 </li>
-
-
-<li class="{{ Request::is('locations*') ? 'active' : '' }}">
-    <a href="{!! route('locations.index') !!}"><i class="fa fa-edit"></i><span>Locations</span></a>
-</li>
-
-<li class="{{ Request::is('enumerators*') ? 'active' : '' }}">
-    <a href="{!! route('enumerators.index') !!}"><i class="fa fa-edit"></i><span>Enumerators</span></a>
+<li class="{{ Request::is('sampleDatas*') ? 'active' : '' }}">
+    <a href="{!! route('sampleDatas.index') !!}"><i class="fa fa-edit"></i><span>SampleDatas</span></a>
 </li>
 

@@ -326,10 +326,8 @@ class ProjectController extends AppBaseController
             Schema::create($project->dbname, function (Blueprint $table) use ($project, $fields) {
 
                 $table->increments('id');
-                $table->string('sample', 20)->index()->nullable(); // sample
-                $table->string('samplable_id')->index();
-                $table->string('samplable_type')->index();
-                $table->unsignedInteger('project_id')->index();
+                $table->unsignedInteger('sample_id')->index(); // sample
+                $table->string('sample')->index(); // sample
                 $table->unsignedInteger('user_id')->index();
                 $table->unsignedInteger('update_user_id')->index()->nullable();
                 $table->timestamps();
@@ -387,7 +385,7 @@ class ProjectController extends AppBaseController
 
         $project->status = 'published';
         $project->save();
-
+        dispatch(new \App\Jobs\GenerateSample($project));
         Flash::success('Form built successfully.');
 
         return redirect()->back();

@@ -43,18 +43,12 @@ Route::resource('projects', 'ProjectController');
 
 Route::resource('questions', 'QuestionController');
 
-Route::get('voters/search', ['as' => 'voters.search', 'uses' => 'VoterController@search']);
-
-Route::resource('voters', 'VoterController');
-
 Route::resource('smsLogs', 'SmsLogController');
 
 Route::post('settings/save', ['as' => 'settings.save', 'uses' => 'SettingController@save']);
 
 Route::resource('settings', 'SettingController');
 
-Route::post('sample/import', ['as' => 'sample.import', 'uses' => 'EnumeratorController@import']);
+Route::post('sample/import', ['as' => 'sample.import', 'uses' => 'SampleDataController@import']);
 
-Route::resource('locations', 'LocationController');
-
-Route::resource('enumerators', 'EnumeratorController');
+Route::resource('sampleDatas', 'SampleDataController');

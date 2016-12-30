@@ -24,25 +24,16 @@ class SurveyResult extends Model
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      **/
-    public function surveyInput()
+    public function project()
     {
-        return $this->belongsTo(\App\Models\SurveyInput::class);
+        return $this->belongsTo(Project::class);
     }
 
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      **/
-    public function project()
+    public function sample()
     {
-        return $this->belongsTo(\App\Models\Project::class);
-    }
-
-    /**
-     * [samplable description]
-     * @return \Illuminate\Database\Eloquent\Relations\MorphTo
-     */
-    public function samplable()
-    {
-        return $this->morphTo();
+        return $this->belongsTo(Sample::class);
     }
 }

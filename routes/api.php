@@ -22,4 +22,4 @@ Route::resource('projects', 'ProjectAPIController');
 Route::resource('questions', 'QuestionAPIController');
 
 Route::match(['get', 'post'], 'voters/sms', ['as' => 'voters.sms', 'uses' => 'VoterAPIController@sms']);
-Route::resource('voters', 'VoterAPIController');
+

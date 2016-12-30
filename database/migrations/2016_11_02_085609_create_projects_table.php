@@ -17,8 +17,9 @@ class CreateProjectsTable extends Migration
             $table->increments('id');
             $table->string('project');
             $table->string('dbname');
-            $table->string('dblink')->nullable(); // voter | location | enumerator | none
-            $table->string('type')->nullable(); // db2sample | sample2db | none
+            $table->string('dblink')->default('enumerator'); // voter | location | enumerator
+            $table->string('type')->default('db2sample'); // db2sample | sample2db
+            $table->integer('dbgroup')->default(1);
             $table->text('sections');
             $table->text('samples');
             $table->unsignedTinyInteger('copies')->default(1);

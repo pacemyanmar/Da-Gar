@@ -11,7 +11,7 @@
         "inIndex": false
     },
     {
-        "name": "name",
+        "name": "samplable_id",
         "dbType": "string:index",
         "htmlType": "text",
         "validations": "",
@@ -22,7 +22,7 @@
         "inIndex": true
     },
     {
-        "name": "type",
+        "name": "samplable_type",
         "dbType": "string:index",
         "htmlType": "text",
         "validations": "",
@@ -33,8 +33,52 @@
         "inIndex": true
     },
     {
-        "name": "unique",
-        "dbType": "string:index",
+        "name": "form_id",
+        "dbType": "integer:index",
+        "htmlType": "text",
+        "validations": "",
+        "searchable": true,
+        "fillable": true,
+        "primary": false,
+        "inForm": true,
+        "inIndex": true
+    },
+    {
+        "name": "project_id",
+        "dbType": "integer:index",
+        "htmlType": "text",
+        "validations": "",
+        "searchable": true,
+        "fillable": true,
+        "primary": false,
+        "inForm": true,
+        "inIndex": true
+    },
+    {
+        "name": "user_id",
+        "dbType": "integer:index",
+        "htmlType": "text",
+        "validations": "",
+        "searchable": true,
+        "fillable": true,
+        "primary": false,
+        "inForm": true,
+        "inIndex": true
+    },
+    {
+        "name": "update_user_id",
+        "dbType": "integer:index",
+        "htmlType": "text",
+        "validations": "",
+        "searchable": true,
+        "fillable": true,
+        "primary": false,
+        "inForm": true,
+        "inIndex": true
+    },
+    {
+        "name": "qc_user_id",
+        "dbType": "integer:index",
         "htmlType": "text",
         "validations": "",
         "searchable": true,

@@ -53,7 +53,7 @@ class Project extends Model
      **/
     public function questions()
     {
-        return $this->HasMany(Question::class);
+        return $this->hasMany(Question::class);
     }
 
     /**
@@ -63,7 +63,12 @@ class Project extends Model
      */
     public function inputs()
     {
-        return $this->HasManyThrough(SurveyInput::class, Question::class);
+        return $this->hasManyThrough(SurveyInput::class, Question::class);
+    }
+
+    public function samplesDb()
+    {
+        return $this->hasMany(Sample::class);
     }
 
 }

@@ -3,6 +3,7 @@
 namespace App\DataTables;
 
 use App\Models\Project;
+use App\Models\Sample;
 use App\Models\SurveyResult;
 use Illuminate\Support\Facades\DB;
 use Yajra\Datatables\Services\DataTable;
@@ -97,61 +98,84 @@ class SurveyResultDataTable extends DataTable
      */
     public function query()
     {
-        // $this->project->dblink = 'voter|location|enumerator'
-        if (!empty($this->project->dblink) && class_exists('App\Models\\' . ucfirst($this->project->dblink))) {
+        // create table name
+        $table = str_plural($this->project->dblink);
+        $orderBy = (isset($this->orderBy)) ? $table . '.' . $this->orderBy : $table . '.id';
+        $order = (isset($this->order)) ? $this->order : 'asc';
 
-            // set dblink model class
-            $class = 'App\Models\\' . ucfirst($this->project->dblink);
+        // dblink
+        $type = $this->project->dblink;
 
-            // create table name
-            $table = str_plural($this->project->dblink);
-            $orderBy = (isset($this->orderBy)) ? $table . '.' . $this->orderBy : $table . '.id';
-            $order = (isset($this->order)) ? $this->order : 'asc';
+        $joinMethod = (isset($this->joinMethod)) ? $this->joinMethod : 'join';
 
-            // dblink
-            $type = $this->project->dblink;
+        // get dblink table base columns
+        $tableColumnsArray = array_keys($this->tableBaseColumns);
+        // modify column name to use in sql query TABLE.COLUMN format
+        array_walk($tableColumnsArray, function (&$column, $index) use ($table) {
+            switch ($column) {
+                case 'form_id':
+                    $column = 'samples.' . $column;
+                    break;
 
-            $joinMethod = (isset($this->joinMethod)) ? $this->joinMethod : 'join';
+                case 'user_id':
+                    $column = 'user.name as username';
+                    break;
 
-            // get dblink table base columns
-            $tableColumnsArray = array_keys($this->tableBaseColumns);
-            // modify column name to use in sql query TABLE.COLUMN format
-            array_walk($tableColumnsArray, function (&$column, $index) use ($table) {
-                $column = $table . '.' . $column;
-            });
-            // concat all columns with comma
-            $dbLinkTableColumns = implode(', ', $tableColumnsArray);
-
-            $project = $this->project;
-            $childTable = $project->dbname;
-            $sectionColumns = [];
-            foreach ($project->sections as $k => $section) {
-                $sectionColumns[] = 'section' . ($k + 1) . 'status';
+                default:
+                    $column = 'sample_datas.' . $column;
+                    break;
             }
 
-            $input_columns = '';
-            // get all inputs for a project form by name key index
-            $unique_inputs = $this->project->inputs->pluck('inputid')->unique();
+        });
+        // concat all columns with comma
+        $dbLinkTableColumns = implode(', ', $tableColumnsArray);
 
-            $unique_inputs = $unique_inputs->toArray();
-            $columnsFromResults = array_merge($sectionColumns, $unique_inputs);
-            // modify column name to use in sql query TABLE.COLUMN format
-            array_walk($columnsFromResults, function (&$column, $index) use ($childTable) {
-                $column = $childTable . '.' . $column;
-            });
+        $project = $this->project;
+        $childTable = $project->dbname;
+        $sectionColumns = [];
+        foreach ($project->sections as $k => $section) {
+            $sectionColumns[] = 'section' . ($k + 1) . 'status';
+        }
 
-            $input_columns = implode(',', $columnsFromResults);
-            //$count = sizeof($unique_inputs);
-            // run query
-            $query = $class::query()
-                ->select(DB::raw($dbLinkTableColumns), DB::raw($input_columns));
-            $query->{$joinMethod}($childTable, function ($join) use ($table, $class, $childTable) {
-                $join->on($table . '.id', '=', $childTable . '.samplable_id')
-                    ->where($childTable . '.samplable_type', '=', $class);
+        $input_columns = '';
+        // get all inputs for a project form by name key index
+        $unique_inputs = $this->project->inputs->pluck('inputid')->unique();
+
+        $unique_inputs = $unique_inputs->toArray();
+        $columnsFromResults = array_merge($sectionColumns, $unique_inputs);
+        // modify column name to use in sql query TABLE.COLUMN format
+        array_walk($columnsFromResults, function (&$column, $index) use ($childTable) {
+            $column = $childTable . '.' . $column;
+        });
+
+        $input_columns = implode(',', $columnsFromResults);
+
+        $defaultColumns = "samples.id, samples.form_id, sample_datas.*";
+        if ($table == 'enumerators') {
+
+        }
+        //$count = sizeof($unique_inputs);
+        // run query
+        $query = Sample::query();
+        $query->leftjoin('users as user', function ($join) {
+            $join->on('user.id', 'samples.user_id');
+        });
+        $query->leftjoin('users as update_user', function ($join) {
+            $join->on('update_user.id', 'samples.update_user_id');
+        });
+        $query->leftjoin('users as qc_user', function ($join) {
+            $join->on('qc_user.id', 'samples.qc_user_id');
+        });
+        if ($this->project->status != 'new') {
+            $query->select(DB::raw($defaultColumns), DB::raw($dbLinkTableColumns), DB::raw($input_columns));
+            // join with samplable database (voters, enumerators)
+            $query->leftjoin('sample_datas', function ($join) {
+                $join->on('samples.sample_data_id', 'sample_datas.id');
             });
-        } else {
-            $query = SurveyResult::query();
-            $query->where('project_id', $this->project->id)->with('project');
+            // join with result database
+            $query->{$joinMethod}($childTable, function ($join) use ($childTable) {
+                $join->on('samples.id', '=', $childTable . '.sample_id');
+            });
         }
 
         return $this->applyScopes($query);
@@ -208,7 +232,7 @@ class SurveyResultDataTable extends DataTable
      */
     protected function getBuilderParameters()
     {
-        $columns = "1, 2, 3, 4, 5, 6";
+        $columns = "0, 1, 2, 3, 4, 5, 6";
         return [
             'dom' => 'Brtip',
             //'sServerMethod' => 'POST',
