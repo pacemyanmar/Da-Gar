@@ -1,9 +1,9 @@
 @extends('layouts.app')
-@section('before-head-end')
+@push('before-head-end')
 <script type="text/javascript">
 window.url="{!! route('projects.surveys.save', ['project' => $project->id, 'sample' => $sample->id]) !!}"
 </script>
-@endsection
+@endpush
 @push('after-body-start')
 <a class="btn btn-primary pull-right btn-float btn-float-up save" style="display:inline;margin-right:15px;" href="#" data-id="survey-form"> Save All</a>
            <a class="pull-right btn-float btn-float-bottom btn-float-to-up" style="display:inline;font-size: 40px;" href="#"><i class="fa fa-arrow-circle-up"></i></a>

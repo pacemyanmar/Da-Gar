@@ -196,7 +196,7 @@ class ProjectController extends AppBaseController
         $project = $this->projectRepository->findWithoutFail($id);
 
         // get unique collection of inputs
-        $fields = $project->inputs->unique('name');
+        $fields = $project->inputs->unique('inputid');
 
         // check if table has already created
         if (Schema::hasTable($project->dbname)) {
@@ -274,7 +274,7 @@ class ProjectController extends AppBaseController
                             }
                             // change input status to published
                             $project->inputs()->withoutGlobalScope(OrderByScope::class)
-                                ->where('name', $input->name)->update(['status' => 'published']);
+                                ->update(['status' => 'published']);
                         });
                     } else {
                         // if column has not been created, creat now
@@ -316,7 +316,7 @@ class ProjectController extends AppBaseController
                             }
                             // change input status to published
                             $project->inputs()->withoutGlobalScope(OrderByScope::class)
-                                ->where('name', $input->name)->update(['status' => 'published']);
+                                ->update(['status' => 'published']);
                         });
                     }
                 }
@@ -377,7 +377,7 @@ class ProjectController extends AppBaseController
 
                     // change input status to published
                     $project->inputs()->withoutGlobalScope(OrderByScope::class)
-                        ->where('name', $input->name)->update(['status' => 'published']);
+                        ->update(['status' => 'published']);
                 }
             });
         }

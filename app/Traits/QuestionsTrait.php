@@ -36,7 +36,7 @@ trait QuestionsTrait
             /**
              * create unique name attribute for each input
              */
-            $param = str_slug('p' . $project_id . '-s' . $section_id . '-' . $qnum . '-i' . $k);
+            $param = str_slug('p' . $project_id . 's' . $section_id . $qnum . 'i' . $k);
             /**
              * assign className attribute using format_input method
              * remove checkbox or radio class name
@@ -45,6 +45,10 @@ trait QuestionsTrait
 
             if (!array_key_exists('name', $a)) {
                 $a['name'] = $param;
+            }
+
+            if (!array_key_exists('id', $a)) {
+                $a['id'] = $param;
             }
 
             if (!array_key_exists('className', $a)) {
@@ -85,7 +89,7 @@ trait QuestionsTrait
                 foreach ($a['values'] as $j => $av) {
                     unset($a['values']);
                     $av['type'] = 'radio';
-                    $av['id'] = $param . '-o' . $j;
+                    $av['id'] = $param . 'o' . $j;
                     // merge $a and $av to get input array as $answer
                     $answer[] = array_merge($a, $av);
                 }
@@ -100,14 +104,15 @@ trait QuestionsTrait
                 $a['type'] = 'matrix';
                 foreach ($a['values'] as $j => $option) {
                     $av['type'] = 'radio';
-                    $av['id'] = $param . '-o' . $j;
+                    $av['id'] = $param . 'o' . $j;
                     $a['values'][$j] = array_merge($option, $av);
                 }
 
             } elseif ($a['type'] == 'radio') {
-                $a['id'] = $param;
-                $a['name'] = str_slug('p' . $project_id . '-s' . $section_id . '-' . $qnum . '-r');
+                $a['name'] = str_slug('p' . $project_id . 's' . $section_id . $qnum . 'r');
                 $a['inputid'] = strtolower('s' . $section_id . $qnum . 'ir');
+            } elseif ($a['type'] == 'checkbox') {
+                $a['name'] = str_slug('p' . $project_id . 's' . $section_id . $qnum . 'c');
             } else {
                 $a['id'] = $param;
             }

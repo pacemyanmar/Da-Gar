@@ -126,12 +126,26 @@ class ProjectResultsController extends Controller
 
         $table->setBaseColumns($baseColumns);
         $section_columns = [];
-
         foreach ($project->sections as $k => $section) {
             $sectionColumn = 'section' . ($k + 1) . 'status';
             $section_columns[$sectionColumn] = [
                 'name' => $sectionColumn,
                 'data' => $sectionColumn,
+                'render' => function () {
+                    return "function(data,type,full,meta){
+                        var html;
+                        if(data == 1) {
+                            html = '<img src=\'" . asset('images/complete.png') . "\'>';
+                        } else if(data == 2) {
+                            html = '<img src=\'" . asset('images/incomplete.png') . "\'>';
+                        } else if(data == 3) {
+                            html = '<img src=\'" . asset('images/error.png') . "\'>';
+                        } else {
+                            html = '<img src=\'" . asset('images/missing.png') . "\'>';
+                        }
+                        return html;
+                    }";
+                },
                 'title' => ucfirst($section['sectionname']),
             ];
         }
@@ -221,14 +235,49 @@ class ProjectResultsController extends Controller
 
         $surveyResult->setTable($project->dbname);
 
+        $sample_type = $request->only('sample');
+
         // get all result array from form
         $results = $request->only('result')['result'];
 
-        //$results['samplable_id'] = $dblink;
-        //$results['samplable_id'] = $sample_dblink->id;
-
         if (empty($results)) {
             return json_encode(['status' => 'error', 'message' => 'No result submitted!']);
+        }
+        $results['sample'] = (isset($sample_type['sample'])) ? $sample_type['sample'] : 1;
+        //$results['samplable_id'] = $dblink;
+        //$results['samplable_id'] = $sample_dblink->id;
+        $sectionstatus = [];
+        foreach ($project->inputs->groupBy('section') as $section => $section_inputs) {
+            $section_status = $section_inputs->where('optional', 0)->pluck('name', 'inputid')->toArray();
+
+            // interset to find empty section
+            $interset_status = array_intersect_key($section_status, $results);
+
+            if (!empty($interset_status)) {
+
+                $section_key = $section + 1;
+                // check if individual question is complete
+                foreach ($section_inputs->groupBy('question_id') as $question => $question_inputs) {
+                    $inputs = $question_inputs->where('optional', 0)->pluck('name', 'inputid')->toArray();
+                    $interset_inputs = array_intersect_key($inputs, $results);
+                    $max = count($inputs);
+                    $min = count(array_flip($inputs));
+                    $actual = count($interset_inputs);
+                    if (($actual >= $min && $actual <= $max)) {
+                        $q[] = 0;
+                    } else {
+                        $q[] = 1;
+                    }
+                }
+
+                $qsum = array_sum($q);
+                if ($qsum) {
+                    $results['section' . $section_key . 'status'] = 2;
+                } else {
+                    $results['section' . $section_key . 'status'] = 1;
+                }
+            }
+
         }
 
         // sample (country|region|1|2)
