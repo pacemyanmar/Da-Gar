@@ -78,6 +78,7 @@ class QuestionAPIController extends AppBaseController
         if (!empty($section)) {
             $input['double_entry'] = (isset($section['double'])) ? $section['double'] : false;
         }
+        $input['css_id'] = str_slug('s' . $section_id . $input['qnum']);
 
         $question = $this->questionRepository->create($input);
 

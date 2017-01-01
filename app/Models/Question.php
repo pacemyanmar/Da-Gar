@@ -19,6 +19,7 @@ class Question extends Model
     public $fillable = [
         'qnum',
         'question',
+        'css_id',
         'raw_ans',
         'render',
         'sort',

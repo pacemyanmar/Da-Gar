@@ -152,6 +152,11 @@
 
     @stack('vue-scripts')
     @stack('before-body-end')
+    <script type="text/javascript">
+    (function($) {
+        @stack('document-ready')
+    })(jQuery);
+    </script>
     <div class="loading hidden">Loading&#8230;</div>
 </body>
 </html>

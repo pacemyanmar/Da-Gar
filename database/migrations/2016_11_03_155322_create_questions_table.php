@@ -17,6 +17,7 @@ class CreateQuestionsTable extends Migration
             $table->increments('id');
             $table->string('qnum');
             $table->string('question');
+            $table->string('css_id');
             $table->text('raw_ans');
             $table->string('layout');
             $table->integer('section')->unsigned();

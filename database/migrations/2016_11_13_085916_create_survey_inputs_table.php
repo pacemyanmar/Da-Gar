@@ -21,6 +21,7 @@ class CreateSurveyInputsTable extends Migration
             $table->string('label')->index();
             $table->string('value')->index();
             $table->string('className')->nullable();
+            $table->string('skip')->nullable();
             $table->unsignedSmallInteger('sort')->index();
             $table->unsignedTinyInteger('section')->index();
             $table->enum('status', ['new', 'published'])->default('new');

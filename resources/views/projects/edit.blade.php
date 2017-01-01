@@ -235,6 +235,28 @@
             }
           },
           checkbox: {
+            skip: {
+              label: 'Skip',
+              type: 'text',
+              name: 'skip',
+              placeholder: 'Space seperated list of Question Number'
+            },
+            optional: {
+              label: 'Optional',
+              type: 'checkbox',
+              name: 'optional'
+            },
+            value: {
+              type: 'number'
+            }
+          },
+          radio: {
+            skip: {
+              label: 'Skip',
+              type: 'text',
+              name: 'skip',
+              placeholder: 'Space seperated list of Question Number'
+            },
             optional: {
               label: 'Optional',
               type: 'checkbox',

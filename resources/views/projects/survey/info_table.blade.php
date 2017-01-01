@@ -10,8 +10,10 @@
             <table class="table table-striped table-bordered table-hover">
                 <thead>
                     <tr>
-                        @if($project->in_index)
-                            @foreach($project->in_index as $column)                            @endforeach
+                        @if($project->index_columns)
+                            @foreach($project->index_columns as $column => $columnName)
+                                <th>{!! $columnName !!}</th>
+                            @endforeach
                         @else
                             @foreach($sample->fillable as $column)
                                 <th>{!! ucwords($column) !!}</th>
@@ -27,8 +29,14 @@
                 </thead>
                 <tbody>
                     <tr>
-                        @if($project->in_index)
-                            @foreach($project->in_index as $column)                            @endforeach
+                        @if($project->index_columns)
+                            @foreach($project->index_columns as $column => $columnName)
+                                @if($column == 'form_id')
+                                <td>{!! ucwords($sample->{$column}) !!}</td>
+                                @else
+                                <td>{!! ucwords($sample->samplable->{$column}) !!}</td>
+                                @endif
+                            @endforeach
                         @else
                             @foreach($sample->fillable as $column)
                                 <td>{!! ucwords($sample->{$column}) !!}</td>

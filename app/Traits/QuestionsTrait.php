@@ -37,11 +37,11 @@ trait QuestionsTrait
              * create unique name attribute for each input
              */
             $param = str_slug('p' . $project_id . 's' . $section_id . $qnum . 'i' . $k);
+
             /**
              * assign className attribute using format_input method
              * remove checkbox or radio class name
              */
-            array_walk_recursive($a, array(&$this, 'format_input'), $param);
 
             if (!array_key_exists('name', $a)) {
                 $a['name'] = $param;
@@ -74,6 +74,15 @@ trait QuestionsTrait
             if (!array_key_exists('sort', $a)) {
                 $a['sort'] = $qsort . $k;
             }
+
+            $param_array = [
+                'p' => $project_id,
+                's' => $section_id,
+                'q' => $qnum,
+                'i' => $k,
+            ];
+
+            array_walk_recursive($a, array(&$this, 'format_input'), $param_array);
 
             /**
              * if input type is radio-group and layout is not matrix, change input type to "radio" and
@@ -166,16 +175,27 @@ trait QuestionsTrait
      * @param string $key
      * @return array
      */
-    private static function format_input(&$value, $key, $param)
+    private static function format_input(&$value, $key, $param_array)
     {
+        $input_id = str_slug('p' . $param_array['p'] . 's' . $param_array['s'] . $param_array['q'] . 'i' . $param_array['i']);
+        $input_class = str_slug('s' . $param_array['s'] . $param_array['q']);
         /**
         if ($key == 'name') {
         $value = $param;
         }
          */
+        $qids = [];
+        if ($key == 'skip') {
+            $qnum_array = explode(' ', $value);
+            foreach ($qnum_array as $qnum) {
+                $qids[] = '.' . str_slug('s' . $param_array['s'] . $qnum);
+            }
+            $value = implode(',', $qids);
+        }
 
         if ($key == 'className') {
-            $value = preg_replace('/\s[checkbox|radio]\s/', ' ', $value);
+            $new_class = preg_replace('/\s[checkbox|radio]\s/', ' ', $value);
+            $value = $new_class . ' ' . $input_class;
         }
     }
 }

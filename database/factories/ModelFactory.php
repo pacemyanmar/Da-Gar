@@ -112,7 +112,8 @@ $factory->define(App\Models\Question::class, function (Faker\Generator $faker) u
 
     $section = ($unique_num > 16) ? 1 : 0;
     $qnum = 'Q' . $unique_num;
-    return [
+
+    $question = [
         'qnum' => $qnum,
         'question' => $faker->realText($maxNbChars = 100, $indexSize = 5) . '?',
         'raw_ans' => $raw_ans,
@@ -123,6 +124,8 @@ $factory->define(App\Models\Question::class, function (Faker\Generator $faker) u
             return factory(App\Models\Project::class)->create()->id;
         },
     ];
+    $question['css_id'] = str_slug('s' . $section . $qnum);
+    return $question;
 }, 'question');
 
 /**

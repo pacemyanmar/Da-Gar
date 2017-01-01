@@ -4,3 +4,14 @@
    		{!! $element->label !!}
    	</label>
 </div>
+@if(!empty($element->skip))
+	@push('document-ready')
+	$("input[name='result[{!! $element->inputid !!}]']").change(function(){
+		if($("input[name='result[{!! $element->inputid !!}]']:checked").val() == {!! $element->value !!}) {
+			$("{!! $element->skip !!}").prop("disabled", true);
+		} else {
+			$("{!! $element->skip !!}").prop("disabled", false);
+		}
+	});
+	@endpush
+@endif
