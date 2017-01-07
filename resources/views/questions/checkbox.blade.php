@@ -5,9 +5,19 @@
 </div>
 @if(!empty($element->skip))
 	@push('document-ready')
+	if($("input[name='result[{!! $element->inputid !!}]']").is(':checked')) {
+			$("{!! $element->skip !!}").prop("disabled", true);
+		} else {
+			$("{!! $element->skip !!}").prop("disabled", false);
+		}
 	$("input[name='result[{!! $element->inputid !!}]']").change(function(){
 		if($("input[name='result[{!! $element->inputid !!}]']").is(':checked')) {
 			$("{!! $element->skip !!}").prop("disabled", true);
+			@if(isset($element->extras['goto']))
+				$("body, html").animate({
+			      scrollTop: $("{!! $element->extras['goto'] !!}").offset().top
+			    }, 600);
+			@endif
 		} else {
 			$("{!! $element->skip !!}").prop("disabled", false);
 		}

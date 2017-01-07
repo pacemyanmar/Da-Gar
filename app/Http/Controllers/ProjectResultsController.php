@@ -175,7 +175,7 @@ class ProjectResultsController extends Controller
      * @param  string $form_id      [sample form id]
      * @return Illuminate\View\View         [view for result creation]
      */
-    public function create($project_id, $samplable, $form_id = '', $type = '')
+    public function create($project_id, $samplable, $form_id = '')
     {
         $project = $this->projectRepository->findWithoutFail($project_id);
 
@@ -243,42 +243,97 @@ class ProjectResultsController extends Controller
         if (empty($results)) {
             return json_encode(['status' => 'error', 'message' => 'No result submitted!']);
         }
-        $results['sample'] = (isset($sample_type['sample'])) ? $sample_type['sample'] : 1;
         //$results['samplable_id'] = $dblink;
         //$results['samplable_id'] = $sample_dblink->id;
         $sectionstatus = [];
+        // group by all inputs with section and loop
         foreach ($project->inputs->groupBy('section') as $section => $section_inputs) {
-            $section_status = $section_inputs->where('optional', 0)->pluck('name', 'inputid')->toArray();
+            // get all inputs array of inputid and skip in a section which is not optional
+            $max_total_inputs = $section_inputs->where('optional', 0)->pluck('skip', 'inputid')->toArray();
 
-            // interset to find empty section
-            $interset_status = array_intersect_key($section_status, $results);
+            $inputs_with_skip = array_filter($max_total_inputs); // from database only inputs with skip column
 
-            if (!empty($interset_status)) {
+            $submitted_inputs_with_skip = array_intersect_key($inputs_with_skip, $results);
+
+            $max_total_inputs_by_name = $section_inputs->where('optional', 0)->pluck('name', 'inputid')->toArray();
+
+            $submitted_total_inputs = array_intersect_key($max_total_inputs_by_name, $results);
+
+            $classNames = [];
+            $skips = [];
+            // array of inputs with skip column from database
+            foreach ($submitted_inputs_with_skip as $skip_input => $skipped) {
+                // explode by commas all skip classes
+                $skipped_inputs = explode(',', $skipped);
+
+                unset($max_total_inputs[$skip_input]);
+                // loop skip classes .s0q4,.s0q5
+                foreach ($skipped_inputs as $skipid) {
+                    // TODO: remove trailing space
+                    $classNames[] = ' ' . str_slug($skipid); // inputid from skip column
+                }
+            }
+
+            // find inputs to skip based on submitted results
+            $skipped_inputs = $section_inputs->whereIn('className', $classNames)->pluck('name', 'inputid')->toArray();
+
+            if (!empty($skipped_inputs)) {
+                foreach ($skipped_inputs as $toskip => $name) {
+                    if (array_key_exists($toskip, $submitted_total_inputs)) {
+                        // remove skipped inputs to avoid validating
+                        unset($submitted_total_inputs[$toskip]);
+                    }
+                }
+            }
+
+            // if section not empty in form submit
+            if (!empty($submitted_total_inputs)) {
 
                 $section_key = $section + 1;
-                // check if individual question is complete
+                $checked_inputs = [];
+                $qsum = [];
+                $q = 0;
+                // group inputs by 'question_id'
                 foreach ($section_inputs->groupBy('question_id') as $question => $question_inputs) {
+                    // get all inputs which is not optional in a question
                     $inputs = $question_inputs->where('optional', 0)->pluck('name', 'inputid')->toArray();
-                    $interset_inputs = array_intersect_key($inputs, $results);
+
+                    if (!empty($skipped_inputs)) {
+                        foreach ($skipped_inputs as $toskip => $name) {
+                            // $toskip = inputid, $name = name
+                            $qsum[$toskip] = $inputs;
+                            if (array_key_exists($toskip, $inputs)) {
+                                // remove skipped inputs
+                                unset($inputs[$toskip]);
+                            }
+                        }
+                    }
+
+                    // check all inputs submitted by matching from database and submitted data
+                    $interset_inputs = array_intersect_key($inputs, $submitted_total_inputs);
                     $max = count($inputs);
                     $min = count(array_flip($inputs));
                     $actual = count($interset_inputs);
+                    $checked_inputs[] = $interset_inputs;
                     if (($actual >= $min && $actual <= $max)) {
-                        $q[] = 0;
+                        $q += 0;
                     } else {
-                        $q[] = 1;
+                        $q += 1;
                     }
-                }
 
-                $qsum = array_sum($q);
-                if ($qsum) {
-                    $results['section' . $section_key . 'status'] = 2;
+                }
+                //echo $q;
+                //dd($qsum);
+                if ($q) {
+                    $section_status = $results['section' . $section_key . 'status'] = 2;
                 } else {
-                    $results['section' . $section_key . 'status'] = 1;
+                    $section_status = $results['section' . $section_key . 'status'] = 1;
                 }
             }
 
         }
+
+        $results['sample'] = (isset($sample_type['sample'])) ? $sample_type['sample'] : 1;
 
         // sample (country|region|1|2)
         //$results['sample'] = (!empty($request->only('samplable_type')['samplable_type'])) ? $request->only('samplable_type')['samplable_type'] : '';
