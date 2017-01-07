@@ -6,7 +6,7 @@
     <tbody>
         @foreach($questions as $question)
             @if($question->section == $section_key)
-            <tr>
+            <tr id="{!! $question->css_id !!}">
                 <td class="col-xs-1">
                 <label>{!! $question->qnum !!}</label>
                     @if($question->report)

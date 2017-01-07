@@ -144,6 +144,9 @@
     @endif
     <!-- Combined vendor js -->
     <script src="{{ elixir('js/vendor.js') }}"></script>
+    <script type="text/javascript">
+        hyperform(window);
+    </script>
 
     <!-- app script -->
     <script src="{{ elixir('js/app.js') }}"></script>
@@ -151,12 +154,13 @@
     @yield('scripts')
 
     @stack('vue-scripts')
-    @stack('before-body-end')
+
     <script type="text/javascript">
     (function($) {
         @stack('document-ready')
     })(jQuery);
     </script>
     <div class="loading hidden">Loading&#8230;</div>
+     @stack('before-body-end')
 </body>
 </html>

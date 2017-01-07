@@ -63,29 +63,54 @@ window.url="{!! route('projects.surveys.save', ['project' => $project->id, 'samp
 
 </style>
 @endsection
-@push('vue-scripts')
+
+@push('before-body-end')
+<style type="text/css">
+.invalid {
+    border: 1px solid red;
+}
+.hf-warning {
+  color:red;
+}
+</style>
 <script type='text/javascript'>
-$(document).ready(function() {
+    (function($) {
 
-    $('.save').click(function(event){
-        event.preventDefault();
+        $('.save').click(function(event){
+            event.preventDefault();
 
-        var id = $(this).data('id');
+            var id = $(this).data('id');
 
-        $('#'+id).find(":input").filter(function(){ return !this.value; }).attr("disabled", "disabled");
-        var info_data = $('.info').serializeArray();
+            $('#'+id).find(":input").filter(function(){ return !this.value; }).attr("disabled", "disabled");
+            var info_data = $('.info').serializeArray();
 
-        var section_data = $('#'+id+' :input').serializeArray();
+            var section_data = $('#'+id+' :input').serializeArray();
 
-        section_data.push({name: 'samplable_type', value: $('#sample').val()});
+            section_data.push({name: 'samplable_type', value: $('#sample').val()});
 
-        var ajaxData = $.merge(info_data, section_data);
+            var ajaxData = $.merge(info_data, section_data);
 
-        sendAjax(url,ajaxData);
+            sendAjax(url,ajaxData);
 
-        $('#'+id).find(":input").removeAttr("disabled");
+            $('#'+id).find(":input").filter(function(){ return !this.value; }).removeAttr("disabled");
 
-    });
-});
-</script>
+        });
+
+
+
+        $(':input').on('keyup change',function(){
+            var input = $(this)[0];
+            var parent = $(this).parent();
+            var validity = input.checkValidity();
+            console.log(validity);
+            if(validity) {
+                $(this).removeClass('invalid');
+            } else {
+                $(this).addClass('invalid');
+            }
+            input.reportValidity();
+        });
+
+    })(jQuery);
+    </script>
 @endpush

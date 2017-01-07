@@ -241,13 +241,20 @@
               name: 'skip',
               placeholder: 'Space seperated list of Question Number'
             },
+            goto: {
+              label: 'Go to',
+              type: 'text',
+              name: 'goto',
+              placeholder: 'Single Question Number'
+            },
             optional: {
               label: 'Optional',
               type: 'checkbox',
               name: 'optional'
             },
             value: {
-              type: 'number'
+              type: 'number',
+              placeholder: 'Only number allow'
             }
           },
           radio: {
@@ -257,13 +264,20 @@
               name: 'skip',
               placeholder: 'Space seperated list of Question Number'
             },
+            goto: {
+              label: 'Go to',
+              type: 'text',
+              name: 'goto',
+              placeholder: 'Single Question Number'
+            },
             optional: {
               label: 'Optional',
               type: 'checkbox',
               name: 'optional'
             },
             value: {
-              type: 'number'
+              type: 'number',
+              placeholder: 'Only number allow'
             }
           },
           'radio-group': {
@@ -331,3 +345,32 @@
 
 </script>
 @endsection
+
+
+@push('before-body-end')
+<style type="text/css">
+.invalid {
+    border: 1px solid red;
+}
+.hf-warning {
+  color:red;
+}
+</style>
+<script type="text/javascript">
+    (function($) {
+
+        $(':input').on('keyup change',function(){
+            var input = $(this)[0];
+            var parent = $(this).parent();
+            var validity = input.checkValidity();
+            console.log(validity);
+            if(validity) {
+                $(this).removeClass('invalid');
+            } else {
+                $(this).addClass('invalid');
+            }
+            input.reportValidity();
+        });
+    })(jQuery);
+    </script>
+@endpush

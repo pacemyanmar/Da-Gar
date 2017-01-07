@@ -8,7 +8,7 @@
         @foreach($questions as $question)
             @if($question->section == $section_key)
             <tr>
-                <td class="col-xs-1">
+                <td class="col-xs-1" id="{!! $question->css_id !!}">
                     <label>{!! $question->qnum !!}</label>
                     @if($question->report)
                         <span class="badge">In report</span>

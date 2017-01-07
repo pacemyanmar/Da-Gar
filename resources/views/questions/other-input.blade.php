@@ -8,9 +8,13 @@ $options = [
 'aria-describedby'=> $element->id.'-addons'
 ];
 if($element->type == 'number') {
-if(isset($element->extras['min'])) $options['min'] = $element->extras['min'];
-if(isset($element->extras['max'])) $options['max'] = $element->extras['max'];
-if(isset($element->extras['step'])) $options['step'] = $element->extras['step'];
+    $options['placeholder'] .= ' (number) ';
+    if(isset($element->extras['min'])) $options['min'] = $element->extras['min'];
+    if(isset($element->extras['max'])) $options['max'] = $element->extras['max'];
+    if(isset($element->extras['step'])) $options['step'] = $element->extras['step'];
+
+    if(isset($element->extras['min']) || isset($element->extras['max']))
+        $options['placeholder'] .= $element->extras['min'].' - '. $element->extras['max'];
 }
 @endphp
     <div class="form-group">
