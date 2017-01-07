@@ -23,6 +23,8 @@
     "moment": "^2.16.0",
     "rivets": "*",
     "select2": "*",
-    "jquery-idletimer": "^1.0.1"
+    "jquery-idletimer": "^1.0.1",
+    "hyperform": "0.8.15"
+    "hyperform-l10n": "0.8.0"
   }
 }

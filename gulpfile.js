@@ -35,8 +35,7 @@ elixir(mix => {
             'formBuilder/dist/form-render.min.css',
             'datatables/media/css/dataTables.bootstrap.min.css',
             'datatables.net-buttons-bs/css/buttons.bootstrap.min.css',
-            'magic-check/css/magic-check.min.css',
-    	
+            'magic-check/css/magic-check.min.css',    	
     	],'public/css/vendor.css','resources/assets/vendor/')
     	.scripts([
             // Order is important
@@ -61,7 +60,8 @@ elixir(mix => {
             'datatables.net-buttons/js/buttons.print.min.js',
             'datatables.net-buttons-bs/js/buttons.bootstrap.min.js',
             'moment/min/moment-with-locales.min.js',
-            'adminlte/dist/js/app.min.js'
+            'adminlte/dist/js/app.min.js',
+            'hyperform/dist/hyperform.min.js'
     		],'public/js/vendor.js','resources/assets/vendor/')
     	.sass('app.scss')
        	.webpack('app.js')

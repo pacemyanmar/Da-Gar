@@ -52,15 +52,6 @@ class Sample extends Model
 
     ];
 
-    /**
-     * [samplable description]
-     * @return \Illuminate\Database\Eloquent\Relations\MorphTo
-     */
-    public function samplable()
-    {
-        return $this->belongsTo(SampleData::class, 'sample_data_id');
-    }
-
     public function result()
     {
         return $this->hasOne(SurveyResult::class);

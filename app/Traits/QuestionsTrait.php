@@ -75,6 +75,23 @@ trait QuestionsTrait
                 $a['sort'] = $qsort . $k;
             }
 
+            if (array_key_exists('goto', $a)) {
+                $qnumid = str_slug('s' . $section_id . $a['goto']);
+                $a['extras']['goto'] = '#' . $qnumid;
+            }
+
+            if (array_key_exists('min', $a)) {
+                $a['extras']['min'] = $a['min'];
+            }
+
+            if (array_key_exists('max', $a)) {
+                $a['extras']['max'] = $a['max'];
+            }
+
+            if (array_key_exists('step', $a)) {
+                $a['extras']['step'] = $a['step'];
+            }
+
             $param_array = [
                 'p' => $project_id,
                 's' => $section_id,
@@ -194,8 +211,8 @@ trait QuestionsTrait
         }
 
         if ($key == 'className') {
-            $new_class = preg_replace('/\s[checkbox|radio]\s/', ' ', $value);
-            $value = $new_class . ' ' . $input_class;
+            $new_class = preg_replace('/\s[checkbox|radio]\s/', '', $value);
+            $value = $input_class . ' ' . $new_class;
         }
     }
 }
