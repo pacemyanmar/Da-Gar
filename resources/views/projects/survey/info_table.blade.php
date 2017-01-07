@@ -33,8 +33,10 @@
                             @foreach($project->index_columns as $column => $columnName)
                                 @if($column == 'form_id')
                                 <td>{!! ucwords($sample->{$column}) !!}</td>
+                                @elseif($column == 'idcode')
+                                <td>{!! ucwords($sample->id) !!}</td>
                                 @else
-                                <td>{!! ucwords($sample->samplable->{$column}) !!}</td>
+                                <td>{!! ucwords($results->{$column}) !!}</td>
                                 @endif
                             @endforeach
                         @else

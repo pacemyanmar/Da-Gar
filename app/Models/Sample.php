@@ -52,6 +52,11 @@ class Sample extends Model
 
     ];
 
+    public function data()
+    {
+        return $this->belongsTo(SampleData::class, 'sample_data_id');
+    }
+
     public function result()
     {
         return $this->hasOne(SurveyResult::class);
