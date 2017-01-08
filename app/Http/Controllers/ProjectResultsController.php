@@ -150,6 +150,11 @@ class ProjectResultsController extends Controller
             ];
         }
         $input_columns = [];
+
+        $project->load(['inputs' => function ($query) {
+            $query->where('status', 'published');
+        }]);
+
         foreach ($project->inputs as $k => $input) {
             $column = $input->inputid;
             $input_columns[$column] = ['name' => $column, 'data' => $column, 'title' => $column];
@@ -198,11 +203,16 @@ class ProjectResultsController extends Controller
         $dbname = $project->dbname;
         $result = $sample->resultWithTable($dbname)->first();
 
-        $questions = $project->questions()->onlyPublished()->get();
+        $project->load(['questions' => function ($query) {
+            $query->where('qstatus', 'published');
+        }]);
+
+        $project->load(['inputs' => function ($query) {
+            $query->where('status', 'published');
+        }]);
 
         $view = view('projects.survey.create')
             ->with('project', $project)
-            ->with('questions', $questions)
             ->with('sample', $sample);
 
         if (!empty($result)) {

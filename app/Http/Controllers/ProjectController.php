@@ -120,7 +120,9 @@ class ProjectController extends AppBaseController
 
             return redirect(route('projects.index'));
         }
-
+        $project->load(['inputs' => function ($query) {
+            $query->where('status', 'published');
+        }]);
         return view('projects.edit')
             ->with('project', $project)
             ->with('questions', $project->questions);
@@ -188,6 +190,24 @@ class ProjectController extends AppBaseController
         Flash::success('Project deleted successfully.');
 
         return redirect(route('projects.index'));
+    }
+
+    public function sort($id)
+    {
+        $project = $this->projectRepository->findWithoutFail($id);
+        $questions = $project->questions;
+
+        foreach ($questions as $question) {
+            $inputs = $question->surveyInputs;
+            $tosort = $question->sort;
+
+            foreach ($inputs as $k => $input) {
+                $sk = $k + 1;
+                $input->sort = $tosort . $sk;
+                $input->save();
+            }
+        }
+        return redirect()->back();
     }
 
     public function dbcreate($id)

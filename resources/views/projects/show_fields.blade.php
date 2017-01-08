@@ -4,7 +4,7 @@
         <th class="col-xs-11">Questions</th>
     </thead>
     <tbody>
-        @foreach($questions as $question)
+        @foreach($project->questions as $question)
             @if($question->section == $section_key)
             <tr id="{!! $question->css_id !!}">
                 <td class="col-xs-1">

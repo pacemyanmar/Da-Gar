@@ -2,51 +2,33 @@
 
 namespace App\Http\Controllers;
 
-use App\DataTables\QuestionDataTable;
 use App\Http\Controllers\AppBaseController;
 use App\Http\Requests\CreateQuestionRequest;
 use App\Http\Requests\UpdateQuestionRequest;
+use App\Repositories\ProjectRepository;
 use App\Repositories\QuestionRepository;
 use App\Repositories\SurveyInputRepository;
 use App\Traits\QuestionsTrait;
-use Flash;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Schema;
 use Response;
 
 class QuestionController extends AppBaseController
 {
     use QuestionsTrait;
+
+    private $projectRepository;
     /** @var  QuestionRepository */
     private $questionRepository;
 
     private $inputRepository;
 
-    public function __construct(QuestionRepository $questionRepo, SurveyInputRepository $inputRepo)
+    public function __construct(ProjectRepository $projectRepo, QuestionRepository $questionRepo, SurveyInputRepository $inputRepo)
     {
         $this->middleware('auth');
+        $this->projectRepository = $projectRepo;
         $this->questionRepository = $questionRepo;
         $this->inputRepository = $inputRepo;
-    }
-
-    /**
-     * Display a listing of the Question.
-     *
-     * @param QuestionDataTable $questionDataTable
-     * @return Response
-     */
-    public function index(QuestionDataTable $questionDataTable)
-    {
-        return $questionDataTable->render('questions.index');
-    }
-
-    /**
-     * Show the form for creating a new Question.
-     *
-     * @return Response
-     */
-    public function create()
-    {
-        return view('questions.create');
     }
 
     /**
@@ -58,95 +40,37 @@ class QuestionController extends AppBaseController
      */
     public function store(CreateQuestionRequest $request)
     {
-        $formInput = $request->all();
+        $input = $request->all();
         $project_id = $request->only('project_id')['project_id'];
         $project = $this->projectRepository->findWithoutFail($project_id);
 
         if (empty($project)) {
-            Flash::error('Project not found');
-
-            return redirect(route('questions.index'));
+            return $this->sendResponse($project_id, 'Project not found.');
         }
+        $section_id = $request->only('section')['section'];
+
+        $section = (isset($project->sections[$section_id])) ? $project->sections[$section_id] : '';
+
+        if (!empty($section)) {
+            $input['double_entry'] = (isset($section['double'])) ? $section['double'] : false;
+        }
+        $input['css_id'] = str_slug('s' . $section_id . $input['qnum']);
+
+        $question = $this->questionRepository->create($input);
 
         $args = [
-            'raw_ans' => $request->only('raw_ans')['raw_ans'],
-            'qnum' => $request->only('qnum')['qnum'],
-            'layout' => $request->only('layout')['layout'],
             'project' => $project,
-            'section' => $request->only('section')['section'],
+            'question' => $question,
+            'section' => $section_id,
         ];
-        $render = $formInput['render'] = $this->to_render($args);
 
-        $question = $this->questionRepository->create($formInput);
+        $render = $input['render'] = $this->to_render($args, $input);
 
         $inputs = $this->getInputs($render);
 
         $question->surveyInputs()->saveMany($inputs);
 
-        $project = $question->project;
-        if (Schema::hasTable($project->dbname)) {
-            $project->status = 'modified';
-            $project->save();
-        }
-
-        /**
-        if(!empty($raw_answers)) {
-        $answers = [];
-        foreach($raw_answers as $answer) {
-        $answer['class_name'] = $answer['className'];
-        $answer['project_id'] = $question->project->id;
-        $answer['question_id'] = $question->id;
-        $answer['user_id'] = Auth::user()->getAuthIdentifier();
-        $answers[] = $answer;
-        }
-
-        DB::table('answers')->insert($answers);
-        }
-         */
-
-        Flash::success('Questions saved successfully.');
-
-        return redirect(route('questions.index'));
-    }
-
-    /**
-     * Display the specified Question.
-     *
-     * @param  int $id
-     *
-     * @return Response
-     */
-    public function show($id)
-    {
-        $question = $this->questionRepository->findWithoutFail($id);
-
-        if (empty($question)) {
-            Flash::error('Question not found');
-
-            return redirect(route('questions.index'));
-        }
-
-        return view('questions.show')->with('question', $question);
-    }
-
-    /**
-     * Show the form for editing the specified Question.
-     *
-     * @param  int $id
-     *
-     * @return Response
-     */
-    public function edit($id)
-    {
-        $question = $this->questionRepository->findWithoutFail($id);
-
-        if (empty($question)) {
-            Flash::error('Question not found');
-
-            return redirect(route('questions.index'));
-        }
-
-        return view('questions.edit')->with('question', $question);
+        return $this->sendResponse($question->toArray(), 'Question saved successfully');
     }
 
     /**
@@ -162,38 +86,50 @@ class QuestionController extends AppBaseController
         $question = $this->questionRepository->findWithoutFail($id);
 
         if (empty($question)) {
-            Flash::error('Question not found');
-
-            return redirect(route('questions.index'));
+            return $this->sendError('Question not found');
         }
 
-        $input = $request->all();
+        $form_input = $request->all();
+
+        $project_id = $request->only('project_id')['project_id'];
+        $project = $this->projectRepository->findWithoutFail($project_id);
+
+        if (empty($project)) {
+            return $this->sendResponse($project_id, 'Project not found.');
+        }
+
+        $section_id = $request->only('section')['section'];
+
+        $section = (isset($project->sections[$section_id])) ? $project->sections[$section_id] : '';
+        $double_entry = $form_input['double_entry'] = (isset($form_input['double_entry'])) ? $form_input['double_entry'] : false;
+        if (!empty($section)) {
+            $form_input['double_entry'] = (isset($section['double'])) ? $section['double'] : $double_entry;
+        }
+
+        $form_input['qstatus'] = 'modified';
+
+        $new_question = $this->questionRepository->update($form_input, $id);
 
         $args = [
-            'raw_ans' => $request->only('raw_ans')['raw_ans'],
-            'qnum' => $request->only('qnum')['qnum'],
-            'layout' => $request->only('layout')['layout'],
-            'project_id' => $request->only('project_id')['project_id'],
-            'section' => $request->only('section')['section'],
+            'question' => $new_question,
+            'project' => $project,
+            'section' => $section_id,
         ];
-        $render = $input['render'] = $this->to_render($args);
 
-        $question = $this->questionRepository->update($input, $id);
+        $render = $this->to_render($args, $form_input);
 
         $inputs = $this->getInputs($render);
 
-        $question->surveyInputs()->delete();
-        $question->surveyInputs()->saveMany($inputs);
+        $new_question->surveyInputs()->delete();
+        $new_question->surveyInputs()->saveMany($inputs);
 
-        $project = $question->project;
+        $project = $new_question->project;
         if (Schema::hasTable($project->dbname)) {
             $project->status = 'modified';
             $project->save();
         }
 
-        Flash::success('Question updated successfully.');
-
-        return redirect(route('questions.index'));
+        return $this->sendResponse($question->toArray(), 'Question updated successfully');
     }
 
     /**
@@ -205,18 +141,26 @@ class QuestionController extends AppBaseController
      */
     public function destroy($id)
     {
+        /** @var Question $question */
         $question = $this->questionRepository->findWithoutFail($id);
 
         if (empty($question)) {
-            Flash::error('Question not found');
-
-            return redirect(route('questions.index'));
+            return $this->sendError('Question not found');
         }
 
-        $this->questionRepository->delete($id);
+        $question->delete();
 
-        Flash::success('Question deleted successfully.');
+        return $this->sendResponse($id, 'Question deleted successfully');
+    }
 
-        return redirect(route('questions.index'));
+    public function sort(Request $request)
+    {
+        $sort = $request->only('sort');
+        $section = $request->only('section');
+        foreach ($sort['sort'] as $key => $qid) {
+            $question = $this->questionRepository->findWithoutFail($qid);
+            $question->sort = $section['section'] . $key;
+            $question->save();
+        }
     }
 }

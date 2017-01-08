@@ -39,9 +39,19 @@ Route::group(['prefix' => 'projects/{project}/surveys'], function () {
 
 Route::post('projects/{project}/dbcreate', ['as' => 'projects.dbcreate', 'uses' => ProjectController::class . '@dbcreate']);
 
+Route::get('projects/sort/{project}', ['as' => 'projects.sort', 'uses' => ProjectController::class . '@sort']);
+
 Route::resource('projects', 'ProjectController');
 
-Route::resource('questions', 'QuestionController');
+Route::post('questions', ['as' => 'questions.store', 'uses' => QuestionController::class . '@store']);
+
+Route::post('questions/sort', ['as' => 'questions.sort', 'uses' => QuestionController::class . '@sort']);
+
+Route::match(['put', 'patch'], 'questions/{question}', ['as' => 'questions.update', 'uses' => QuestionController::class . '@update']);
+
+Route::delete('questions/{question}', ['as' => 'questions.destroy', 'uses' => QuestionController::class . '@destroy']);
+
+//Route::resource('questions', 'QuestionController');
 
 Route::resource('smsLogs', 'SmsLogController');
 

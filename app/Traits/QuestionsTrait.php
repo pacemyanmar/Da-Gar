@@ -211,7 +211,7 @@ trait QuestionsTrait
         }
 
         if ($key == 'className') {
-            $new_class = preg_replace('/\s[checkbox|radio]\s/', '', $value);
+            $new_class = preg_replace('/[checkbox|radio]/', '', $value);
             $value = $input_class . ' ' . $new_class;
         }
     }

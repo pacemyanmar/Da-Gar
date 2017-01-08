@@ -6,9 +6,11 @@
 <section class="content-header" style="margin-bottom:30px;">
   <h1 class="pull-left">{!! $project->project !!}</h1>
   <h1 class="pull-right">
+
   @if($project->status != 'published')
     {!! Form::open(['route' => ['projects.dbcreate', $project->id], 'method' => 'post']) !!}
     <div class='btn-group'>
+    <a href="{!! route('projects.sort', [$project->id]) !!}" class="btn btn-info">Sort Project</a>
     @if($project->status == 'modified')
         {!! Form::button('<i class="fa fa-list-alt"></i> Rebuild Form', [
             'type' => 'submit',
@@ -60,7 +62,7 @@
     <div class="panel-heading">
       <div class="panel-title">
         {!! $section['sectionname'] !!} <small> {!! (!empty($section['descriptions']))?" | ".$section['descriptions']:"" !!}</small>
-        <span class="pull-right"><a href="#" class='btn btn-success' data-toggle="modal" data-target="#qModal" data-qurl="{!! route('api.questions.store') !!}" data-section="{!! $section_key !!}" data-method='POST'><i class="glyphicon glyphicon-plus"></i></a></span>
+        <span class="pull-right"><a href="#" class='btn btn-success' data-toggle="modal" data-target="#qModal" data-qurl="{!! route('questions.store') !!}" data-section="{!! $section_key !!}" data-method='POST'><i class="glyphicon glyphicon-plus"></i></a></span>
       </div>
     </div>
     <div class="panel-body">
@@ -85,6 +87,7 @@
 <script type='text/javascript'>
 
   var formData = {'fields':''};
+  var sortURL = '{!! route('questions.sort') !!}';
 
   $(document).ready(function(){
 
@@ -93,6 +96,35 @@
       { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') }
     });
 
+    $('tbody').sortable({
+      cursor: 'move',
+      axis: 'y',
+      update: function (event, ui) {
+        var order = $(this).sortable("serialize");
+        var section = $(this).data('section');
+        order += '&section=' + section;
+        console.log(section);
+        console.log(order);
+
+        //send ajax request
+        $.ajax({
+          url    : sortURL,
+          type   : 'POST',
+          data   : order,
+          success: function (data) {
+            console.log(data);
+            if(data.success){
+              $("#message").html('Sorted');
+              $("#message").addClass('text-green');
+            }else{
+              $("#message").html('Something wrong');
+              $("#message").addClass('text-red');
+            }
+          }
+
+        });
+      }
+    });
 
     $('#qModal').on('shown.bs.modal', function(event) {
       var button = $(event.relatedTarget) // Button that triggered the modal
@@ -328,7 +360,7 @@
             window.beforeunload = function(){ return void 0;}
             resetForm($( "#qModalForm" ))
             setTimeout(function(){
-              window.location.reload();
+              //window.location.reload();
             }, 1800);
           }
         });

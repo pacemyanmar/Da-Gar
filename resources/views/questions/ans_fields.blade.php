@@ -3,8 +3,10 @@
  * count answers
  * set array of css class based on column count
  */
-
-$anscount = count($question->surveyInputs);
+$surveyInputs = $project->inputs->where('question_id', $question->id)->all();
+// reindex collection array
+$surveyInputs = array_values($surveyInputs);
+$anscount = count($surveyInputs);
 $css_class = [
     '', // empty
     'col-xs-12', // column count 1
@@ -39,7 +41,7 @@ $ans_in_col = round($anscount / $col_group_count);
 			<div class="{!! $css_class[$col_group_count] !!} @if($i>0) {{ ' padleft' }}@endif">
 		@endif
 
-		@foreach ($question->surveyInputs as $k => $element)
+		@foreach ($surveyInputs as $k => $element)
 			@if($k >= ($i * $ans_in_col) && $k < (($i + 1) * $ans_in_col))
 				@if(!isset($element->value))
 					@php
