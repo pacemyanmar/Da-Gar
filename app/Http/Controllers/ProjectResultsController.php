@@ -209,6 +209,10 @@ class ProjectResultsController extends Controller
             $view->with('results', $result);
         }
 
+        if (!empty($form_id) && $project->copies > 1) {
+            $view->with('form', $form_id);
+        }
+
         return $view;
     }
 

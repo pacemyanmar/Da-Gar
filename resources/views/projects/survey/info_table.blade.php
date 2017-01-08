@@ -32,7 +32,13 @@
                         @if($project->index_columns)
                             @foreach($project->index_columns as $column => $columnName)
                                 @if($column == 'form_id')
-                                <td>{!! ucwords($sample->{$column}) !!}</td>
+                                <td>
+                                    @if(isset($form))
+                                        <p>{!! $form !!}</p>
+                                    @else
+                                    {!! ucwords($sample->{$column}) !!}
+                                    @endif
+                                </td>
                                 @else
                                 <td>{!! ucwords($sample->data->{$column}) !!}</td>
                                 @endif
@@ -44,22 +50,30 @@
                         @endif
                         @if(count($project->samples) > 1)
                         <td>
-                                <select name="sample" id="sample" class="info form-control">
-                                @foreach($project->samples as $name => $sample)
-                                        <option value="{!! $sample !!}">{!! $name !!}</option>
-                                @endforeach
-                                </select>
+                            <select id="sample" class="info form-control" {!! (isset($sample->data->sample))?'disabled="disabled"':'name="sample"' !!}>
+                            @foreach($project->samples as $name => $sample_value)
+                                <option value="{!! $sample_value !!}" {!! (isset($sample->data->sample) && $sample->data->sample == $sample_value)?' selected="selected"':'' !!}>{!! $name !!}</option>
+                            @endforeach
+                            </select>
+                            @if(isset($sample->data->sample))
+                                <input type="hidden" name="sample" value="{!! $sample->data->sample !!}">
+                            @endif
                         </td>
                         @else
                             <input class ="info" type="hidden" id="sample" name="sample" value="{!! $project->samples[0]!!}">
                         @endif
                         @if($project->copies > 1)
                             <td>
+                                @if(isset($form))
+                                    <input name="copies" id="copies" type=hidden value="{!! $form !!}">
+                                    <p>{!! $form !!}</p>
+                                @else
                                 <select name="copies" id="copies" class="info form-control">
                                 @for($i=1; $i <= $project->copies; $i++)
                                     <option value="{!! $i !!}">{!! $i !!}</option>
                                 @endfor
                                 </select>
+                                @endif
                             </td>
                         @else
                             <input class="info" type="hidden" id="copies" name="copies" value="1">
