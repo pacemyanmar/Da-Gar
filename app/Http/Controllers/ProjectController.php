@@ -105,6 +105,10 @@ class ProjectController extends AppBaseController
             return redirect(route('projects.index'));
         }
 
+        if ($project->status != 'published') {
+            return redirect(route('projects.index'));
+        }
+
         return view('projects.show')->with('project', $project)
             ->with('questions', $project->questions);
     }

@@ -42,6 +42,18 @@ class ProjectResultsController extends Controller
     {
         $project = $this->projectRepository->findWithoutFail($project_id);
 
+        if (empty($project)) {
+            Flash::error('Project not found');
+
+            return redirect(route('projects.index'));
+        }
+
+        if ($project->status != 'published') {
+            Flash::error('Project need to build.');
+
+            return redirect(route('projects.edit', [$project->id]));
+        }
+
         if ($resultDataTable instanceof SurveyResultDataTable) {
             $table = $resultDataTable;
         } else if ($samplable instanceof SurveyResultDataTable) {
