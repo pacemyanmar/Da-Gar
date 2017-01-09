@@ -58,16 +58,16 @@ class ProjectController extends AppBaseController
      */
     public function store(CreateProjectRequest $request)
     {
-        $input = $request->all();
+        $input = $request->except(['samples']);
         if (!isset($input['sections'])) {
             $input['sections'][0] = [
                 'sectionname' => 'Survey',
             ];
         }
 
-        $samples = $request->only('samples');
-        if (array_key_exists('samples', $samples) && !empty($samples['samples'])) {
-            foreach ($samples['samples'] as $sample) {
+        $samples = $request->input('samples');
+        if (!empty($samples)) {
+            foreach ($samples as $sample) {
                 $key = $sample['name'];
                 $val = $sample['id'];
                 $input['samples'][$key] = $val;
@@ -157,8 +157,8 @@ class ProjectController extends AppBaseController
                 'sectionname' => 'Survey',
             ];
         }
-        $samples = $request->only('samples');
-        foreach ($samples['samples'] as $sample) {
+        $samples = $request->input('samples');
+        foreach ($samples as $sample) {
             $key = $sample['name'];
             $val = $sample['id'];
             $input['samples'][$key] = $val;
