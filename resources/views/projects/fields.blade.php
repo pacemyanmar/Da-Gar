@@ -25,7 +25,7 @@
 <!-- DB Link Field -->
 <div class="form-group col-sm-6 has-error">
     {!! Form::label('dblink', 'Database name to link: ') !!}
-    {!! Form::select('dblink', $dblink,($project)?$project->dblink:null, ['class' => 'form-control toggle']) !!}
+    {!! Form::select('dblink', $dblink,(isset($project))?$project->dblink:null, ['class' => 'form-control toggle']) !!}
     <span class="text-red">* Red fields cannot change after form built.</span>
 </div>
 
@@ -34,13 +34,13 @@
 <div class="row">
 <div class="form-group col-sm-6 has-error">
     {!! Form::label('type', 'Linked database type: ') !!}
-    {!! Form::select('type', $type,($project)?$project->type:null, ['class' => 'form-control toggle']) !!}
+    {!! Form::select('type', $type,(isset($project))?$project->type:null, ['class' => 'form-control toggle']) !!}
 </div>
 <!-- Type Field -->
 <div class="form-group col-sm-6 has-error">
     {!! Form::label('copies', 'Copies of form for a sample: ') !!}
     {!! Form::select('copies', ['1' => 1,'2' => 2,'3' => 3,'4' => 4,'5' => 5,'6' => 6,'7' => 7,'8' => 8,'9' => 9,'10' => 10,
-    '11' => 11,'12' => 12,'13' => 13,'14' => 14,'15' => 15,'16' => 16,'17' => 17,'18' => 18,'19' => 19,'20' => 20],($project)?$project->copies:null, ['class' => 'form-control toggle']) !!}
+    '11' => 11,'12' => 12,'13' => 13,'14' => 14,'15' => 15,'16' => 16,'17' => 17,'18' => 18,'19' => 19,'20' => 20],(isset($project))?$project->copies:null, ['class' => 'form-control toggle']) !!}
 </div>
 </div>
 </div>
