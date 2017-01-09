@@ -238,6 +238,7 @@ class SurveyResultDataTable extends DataTable
         $textColumns = array_intersect_key($this->tableColumns, array_flip($textColumns));
 
         $columnName = array_flip($columnName);
+        $textColsArr = [];
         foreach ($textColumns as $key => $value) {
             $textColsArr[] = $columnName[$key];
         }
@@ -245,7 +246,7 @@ class SurveyResultDataTable extends DataTable
         $selectColumns = ['village', 'village_tract', 'township', 'district', 'state'];
 
         $selectColumns = array_intersect_key($this->tableColumns, array_flip($selectColumns));
-
+        $selectColsArr = [];
         foreach ($selectColumns as $key => $value) {
             $selectColsArr[] = $columnName[$key];
         }
