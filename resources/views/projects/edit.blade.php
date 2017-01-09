@@ -5,11 +5,10 @@
 @section('content')
 <section class="content-header" style="margin-bottom:30px;">
   <h1 class="pull-left">{!! $project->project !!}</h1>
-  <h1 class="pull-right">
-  <div class='btn-group'>
+  <div class="pull-right">
     <a href="{!! route('projects.sort', [$project->id]) !!}" class="btn btn-info">Sort Project</a>
   @if($project->status != 'published')
-    {!! Form::open(['route' => ['projects.dbcreate', $project->id], 'method' => 'post']) !!}
+    {!! Form::open(['route' => ['projects.dbcreate', $project->id], 'method' => 'post', 'class' => 'btn']) !!}
     @if($project->status == 'modified')
         {!! Form::button('<i class="fa fa-list-alt"></i> Rebuild Form', [
             'type' => 'submit',
@@ -27,7 +26,6 @@
   {!! Form::close() !!}
   @endif
   </div>
-  </h1>
 </section>
 
 <section>
