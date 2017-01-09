@@ -20,6 +20,7 @@ class Project extends Model
         'samples',
         'copies',
         'dblink',
+        'dbname',
         'status',
         'index_columns',
     ];
