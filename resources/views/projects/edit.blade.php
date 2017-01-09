@@ -6,11 +6,10 @@
 <section class="content-header" style="margin-bottom:30px;">
   <h1 class="pull-left">{!! $project->project !!}</h1>
   <h1 class="pull-right">
-
+  <div class='btn-group'>
+    <a href="{!! route('projects.sort', [$project->id]) !!}" class="btn btn-info">Sort Project</a>
   @if($project->status != 'published')
     {!! Form::open(['route' => ['projects.dbcreate', $project->id], 'method' => 'post']) !!}
-    <div class='btn-group'>
-    <a href="{!! route('projects.sort', [$project->id]) !!}" class="btn btn-info">Sort Project</a>
     @if($project->status == 'modified')
         {!! Form::button('<i class="fa fa-list-alt"></i> Rebuild Form', [
             'type' => 'submit',
@@ -24,9 +23,10 @@
             'onclick' => 'return confirm("Are you sure?\nThis will build actual form table for data entry!")'
         ]) !!}
     @endif
-    </div>
-{!! Form::close() !!}
-@endif
+
+  {!! Form::close() !!}
+  @endif
+  </div>
   </h1>
 </section>
 

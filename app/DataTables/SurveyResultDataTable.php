@@ -232,7 +232,27 @@ class SurveyResultDataTable extends DataTable
      */
     protected function getBuilderParameters()
     {
-        $columns = "0, 1, 2, 3, 4, 5, 6";
+        $columnName = array_keys($this->tableColumns);
+        $textColumns = ['idcode', 'name', 'nrc_id', 'form_id'];
+
+        $textColumns = array_intersect_key($this->tableColumns, array_flip($textColumns));
+
+        $columnName = array_flip($columnName);
+        foreach ($textColumns as $key => $value) {
+            $textColsArr[] = $columnName[$key];
+        }
+
+        $selectColumns = ['village', 'village_tract', 'township', 'district', 'state'];
+
+        $selectColumns = array_intersect_key($this->tableColumns, array_flip($selectColumns));
+
+        foreach ($selectColumns as $key => $value) {
+            $selectColsArr[] = $columnName[$key];
+        }
+
+        $textCols = implode(',', $textColsArr);
+        $selectCols = implode(',', $selectColsArr);
+
         return [
             'dom' => 'Brtip',
             //'sServerMethod' => 'POST',
@@ -253,11 +273,13 @@ class SurveyResultDataTable extends DataTable
                 'colvis',
             ],
             'initComplete' => "function () {
-                            this.api().columns([$columns]).every(function () {
+                            this.api().columns([$textCols]).every(function () {
                                 var column = this;
+                                var br = document.createElement(\"br\");
                                 var input = document.createElement(\"input\");
                                 input.className = 'form-control input-sm';
                                 input.style.width = '80px';
+                                $(br).appendTo($(column.header()));
                                 $(input).appendTo($(column.header()))
                                 .on('change', function () {
                                     column.search($(this).val(), false, false, true).draw();

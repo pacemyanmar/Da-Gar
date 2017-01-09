@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\DataTables\SurveyResultDataTable;
+use App\Models\SampleData;
 use App\Models\SurveyResult;
 use App\Repositories\ProjectRepository;
 use App\Repositories\QuestionRepository;
@@ -25,13 +26,16 @@ class ProjectResultsController extends Controller
 
     private $sampleRepository;
 
-    public function __construct(ProjectRepository $projectRepo, QuestionRepository $questionRepo, SurveyInputRepository $surveyInputRepo, SampleRepository $sampleRepo)
+    private $sampleDataModel;
+
+    public function __construct(ProjectRepository $projectRepo, QuestionRepository $questionRepo, SurveyInputRepository $surveyInputRepo, SampleRepository $sampleRepo, SampleData $sampleDataModel)
     {
         $this->middleware('auth');
         $this->projectRepository = $projectRepo;
         $this->questionRepository = $questionRepo;
         $this->surveyInputRepo = $surveyInputRepo;
         $this->sampleRepository = $sampleRepo;
+        $this->sampleDataModel = $sampleDataModel;
     }
 
     public function index($project_id, $samplable = null, SurveyResultDataTable $resultDataTable = null)
@@ -134,15 +138,20 @@ class ProjectResultsController extends Controller
                 'render' => function () {
                     return "function(data,type,full,meta){
                         var html;
-                        if(data == 1) {
-                            html = '<img src=\'" . asset('images/complete.png') . "\'>';
-                        } else if(data == 2) {
-                            html = '<img src=\'" . asset('images/incomplete.png') . "\'>';
-                        } else if(data == 3) {
-                            html = '<img src=\'" . asset('images/error.png') . "\'>';
+                        if(type === 'display') {
+                            if(data == 1) {
+                                html = '<img src=\'" . asset('images/complete.png') . "\'>';
+                            } else if(data == 2) {
+                                html = '<img src=\'" . asset('images/incomplete.png') . "\'>';
+                            } else if(data == 3) {
+                                html = '<img src=\'" . asset('images/error.png') . "\'>';
+                            } else {
+                                html = '<img src=\'" . asset('images/missing.png') . "\'>';
+                            }
                         } else {
-                            html = '<img src=\'" . asset('images/missing.png') . "\'>';
+                            html = data;
                         }
+
                         return html;
                     }";
                 },
@@ -150,6 +159,8 @@ class ProjectResultsController extends Controller
             ];
         }
         $input_columns = [];
+
+        $project->load('samplesDb.data');
 
         $project->load(['inputs' => function ($query) {
             $query->where('status', 'published');
@@ -170,7 +181,57 @@ class ProjectResultsController extends Controller
         }
 
         $table->setColumns($columns);
-        return $table->render('projects.survey.' . $project->type . '.index', compact('project'));
+
+        $statesCollections = $project->samplesData->groupBy('state');
+        $locations['allStates'] = $project->samplesData->pluck('state')->unique();
+        $locations['allDistricts'] = $project->samplesData->pluck('district')->unique();
+        $locations['allTownships'] = $project->samplesData->pluck('township')->unique();
+        $locations['allVillageTracts'] = $project->samplesData->pluck('village_tract')->unique();
+        $locations['allVillages'] = $project->samplesData->pluck('village')->unique();
+
+        $districtsByState = [];
+        $townshipByState = [];
+        $vtractByState = [];
+        $villageByState = [];
+
+        foreach ($statesCollections as $state => $samplesData) {
+            $locations['state'][$state]['district'] = $districtsByState[$state] = $samplesData->pluck('district', 'district')->toArray();
+            $locations['state'][$state]['township'] = $townshipByState[$state] = $samplesData->pluck('township', 'township')->toArray();
+            $locations['state'][$state]['village_tract'] = $vtractByState[$state] = $samplesData->pluck('village_tract', 'village_tract')->toArray();
+            $locations['state'][$state]['village'] = $villageByState[$state] = $samplesData->pluck('village', 'village')->toArray();
+        }
+
+        $districtsCollections = $project->samplesData->groupBy('district');
+
+        $townshipByDistrict = [];
+        $vtractByDistrict = [];
+        $villageByDistrict = [];
+
+        foreach ($districtsCollections as $district => $samplesData) {
+            $locations['district'][$district]['township'] = $townshipByDistrict[$district] = $samplesData->pluck('township', 'township')->toArray();
+            $locations['district'][$district]['village_tract'] = $vtractByDistrict[$district] = $samplesData->pluck('village_tract', 'village_tract')->toArray();
+            $locations['district'][$district]['village'] = $villageByDistrict[$district] = $samplesData->pluck('village', 'village')->toArray();
+        }
+
+        $townshipsCollections = $project->samplesData->groupBy('township');
+
+        $vtractBytownship = [];
+        $villageBytownship = [];
+
+        foreach ($townshipsCollections as $township => $samplesData) {
+            $locations['township'][$township]['village_tract'] = $vtractBytownship[$township] = $samplesData->pluck('village_tract', 'village_tract')->toArray();
+            $locations['township'][$township]['village'] = $villageBytownship[$township] = $samplesData->pluck('village', 'village')->toArray();
+        }
+
+        $village_tractsCollections = $project->samplesData->groupBy('village_tract');
+
+        $villageByvillage_tract = [];
+
+        foreach ($village_tractsCollections as $village_tract => $samplesData) {
+            $locations['village_tract'][$village_tract]['village'] = $villageByvillage_tract[$village_tract] = $samplesData->pluck('village', 'village')->toArray();
+        }
+
+        return $table->render('projects.survey.' . $project->type . '.index', compact('project'), compact('locations'));
     }
 
     /**

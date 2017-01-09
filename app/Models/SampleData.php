@@ -80,4 +80,9 @@ class SampleData extends Model
         return $this->hasMany(Sample::class, 'sample_data_id');
     }
 
+    public function projects()
+    {
+        return $this->belongsToMany(Projects::class, 'samples', 'sample_data_id', 'project_id');
+    }
+
 }
