@@ -49,7 +49,7 @@ class ProjectResultsController extends Controller
         }
 
         if ($project->status != 'published') {
-            Flash::error('Project need to build.');
+            Flash::error('Project need to build form.');
 
             return redirect(route('projects.edit', [$project->id]));
         }
