@@ -66,11 +66,16 @@ class ProjectController extends AppBaseController
         }
 
         $samples = $request->only('samples');
-        foreach ($samples['samples'] as $sample) {
-            $key = $sample['name'];
-            $val = $sample['id'];
-            $input['samples'][$key] = $val;
+        if (array_key_exists('samples', $samples) && !empty($samples['samples'])) {
+            foreach ($samples['samples'] as $sample) {
+                $key = $sample['name'];
+                $val = $sample['id'];
+                $input['samples'][$key] = $val;
+            }
+        } else {
+            $input['samples']['Default'] = 1;
         }
+
         $short_project_name = substr($input['project'], 0, 10);
         $unique = uniqid();
         $short_unique = substr($unique, 0, 5);
