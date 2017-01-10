@@ -70,6 +70,11 @@ class QuestionController extends AppBaseController
 
         $question->surveyInputs()->saveMany($inputs);
 
+        if (Schema::hasTable($project->dbname)) {
+            $project->status = 'modified';
+            $project->save();
+        }
+
         return $this->sendResponse($question->toArray(), 'Question saved successfully');
     }
 
