@@ -157,6 +157,7 @@
         dataType: 'json',
         controlOrder: [
         'checkbox',
+        'radio',
         'radio-group',
         'text',
         'date',
@@ -202,6 +203,20 @@
             }
           },
           checkbox: {
+            onadd: function (fld) {
+              $('.name-wrap', fld).remove();
+              $('.required-wrap', fld).remove();
+              $('.access-wrap', fld).remove();
+              $('.toggle-wrap', fld).remove();
+            },
+            onclone: function (fld) {
+              $('.name-wrap', fld).remove();
+              $('.required-wrap', fld).remove();
+              $('.access-wrap', fld).remove();
+              $('.toggle-wrap', fld).remove();
+            }
+          },
+          radio: {
             onadd: function (fld) {
               $('.name-wrap', fld).remove();
               $('.required-wrap', fld).remove();
@@ -358,7 +373,7 @@
             window.beforeunload = function(){ return void 0;}
             resetForm($( "#qModalForm" ))
             setTimeout(function(){
-              //window.location.reload();
+              window.location.reload();
             }, 1800);
           }
         });

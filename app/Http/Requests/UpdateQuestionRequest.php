@@ -25,7 +25,7 @@ class UpdateQuestionRequest extends FormRequest
     public function rules()
     {
         return [
-            'qnum' => 'required|alpha_num|unique_with:questions,section,sort,' . $this->route('question'),
+            'qnum' => 'required|alpha_num|unique_with:questions,section,sort,project_id,' . $this->route('question'),
             'question' => 'required',
             'raw_ans' => 'required',
             'section' => 'required',
