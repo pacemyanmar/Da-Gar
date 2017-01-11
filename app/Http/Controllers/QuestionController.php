@@ -110,6 +110,7 @@ class QuestionController extends AppBaseController
         if (!empty($section)) {
             $form_input['double_entry'] = (isset($section['double'])) ? $section['double'] : $double_entry;
         }
+        $form_input['css_id'] = str_slug('s' . $section_id . $input['qnum']);
 
         $form_input['qstatus'] = 'modified';
 
