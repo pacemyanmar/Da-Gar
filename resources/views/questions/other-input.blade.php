@@ -26,7 +26,6 @@ if($element->type == 'number') {
     		@else
 				{!! $element->label !!}
     		@endif
-            @if($element->value != '') <span class="label label-primary badge">{!! $element->value !!}</span> @endif
             @if($element->status != 'published') <span class="label label-warning badge">{!! $element->status !!}</span> @endif
     		</span>
     		{!! Form::input($element->type,"result[".$element->inputid."]", (isset($results))?$results->{$element->inputid}:null, $options) !!}
