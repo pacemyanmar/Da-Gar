@@ -153,10 +153,22 @@ class QuestionController extends AppBaseController
         if (empty($question)) {
             return $this->sendError('Question not found');
         }
-
+        if ($question->project->status != 'new') {
+            if (Schema::hasTable($question->project->dbname)) {
+                $inputs = $question->surveyInputs;
+                foreach ($inputs as $input) {
+                    if (Schema::hasColumn($question->project->dbname, $input->inputid)) {
+                        Schema::table($question->project->dbname, function ($table) use ($input) {
+                            $table->dropColumn($input->inputid);
+                        });
+                    }
+                }
+            }
+        }
+        $question->surveyInputs()->delete();
         $question->delete();
 
-        return $this->sendResponse($id, 'Question deleted successfully');
+        return redirect()->back();
     }
 
     public function sort(Request $request)

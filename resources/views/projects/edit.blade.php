@@ -49,7 +49,7 @@
       </div>
     </div>
   </div>
-  {!! Form::open(['url' => '#', 'id' => 'qaForm', 'class'=>'form-horizontal']) !!}
+
   @if(is_array($project->sections))
   @foreach($project->sections as $section_key => $section)
   @php
@@ -69,7 +69,6 @@
   </div>
   @endforeach
   @endif
-  {!! Form::close() !!}
 </div>
 </section>
 @include('questions.modal')
