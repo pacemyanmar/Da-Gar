@@ -31,7 +31,7 @@ elixir(mix => {
             'adminlte/dist/css/AdminLTE.min.css',
             'adminlte/dist/css/skins/_all-skins.min.css',
             'ionicons/css/ionicons.min.css',
-            'formBuilder/dist/form-builder.css',
+            '../css/form-builder.css',
             'formBuilder/dist/form-render.min.css',
             'datatables/media/css/dataTables.bootstrap.min.css',
             'datatables.net-buttons-bs/css/buttons.bootstrap.min.css',
