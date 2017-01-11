@@ -130,9 +130,7 @@ class ProjectController extends AppBaseController
 
             return redirect(route('projects.index'));
         }
-        $project->load(['inputs' => function ($query) {
-            $query->where('status', 'published');
-        }]);
+        $project->load(['inputs']);
         return view('projects.edit')
             ->with('project', $project)
             ->with('questions', $project->questions);
