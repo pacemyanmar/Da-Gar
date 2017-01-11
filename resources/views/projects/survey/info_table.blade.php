@@ -55,12 +55,13 @@
                                 <option value="{!! $sample_value !!}" {!! (isset($sample->data->sample) && $sample->data->sample == $sample_value)?' selected="selected"':'' !!}>{!! $name !!}</option>
                             @endforeach
                             </select>
-                            @if(isset($sample->data->sample))
-                                <input type="hidden" name="sample" value="{!! $sample->data->sample !!}">
-                            @endif
+
                         </td>
+                        @endif
+                        @if(isset($sample->data->sample))
+                                <input type="hidden" name="sample" value="{!! $sample->data->sample !!}">
                         @else
-                            <input class ="info" type="hidden" id="sample" name="sample" value="{!! $project->samples[0]!!}">
+                                <input type="hidden" name="sample" value="1">
                         @endif
                         @if($project->copies > 1)
                             <td>
