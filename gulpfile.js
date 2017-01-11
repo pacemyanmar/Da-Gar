@@ -13,7 +13,7 @@ require('laravel-elixir-vue-2');
  |
  */
 
-elixir(mix => {    
+elixir(mix => {
     // by using versioning on js and css files, all dependencies related files and directory should be in "build" dir.
     mix.copy('resources/assets/vendor/bootstrap/dist/fonts', 'public/build/fonts')
         .copy('resources/assets/vendor/font-awesome/fonts', 'public/build/fonts')
@@ -31,11 +31,11 @@ elixir(mix => {
             'adminlte/dist/css/AdminLTE.min.css',
             'adminlte/dist/css/skins/_all-skins.min.css',
             'ionicons/css/ionicons.min.css',
-            'formBuilder/dist/form-builder.min.css',
+            'formBuilder/dist/form-builder.css',
             'formBuilder/dist/form-render.min.css',
             'datatables/media/css/dataTables.bootstrap.min.css',
             'datatables.net-buttons-bs/css/buttons.bootstrap.min.css',
-            'magic-check/css/magic-check.min.css',    	
+            'magic-check/css/magic-check.min.css',
     	],'public/css/vendor.css','resources/assets/vendor/')
     	.scripts([
             // Order is important
@@ -44,12 +44,13 @@ elixir(mix => {
             'jquery-migrate-official/dist/jquery-migrate.min.js',
             'jquery-ui/jquery-ui.min.js',
             'jquery-ui-sortable/jquery-ui-sortable.min.js',
-            '../js/tooltip-conflict.js', // resolve conflict between jquery-ui and bootstrap            
+            '../js/tooltip-conflict.js', // resolve conflict between jquery-ui and bootstrap
             'bootstrap/dist/js/bootstrap.min.js',
             //'backbone/backbone.js',
-            //'backbone-deep-model/distribution/deep-model.js',            
+            //'backbone-deep-model/distribution/deep-model.js',
             'select2/dist/js/select2.min.js',
-            'formBuilder/dist/form-builder.min.js',
+            '../js/form-builder.js',
+            //'formBuilder/dist/form-builder.min.js',
             'formBuilder/dist/form-render.min.js',
             'datatables/media/js/jquery.dataTables.min.js',
             'datatables/media/js/dataTables.bootstrap.min.js',
@@ -69,7 +70,7 @@ elixir(mix => {
         Elixir.webpack.mergeConfig({
             module: {
                 loaders: [{
-                    test: /\.jsx?$/, 
+                    test: /\.jsx?$/,
                     loader: 'babel',
                     exclude: /node_modules(?!\/(vue-tables-2|vue-pagination-2))/
                 }]
