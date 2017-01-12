@@ -6,6 +6,7 @@ use App\Models\Project;
 use App\Models\Sample;
 use App\Models\SurveyResult;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Request;
 use Yajra\Datatables\Services\DataTable;
 
 class SurveyResultDataTable extends DataTable
@@ -15,6 +16,8 @@ class SurveyResultDataTable extends DataTable
     protected $tableColumns;
 
     protected $tableBaseColumns;
+
+    protected $tableSectionColumns;
 
     protected $sampleType;
 
@@ -49,6 +52,17 @@ class SurveyResultDataTable extends DataTable
     public function setBaseColumns($columns)
     {
         $this->tableBaseColumns = $columns;
+        return $this;
+    }
+
+    /**
+     * Columns Setter
+     * @param array $columns [array of columns to use by datatables]
+     * @return $this ( App\DataTables\SurveyResultDataTable )
+     */
+    public function setSectionColumns($columns)
+    {
+        $this->tableSectionColumns = $columns;
         return $this;
     }
 
@@ -178,6 +192,22 @@ class SurveyResultDataTable extends DataTable
             });
         }
 
+        $filterColumns = Request::get('columns', []);
+
+        foreach ($filterColumns as $index => $column) {
+            if (array_key_exists($filterColumns[$index]['name'], $this->tableSectionColumns) && $filterColumns[$index]['search']['value'] != '') {
+
+                $columnName = $filterColumns[$index]['name'];
+                $value = $filterColumns[$index]['search']['value'];
+
+                if ($value) {
+                    $query->where($columnName, '=', $value);
+                } else {
+                    $query->where($columnName, '=', $value)->orWhereNull($columnName);
+                }
+            }
+        }
+
         return $this->applyScopes($query);
     }
 
@@ -188,7 +218,11 @@ class SurveyResultDataTable extends DataTable
      */
     public function html()
     {
+        $tableAttributes = [
+            'className' => 'table table-striped table-bordered',
+        ];
         $table = $this->builder()
+            ->setTableAttributes($tableAttributes)
             ->columns($this->getColumns())
             ->ajax(['type' => 'POST', 'data' => '{"_method":"GET"}']);
 
@@ -251,8 +285,15 @@ class SurveyResultDataTable extends DataTable
             $selectColsArr[] = $columnName[$key];
         }
 
+        $statusColumns = array_intersect_key($this->tableColumns, $this->tableSectionColumns);
+        $statusColsArr = [];
+        foreach ($statusColumns as $key => $value) {
+            $statusColsArr[] = $columnName[$key];
+        }
+
         $textCols = implode(',', $textColsArr);
         $selectCols = implode(',', $selectColsArr);
+        $statusCols = implode(',', $statusColsArr);
 
         return [
             'dom' => 'Brtip',
@@ -260,7 +301,7 @@ class SurveyResultDataTable extends DataTable
             'scrollX' => true,
             'buttons' => [
                 'print',
-                'reset',
+                //'reset',
                 'reload',
                 [
                     'extend' => 'collection',
@@ -274,7 +315,7 @@ class SurveyResultDataTable extends DataTable
                 'colvis',
             ],
             'initComplete' => "function () {
-                            this.api().columns([$textCols]).every(function () {
+                            this.api().columns([$textCols,'.result']).every(function () {
                                 var column = this;
                                 var br = document.createElement(\"br\");
                                 var input = document.createElement(\"input\");
@@ -286,6 +327,21 @@ class SurveyResultDataTable extends DataTable
                                     column.search($(this).val(), false, false, true).draw();
                                 });
                             });
+                            this.api().columns([$statusCols]).every( function () {
+                              var column = this;
+                              var select = $('<select style=\"width:80px !important\"><option value=\"\">-</option><option value=\"0\">Missing</option><option value=\"1\">Complete</option><option value=\"2\">incomplete</option><option value=\"3\">Error</option></select>')
+                              .appendTo( $(column.header()) )
+                              .on( 'change', function () {
+                              var val = $.fn.dataTable.util.escapeRegex(
+                                          $(this).val()
+                                          );
+
+                                  column
+                                  .search( val ? val : '', false, false )
+                                  .draw();
+                              } );
+                              select.addClass('form-control input-sm');
+                              } );
                         }",
         ];
     }

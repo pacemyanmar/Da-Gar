@@ -54,7 +54,7 @@
 			    //console.log(colIdx);
 			    var br = document.createElement("br");
 			    $(br).appendTo($(column.header()));
-			    var select = $('<select id=\"'+columnName[this.selector.cols]+'\"><option value=\"\"></option></select>')
+			    var select = $('<select style=\"width:100px !important\" id=\"'+columnName[this.selector.cols]+'\"><option value=\"\"></option></select>')
 			        .appendTo(
 			            column.header()
 			        )

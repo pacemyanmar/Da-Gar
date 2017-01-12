@@ -29,8 +29,17 @@
             $selectColsArr[] = $columnName[$key];
         }
 
+        $statusColumns = [''];
+
+        $statusColumns = array_intersect_key($columns, array_flip($statusColumns));
+
+        foreach ($statusColumns as $key => $value) {
+            $statusColsArr[] = $columnName[$key];
+        }
+
         $textCols = implode(',', $textColsArr);
         $selectCols = implode(',', $selectColsArr);
+        $statusCols = implode(',', $statusColsArr);
 
        // dd($project->samplesData->groupBy('state')->keys());
 
@@ -52,7 +61,7 @@
 			    //console.log(colIdx);
 			    var br = document.createElement("br");
 			    $(br).appendTo($(column.header()));
-			    var select = $('<select id=\"'+columnName[this.selector.cols]+'\"><option value=\"\"></option></select>')
+			    var select = $('<select  style=\"width:100px !important\" id=\"'+columnName[this.selector.cols]+'\"><option value=\"\"></option></select>')
 			        .appendTo(
 			            column.header()
 			        )
@@ -211,8 +220,6 @@
 				});
 			});
 
-    		console.log($('#state'));
-    		console.log($('#village'));
     	})(jQuery);
     </script>
 @endsection

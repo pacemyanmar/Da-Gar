@@ -141,12 +141,15 @@ class ProjectResultsController extends Controller
         $baseColumns = $columns;
 
         $table->setBaseColumns($baseColumns);
+
         $section_columns = [];
         foreach ($project->sections as $k => $section) {
             $sectionColumn = 'section' . ($k + 1) . 'status';
             $section_columns[$sectionColumn] = [
                 'name' => $sectionColumn,
                 'data' => $sectionColumn,
+                'orderable' => false,
+                'searchable' => false,
                 'render' => function () {
                     return "function(data,type,full,meta){
                         var html;
@@ -170,6 +173,9 @@ class ProjectResultsController extends Controller
                 'title' => ucfirst($section['sectionname']),
             ];
         }
+
+        $table->setSectionColumns($section_columns);
+
         $input_columns = [];
 
         $project->load('samplesDb.data');
@@ -180,7 +186,7 @@ class ProjectResultsController extends Controller
 
         foreach ($project->inputs as $k => $input) {
             $column = $input->inputid;
-            $input_columns[$column] = ['name' => $column, 'data' => $column, 'title' => $column];
+            $input_columns[$column] = ['name' => $column, 'data' => $column, 'title' => $column, 'class' => 'result', 'orderable' => false];
             if (!$input->in_index) {
                 $input_columns[$column]['visible'] = false;
             }
