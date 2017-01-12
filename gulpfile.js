@@ -50,6 +50,7 @@ elixir(mix => {
             //'backbone-deep-model/distribution/deep-model.js',
             'select2/dist/js/select2.min.js',
             '../js/form-builder.js',
+            //'../js/form-render.js',
             //'formBuilder/dist/form-builder.min.js',
             'formBuilder/dist/form-render.min.js',
             'datatables/media/js/jquery.dataTables.min.js',

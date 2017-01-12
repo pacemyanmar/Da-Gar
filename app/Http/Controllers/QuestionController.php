@@ -65,7 +65,7 @@ class QuestionController extends AppBaseController
         ];
 
         $render = $input['render'] = $this->to_render($args, $input);
-
+        $input['raw_ans'] = str_replace("'", "&#39;", $input['raw_ans']);
         $inputs = $this->getInputs($render);
 
         $question->surveyInputs()->saveMany($inputs);
@@ -111,6 +111,8 @@ class QuestionController extends AppBaseController
             $form_input['double_entry'] = (isset($section['double'])) ? $section['double'] : $double_entry;
         }
         $form_input['css_id'] = str_slug('s' . $section_id . $form_input['qnum']);
+
+        $form_input['raw_ans'] = str_replace("'", "&#39;", $form_input['raw_ans']);
 
         $form_input['qstatus'] = 'modified';
 
