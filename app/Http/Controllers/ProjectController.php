@@ -84,6 +84,19 @@ class ProjectController extends AppBaseController
 
         $project = $this->projectRepository->create($input);
 
+        // update survey_inputs as s join questions as q on s.question_id = q.id join projects as p on q.project_id = p.id set s.double_entry = 1, q.double_entry = 1 where p.id = 1 and q.section = 1;
+
+        foreach ($input['sections'] as $skey => $section) {
+            if (!empty($section)) {
+                if (isset($section['double'])) {
+                    $query = "update survey_inputs as s join questions as q on s.question_id = q.id join projects as p on q.project_id = p.id set s.double_entry = 1, q.double_entry = 1 where p.id = $project->id and q.section = $skey";
+                } else {
+                    $query = "update survey_inputs as s join questions as q on s.question_id = q.id join projects as p on q.project_id = p.id set s.double_entry = 0, q.double_entry = 0 where p.id = $project->id and q.section = $skey";
+                }
+                DB::update(DB::raw($query));
+            }
+        }
+
         Flash::success('Project saved successfully.');
 
         return redirect(route('projects.index'));
@@ -166,8 +179,22 @@ class ProjectController extends AppBaseController
             $val = $sample['id'];
             $input['samples'][$key] = $val;
         }
+        if (Schema::hasTable($project->dbname)) {
+            $input['status'] = 'modified';
+        }
 
         $project = $this->projectRepository->update($input, $id);
+
+        foreach ($input['sections'] as $skey => $section) {
+            if (!empty($section)) {
+                if (isset($section['double'])) {
+                    $query = "update survey_inputs as s join questions as q on s.question_id = q.id join projects as p on q.project_id = p.id set s.double_entry = 1, s.status = 'new', q.double_entry = 1 where p.id = $project->id and q.section = $skey";
+                } else {
+                    $query = "update survey_inputs as s join questions as q on s.question_id = q.id join projects as p on q.project_id = p.id set s.double_entry = 0, s.status = 'new', q.double_entry = 0 where p.id = $project->id and q.section = $skey";
+                }
+                DB::update(DB::raw($query));
+            }
+        }
 
         Flash::success('Project updated successfully.');
 
@@ -228,6 +255,13 @@ class ProjectController extends AppBaseController
 
         // check if table has already created
         if (Schema::hasTable($project->dbname)) {
+            foreach ($project->sections as $key => $section) {
+                $section_num = $key + 1;
+                $section_name = 'section' . $section_num . 'status';
+                if (!Schema::hasColumn($project->dbname, $section_name)) {
+                    $table->unsignedSmallInteger($section_name)->index()->default(0); // 0 => missing, 1 => complete, 2 => incomplete, 3 => error
+                }
+            }
             // if table exists, loop inputs
             foreach ($fields as $input) {
                 $double_column = $input->inputid . '_d';
@@ -263,19 +297,17 @@ class ProjectController extends AppBaseController
                             $table->$inputType($input->inputid)
                                 ->change();
 
+                            $index = DB::select(DB::raw("show index from $project->dbname where Column_name ='$input->inputid'"));
+
+                            if (!empty($index)) {
+                                foreach ($index as $keyIndex) {
+                                    $table->dropIndex($keyIndex->Key_name);
+                                }
+                            }
                             if ($input->in_index) {
 
                                 $table->index($input->inputid);
 
-                            } else {
-
-                                $index = DB::select(DB::raw("show index from $project->dbname where Column_name ='$input->inputid'"));
-
-                                if (!empty($index)) {
-                                    foreach ($index as $keyIndex) {
-                                        $table->dropIndex($keyIndex->Key_name);
-                                    }
-                                }
                             }
 
                             if ($input->double_entry) {
