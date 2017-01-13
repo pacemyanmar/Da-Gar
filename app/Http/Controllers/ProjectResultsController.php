@@ -108,6 +108,15 @@ class ProjectResultsController extends Controller
                             'defaultContent' => 'N/A',
                         ];
                         break;
+                    case 'mobile':
+                        $columns[$column] = [
+                            'name' => 'sample_datas.mobile',
+                            'data' => 'mobile',
+                            'title' => ucfirst($name),
+                            'orderable' => false,
+                            'defaultContent' => 'N/A',
+                        ];
+                        break;
 
                     default:
                         $columns[$column] = [
