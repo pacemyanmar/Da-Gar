@@ -275,7 +275,7 @@ class SurveyResultDataTable extends DataTable
     protected function getBuilderParameters()
     {
         $columnName = array_keys($this->tableColumns);
-        $textColumns = ['idcode', 'name', 'nrc_id', 'form_id'];
+        $textColumns = ['idcode', 'name', 'nrc_id', 'form_id', 'mobile'];
 
         $textColumns = array_intersect_key($this->tableColumns, array_flip($textColumns));
 
