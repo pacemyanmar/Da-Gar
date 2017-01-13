@@ -259,7 +259,7 @@ class ProjectController extends AppBaseController
                 $section_num = $key + 1;
                 $section_name = 'section' . $section_num . 'status';
                 if (!Schema::hasColumn($project->dbname, $section_name)) {
-                    Schema::table($project->dbname, function ($table) use ($input, $project, $double_column, $double_status) {
+                    Schema::table($project->dbname, function ($table) {
                         $table->unsignedSmallInteger($section_name)->index()->default(0); // 0 => missing, 1 => complete, 2 => incomplete, 3 => error
                     });
                 }
