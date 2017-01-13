@@ -36,7 +36,27 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password',
+        'name',
+        'username',
+        'email',
+        'password',
+        'role_id',
+        'confirmation_code',
+    ];
+
+    /**
+     * The attributes that should be casted to native types.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'name' => 'string',
+        'email' => 'string',
+        'username' => 'string',
+        'role_id' => 'integer',
+        'password' => 'string',
+        'confirmation_code' => 'string',
+        'remember_token' => 'string',
     ];
 
     /**
@@ -45,6 +65,28 @@ class User extends Authenticatable
      * @var array
      */
     protected $hidden = [
-        'password', 'remember_token',
+        'password', 'remember_token', 'confirmation_code',
     ];
+
+    /**
+     * Validation rules
+     *
+     * @var array
+     */
+    public static $rules = [
+        'name' => 'required|max:255',
+        'email' => 'required|email|max:255|unique:users,id',
+        'username' => 'required|alpha_num|max:255|unique:users,id',
+        'password' => 'required|min:6|confirmed',
+    ];
+
+    public function role()
+    {
+        return $this->belongsTo(Role::class, 'role_id');
+    }
+
+    public function setPasswordAttribute($value)
+    {
+        $this->attributes['password'] = bcrypt($value);
+    }
 }

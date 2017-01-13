@@ -26,7 +26,7 @@ class UserDataTable extends DataTable
      */
     public function query()
     {
-        $users = User::query();
+        $users = User::query()->with('role');
 
         return $this->applyScopes($users);
     }
@@ -73,6 +73,7 @@ class UserDataTable extends DataTable
         return [
             'name' => ['name' => 'name', 'data' => 'name'],
             'email' => ['name' => 'email', 'data' => 'email'],
+            'role' => ['name' => 'role.description', 'data' => 'role.description'],
             'created_at' => ['name' => 'created_at', 'data' => 'created_at'],
             'updated_at' => ['name' => 'updated_at', 'data' => 'updated_at'],
         ];

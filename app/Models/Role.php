@@ -13,8 +13,6 @@ class Role extends Model
 {
 
     public $table = 'roles';
-    
-
 
     public $fillable = [
         'level',
@@ -22,7 +20,7 @@ class Role extends Model
         'role_name',
         'description',
         'created_at',
-        'updated_at'
+        'updated_at',
     ];
 
     /**
@@ -34,7 +32,7 @@ class Role extends Model
         'level' => 'integer',
         'group' => 'string',
         'role_name' => 'string',
-        'description' => 'string'
+        'description' => 'string',
     ];
 
     /**
@@ -43,8 +41,12 @@ class Role extends Model
      * @var array
      */
     public static $rules = [
-        
+
     ];
 
-    
+    public function user()
+    {
+        return $this->hasMany(User::class);
+    }
+
 }

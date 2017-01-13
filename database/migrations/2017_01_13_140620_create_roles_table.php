@@ -2,6 +2,7 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Artisan;
 
 class CreateRolesTable extends Migration
 {
@@ -14,13 +15,18 @@ class CreateRolesTable extends Migration
     public function up()
     {
         Schema::create('roles', function (Blueprint $table) {
-            $table->increment('id');
+            $table->increments('id');
             $table->integer('level');
             $table->string('group');
             $table->string('role_name');
             $table->string('description');
             $table->timestamps();
         });
+
+        Artisan::call('db:seed', [
+            '--class' => 'RoleTableSeeder',
+            '--force' => true]
+        );
     }
 
     /**

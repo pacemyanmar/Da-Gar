@@ -3,12 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\DataTables\UserDataTable;
-use App\Http\Requests;
+use App\Http\Controllers\AppBaseController;
 use App\Http\Requests\CreateUserRequest;
 use App\Http\Requests\UpdateUserRequest;
+use App\Models\Role;
 use App\Repositories\UserRepository;
 use Flash;
-use App\Http\Controllers\AppBaseController;
 use Response;
 
 class UserController extends AppBaseController
@@ -16,9 +16,14 @@ class UserController extends AppBaseController
     /** @var  UserRepository */
     private $userRepository;
 
-    public function __construct(UserRepository $userRepo)
+    /** @var RoleRepository */
+    private $role;
+
+    public function __construct(UserRepository $userRepo, Role $roleModel)
     {
+        $this->middleware('auth');
         $this->userRepository = $userRepo;
+        $this->role = $roleModel;
     }
 
     /**
@@ -39,7 +44,8 @@ class UserController extends AppBaseController
      */
     public function create()
     {
-        return view('users.create');
+        $roles = $this->role->pluck('description', 'id');
+        return view('users.create')->with('roles', $roles);
     }
 
     /**
@@ -97,7 +103,9 @@ class UserController extends AppBaseController
             return redirect(route('users.index'));
         }
 
-        return view('users.edit')->with('user', $user);
+        $roles = $this->role->pluck('description', 'id');
+
+        return view('users.edit')->with('user', $user)->with('roles', $roles);
     }
 
     /**
