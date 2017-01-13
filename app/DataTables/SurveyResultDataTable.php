@@ -5,6 +5,7 @@ namespace App\DataTables;
 use App\Models\Project;
 use App\Models\Sample;
 use App\Models\SurveyResult;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Request;
 use Yajra\Datatables\Services\DataTable;
@@ -112,6 +113,7 @@ class SurveyResultDataTable extends DataTable
      */
     public function query()
     {
+        $auth = Auth::user();
         // create table name
         $table = str_plural($this->project->dblink);
         $orderBy = (isset($this->orderBy)) ? $table . '.' . $this->orderBy : $table . '.id';
@@ -164,7 +166,7 @@ class SurveyResultDataTable extends DataTable
 
         $input_columns = implode(',', $columnsFromResults);
 
-        $defaultColumns = "samples.id, samples.form_id, sample_datas.*";
+        $defaultColumns = "samples.id, samples.form_id, sample_datas.idcode, sample_datas.*";
         if ($table == 'enumerators') {
 
         }
@@ -187,9 +189,15 @@ class SurveyResultDataTable extends DataTable
                 $join->on('samples.sample_data_id', 'sample_datas.id');
             });
             // join with result database
-            $query->{$joinMethod}($childTable, function ($join) use ($childTable) {
-                $join->on('samples.id', '=', $childTable . '.sample_id');
-            });
+            if ($auth->role->role_name == 'doublechecker') {
+                $query->join($childTable, function ($join) use ($childTable) {
+                    $join->on('samples.id', '=', $childTable . '.sample_id');
+                });
+            } else {
+                $query->{$joinMethod}($childTable, function ($join) use ($childTable) {
+                    $join->on('samples.id', '=', $childTable . '.sample_id');
+                });
+            }
         }
 
         $filterColumns = Request::get('columns', []);
