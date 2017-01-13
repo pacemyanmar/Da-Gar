@@ -99,6 +99,15 @@ class ProjectResultsController extends Controller
                             'defaultContent' => 'N/A',
                         ];
                         break;
+                    case 'idcode':
+                        $columns[$column] = [
+                            'name' => 'sample_datas.idcode',
+                            'data' => 'idcode',
+                            'title' => ucfirst($name),
+                            'orderable' => false,
+                            'defaultContent' => 'N/A',
+                        ];
+                        break;
 
                     default:
                         $columns[$column] = [
@@ -115,7 +124,7 @@ class ProjectResultsController extends Controller
             switch ($project->dblink) {
                 case 'voter':
                     $columns = [
-                        'idcode' => ['name' => 'idcode', 'data' => 'idcode', 'title' => 'Voter ID'],
+                        'idcode' => ['name' => 'sample_datas.idcode', 'data' => 'sample_datas.idcode', 'title' => 'Voter ID'],
                         'name' => ['name' => 'name', 'data' => 'name', 'title' => 'Name'],
                         'nrc_id' => ['name' => 'nrc_id', 'data' => 'nrc_id', 'title' => 'NRC ID'],
                     ];
@@ -123,7 +132,7 @@ class ProjectResultsController extends Controller
 
                 case 'enumerator':
                     $columns = [
-                        'idcode' => ['name' => 'idcode', 'data' => 'idcode', 'title' => 'Code'],
+                        'idcode' => ['name' => 'sample_datas.idcode', 'data' => 'sample_datas.idcode', 'title' => 'Code'],
                         'form_id' => ['name' => 'form_id', 'data' => 'form_id', 'title' => 'Form No.'],
                         'name' => ['name' => 'name', 'data' => 'name', 'title' => 'Name'],
                         'nrc_id' => ['name' => 'nrc_id', 'data' => 'nrc_id', 'title' => 'NRC ID'],
@@ -131,7 +140,7 @@ class ProjectResultsController extends Controller
 
                 default:
                     $columns = [
-                        'idcode' => ['name' => 'idcode', 'data' => 'idcode', 'title' => 'Code'],
+                        'idcode' => ['name' => 'sample_datas.idcode', 'data' => 'sample_datas.idcode', 'title' => 'Code'],
                         'form_id' => ['name' => 'form_id', 'data' => 'form_id', 'title' => 'Form No.'],
                     ];
                     break;
@@ -262,7 +271,7 @@ class ProjectResultsController extends Controller
     public function create($project_id, $samplable, $form_id = '')
     {
         $project = $this->projectRepository->findWithoutFail($project_id);
-
+        $auth = Auth::user();
         if ($project->status == 'new') {
             Flash::warning("Project need to build to show '$project->project' form.");
 
@@ -282,9 +291,15 @@ class ProjectResultsController extends Controller
         $dbname = $project->dbname;
         $result = $sample->resultWithTable($dbname)->first();
 
-        $project->load(['questions' => function ($query) {
-            $query->where('qstatus', 'published');
-        }]);
+        if ($auth->role->role_name == 'doublechecker') {
+            $project->load(['questions' => function ($query) {
+                $query->where('qstatus', 'published')->where('double_entry', 1);
+            }]);
+        } else {
+            $project->load(['questions' => function ($query) {
+                $query->where('qstatus', 'published');
+            }]);
+        }
 
         $project->load(['inputs' => function ($query) {
             $query->where('status', 'published');
