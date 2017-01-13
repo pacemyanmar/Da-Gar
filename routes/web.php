@@ -62,3 +62,8 @@ Route::resource('settings', 'SettingController');
 Route::post('sample/import', ['as' => 'sample.import', 'uses' => 'SampleDataController@import']);
 
 Route::resource('sampleDatas', 'SampleDataController');
+
+
+Route::resource('users', 'UserController');
+
+Route::resource('roles', 'RoleController');
