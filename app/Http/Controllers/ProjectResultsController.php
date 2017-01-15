@@ -348,9 +348,15 @@ class ProjectResultsController extends Controller
         $dblink = strtolower($project->dblink);
         $sample = $this->sampleRepository->findWithoutFail($samplable);
 
+        if (Auth::user()->role->role_name == 'doublechecker') {
+            $dbname = $project->dbname . '_double';
+        } else {
+            $dbname = $project->dbname;
+        }
+
         $surveyResult = new SurveyResult();
 
-        $surveyResult->setTable($project->dbname);
+        $surveyResult->setTable($dbname);
 
         $sample_type = $request->only('sample');
 
@@ -387,7 +393,8 @@ class ProjectResultsController extends Controller
                 // loop skip classes .s0q4,.s0q5
                 foreach ($skipped_inputs as $skipid) {
                     // TODO: remove trailing space
-                    $classNames[] = ' ' . str_slug($skipid); // inputid from skip column
+                    //$classNames[] = ' ' . str_slug($skipid); // inputid from skip column
+                    $classNames[] = str_slug($skipid);
                 }
             }
 
@@ -439,8 +446,7 @@ class ProjectResultsController extends Controller
                     }
 
                 }
-                //echo $q;
-                //dd($qsum);
+
                 if ($q) {
                     $section_status = $results['section' . $section_key . 'status'] = 2;
                 } else {
@@ -456,7 +462,6 @@ class ProjectResultsController extends Controller
         //$results['sample'] = (!empty($request->only('samplable_type')['samplable_type'])) ? $request->only('samplable_type')['samplable_type'] : '';
 
         $auth_user = Auth::user()->id;
-        //$results['project_id'] = $project->id;
 
         if (!empty($sample->user_id) && $sample->user_id != $auth_user) {
             $sample->update_user_id = $auth_user;
@@ -466,43 +471,23 @@ class ProjectResultsController extends Controller
 
         $results['user_id'] = $auth_user;
 
-        $old_result = $sample->resultWithTable($project->dbname);
+        $old_result = $sample->resultWithTable($dbname);
 
         $old_result = $old_result->first();
 
         if (!empty($old_result)) {
-            $old_result->setTable($project->dbname);
+            $old_result->setTable($dbname);
             $old_result->fill($results);
 
             $result = $old_result->save($results);
         } else {
             $surveyResult->fill($results);
 
-            $result = $sample->resultWithTable($project->dbname)->save($surveyResult);
+            $result = $sample->resultWithTable($dbname)->save($surveyResult);
         }
         $sample->save(); // update Sample::class
 
-        //$qnumSort = array_map($getQuestion, array_keys($results));
         return json_encode(['status' => 'success', 'message' => 'Saved!', 'data' => $result]);
     }
 
-    public function show($project_id, $voter_id)
-    {
-
-    }
-
-    public function edit()
-    {
-
-    }
-
-    public function update()
-    {
-
-    }
-
-    public function delete()
-    {
-
-    }
 }

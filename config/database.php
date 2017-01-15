@@ -70,7 +70,7 @@ return [
             'driver' => 'mysql',
             'host' => env('DB_HOST', 'mariadb'),
             'port' => env('DB_PORT', '3306'),
-            'database' => env('DB_DATABASE', 'homestead'),
+            'database' => env('DB_DATABASE', 'thwin_smslaravel'),
             'username' => env('DB_USERNAME', 'homestead'),
             'password' => env('DB_PASSWORD', 'secret'),
             'charset' => 'utf8',
