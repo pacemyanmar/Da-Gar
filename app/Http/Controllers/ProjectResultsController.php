@@ -161,8 +161,16 @@ class ProjectResultsController extends Controller
         $table->setBaseColumns($baseColumns);
 
         $section_columns = [];
+        $wordcount = 17;
         foreach ($project->sections as $k => $section) {
             $sectionColumn = 'section' . ($k + 1) . 'status';
+            $sectionname = $section['sectionname'];
+            // if string long to show in label show as tooltip
+            if (mb_strlen($section['sectionname']) > $wordcount) {
+                $sectionshort = str_limit($sectionname, $wordcount - 5);
+                $sectionname = "<span data-toggle='tooltip' data-placement='top' title='$sectionname' data-container='body'> $sectionshort <i class='fa fa-info-circle'></i></span>";
+            }
+
             $section_columns[$sectionColumn] = [
                 'name' => $sectionColumn,
                 'data' => $sectionColumn,
@@ -188,7 +196,7 @@ class ProjectResultsController extends Controller
                         return html;
                     }";
                 },
-                'title' => ucfirst($section['sectionname']),
+                'title' => $sectionname,
             ];
         }
 
@@ -300,15 +308,15 @@ class ProjectResultsController extends Controller
         $dbname = $project->dbname;
         $result = $sample->resultWithTable($dbname)->first();
 
-        if ($auth->role->role_name == 'doublechecker') {
-            $project->load(['questions' => function ($query) {
-                $query->where('qstatus', 'published')->where('double_entry', 1);
-            }]);
-        } else {
-            $project->load(['questions' => function ($query) {
-                $query->where('qstatus', 'published');
-            }]);
-        }
+        //if ($auth->role->role_name == 'doublechecker') {
+        //    $project->load(['questions' => function ($query) {
+        //        $query->where('qstatus', 'published')->where('double_entry', 1);
+        //    }]);
+        //} else {
+        $project->load(['questions' => function ($query) {
+            $query->where('qstatus', 'published');
+        }]);
+        //}
 
         $project->load(['inputs' => function ($query) {
             $query->where('status', 'published');
@@ -320,6 +328,12 @@ class ProjectResultsController extends Controller
 
         if (!empty($result)) {
             $view->with('results', $result);
+        }
+
+        if ($auth->role->role_name == 'doublechecker') {
+            $dbname_double = $project->dbname . '_double';
+            $double_results = $sample->resultWithTable($dbname_double)->first();
+            $view->with('double_results', $double_results);
         }
 
         if (!empty($form_id) && $project->copies > 1) {
