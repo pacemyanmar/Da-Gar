@@ -5,7 +5,9 @@ $options = [
 'class' => $element->className.' form-control '.$sectionClass,
 'id' => $element->id,
 'placeholder' => $element->label,
-'aria-describedby'=> $element->id.'-addons'
+'aria-describedby'=> $element->id.'-addons',
+'data-class'=>$element->inputid,
+'data-origin' => $origin_text,
 ];
 if($element->type == 'number') {
     $options['placeholder'] .= ' (number) ';
@@ -30,8 +32,8 @@ if($element->type == 'number') {
             @if($element->value != '') <span class="label label-primary badge">{!! $element->value !!}</span> @endif
             @endif
             @if($element->status != 'published') <span class="label label-warning badge">{!! $element->status !!}</span> @endif
-    		</span>
-    		{!! Form::input($element->type,"result[".$element->inputid."]", (isset($results))?$results->{$element->inputid}:null, $options) !!}
+    		<span class="hide label label-danger badge {!! $element->inputid .' '.$element->id!!}">{!! "Data not match!" !!}</span>
+            </span>
+    		{!! Form::input($element->type,"result[".$element->inputid."]", (isset($double_results))?$double_results->{$element->inputid}:null, $options) !!}
     	</div>
-
     </div>

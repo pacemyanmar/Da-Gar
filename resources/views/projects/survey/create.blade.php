@@ -114,3 +114,21 @@ window.url="{!! route('projects.surveys.save', ['project' => $project->id, 'samp
     })(jQuery);
     </script>
 @endpush
+
+@if(Auth::user()->role->role_name == 'doublechecker')
+
+@push('document-ready')
+$(":input").on('change keyup', function(e){
+    var cssid = $(this).attr('id');
+    var cssclass = $(this).data('class');
+    if($(this).val() != $(this).data('origin')) {
+        $('.'+cssclass).addClass('hide');
+        $('.'+cssid).removeClass('hide');
+        //console.log('data not match ' + cssid + cssclass);
+    } else {
+        $('.'+cssclass).addClass('hide');
+    }
+    e.preventDefault();
+});
+@endpush
+@endif

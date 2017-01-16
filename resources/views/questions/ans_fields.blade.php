@@ -1,4 +1,10 @@
 <?php
+
+if (Auth::user()->role->role_name == 'doublechecker') {
+    $prefix = "double_";
+} else {
+    $prefix = "";
+}
 /**
  * count answers
  * set array of css class based on column count
@@ -34,7 +40,7 @@ $ans_in_col = round($anscount / $col_group_count);
  */
 ?>
 @if($question->layout == 'matrix')
-	@include('questions.radio-group')
+	@include('questions.'.$prefix.'radio-group')
 @else
 	@for($i=0,$j=0;$i<$col_group_count; $i++)
 		@if($j == ($i * $ans_in_col))
@@ -43,19 +49,25 @@ $ans_in_col = round($anscount / $col_group_count);
 
 		@foreach ($surveyInputs as $k => $element)
 			@if($k >= ($i * $ans_in_col) && $k < (($i + 1) * $ans_in_col))
+				@php
+					$origin = (isset($results) && $element->value == $results->{$element->inputid});
+					$double = (isset($double_results) && $element->value == $double_results->{$element->inputid});
+					$origin_text = (isset($results))?$results->{$element->inputid}:null;
+					$double_text = (isset($double_results))?$double_results->{$element->inputid}:null;
+				@endphp
 				@if(!isset($element->value))
 					@php
 						$element->value = $k;
 					@endphp
 				@endif
 				@if ($element->type == 'checkbox')
-					@include('questions.checkbox')
+					@include('questions.'.$prefix.'checkbox')
 				@endif
 				@if ($element->type == 'radio')
-					@include('questions.radio')
+					@include('questions.'.$prefix.'radio')
 				@endif
 				@if (in_array($element->type,['text','number','email','date']))
-					@include('questions.other-input')
+					@include('questions.'.$prefix.'other-input')
 				@endif
 				@php
 					$j++;
