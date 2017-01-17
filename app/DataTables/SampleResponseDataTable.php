@@ -88,8 +88,27 @@ class SampleResponseDataTable extends DataTable
     {
         return $this->builder()
             ->columns($this->getColumns())
-            ->ajax('')
+            ->ajax(['type' => 'POST', 'data' => '{"_method":"GET"}'])
             ->parameters($this->getBuilderParameters());
+    }
+
+    /**
+     * Get default builder parameters.
+     *
+     * @return array
+     */
+    protected function getBuilderParameters()
+    {
+        return [
+            'scrollX' => true,
+            'buttons' => [
+                'create',
+                'export',
+                'print',
+                'reset',
+                'reload',
+            ],
+        ];
     }
 
     /**
