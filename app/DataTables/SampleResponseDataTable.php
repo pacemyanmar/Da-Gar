@@ -3,6 +3,7 @@
 namespace App\DataTables;
 
 use App\Models\Sample;
+use Illuminate\Support\Facades\DB;
 use Yajra\Datatables\Services\DataTable;
 
 class SampleResponseDataTable extends DataTable
@@ -37,6 +38,22 @@ class SampleResponseDataTable extends DataTable
         $project = $this->project;
         $childTable = $project->dbname;
 
+        $sectionColumns = [];
+        foreach ($project->sections as $k => $section) {
+            $sectionColumns[] = 'section' . ($k + 1) . 'status';
+        }
+
+        // modify column name to use in sql query TABLE.COLUMN format
+        array_walk($sectionColumns, function (&$column, $index) use ($childTable) {
+            $columnStr = 'SUM(IF(' . $childTable . '.' . $column . ' = 0, 1, 0)) AS ' . $column . '_missing';
+            $columnStr .= ', SUM(IF(' . $childTable . '.' . $column . ' = 1, 1, 0)) AS ' . $column . '_complete';
+            $columnStr .= ', SUM(IF(' . $childTable . '.' . $column . ' = 2, 1, 0)) AS ' . $column . '_incomplete';
+            $columnStr .= ', SUM(IF(' . $childTable . '.' . $column . ' = 3, 1, 0)) AS ' . $column . '_error';
+            $column = $columnStr;
+        });
+
+        $sectionColumnsStr = implode(',', $sectionColumns);
+
         $query->leftjoin('users as user', function ($join) {
             $join->on('user.id', 'samples.user_id');
         });
@@ -48,7 +65,7 @@ class SampleResponseDataTable extends DataTable
         });
 
         if ($project->status != 'new') {
-            $query->select('idcode', 'user.name as user_name', 'update_user.name as update_user', 'qc_user.name as qc_user');
+            $query->select('state', DB::raw('GROUP_CONCAT(DISTINCT user.name) as user_name', 'GROUP_CONCAT(DISTINCT update_user.name) as update_user', 'GROUP_CONCAT(DISTINCT qc_user.name) as qc_user'), DB::raw($sectionColumnsStr));
             $query->leftjoin('sample_datas', function ($join) {
                 $join->on('samples.sample_data_id', 'sample_datas.id');
             });
@@ -57,6 +74,7 @@ class SampleResponseDataTable extends DataTable
                 $join->on('samples.id', '=', $childTable . '.sample_id');
             });
         }
+        $query->groupBy('sample_datas.state');
 
         return $this->applyScopes($query);
     }
@@ -81,11 +99,31 @@ class SampleResponseDataTable extends DataTable
      */
     protected function getColumns()
     {
-        return [
-            'idcode',
-            'user_name' => ['data' => 'user_name', 'name' => 'user.name'],
-            'update_user' => ['data' => 'update_user', 'name' => 'update_user.name'],
+        $project = $this->project;
+
+        $columns = [
+            //'idcode' => ['data' => 'idcode', 'name' => 'idcode', 'title' => 'ID Code'],
+            'state',
+            //'user_name' => ['data' => 'user_name', 'name' => 'user.name', 'defaultContent' => 'N/A'],
+            //'update_user' => ['data' => 'update_user', 'name' => 'update_user.name', 'defaultContent' => 'N/A'],
         ];
+
+        $sectionColumns = [];
+        foreach ($project->sections as $k => $section) {
+            $section_id = 'section' . ($k + 1) . 'status';
+            $sectionname = $section['sectionname'];
+            $complete_img = "<img src='" . asset('images/complete.png') . "'>";
+            $incomplete_img = "<img src='" . asset('images/incomplete.png') . "'>";
+            $missing_img = "<img src='" . asset('images/missing.png') . "'>";
+            $error_img = "<img src='" . asset('images/error.png') . "'>";
+
+            $columns[$section_id . '_complete'] = ['data' => $section_id . '_complete', 'name' => $section_id . '_complete', 'defaultContent' => 'N/A', 'title' => $sectionname . $complete_img, 'searchable' => false];
+            $columns[$section_id . '_incomplete'] = ['data' => $section_id . '_incomplete', 'name' => $section_id . '_incomplete', 'defaultContent' => 'N/A', 'title' => $sectionname . $incomplete_img, 'searchable' => false];
+            $columns[$section_id . '_missing'] = ['data' => $section_id . '_missing', 'name' => $section_id . '_missing', 'defaultContent' => 'N/A', 'title' => $sectionname . $missing_img, 'searchable' => false];
+            $columns[$section_id . '_error'] = ['data' => $section_id . '_error', 'name' => $section_id . '_error', 'defaultContent' => 'N/A', 'title' => $sectionname . $error_img, 'searchable' => false];
+        }
+
+        return $columns;
     }
 
     /**
