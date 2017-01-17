@@ -2,11 +2,18 @@
 
 namespace App\DataTables;
 
-use App\User;
+use App\Models\Sample;
 use Yajra\Datatables\Services\DataTable;
 
 class SampleResponseDataTable extends DataTable
 {
+    private $project;
+
+    public function setProject($project)
+    {
+        $this->project = $project;
+        return $this;
+    }
     /**
      * Display ajax response.
      *
@@ -16,8 +23,7 @@ class SampleResponseDataTable extends DataTable
     {
         return $this->datatables
             ->eloquent($this->query())
-            ->addColumn('action', 'path.to.action.view')
-            ->make(true);
+            ->make(true, true);
     }
 
     /**
@@ -27,7 +33,30 @@ class SampleResponseDataTable extends DataTable
      */
     public function query()
     {
-        $query = User::query();
+        $query = Sample::query();
+        $project = $this->project;
+        $childTable = $project->dbname;
+
+        $query->leftjoin('users as user', function ($join) {
+            $join->on('user.id', 'samples.user_id');
+        });
+        $query->leftjoin('users as update_user', function ($join) {
+            $join->on('update_user.id', 'samples.update_user_id');
+        });
+        $query->leftjoin('users as qc_user', function ($join) {
+            $join->on('qc_user.id', 'samples.qc_user_id');
+        });
+
+        if ($project->status != 'new') {
+            $query->select('idcode', 'user.name as user_name', 'update_user.name as update_user', 'qc_user.name as qc_user');
+            $query->leftjoin('sample_datas', function ($join) {
+                $join->on('samples.sample_data_id', 'sample_datas.id');
+            });
+
+            $query->leftjoin($childTable, function ($join) use ($childTable) {
+                $join->on('samples.id', '=', $childTable . '.sample_id');
+            });
+        }
 
         return $this->applyScopes($query);
     }
@@ -40,10 +69,9 @@ class SampleResponseDataTable extends DataTable
     public function html()
     {
         return $this->builder()
-                    ->columns($this->getColumns())
-                    ->ajax('')
-                    ->addAction(['width' => '80px'])
-                    ->parameters($this->getBuilderParameters());
+            ->columns($this->getColumns())
+            ->ajax('')
+            ->parameters($this->getBuilderParameters());
     }
 
     /**
@@ -54,10 +82,9 @@ class SampleResponseDataTable extends DataTable
     protected function getColumns()
     {
         return [
-            'id',
-            // add your columns
-            'created_at',
-            'updated_at',
+            'idcode',
+            'user_name' => ['data' => 'user_name', 'name' => 'user.name'],
+            'update_user' => ['data' => 'update_user', 'name' => 'update_user.name'],
         ];
     }
 

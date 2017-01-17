@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\DataTables\SampleResponseDataTable;
 use App\DataTables\SurveyResultDataTable;
 use App\Models\SampleData;
 use App\Models\SurveyResult;
@@ -484,15 +485,19 @@ class ProjectResultsController extends Controller
         // sample (country|region|1|2)
         //$results['sample'] = (!empty($request->only('samplable_type')['samplable_type'])) ? $request->only('samplable_type')['samplable_type'] : '';
 
-        $auth_user = Auth::user()->id;
+        $auth_user = Auth::user();
 
-        if (!empty($sample->user_id) && $sample->user_id != $auth_user) {
-            $sample->update_user_id = $auth_user;
+        if (!empty($sample->user_id) && $sample->user_id != $auth_user->id) {
+            if ($auth_user->role->role_name == 'doublechecker') {
+                $sample->qc_user_id = $auth_user->id;
+            } else {
+                $sample->update_user_id = $auth_user->id;
+            }
         } else {
-            $sample->user_id = $auth_user;
+            $sample->user_id = $auth_user->id;
         }
 
-        $results['user_id'] = $auth_user;
+        $results['user_id'] = $auth_user->id;
 
         $old_result = $sample->resultWithTable($dbname);
 
@@ -513,14 +518,32 @@ class ProjectResultsController extends Controller
         return json_encode(['status' => 'success', 'message' => 'Saved!', 'data' => $result]);
     }
 
-    public function responseRateSample($project_id, Request $request)
+    public function responseRateSample($project_id, SampleResponseDataTable $sampleResponse)
     {
-        # code...
+        $project = $this->projectRepository->findWithoutFail($project_id);
+        if (empty($project)) {
+            Flash::error('Project not found');
+
+            return redirect(route('projects.index'));
+        }
+
+        $sampleResponse->setProject($project);
+
+        return $sampleResponse->render('projects.survey.' . $project->type . '.response-sample');
     }
 
-    public function responseRateDouble($project_id, Request $request)
+    public function responseRateDouble($project_id, SampleResponseDataTable $sampleResponse)
     {
-        # code...
+        $project = $this->projectRepository->findWithoutFail($project_id);
+        if (empty($project)) {
+            Flash::error('Project not found');
+
+            return redirect(route('projects.index'));
+        }
+
+        $sampleResponse->setProject($project);
+
+        return $sampleResponse->render('projects.survey.' . $project->type . '.response-double');
     }
 
     public function originUse($project_id, $qid, $survey_id, Request $request)
