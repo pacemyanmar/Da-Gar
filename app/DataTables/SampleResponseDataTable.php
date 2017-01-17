@@ -110,8 +110,11 @@ class SampleResponseDataTable extends DataTable
 
         $sectionColumns = [];
         foreach ($project->sections as $k => $section) {
-            $section_id = 'section' . ($k + 1) . 'status';
+            $section_key = ($k + 1);
+            $section_id = 'section' . $section_key . 'status';
             $sectionname = $section['sectionname'];
+            $sectionname = "<span data-toggle='tooltip' data-placement='top' title='$sectionname' data-container='body'> <i class='fa fa-info-circle'></i>Sect$section_key  </span>";
+
             $complete_img = "<img src='" . asset('images/complete.png') . "'>";
             $incomplete_img = "<img src='" . asset('images/incomplete.png') . "'>";
             $missing_img = "<img src='" . asset('images/missing.png') . "'>";
