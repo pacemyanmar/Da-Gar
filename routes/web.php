@@ -19,6 +19,13 @@ Auth::routes();
 
 Route::get('/home', 'HomeController@index');
 
+Route::group(['prefix' => 'projects/{project}/response'], function () {
+    Route::match(['get', 'post'], '/sample', ['as' => 'projects.response.sample', 'uses' => 'ProjectResultsController@responseRateSample']);
+    Route::match(['get', 'post'], '/double', ['as' => 'projects.response.double', 'uses' => 'ProjectResultsController@responseRateDouble']);
+    Route::post('/origin/{survey_id}', ['as' => 'projects.response.origin.use', 'uses' => 'ProjectResultsController@originUse']);
+    Route::post('/double/{survey_id}', ['as' => 'projects.response.double.use', 'uses' => 'ProjectResultsController@doubleUse']);
+});
+
 Route::group(['prefix' => 'projects/{project}/surveys'], function () {
 
     Route::match(['get', 'post'], '/{sample_type?}', ['as' => 'projects.surveys.index', 'uses' => 'ProjectResultsController@index']);
@@ -62,7 +69,6 @@ Route::resource('settings', 'SettingController');
 Route::post('sample/import', ['as' => 'sample.import', 'uses' => 'SampleDataController@import']);
 
 Route::resource('sampleDatas', 'SampleDataController');
-
 
 Route::resource('users', 'UserController');
 

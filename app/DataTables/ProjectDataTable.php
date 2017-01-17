@@ -3,7 +3,6 @@
 namespace App\DataTables;
 
 use App\Models\Project;
-use Form;
 use Yajra\Datatables\Services\DataTable;
 
 class ProjectDataTable extends DataTable
@@ -41,26 +40,27 @@ class ProjectDataTable extends DataTable
     {
         return $this->builder()
             ->columns($this->getColumns())
-            ->addAction(['width' => '10%'])
+            ->addAction(['width' => '60%'])
             ->ajax('')
             ->parameters([
                 'dom' => 'rtip',
+                'paging' => false,
                 'scrollX' => false,
                 'buttons' => [
                     'print',
                     'reset',
                     'reload',
                     [
-                         'extend'  => 'collection',
-                         'text'    => '<i class="fa fa-download"></i> Export',
-                         'buttons' => [
-                             'csv',
-                             'excel',
-                             'pdf',
-                         ],
+                        'extend' => 'collection',
+                        'text' => '<i class="fa fa-download"></i> Export',
+                        'buttons' => [
+                            'csv',
+                            'excel',
+                            'pdf',
+                        ],
                     ],
                     //'colvis'
-                ]
+                ],
             ]);
     }
 
@@ -73,7 +73,7 @@ class ProjectDataTable extends DataTable
     {
         return [
             'project' => ['name' => 'project', 'data' => 'project'],
-            'type' => ['name' => 'type', 'data' => 'type']
+            //'type' => ['name' => 'type', 'data' => 'type'],
         ];
     }
 

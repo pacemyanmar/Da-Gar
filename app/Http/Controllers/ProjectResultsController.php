@@ -88,6 +88,7 @@ class ProjectResultsController extends Controller
                             'title' => ucfirst($name),
                             'orderable' => false,
                             'defaultContent' => 'N/A',
+                            'width' => '80px',
                         ];
                         break;
                     case 'name':
@@ -97,6 +98,7 @@ class ProjectResultsController extends Controller
                             'title' => ucfirst($name),
                             'orderable' => false,
                             'defaultContent' => 'N/A',
+                            'width' => '80px',
                         ];
                         break;
                     case 'idcode':
@@ -106,6 +108,7 @@ class ProjectResultsController extends Controller
                             'title' => ucfirst($name),
                             'orderable' => false,
                             'defaultContent' => 'N/A',
+                            'width' => '80px',
                         ];
                         break;
                     case 'mobile':
@@ -115,6 +118,7 @@ class ProjectResultsController extends Controller
                             'title' => ucfirst($name),
                             'orderable' => false,
                             'defaultContent' => 'N/A',
+                            'width' => '80px',
                         ];
                         break;
 
@@ -124,6 +128,7 @@ class ProjectResultsController extends Controller
                             'data' => $column,
                             'title' => ucfirst($name),
                             'orderable' => false,
+                            'width' => '80px',
                         ];
                         break;
                 }
@@ -136,6 +141,7 @@ class ProjectResultsController extends Controller
                         'idcode' => ['name' => 'sample_datas.idcode', 'data' => 'sample_datas.idcode', 'title' => 'Voter ID'],
                         'name' => ['name' => 'name', 'data' => 'name', 'title' => 'Name'],
                         'nrc_id' => ['name' => 'nrc_id', 'data' => 'nrc_id', 'title' => 'NRC ID'],
+                        'width' => '80px',
                     ];
                     break;
 
@@ -145,12 +151,14 @@ class ProjectResultsController extends Controller
                         'form_id' => ['name' => 'form_id', 'data' => 'form_id', 'title' => 'Form No.'],
                         'name' => ['name' => 'name', 'data' => 'name', 'title' => 'Name'],
                         'nrc_id' => ['name' => 'nrc_id', 'data' => 'nrc_id', 'title' => 'NRC ID'],
+                        'width' => '80px',
                     ];
 
                 default:
                     $columns = [
                         'idcode' => ['name' => 'sample_datas.idcode', 'data' => 'sample_datas.idcode', 'title' => 'Code'],
                         'form_id' => ['name' => 'form_id', 'data' => 'form_id', 'title' => 'Form No.'],
+                        'width' => '80px',
                     ];
                     break;
             }
@@ -176,6 +184,7 @@ class ProjectResultsController extends Controller
                 'data' => $sectionColumn,
                 'orderable' => false,
                 'searchable' => false,
+                'width' => '80px',
                 'render' => function () {
                     return "function(data,type,full,meta){
                         var html;
@@ -212,7 +221,7 @@ class ProjectResultsController extends Controller
 
         foreach ($project->inputs as $k => $input) {
             $column = $input->inputid;
-            $input_columns[$column] = ['name' => $column, 'data' => $column, 'title' => $column, 'class' => 'result', 'orderable' => false];
+            $input_columns[$column] = ['name' => $column, 'data' => $column, 'title' => $column, 'class' => 'result', 'orderable' => false, 'width' => '80px'];
             if (!$input->in_index) {
                 $input_columns[$column]['visible'] = false;
             }
@@ -502,6 +511,26 @@ class ProjectResultsController extends Controller
         $sample->save(); // update Sample::class
 
         return json_encode(['status' => 'success', 'message' => 'Saved!', 'data' => $result]);
+    }
+
+    public function responseRateSample($project_id, Request $request)
+    {
+        # code...
+    }
+
+    public function responseRateDouble($project_id, Request $request)
+    {
+        # code...
+    }
+
+    public function originUse($project_id, $qid, $survey_id, Request $request)
+    {
+        # code...
+    }
+
+    public function doubleUse($project_id, $qid, $survey_id, Request $request)
+    {
+        # code...
     }
 
 }

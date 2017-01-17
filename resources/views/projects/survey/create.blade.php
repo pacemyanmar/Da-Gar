@@ -102,7 +102,7 @@ window.url="{!! route('projects.surveys.save', ['project' => $project->id, 'samp
             var input = $(this)[0];
             var parent = $(this).parent();
             var validity = input.checkValidity();
-            console.log(validity);
+            //console.log(validity);
             if(validity) {
                 $(this).removeClass('invalid');
             } else {

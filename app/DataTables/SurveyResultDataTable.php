@@ -227,14 +227,15 @@ class SurveyResultDataTable extends DataTable
     public function html()
     {
         $tableAttributes = [
-            'className' => 'table table-striped table-bordered',
+            'class' => 'table table-striped table-bordered',
         ];
         $table = $this->builder()
             ->setTableAttributes($tableAttributes)
+            ->addAction(['width' => '80px'])
             ->columns($this->getColumns())
             ->ajax(['type' => 'POST', 'data' => '{"_method":"GET"}']);
 
-        $table->addAction(['width' => '80px']);
+        //$table->addAction(['width' => '80px']);
 
         return $table->parameters($this->getBuilderParameters());
     }
@@ -282,7 +283,7 @@ class SurveyResultDataTable extends DataTable
         $columnName = array_flip($columnName);
         $textColsArr = [];
         foreach ($textColumns as $key => $value) {
-            $textColsArr[] = $columnName[$key];
+            $textColsArr[] = $columnName[$key] + 1;
         }
 
         $selectColumns = ['village', 'village_tract', 'township', 'district', 'state'];
@@ -290,13 +291,13 @@ class SurveyResultDataTable extends DataTable
         $selectColumns = array_intersect_key($this->tableColumns, array_flip($selectColumns));
         $selectColsArr = [];
         foreach ($selectColumns as $key => $value) {
-            $selectColsArr[] = $columnName[$key];
+            $selectColsArr[] = $columnName[$key] + 1;
         }
 
         $statusColumns = array_intersect_key($this->tableColumns, $this->tableSectionColumns);
         $statusColsArr = [];
         foreach ($statusColumns as $key => $value) {
-            $statusColsArr[] = $columnName[$key];
+            $statusColsArr[] = $columnName[$key] + 1;
         }
 
         $textCols = implode(',', $textColsArr);
@@ -305,8 +306,11 @@ class SurveyResultDataTable extends DataTable
 
         return [
             'dom' => 'Brtip',
+            'ordering' => false,
+            'authWidth' => false,
             //'sServerMethod' => 'POST',
             'scrollX' => true,
+            'fixedColumns' => true,
             'buttons' => [
                 'print',
                 //'reset',
