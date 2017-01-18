@@ -279,13 +279,9 @@ class ProjectController extends AppBaseController
 
     private function down($project)
     {
-        if (Schema::hasTable($project->dbname)) {
-            Schema::drop($project->dbname);
-        }
+        Schema::dropIfExists($project->dbname);
 
-        if (Schema::hasTable($project->dbname . '_double')) {
-            Schema::drop($project->dbname . '_double');
-        }
+        Schema::dropIfExists($project->dbname . '_double');
     }
 
     private function createTable($dbname, $project, $fields)
