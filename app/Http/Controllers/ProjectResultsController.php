@@ -518,7 +518,7 @@ class ProjectResultsController extends Controller
         return json_encode(['status' => 'success', 'message' => 'Saved!', 'data' => $result]);
     }
 
-    public function responseRateSample($project_id, SampleResponseDataTable $sampleResponse)
+    public function responseRateSample($project_id, $filter, SampleResponseDataTable $sampleResponse)
     {
         $project = $this->projectRepository->findWithoutFail($project_id);
         if (empty($project)) {
@@ -529,7 +529,9 @@ class ProjectResultsController extends Controller
 
         $sampleResponse->setProject($project);
 
-        return $sampleResponse->render('projects.survey.' . $project->type . '.response-sample');
+        $sampleResponse->setFilter($filter);
+
+        return $sampleResponse->render('projects.survey.' . $project->type . '.response-sample', compact('project', $project), compact('filter', $filter));
     }
 
     public function responseRateDouble($project_id, SampleResponseDataTable $sampleResponse)

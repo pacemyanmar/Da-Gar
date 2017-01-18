@@ -10,9 +10,17 @@ class SampleResponseDataTable extends DataTable
 {
     private $project;
 
+    private $filter;
+
     public function setProject($project)
     {
         $this->project = $project;
+        return $this;
+    }
+
+    public function setFilter($filter)
+    {
+        $this->filter = $filter;
         return $this;
     }
     /**
@@ -65,7 +73,7 @@ class SampleResponseDataTable extends DataTable
         });
 
         if ($project->status != 'new') {
-            $query->select('state', DB::raw('GROUP_CONCAT(DISTINCT user.name) as user_name', 'GROUP_CONCAT(DISTINCT update_user.name) as update_user', 'GROUP_CONCAT(DISTINCT qc_user.name) as qc_user'), DB::raw($sectionColumnsStr));
+            $query->select('sample_datas.' . $this->filter, DB::raw('GROUP_CONCAT(DISTINCT user.name) as user_name', 'GROUP_CONCAT(DISTINCT update_user.name) as update_user', 'GROUP_CONCAT(DISTINCT qc_user.name) as qc_user'), DB::raw($sectionColumnsStr));
             $query->leftjoin('sample_datas', function ($join) {
                 $join->on('samples.sample_data_id', 'sample_datas.id');
             });
@@ -74,7 +82,7 @@ class SampleResponseDataTable extends DataTable
                 $join->on('samples.id', '=', $childTable . '.sample_id');
             });
         }
-        $query->groupBy('sample_datas.state');
+        $query->groupBy('sample_datas.' . $this->filter);
 
         return $this->applyScopes($query);
     }
@@ -86,7 +94,11 @@ class SampleResponseDataTable extends DataTable
      */
     public function html()
     {
+        $tableAttributes = [
+            'class' => 'table table-striped table-bordered',
+        ];
         return $this->builder()
+            ->setTableAttributes($tableAttributes)
             ->columns($this->getColumns())
             ->ajax(['type' => 'POST', 'data' => '{"_method":"GET"}'])
             ->parameters($this->getBuilderParameters());
@@ -100,14 +112,25 @@ class SampleResponseDataTable extends DataTable
     protected function getBuilderParameters()
     {
         return [
+            'dom' => 'Brtip',
             'scrollX' => true,
             'buttons' => [
-                'create',
-                'export',
-                'print',
-                'reset',
-                'reload',
+
             ],
+            'initComplete' => "function () {
+                            this.api().columns([0]).every(function () {
+                                var column = this;
+                                var br = document.createElement(\"br\");
+                                var input = document.createElement(\"input\");
+                                input.className = 'form-control input-sm';
+                                input.style.width = '60px';
+                                $(br).appendTo($(column.header()));
+                                $(input).appendTo($(column.header()))
+                                .on('change', function () {
+                                    column.search($(this).val(), false, false, true).draw();
+                                });
+                            });
+                        }",
         ];
     }
 
@@ -119,10 +142,10 @@ class SampleResponseDataTable extends DataTable
     protected function getColumns()
     {
         $project = $this->project;
-
+        $filter = $this->filter;
         $columns = [
             //'idcode' => ['data' => 'idcode', 'name' => 'idcode', 'title' => 'ID Code'],
-            'state',
+            "$filter" => ['data' => "$filter", 'name' => 'sample_datas.' . $filter, 'orderable' => false],
             //'user_name' => ['data' => 'user_name', 'name' => 'user.name', 'defaultContent' => 'N/A'],
             //'update_user' => ['data' => 'update_user', 'name' => 'update_user.name', 'defaultContent' => 'N/A'],
         ];

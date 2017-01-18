@@ -11,7 +11,7 @@
 </div>
 @if(Auth::user()->role->level > 5)
 <div class="btn-group">
-    <a href="{{ route('projects.response.sample', $id) }}" class='btn btn-default btn-sm'>
+    <a href="{{ route('projects.response.filter', [$id, 'state']) }}" class='btn btn-default btn-sm'>
         <i class="glyphicon glyphicon-equalizer"></i> Response
     </a>
     <a href="{{ route('projects.response.double', $id) }}" class='btn btn-default btn-sm'>

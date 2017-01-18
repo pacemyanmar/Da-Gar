@@ -20,7 +20,7 @@ Auth::routes();
 Route::get('/home', 'HomeController@index');
 
 Route::group(['prefix' => 'projects/{project}/response'], function () {
-    Route::match(['get', 'post'], '/sample', ['as' => 'projects.response.sample', 'uses' => 'ProjectResultsController@responseRateSample']);
+    Route::match(['get', 'post'], '/{filter}', ['as' => 'projects.response.filter', 'uses' => 'ProjectResultsController@responseRateSample']);
     Route::match(['get', 'post'], '/double', ['as' => 'projects.response.double', 'uses' => 'ProjectResultsController@responseRateDouble']);
     Route::post('/origin/{survey_id}', ['as' => 'projects.response.origin.use', 'uses' => 'ProjectResultsController@originUse']);
     Route::post('/double/{survey_id}', ['as' => 'projects.response.double.use', 'uses' => 'ProjectResultsController@doubleUse']);
