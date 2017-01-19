@@ -54,7 +54,8 @@
   @foreach($project->sections as $section_key => $section)
   @php
             //section as css class name
-            $sectionClass = str_slug($section['sectionname'], $separator = "-")
+            $sectionClass = str_slug($section['sectionname'], $separator = "-");
+            $editing = true;
   @endphp
   <div class="panel panel-primary">
     <div class="panel-heading">
@@ -402,12 +403,22 @@
 </style>
 <script type="text/javascript">
     (function($) {
-
+        $('form.translation').submit(function(e){
+                          $.ajax({
+                                type: $(this).attr('method'),
+                                url: $(this).attr('action'),
+                                data: $(this).serialize(),
+                                success: function (data) {
+                                    alert('OK. Translation saved!');
+                                }
+                            });
+                            e.preventDefault();
+                        });
         $(':input').on('keyup change',function(){
             var input = $(this)[0];
             var parent = $(this).parent();
             var validity = input.checkValidity();
-            console.log(validity);
+
             if(validity) {
                 $(this).removeClass('invalid');
             } else {

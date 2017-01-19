@@ -18,7 +18,9 @@ class Question extends Model
 
     public $fillable = [
         'qnum',
+        'qnum_trans',
         'question',
+        'question_trans',
         'css_id',
         'raw_ans',
         'render',
@@ -92,5 +94,18 @@ class Question extends Model
     public function scopeOnlyPublished($query)
     {
         return $query->whereQstatus('published');
+    }
+
+    public function getQuestionAttribute($value)
+    {
+        $lang = \App::getLocale();
+        $question = json_decode($this->attributes['question_trans'], true);
+        if (!empty($question) && array_key_exists($lang, $question)) {
+            $translation = $question[$lang];
+        }
+        if (!empty($translation)) {
+            $value = $translation;
+        }
+        return $value;
     }
 }

@@ -188,6 +188,11 @@ return [
          */
         Felixkiss\UniqueWithValidator\UniqueWithValidatorServiceProvider::class,
 
+        /**
+         * https://github.com/ied3vil/LanguageSwitcher
+         */
+        ied3vil\LanguageSwitcher\Providers\LanguageSwitcherProvider::class,
+
         /*
          * Application Service Providers...
          */

@@ -23,6 +23,7 @@ class Project extends Model
         'dbname',
         'status',
         'index_columns',
+        'project_trans',
     ];
 
     /**
@@ -77,4 +78,16 @@ class Project extends Model
         return $this->belongsToMany(SampleData::class, 'samples', 'project_id', 'sample_data_id');
     }
 
+    public function getProjectAttribute($value)
+    {
+        $lang = \App::getLocale();
+        $project = json_decode($this->attributes['project_trans'], true);
+        if (!empty($project) && array_key_exists($lang, $project)) {
+            $translation = $project[$lang];
+        }
+        if (!empty($translation)) {
+            $value = $translation;
+        }
+        return $value;
+    }
 }

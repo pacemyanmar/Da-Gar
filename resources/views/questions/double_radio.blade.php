@@ -7,7 +7,7 @@
             <span class="hide label label-danger badge {!! $element->inputid .' '.$element->id!!}">{!! "Data not match!" !!}</span>
    	</label>
 </div>
-@if(!empty($element->skip))
+@if(!empty($element->skip) && !isset($editing))
 	@push('document-ready')
 	if($("input[name='result[{!! $element->inputid !!}]']:checked").val() == {!! $element->value !!}) {
 			$("{!! $element->skip !!}").prop("disabled", true);

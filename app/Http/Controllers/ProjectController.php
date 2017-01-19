@@ -81,6 +81,9 @@ class ProjectController extends AppBaseController
         $unique = uniqid();
         $short_unique = substr($unique, 0, 5);
         $input['dbname'] = snake_case($short_project_name . '_' . $short_unique);
+        $lang = config('app.fallback_locale');
+
+        $input['project_trans'] = json_encode([$lang => $input['project']]);
 
         $project = $this->projectRepository->create($input);
 
@@ -182,6 +185,10 @@ class ProjectController extends AppBaseController
         if (Schema::hasTable($project->dbname)) {
             $input['status'] = 'modified';
         }
+
+        $lang = config('app.fallback_locale');
+
+        $input['project_trans'] = json_encode([$lang => $input['project']]);
 
         $project = $this->projectRepository->update($input, $id);
 

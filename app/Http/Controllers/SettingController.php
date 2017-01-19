@@ -8,6 +8,7 @@ use App\Http\Requests\SaveSettingRequest;
 use App\Http\Requests\UpdateSettingRequest;
 use App\Repositories\SettingRepository;
 use Flash;
+use Illuminate\Http\Request;
 use Krucas\Settings\Facades\Settings;
 use Response;
 
@@ -164,5 +165,35 @@ class SettingController extends AppBaseController
         Flash::success('Setting deleted successfully.');
 
         return redirect(route('settings.index'));
+    }
+
+    public function translate($id, Request $request)
+    {
+        $model = $request->input('model');
+        $locale = \App::getLocale();
+        if ($locale == config('app.fallback_locale')) {
+            return;
+        }
+
+        $columns = $request->input('columns'); //array
+        if (!empty($model) && class_exists('App\Models\\' . studly_case($model))) {
+            // set dblink model class
+            $class = 'App\Models\\' . studly_case($model);
+            $classInstance = $class::find($id);
+            foreach ($columns as $column => $translation) {
+                $translation_column = $column . '_trans';
+                $old_translation = json_decode($classInstance->{$translation_column}, true);
+                $new_translation[$locale] = $translation;
+                if (!empty($old_translation)) {
+                    $updated_translation = array_merge($old_translation, $new_translation);
+                } else {
+                    $updated_translation = $new_translation;
+                }
+                $classInstance->{$translation_column} = json_encode($updated_translation);
+
+                $classInstance->save();
+            }
+        }
+        return redirect()->back();
     }
 }

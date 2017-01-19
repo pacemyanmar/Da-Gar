@@ -56,6 +56,12 @@ class QuestionController extends AppBaseController
         }
         $input['css_id'] = str_slug('s' . $section_id . $input['qnum']);
 
+        $lang = config('app.fallback_locale');
+
+        $input['qnum_trans'] = json_encode([$lang => $input['qnum']]);
+
+        $input['question_trans'] = json_encode([$lang => $input['question']]);
+
         $question = $this->questionRepository->create($input);
 
         $args = [
@@ -115,6 +121,12 @@ class QuestionController extends AppBaseController
         $form_input['raw_ans'] = str_replace("'", "&#39;", $form_input['raw_ans']);
 
         $form_input['qstatus'] = 'modified';
+
+        $lang = config('app.fallback_locale');
+
+        $form_input['qnum_trans'] = json_encode([$lang => $form_input['qnum']]);
+
+        $form_input['question_trans'] = json_encode([$lang => $form_input['question']]);
 
         $new_question = $this->questionRepository->update($form_input, $id);
 

@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>SMS Generator</title>
+    <title>{!! settings('app_name', 'Kanaung SMS Default'); !!}</title>
     <meta content='width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no' name='viewport'>
     @yield('meta')
 
@@ -41,6 +41,10 @@
                 <!-- Navbar Right Menu -->
                 <div class="navbar-custom-menu">
                     <ul class="nav navbar-nav">
+                        <li class="dropdown lang lang-menu">
+                        <a class="dropdown-toggle" data-toggle="dropdown"><img src="{{ asset('images/flags/'.config('app.locale').'.png') }}"> {!! trans('locale.'.config('app.locale'))!!}</a>
+                        @include('layouts.language')
+                        </li>
                         <!-- User Account Menu -->
                         <li class="dropdown user user-menu">
                             <!-- Menu Toggle Button -->

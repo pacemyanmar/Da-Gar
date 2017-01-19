@@ -62,6 +62,8 @@ Route::delete('questions/{question}', ['as' => 'questions.destroy', 'uses' => Qu
 
 Route::resource('smsLogs', 'SmsLogController');
 
+Route::post('translate/{id}', ['as' => 'translate', 'uses' => 'SettingController@translate']);
+
 Route::post('settings/save', ['as' => 'settings.save', 'uses' => 'SettingController@save']);
 
 Route::resource('settings', 'SettingController');

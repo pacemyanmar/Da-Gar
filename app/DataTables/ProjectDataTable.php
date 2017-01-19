@@ -61,6 +61,19 @@ class ProjectDataTable extends DataTable
                     ],
                     //'colvis'
                 ],
+                'initComplete' => "function () {
+                    $('form.translation').submit(function(e){
+                          $.ajax({
+                                type: $(this).attr('method'),
+                                url: $(this).attr('action'),
+                                data: $(this).serialize(),
+                                success: function (data) {
+                                    alert('OK. Translation saved!');
+                                }
+                            });
+                            e.preventDefault();
+                        });
+                }",
             ]);
     }
 

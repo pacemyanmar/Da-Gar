@@ -4,7 +4,7 @@
 	@if($element->status != 'published') <span class="label label-warning badge">{!! $element->status !!}</span> @endif
     </label>
 </div>
-@if(!empty($element->skip))
+@if(!empty($element->skip) && !isset($editing))
 	@push('document-ready')
 	if($("input[name='result[{!! $element->inputid !!}]']").is(':checked')) {
 			$("{!! $element->skip !!}").prop("disabled", true);

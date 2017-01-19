@@ -29,4 +29,25 @@
 
 {!! Form::close() !!}
 </div>
+
+@endif
+@if(Auth::user()->role->level > 8)
+<div class="btn-group">
+{!! Form::open(['route' => ['translate', $id], 'method' => 'post', 'class' => 'translation']) !!}
+<div class="input-group">
+      @php
+        $trans = json_decode($project_trans,true);
+      @endphp
+
+      <input type="text" name="columns[project]" class="form-control" placeholder="Add Translation" @if(!empty($trans) && array_key_exists(config('app.locale'), $trans ))
+        value="{!! $trans[config('app.locale')] !!}"
+      @endif>
+      <input type="hidden" name="model" value="project">
+      <span class="input-group-btn">
+        <button class="btn btn-default" type="submit">Save</button>
+      </span>
+
+</div><!-- /input-group -->
+{!! Form::close() !!}
+</div>
 @endif

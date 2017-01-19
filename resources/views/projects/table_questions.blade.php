@@ -10,6 +10,7 @@
             <tr id="sort-{!! $question->id !!}">
                 <td class="col-xs-1" id="{!! $question->css_id !!}">
                     <label>{!! $question->qnum !!}</label>
+
                     @if($question->report)
                         <span class="badge">In report</span>
                     @endif
@@ -20,6 +21,34 @@
                 <td class="col-xs-9">
                     <div class="row"><label>{!! $question->question !!}</label></div>
                     <div id="accordion{!! $question->css_id !!}" class="row collapse">
+                        @if(Auth::user()->role->level > 8)
+                        <div class="btn-group form-inline" style="margin-bottom:20px;">
+                        {!! Form::open(['route' => ['translate', $question->id], 'method' => 'post', 'class' => 'translation']) !!}
+
+                              @php
+                                $qnum_trans = json_decode($question->qnum_trans,true);
+                                $question_trans = json_decode($question->question_trans,true);
+                              @endphp
+                              <div class="input-group">
+                              <span class="input-group-addon">Q Number</span>
+                              <input type="text" name="columns[qnum]" class="form-control" placeholder="Add Translation" @if(!empty($qnum_trans) && array_key_exists(config('app.locale'), $qnum_trans ))
+                                value="{!! $qnum_trans[config('app.locale')] !!}"
+                              @endif>
+                              </div>
+                              <div class="input-group">
+                              <span class="input-group-addon">Question</span>
+                              <input type="text" name="columns[question]" class="form-control" placeholder="Add Translation" @if(!empty($question_trans) && array_key_exists(config('app.locale'), $question_trans ))
+                                value="{!! $question_trans[config('app.locale')] !!}"
+                              @endif>
+                              <input type="hidden" name="model" value="question">
+                              <span class="input-group-btn">
+                                <button class="btn btn-default" type="submit">Save</button>
+                              </span>
+
+                        </div><!-- /input-group -->
+                        {!! Form::close() !!}
+                        </div>
+                        @endif
                         @include('questions.ans_fields')
                     </div>
                 </td>

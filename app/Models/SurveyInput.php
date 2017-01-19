@@ -27,6 +27,7 @@ class SurveyInput extends Model
         'name',
         'column',
         'label',
+        'label_trans',
         'value',
         'className',
         'skip',
@@ -94,5 +95,18 @@ class SurveyInput extends Model
     public function scopePublished($query)
     {
         return $query->where('status', 'published');
+    }
+
+    public function getLabelAttribute($value)
+    {
+        $lang = \App::getLocale();
+        $label = json_decode($this->attributes['label_trans'], true);
+        if (!empty($label) && array_key_exists($lang, $label)) {
+            $translation = $label[$lang];
+        }
+        if (!empty($translation)) {
+            $value = $translation;
+        }
+        return $value;
     }
 }

@@ -157,6 +157,8 @@ trait QuestionsTrait
     {
         $inputs = [];
         $label = [];
+        $lang = config('app.fallback_locale');
+
         foreach ($render as $k => $input) {
 
             if ($input['type'] == 'matrix') {
@@ -169,6 +171,7 @@ trait QuestionsTrait
                     $value['sort'] = $k . $i;
                     $value['extras']['group'] = $input['label'];
                     $value = array_merge($input, $value);
+                    $input['label_trans'] = json_encode([$lang => $value['label']]);
                     $inputs[] = new SurveyInput($value);
                 }
             } else {
@@ -179,6 +182,8 @@ trait QuestionsTrait
                 if (!isset($input['sort'])) {
                     $input['sort'] = $k;
                 }
+
+                $input['label_trans'] = json_encode([$lang => $input['label']]);
 
                 $inputs[] = new SurveyInput($input);
             }

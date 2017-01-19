@@ -60,6 +60,7 @@ $ans_in_col = round($anscount / $col_group_count);
 						$element->value = $k;
 					@endphp
 				@endif
+				<div class="form-inline" style="margin-top:5px;margin-bottom:5px;">
 				@if ($element->type == 'checkbox')
 					@include('questions.'.$prefix.'checkbox')
 				@endif
@@ -72,6 +73,28 @@ $ans_in_col = round($anscount / $col_group_count);
 				@php
 					$j++;
 				@endphp
+
+				@if(Auth::user()->role->level > 8 && isset($editing))
+                        <div class="btn-group">
+                        {!! Form::open(['route' => ['translate', $element->id], 'method' => 'post', 'class' => 'translation']) !!}
+                        <div class="input-group">
+                              @php
+                                $label_trans = json_decode($element->label_trans,true);
+                              @endphp
+
+                              <input type="text" name="columns[label]" class="form-control input-sm" placeholder="Add Translation" @if(!empty($label_trans) && array_key_exists(config('app.locale'), $label_trans ))
+                                value="{!! $label_trans[config('app.locale')] !!}"
+                              @endif>
+                              <input type="hidden" name="model" value="survey_input">
+                              <span class="input-group-btn">
+                                <button class="btn btn-default input-sm" type="submit">Save</button>
+                              </span>
+
+                        </div><!-- /input-group -->
+                        {!! Form::close() !!}
+                        </div>
+              	@endif
+              	</div>
 
 			@endif
 		@endforeach
