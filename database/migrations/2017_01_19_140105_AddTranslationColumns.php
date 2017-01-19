@@ -33,7 +33,7 @@ class AddTranslationColumns extends Migration
             $table->text('label_trans')->nullable();
         });
         Schema::table('projects', function (Blueprint $table) {
-            //$table->text('project_trans')->nullable();
+            $table->text('project_trans')->nullable();
         });
     }
 
