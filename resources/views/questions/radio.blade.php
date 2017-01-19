@@ -16,6 +16,11 @@
 	$("input[name='result[{!! $element->inputid !!}]']").change(function(){
 		if($("input[name='result[{!! $element->inputid !!}]']:checked").val() == {!! $element->value !!}) {
 			$("{!! $element->skip !!}").prop("disabled", true);
+			@if(isset($element->extras['goto']))
+				$("body, html").animate({
+			      scrollTop: $("{!! $element->extras['goto'] !!}").offset().top
+			    }, 600);
+			@endif
 		} else {
 			$("{!! $element->skip !!}").prop("disabled", false);
 		}
