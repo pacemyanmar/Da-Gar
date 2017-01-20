@@ -8,6 +8,7 @@ $options = [
 'aria-describedby'=> $element->id.'-addons',
 'data-class'=>$element->inputid,
 'data-origin' => $origin_text,
+'autocomplete' => 'off'
 ];
 if($element->type == 'number') {
     $options['placeholder'] .= ' (number) ';

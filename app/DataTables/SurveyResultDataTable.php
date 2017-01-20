@@ -216,6 +216,16 @@ class SurveyResultDataTable extends DataTable
             }
         }
 
+        $query->where('project_id', $project->id);
+        if ($auth->role->role_name == 'doublechecker') {
+            $query->whereNull('qc_user_id')
+                ->orWhere('qc_user_id', $auth->id);
+        }
+        if ($auth->role->role_name == 'entryclerk') {
+            $query->whereNull('samples.user_id')
+                ->orWhere('samples.user_id', $auth->id);
+        }
+
         return $this->applyScopes($query);
     }
 

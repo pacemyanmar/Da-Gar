@@ -5,7 +5,8 @@ $options = [
 'class' => $element->className.' form-control '.$sectionClass,
 'id' => $element->id,
 'placeholder' => $element->label,
-'aria-describedby'=> $element->id.'-addons'
+'aria-describedby'=> $element->id.'-addons',
+'autocomplete' => 'off'
 ];
 if($element->type == 'number') {
     $options['placeholder'] .= ' (number) ';

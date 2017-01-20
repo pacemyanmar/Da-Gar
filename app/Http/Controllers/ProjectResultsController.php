@@ -317,7 +317,6 @@ class ProjectResultsController extends Controller
         }
         $dbname = $project->dbname;
         $result = $sample->resultWithTable($dbname)->first();
-
         //if ($auth->role->role_name == 'doublechecker') {
         //    $project->load(['questions' => function ($query) {
         //        $query->where('qstatus', 'published')->where('double_entry', 1);

@@ -9,8 +9,9 @@ window.url="{!! route('projects.surveys.save', ['project' => $project->id, 'samp
            <a class="pull-right btn-float btn-float-bottom btn-float-to-up" style="display:inline;font-size: 40px;" href="#"><i class="fa fa-arrow-circle-up"></i></a>
 @endpush
 @section('content')
-
+<form autocomplete="off">
     <section class="content-header">
+
     @if($project->status != 'published')
             <div class="alert alert-warning">
                 Project modified. Rebuild to show new changes in this form.
@@ -54,6 +55,7 @@ window.url="{!! route('projects.surveys.save', ['project' => $project->id, 'samp
         @endforeach
         </div>
     </div>
+</form>
 @endsection
 
 <!-- copy from https://getflywheel.com/layout/add-sticky-back-top-button-website/ -->
@@ -75,6 +77,7 @@ window.url="{!! route('projects.surveys.save', ['project' => $project->id, 'samp
 </style>
 <script type='text/javascript'>
     (function($) {
+        $('form').reset();
 
         $('.save').click(function(event){
             event.preventDefault();

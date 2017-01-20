@@ -82,6 +82,7 @@ class SampleResponseDataTable extends DataTable
                 $join->on('samples.id', '=', $childTable . '.sample_id');
             });
         }
+        $query->where('project_id', $project->id);
         $query->groupBy('sample_datas.' . $this->filter);
 
         return $this->applyScopes($query);
