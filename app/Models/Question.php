@@ -41,7 +41,9 @@ class Question extends Model
     protected $casts = [
         'id' => 'integer',
         'qnum' => 'string',
+        'qnum_trans' => 'array',
         'question' => 'string',
+        'question_trans' => 'array',
         'raw_ans' => 'array',
         'render' => 'array',
         'sort' => 'integer',

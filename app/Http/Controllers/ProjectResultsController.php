@@ -328,7 +328,8 @@ class ProjectResultsController extends Controller
         //}
 
         $project->load(['inputs' => function ($query) {
-            $query->where('status', 'published');
+            $query->where('status', 'published')
+                ->orderBy('sort', 'ASC');
         }]);
 
         $view = view('projects.survey.create')

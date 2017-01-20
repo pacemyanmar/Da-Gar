@@ -81,9 +81,10 @@ class ProjectController extends AppBaseController
         $unique = uniqid();
         $short_unique = substr($unique, 0, 5);
         $input['dbname'] = snake_case($short_project_name . '_' . $short_unique);
-        $lang = config('app.fallback_locale');
 
-        $input['project_trans'] = json_encode([$lang => $input['project']]);
+        // $lang = config('app.fallback_locale');
+
+        // $input['project_trans'] = json_encode([$lang => $input['project']]);
 
         $project = $this->projectRepository->create($input);
 
@@ -186,9 +187,13 @@ class ProjectController extends AppBaseController
             $input['status'] = 'modified';
         }
 
-        $lang = config('app.fallback_locale');
-
-        $input['project_trans'] = json_encode([$lang => $input['project']]);
+        // $lang = config('app.fallback_locale');
+        // $project_trans = $project->project_trans;
+        // if (!empty($project_trans) && array_key_exists($lang, $project_trans)) {
+        //     $translation = $project_trans[$lang];
+        // }
+        // $new_translation = [$lang => $input['project']];
+        // $input['project_trans'] = array_merge($new_translation, $translation);
 
         $project = $this->projectRepository->update($input, $id);
 

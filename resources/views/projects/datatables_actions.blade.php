@@ -35,12 +35,8 @@
 <div class="btn-group">
 {!! Form::open(['route' => ['translate', $id], 'method' => 'post', 'class' => 'translation']) !!}
 <div class="input-group">
-      @php
-        $trans = json_decode($project_trans,true);
-      @endphp
-
-      <input type="text" name="columns[project]" class="form-control" placeholder="{!! trans('messages.add_translation') !!}" @if(!empty($trans) && array_key_exists(config('app.locale'), $trans ))
-        value="{!! $trans[config('app.locale')] !!}"
+      <input type="text" name="columns[project]" class="form-control" placeholder="{!! trans('messages.add_translation') !!}" @if(!empty($project_trans) && array_key_exists(config('app.locale'), $project_trans ))
+        value="{!! $project_trans[config('app.locale')] !!}"
       @endif>
       <input type="hidden" name="model" value="project">
       <span class="input-group-btn">

@@ -24,21 +24,16 @@
                         @if(Auth::user()->role->level > 8)
                         <div class="btn-group form-inline" style="margin-bottom:20px;">
                         {!! Form::open(['route' => ['translate', $question->id], 'method' => 'post', 'class' => 'translation']) !!}
-
-                              @php
-                                $qnum_trans = json_decode($question->qnum_trans,true);
-                                $question_trans = json_decode($question->question_trans,true);
-                              @endphp
                               <div class="input-group">
                               <span class="input-group-addon">{!! trans('messages.qnum') !!}</span>
-                              <input type="text" name="columns[qnum]" class="form-control" placeholder="{!! trans('messages.add_translation') !!}" @if(!empty($qnum_trans) && array_key_exists(config('app.locale'), $qnum_trans ))
-                                value="{!! $qnum_trans[config('app.locale')] !!}"
+                              <input type="text" name="columns[qnum]" class="form-control" placeholder="{!! trans('messages.add_translation') !!}" @if(!empty($question->qnum_trans) && array_key_exists(config('app.locale'), $question->qnum_trans ))
+                                value="{!! $question->qnum_trans[config('app.locale')] !!}"
                               @endif>
                               </div>
                               <div class="input-group">
                               <span class="input-group-addon">{!! trans('messages.question') !!}</span>
-                              <input type="text" name="columns[question]" class="form-control" placeholder="{!! trans('messages.add_translation') !!}" @if(!empty($question_trans) && array_key_exists(config('app.locale'), $question_trans ))
-                                value="{!! $question_trans[config('app.locale')] !!}"
+                              <input type="text" name="columns[question]" class="form-control" placeholder="{!! trans('messages.add_translation') !!}" @if(!empty($question->question_trans) && array_key_exists(config('app.locale'), $question->question_trans ))
+                                value="{!! $question->question_trans[config('app.locale')] !!}"
                               @endif>
                               <input type="hidden" name="model" value="question">
                               <span class="input-group-btn">

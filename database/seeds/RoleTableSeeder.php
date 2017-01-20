@@ -39,7 +39,7 @@ class RoleTableSeeder extends Seeder
             ],
             [
                 'level' => '5',
-                'group' => 'doublechecker',
+                'group' => 'data',
                 'role_name' => 'doublechecker',
                 'description' => 'Double Checker',
                 'created_at' => Carbon::now('Asia/Rangoon'),
@@ -47,7 +47,7 @@ class RoleTableSeeder extends Seeder
             ],
             [
                 'level' => '4',
-                'group' => 'entryclerk',
+                'group' => 'data',
                 'role_name' => 'entryclerk',
                 'description' => 'Data Entry Clerk',
                 'created_at' => Carbon::now('Asia/Rangoon'),

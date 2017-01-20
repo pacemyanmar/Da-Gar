@@ -116,6 +116,7 @@ trait QuestionsTrait
                     unset($a['values']);
                     $av['type'] = 'radio';
                     $av['id'] = $param . 'o' . $j;
+                    $av['sort'] = $qsort . $j;
                     // merge $a and $av to get input array as $answer
                     $answer[] = array_merge($a, $av);
                 }
@@ -131,6 +132,7 @@ trait QuestionsTrait
                 foreach ($a['values'] as $j => $option) {
                     $av['type'] = 'radio';
                     $av['id'] = $param . 'o' . $j;
+                    $av['sort'] = $qsort . $j;
                     $a['values'][$j] = array_merge($option, $av);
                 }
 
@@ -171,7 +173,7 @@ trait QuestionsTrait
                     $value['sort'] = $k . $i;
                     $value['extras']['group'] = $input['label'];
                     $value = array_merge($input, $value);
-                    $input['label_trans'] = json_encode([$lang => $value['label']]);
+                    //$input['label_trans'] = json_encode([$lang => $value['label']]);
                     $inputs[] = new SurveyInput($value);
                 }
             } else {
@@ -183,7 +185,7 @@ trait QuestionsTrait
                     $input['sort'] = $k;
                 }
 
-                $input['label_trans'] = json_encode([$lang => $input['label']]);
+                //$input['label_trans'] = json_encode([$lang => $input['label']]);
 
                 $inputs[] = new SurveyInput($input);
             }

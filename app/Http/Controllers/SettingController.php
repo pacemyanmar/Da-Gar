@@ -182,14 +182,14 @@ class SettingController extends AppBaseController
             $classInstance = $class::find($id);
             foreach ($columns as $column => $translation) {
                 $translation_column = $column . '_trans';
-                $old_translation = json_decode($classInstance->{$translation_column}, true);
+                $old_translation = $classInstance->{$translation_column};
                 $new_translation[$locale] = $translation;
                 if (!empty($old_translation)) {
                     $updated_translation = array_merge($old_translation, $new_translation);
                 } else {
                     $updated_translation = $new_translation;
                 }
-                $classInstance->{$translation_column} = json_encode($updated_translation);
+                $classInstance->{$translation_column} = $updated_translation;
 
                 $classInstance->save();
             }

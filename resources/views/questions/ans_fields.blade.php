@@ -78,12 +78,8 @@ $ans_in_col = round($anscount / $col_group_count);
                         <div class="btn-group">
                         {!! Form::open(['route' => ['translate', $element->id], 'method' => 'post', 'class' => 'translation']) !!}
                         <div class="input-group">
-                              @php
-                                $label_trans = json_decode($element->label_trans,true);
-                              @endphp
-
-                              <input type="text" name="columns[label]" class="form-control input-sm" placeholder="{!! trans('messages.add_translation') !!}" @if(!empty($label_trans) && array_key_exists(config('app.locale'), $label_trans ))
-                                value="{!! $label_trans[config('app.locale')] !!}"
+                              <input type="text" name="columns[label]" class="form-control input-sm" placeholder="{!! trans('messages.add_translation') !!}" @if(!empty($element->label_trans) && array_key_exists(config('app.locale'), $element->label_trans ))
+                                value="{!! $element->label_trans[config('app.locale')] !!}"
                               @endif>
                               <input type="hidden" name="model" value="survey_input">
                               <span class="input-group-btn">
