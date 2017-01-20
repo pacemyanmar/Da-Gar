@@ -98,6 +98,19 @@ class Question extends Model
         return $query->whereQstatus('published');
     }
 
+    public function getQnumAttribute($value)
+    {
+        $lang = \App::getLocale();
+        $qnum = json_decode($this->attributes['qnum_trans'], true);
+        if (!empty($qnum) && array_key_exists($lang, $qnum)) {
+            $translation = $qnum[$lang];
+        }
+        if (!empty($translation)) {
+            $value = $translation;
+        }
+        return $value;
+    }
+
     public function getQuestionAttribute($value)
     {
         $lang = \App::getLocale();
