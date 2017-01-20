@@ -1,6 +1,6 @@
 <table class="table table-responsive" id="questions-table">
     <thead>
-        <th class="col-xs-1">No.</th>
+        <th class="col-xs-1">{!! trans('messages.no_') !!}</th>
         <th class="col-xs-9">{!! trans('messages.question') !!}</th>
         <th class="col-xs-2">{!! trans('messages.action') !!}</th>
     </thead>

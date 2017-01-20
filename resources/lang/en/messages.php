@@ -1,5 +1,6 @@
 <?php
 return [
+    'no_' => 'No.',
     'project' => 'Project',
     'projects' => 'Project|Projects',
     'qnum' => 'Q Number',

@@ -1,7 +1,7 @@
 <table class="table table-responsive" id="questions-table">
     <thead>
-        <th class="col-xs-1">No.</th>
-        <th class="col-xs-11">Questions</th>
+        <th class="col-xs-1">{!! trans('messages.no_') !!}</th>
+        <th class="col-xs-11">{!! trans('messages.question') !!}</th>
     </thead>
     <tbody>
         @foreach($project->questions as $question)
