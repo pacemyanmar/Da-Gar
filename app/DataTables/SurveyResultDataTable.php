@@ -166,7 +166,7 @@ class SurveyResultDataTable extends DataTable
 
         $input_columns = implode(',', $columnsFromResults);
 
-        $defaultColumns = "samples.id, samples.form_id, sample_datas.idcode, sample_datas.*";
+        $defaultColumns = "samples.id as samples_id, samples.form_id, sample_datas.idcode, sample_datas.id as data_id, sample_datas.*";
         if ($table == 'enumerators') {
 
         }
