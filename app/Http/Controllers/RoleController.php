@@ -3,12 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\DataTables\RoleDataTable;
-use App\Http\Requests;
+use App\Http\Controllers\AppBaseController;
 use App\Http\Requests\CreateRoleRequest;
 use App\Http\Requests\UpdateRoleRequest;
 use App\Repositories\RoleRepository;
 use Flash;
-use App\Http\Controllers\AppBaseController;
 use Response;
 
 class RoleController extends AppBaseController
@@ -18,6 +17,7 @@ class RoleController extends AppBaseController
 
     public function __construct(RoleRepository $roleRepo)
     {
+        $this->middleware('auth');
         $this->roleRepository = $roleRepo;
     }
 

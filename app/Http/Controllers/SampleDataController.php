@@ -20,6 +20,7 @@ class SampleDataController extends AppBaseController
 
     public function __construct(SampleDataRepository $sampleDataRepo)
     {
+        $this->middleware('auth');
         $this->sampleDataRepository = $sampleDataRepo;
     }
 
