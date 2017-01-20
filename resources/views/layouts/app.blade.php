@@ -29,7 +29,7 @@
 
             <!-- Logo -->
             <a href="#" class="logo">
-                <b>SMS</b>
+                <b>{!! settings('app_short', 'SMS'); !!}</b>
             </a>
 
             <!-- Header Navbar -->
@@ -116,7 +116,7 @@
 
                 <!-- Branding Image -->
                 <a class="navbar-brand" href="{!! url('/') !!}">
-                    SMS Generator
+                    {!! settings('app_name', 'Kanaung SMS Default'); !!}
                 </a>
             </div>
 

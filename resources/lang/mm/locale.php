@@ -2,6 +2,6 @@
 return [
     'en' => 'English',
     'en_flag' => 'us.png',
-    'mm' => 'Burmese',
+    'mm' => 'ဗမာစာ',
     'mm_flag' => 'mm.png',
 ];

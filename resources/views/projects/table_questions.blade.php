@@ -1,8 +1,8 @@
 <table class="table table-responsive" id="questions-table">
     <thead>
         <th class="col-xs-1">No.</th>
-        <th class="col-xs-9">Questions</th>
-        <th class="col-xs-2">Action</th>
+        <th class="col-xs-9">{!! trans('messages.question') !!}</th>
+        <th class="col-xs-2">{!! trans('messages.action') !!}</th>
     </thead>
     <tbody data-section="{!! $section_key !!}">
         @foreach($questions as $question)
@@ -12,10 +12,10 @@
                     <label>{!! $question->qnum !!}</label>
 
                     @if($question->report)
-                        <span class="badge">In report</span>
+                        <span class="badge">{!! trans('messages.in_report') !!}</span>
                     @endif
                     @if($question->double_entry)
-                        <span class="badge">Double</span>
+                        <span class="badge">{!! trans('messages.double_entry') !!}</span>
                     @endif
                 </td>
                 <td class="col-xs-9">
@@ -30,19 +30,19 @@
                                 $question_trans = json_decode($question->question_trans,true);
                               @endphp
                               <div class="input-group">
-                              <span class="input-group-addon">Q Number</span>
-                              <input type="text" name="columns[qnum]" class="form-control" placeholder="Add Translation" @if(!empty($qnum_trans) && array_key_exists(config('app.locale'), $qnum_trans ))
+                              <span class="input-group-addon">{!! trans('messages.qnum') !!}</span>
+                              <input type="text" name="columns[qnum]" class="form-control" placeholder="{!! trans('messages.add_translation') !!}" @if(!empty($qnum_trans) && array_key_exists(config('app.locale'), $qnum_trans ))
                                 value="{!! $qnum_trans[config('app.locale')] !!}"
                               @endif>
                               </div>
                               <div class="input-group">
-                              <span class="input-group-addon">Question</span>
-                              <input type="text" name="columns[question]" class="form-control" placeholder="Add Translation" @if(!empty($question_trans) && array_key_exists(config('app.locale'), $question_trans ))
+                              <span class="input-group-addon">{!! trans('messages.question') !!}</span>
+                              <input type="text" name="columns[question]" class="form-control" placeholder="{!! trans('messages.add_translation') !!}" @if(!empty($question_trans) && array_key_exists(config('app.locale'), $question_trans ))
                                 value="{!! $question_trans[config('app.locale')] !!}"
                               @endif>
                               <input type="hidden" name="model" value="question">
                               <span class="input-group-btn">
-                                <button class="btn btn-default" type="submit">Save</button>
+                                <button class="btn btn-default" type="submit">{!! trans('messages.save') !!}</button>
                               </span>
 
                         </div><!-- /input-group -->
@@ -57,11 +57,11 @@
                     <div class='btn-group'>
                         <button type="button" class="btn btn-info btn-xs" data-toggle="collapse" data-target="#accordion{!! $question->css_id !!}">
                         <i class="glyphicon glyphicon-collapse"></i>
-                        Click to expand
+                        {!! trans('messages.click_to_expend') !!}
                         </button>
-                        <a href="#" class='btn btn-default btn-xs' data-toggle="modal" data-target="#qModal" data-qid="{!! $question->id !!}" data-qurl="{!! route('questions.update', [$question->id]) !!}" data-qnum="{!! $question->qnum !!}" data-question="{!! $question->question !!}" data-section="{!! $section_key !!}" data-sort="{!! $question->sort !!}" data-answers='{!! str_replace("'","&#39;",$question->raw_ans) !!}' data-layout='{!! $question->layout !!}' data-method='PATCH'><i class="glyphicon glyphicon-edit"></i> Edit</a>
+                        <a href="#" class='btn btn-default btn-xs' data-toggle="modal" data-target="#qModal" data-qid="{!! $question->id !!}" data-qurl="{!! route('questions.update', [$question->id]) !!}" data-qnum="{!! $question->qnum !!}" data-question="{!! $question->question !!}" data-section="{!! $section_key !!}" data-sort="{!! $question->sort !!}" data-answers='{!! str_replace("'","&#39;",$question->raw_ans) !!}' data-layout='{!! $question->layout !!}' data-method='PATCH'><i class="glyphicon glyphicon-edit"></i> {!! trans('messages.edit') !!}</a>
 
-                        {!! Form::button('<i class="glyphicon glyphicon-trash"></i>', ['type' => 'submit', 'class' => 'btn btn-danger btn-xs', 'onclick' => "return confirm('Are you sure?')"]) !!}
+                        {!! Form::button('<i class="glyphicon glyphicon-trash"></i>', ['type' => 'submit', 'class' => 'btn btn-danger btn-xs', 'onclick' => "return confirm('".trans('messages.are_you_sure')."')"]) !!}
                     </div>
                     {!! Form::close() !!}
                 </td>

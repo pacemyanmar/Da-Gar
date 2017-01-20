@@ -114,6 +114,37 @@ class SampleResponseDataTable extends DataTable
         return [
             'dom' => 'Brtip',
             'scrollX' => true,
+            'language' => [
+                "decimal" => trans('messages.decimal'),
+                "emptyTable" => trans('messages.emptyTable'),
+                "info" => trans('messages.info'),
+                "infoEmpty" => trans('messages.infoEmpty'),
+                "infoFiltered" => trans('messages.infoFiltered'),
+                "infoPostFix" => trans('messages.infoPostFix'),
+                "thousands" => trans('messages.thousands'),
+                "lengthMenu" => trans('messages.lengthMenu'),
+                "loadingRecords" => trans('messages.loadingRecords'),
+                "processing" => trans('messages.processing'),
+                "search" => trans('messages.search'),
+                "zeroRecords" => trans('messages.zeroRecords'),
+                "paginate" => [
+                    "first" => trans('messages.paginate.first'),
+                    "last" => trans('messages.paginate.last'),
+                    "next" => trans('messages.paginate.next'),
+                    "previous" => trans('messages.paginate.previous'),
+                ],
+                "aria" => [
+                    "sortAscending" => trans('messages.aria.sortAscending'),
+                    "sortDescending" => trans('messages.aria.sortDescending'),
+                ],
+                "buttons" => [
+                    'print' => trans('messages.print'),
+                    'reset' => trans('messages.reset'),
+                    'reload' => trans('messages.reload'),
+                    'export' => trans('messages.export'),
+                    'colvis' => trans('messages.colvis'),
+                ],
+            ],
             'buttons' => [
 
             ],

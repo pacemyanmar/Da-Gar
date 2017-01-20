@@ -60,7 +60,7 @@ return [
 
         'database' => [
             'driver' => 'database',
-            'connection' => env('DB_CONNECTION', 'mysql'),
+            'connection' => env('DB_CONNECTION', 'mariadb'),
             'table' => 'settings',
         ],
 

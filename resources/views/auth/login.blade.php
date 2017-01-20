@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>SMS Laravel Generator</title>
+    <title>{!! settings('app_name', 'Kanaung SMS Default'); !!}</title>
 
     <!-- Tell the browser to be responsive to screen width -->
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
@@ -11,7 +11,7 @@
     <link rel="stylesheet" href="{{ elixir('css/vendor.css') }}">
     <link rel="stylesheet" href="{{ elixir('css/app.css') }}">
 
-    
+
 
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -20,12 +20,12 @@
     <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
     @yield('css')
-    
+
 </head>
 <body class="hold-transition login-page">
 <div class="login-box">
     <div class="login-logo">
-        <a href="{{ url('/home') }}"><b>SMS </b>Generator</a>
+        <a href="{{ url('/home') }}">{!! settings('app_name', 'Kanaung SMS Default'); !!}</a>
     </div>
 
     <!-- /.login-logo -->
@@ -43,7 +43,7 @@
                 </span>
                 @endif
             </div>
-            
+
             <div class="form-group has-feedback {{ $errors->has('email') ? ' has-error' : '' }}">
                 <input type="email" class="form-control" name="email" value="{{ old('email') }}" placeholder="Email">
                 <span class="glyphicon glyphicon-envelope form-control-feedback"></span>
@@ -67,8 +67,8 @@
             <div class="row">
                 <div class="col-xs-8">
                     <div class="">
-                        
-                            <input class="magic-checkbox" type="checkbox" name="remember" id="remember"> 
+
+                            <input class="magic-checkbox" type="checkbox" name="remember" id="remember">
                             <label for="remember">Remember Me </label>
                     </div>
                 </div>
@@ -90,7 +90,7 @@
 
     <!-- Combined vendor js -->
     <script src="{{ elixir('js/vendor.js') }}"></script>
-    
+
     <!-- app script -->
     <script src="{{ elixir('js/app.js') }}"></script>
 

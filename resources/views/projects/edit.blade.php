@@ -6,17 +6,17 @@
 <section class="content-header" style="margin-bottom:30px;">
   <h1 class="pull-left">{!! $project->project !!}</h1>
   <div class="pull-right">
-    <a href="{!! route('projects.sort', [$project->id]) !!}" class="btn btn-info">Sort Project</a>
+    <a href="{!! route('projects.sort', [$project->id]) !!}" class="btn btn-info">{!! trans('messages.sort_project') !!}</a>
   @if($project->status != 'published')
     {!! Form::open(['route' => ['projects.dbcreate', $project->id], 'method' => 'post', 'class' => 'btn']) !!}
     @if($project->status == 'modified')
-        {!! Form::button('<i class="fa fa-list-alt"></i> Rebuild Form', [
+        {!! Form::button('<i class="fa fa-list-alt"></i> '.trans('messages.rebuild_form'), [
             'type' => 'submit',
             'class' => 'btn btn-danger',
             'onclick' => 'return confirm("Are you sure?\n This will update live form table for data entry!\nSome serious changes are running.\nPlease do not run this frequently if data entry already live.")'
         ]) !!}
     @else
-        {!! Form::button('<i class="fa fa-list-alt"></i> Build Form', [
+        {!! Form::button('<i class="fa fa-list-alt"></i> '.trans('messages.build_form'), [
             'type' => 'submit',
             'class' => 'btn btn-danger',
             'onclick' => 'return confirm("Are you sure?\nThis will build actual form table for data entry!")'

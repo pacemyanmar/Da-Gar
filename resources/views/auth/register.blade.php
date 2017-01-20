@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>SMS Laravel Generator | Registration Page</title>
+    <title>{!! settings('app_name', 'Kanaung SMS Default'); !!} | Registration</title>
 
     <!-- Tell the browser to be responsive to screen width -->
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
@@ -14,7 +14,7 @@
     <link rel="stylesheet" href="{{ elixir('css/vendor.css') }}">
     <link rel="stylesheet" href="{{ elixir('css/app.css') }}">
 
-    
+
 
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -27,7 +27,7 @@
 <body class="hold-transition register-page">
 <div class="register-box">
     <div class="register-logo">
-        <a href="{{ url('/home') }}"><b>SMS </b>Generator</a>
+        <a href="{{ url('/home') }}">{!! settings('app_name', 'Kanaung SMS Default'); !!}</a>
     </div>
 
     <div class="register-box-body">
@@ -97,7 +97,7 @@
                             <strong>{{ $errors->first('terms') }}</strong>
                         </span>
                     @endif
-                    <div class="">                        
+                    <div class="">
                             <input class="magic-checkbox" id="terms" name="terms" type="checkbox">
                             <label for="terms"> I agree to the <a href="#">terms</a>
                             </label>
@@ -118,7 +118,7 @@
 <!-- /.register-box -->
 <!-- Combined vendor js -->
     <script src="{{ elixir('js/vendor.js') }}"></script>
-    
+
     <!-- app script -->
     <script src="{{ elixir('js/app.js') }}"></script>
 

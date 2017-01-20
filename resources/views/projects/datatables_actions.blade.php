@@ -1,21 +1,21 @@
 
 <div class='btn-group'>
     <a href="{{ route('projects.surveys.index', $id) }}" class='btn btn-default btn-sm'>
-        <i class="glyphicon glyphicon-eye-open"></i> List samples
+        <i class="glyphicon glyphicon-eye-open"></i> {!! trans('messages.list_samples') !!}
     </a>
     @if(Auth::user()->role->level > 5)
     <a href="{{ route('projects.edit', $id) }}" class='btn btn-default btn-sm'>
-        <i class="glyphicon glyphicon-edit"></i> Edit
+        <i class="glyphicon glyphicon-edit"></i> {!! trans('messages.edit') !!}
     </a>
     @endif
 </div>
 @if(Auth::user()->role->level > 5)
 <div class="btn-group">
     <a href="{{ route('projects.response.filter', [$id, 'state']) }}" class='btn btn-default btn-sm'>
-        <i class="glyphicon glyphicon-equalizer"></i> Response
+        <i class="glyphicon glyphicon-equalizer"></i> {!! trans('messages.response') !!}
     </a>
     <a href="{{ route('projects.response.double', $id) }}" class='btn btn-default btn-sm'>
-        <i class="glyphicon glyphicon-transfer"></i> Double Entry
+        <i class="glyphicon glyphicon-transfer"></i> {!! trans('messages.double_entry') !!}
     </a>
 </div>
 <div class="btn-group">
@@ -24,7 +24,7 @@
     {!! Form::button('<i class="glyphicon glyphicon-trash"></i>', [
         'type' => 'submit',
         'class' => 'btn btn-danger btn-sm',
-        'onclick' => "return confirm('Are you sure?')"
+        'onclick' => "return confirm('".trans('messages.are_you_sure')."')"
     ]) !!}
 
 {!! Form::close() !!}
@@ -39,12 +39,12 @@
         $trans = json_decode($project_trans,true);
       @endphp
 
-      <input type="text" name="columns[project]" class="form-control" placeholder="Add Translation" @if(!empty($trans) && array_key_exists(config('app.locale'), $trans ))
+      <input type="text" name="columns[project]" class="form-control" placeholder="{!! trans('messages.add_translation') !!}" @if(!empty($trans) && array_key_exists(config('app.locale'), $trans ))
         value="{!! $trans[config('app.locale')] !!}"
       @endif>
       <input type="hidden" name="model" value="project">
       <span class="input-group-btn">
-        <button class="btn btn-default" type="submit">Save</button>
+        <button class="btn btn-default" type="submit">{!! trans('messages.save') !!}</button>
       </span>
 
 </div><!-- /input-group -->

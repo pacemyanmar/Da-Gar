@@ -4,7 +4,7 @@
     <section class="content-header">
         <h1 class="pull-left">Settings</h1>
         <h1 class="pull-right">
-           <a class="btn btn-primary pull-right" style="margin-top: -10px;margin-bottom: 5px" href="{!! route('settings.create') !!}">Add New</a>
+           <a class="btn btn-primary pull-right" style="margin-top: -10px;margin-bottom: 5px" href="{!! route('settings.create') !!}">{!! trans('messages.add_new') !!}</a>
         </h1>
     </section>
     <div class="content">
@@ -24,6 +24,16 @@
                                         {!! 'APP Name :' !!}
                                     </span>
                                     {!! Form::text("configs[app_name]", settings('app_name', null), ['class' => 'form-control']) !!}
+                                </div>
+                            </div>
+                            <!-- APP Name Field -->
+                            <div class="form-group">
+                                <div class="input-group">
+                                    <!-- if string long to show in label show as tooltip -->
+                                    <span class="input-group-addon">
+                                        {!! 'APP Short Name :' !!}
+                                    </span>
+                                    {!! Form::text("configs[app_short]", settings('app_short', null), ['class' => 'form-control']) !!}
                                 </div>
                             </div>
                             <div class="form-group">

@@ -3,7 +3,6 @@
 namespace App\DataTables;
 
 use App\Models\SmsLog;
-use Form;
 use Yajra\Datatables\Services\DataTable;
 
 class SmsLogDataTable extends DataTable
@@ -41,26 +40,57 @@ class SmsLogDataTable extends DataTable
     {
         return $this->builder()
             ->columns($this->getColumns())
-            ->addAction(['width' => '10%'])
+            ->addAction(['width' => '10%', 'title' => trans('messages.action')])
             ->ajax('')
             ->parameters([
                 'dom' => 'Bfrtip',
                 'scrollX' => false,
+                'language' => [
+                    "decimal" => trans('messages.decimal'),
+                    "emptyTable" => trans('messages.emptyTable'),
+                    "info" => trans('messages.info'),
+                    "infoEmpty" => trans('messages.infoEmpty'),
+                    "infoFiltered" => trans('messages.infoFiltered'),
+                    "infoPostFix" => trans('messages.infoPostFix'),
+                    "thousands" => trans('messages.thousands'),
+                    "lengthMenu" => trans('messages.lengthMenu'),
+                    "loadingRecords" => trans('messages.loadingRecords'),
+                    "processing" => trans('messages.processing'),
+                    "search" => trans('messages.search'),
+                    "zeroRecords" => trans('messages.zeroRecords'),
+                    "paginate" => [
+                        "first" => trans('messages.paginate.first'),
+                        "last" => trans('messages.paginate.last'),
+                        "next" => trans('messages.paginate.next'),
+                        "previous" => trans('messages.paginate.previous'),
+                    ],
+                    "aria" => [
+                        "sortAscending" => trans('messages.aria.sortAscending'),
+                        "sortDescending" => trans('messages.aria.sortDescending'),
+                    ],
+                    "buttons" => [
+                        'print' => trans('messages.print'),
+                        'reset' => trans('messages.reset'),
+                        'reload' => trans('messages.reload'),
+                        'export' => trans('messages.export'),
+                        'colvis' => trans('messages.colvis'),
+                    ],
+                ],
                 'buttons' => [
                     'print',
                     'reset',
                     'reload',
                     [
-                         'extend'  => 'collection',
-                         'text'    => '<i class="fa fa-download"></i> Export',
-                         'buttons' => [
-                             'csv',
-                             'excel',
-                             'pdf',
-                         ],
+                        'extend' => 'collection',
+                        'text' => '<i class="fa fa-download"></i> ' . trans('messages.export'),
+                        'buttons' => [
+                            'csv',
+                            'excel',
+                            'pdf',
+                        ],
                     ],
-                    'colvis'
-                ]
+                    'colvis',
+                ],
             ]);
     }
 
@@ -80,7 +110,7 @@ class SmsLogDataTable extends DataTable
             'content' => ['name' => 'content', 'data' => 'content'],
             'error_message' => ['name' => 'error_message', 'data' => 'error_message'],
             'search_result' => ['name' => 'search_result', 'data' => 'search_result'],
-            'phone' => ['name' => 'phone', 'data' => 'phone']
+            'phone' => ['name' => 'phone', 'data' => 'phone'],
         ];
     }
 

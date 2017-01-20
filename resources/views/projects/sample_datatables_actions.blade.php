@@ -15,7 +15,7 @@ $sample_id = (isset($sample_id))?$sample_id:null;
     {!! Form::button('<i class="glyphicon glyphicon-trash"></i>', [
         'type' => 'submit',
         'class' => 'btn btn-danger btn-md',
-        'onclick' => "return confirm('Are you sure?')"
+        'onclick' => "return confirm('".trans('messages.are_you_sure')."')"
     ]) !!}
     @endif
 </div>
