@@ -52,6 +52,8 @@ class Sample extends Model
 
     ];
 
+    public $relatedTable;
+
     public function data()
     {
         return $this->belongsTo(SampleData::class, 'sample_data_id');
@@ -62,9 +64,19 @@ class Sample extends Model
         return $this->hasOne(SurveyResult::class);
     }
 
+    public function setRelatedTable($table)
+    {
+        $this->relatedTable = $table;
+        return $this;
+    }
+
     public function resultWithTable($table = null)
     {
         $foreignKey = $this->getForeignKey();
+
+        if (empty($table)) {
+            $table = $this->relatedTable;
+        }
 
         $instance = new SurveyResult();
 

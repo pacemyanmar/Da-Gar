@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\DataTables\DoubleResponseDataTable;
 use App\DataTables\SampleResponseDataTable;
 use App\DataTables\SurveyResultDataTable;
+use App\Models\Sample;
 use App\Models\SampleData;
 use App\Models\SurveyResult;
 use App\Repositories\ProjectRepository;
@@ -534,7 +536,7 @@ class ProjectResultsController extends Controller
         return $sampleResponse->render('projects.survey.' . $project->type . '.response-sample', compact('project', $project), compact('filter', $filter));
     }
 
-    public function responseRateDouble($project_id, SampleResponseDataTable $sampleResponse)
+    public function responseRateDouble($project_id, DoubleResponseDataTable $doubleResponse)
     {
         $project = $this->projectRepository->findWithoutFail($project_id);
         if (empty($project)) {
@@ -542,10 +544,16 @@ class ProjectResultsController extends Controller
 
             return redirect(route('projects.index'));
         }
+        $sample = new Sample();
+        $sample = $sample->setRelatedTable($project->dbname)->query()
+            ->where('project_id', $project->id)
+            ->with(['resultWithTable' => function ($query) use ($project) {
+                return $query->from($project->dbname);
+            }]);
+        dd($sample->get());
+        //$sampleResponse->setProject($project);
 
-        $sampleResponse->setProject($project);
-
-        return $sampleResponse->render('projects.survey.' . $project->type . '.response-double');
+        return $doubleResponse->render('projects.survey.' . $project->type . '.response-double');
     }
 
     public function originUse($project_id, $qid, $survey_id, Request $request)

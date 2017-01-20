@@ -2,11 +2,26 @@
 
 namespace App\DataTables;
 
-use App\User;
+use App\Models\Sample;
 use Yajra\Datatables\Services\DataTable;
 
 class DoubleResponseDataTable extends DataTable
 {
+    private $project;
+
+    private $filter;
+
+    public function setProject($project)
+    {
+        $this->project = $project;
+        return $this;
+    }
+
+    public function setFilter($filter)
+    {
+        $this->filter = $filter;
+        return $this;
+    }
     /**
      * Display ajax response.
      *
@@ -27,8 +42,7 @@ class DoubleResponseDataTable extends DataTable
      */
     public function query()
     {
-        $query = User::query();
-
+        $query = Sample::query();
         return $this->applyScopes($query);
     }
 
@@ -46,7 +60,7 @@ class DoubleResponseDataTable extends DataTable
             ->parameters($this->getBuilderParameters());
     }
 
-    private function getBuilderParameters()
+    protected function getBuilderParameters()
     {
         return [
             'dom' => 'Bfrtip',

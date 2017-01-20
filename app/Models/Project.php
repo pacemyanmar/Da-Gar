@@ -74,6 +74,11 @@ class Project extends Model
         return $this->hasMany(Sample::class);
     }
 
+    /**
+     * Projects and sample_datas has pivot relation.
+     * samples is pivot table
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
     public function samplesData()
     {
         return $this->belongsToMany(SampleData::class, 'samples', 'project_id', 'sample_data_id');
