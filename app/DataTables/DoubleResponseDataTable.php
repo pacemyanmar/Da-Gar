@@ -10,7 +10,7 @@ class DoubleResponseDataTable extends DataTable
 {
     private $project;
 
-    private $filter;
+    private $section;
 
     public function setProject($project)
     {
@@ -18,9 +18,9 @@ class DoubleResponseDataTable extends DataTable
         return $this;
     }
 
-    public function setFilter($filter)
+    public function setSection($section)
     {
-        $this->filter = $filter;
+        $this->section = $section;
         return $this;
     }
     /**
@@ -44,8 +44,11 @@ class DoubleResponseDataTable extends DataTable
     public function query()
     {
         $project = $this->project;
+        $section = $this->section;
         $sample = Sample::query();
-        $project_inputs = $project->inputs;
+        $project_inputs = $project->load(['inputs' => function ($query) use ($section) {
+            return $query->where('survey_inputs.section', $section);
+        }])->inputs;
         $origin_db = $project->dbname;
         $double_db = $project->dbname . '_double';
         $columns = [];
@@ -154,6 +157,20 @@ class DoubleResponseDataTable extends DataTable
                 ],
                 'colvis',
             ],
+            'initComplete' => "function () {
+                            this.api().columns(['0,1']).every(function () {
+                                var column = this;
+                                var br = document.createElement(\"br\");
+                                var input = document.createElement(\"input\");
+                                input.className = 'form-control input-sm';
+                                input.style.width = '90%';
+                                $(br).appendTo($(column.header()));
+                                $(input).appendTo($(column.header()))
+                                .on('change', function () {
+                                    column.search($(this).val(), false, false, true).draw();
+                                });
+                            });
+                        }",
         ];
     }
 
@@ -165,12 +182,17 @@ class DoubleResponseDataTable extends DataTable
     protected function getColumns()
     {
         $project = $this->project;
-        $project_inputs = $project->inputs;
+        $section = $this->section;
+        $project_inputs = $project->load(['inputs' => function ($query) use ($section) {
+            return $query->where('survey_inputs.section', $section);
+        }])->inputs;
         $origin_db = $project->dbname;
         $double_db = $project->dbname . '_double';
         $columns = ['idcode', 'form_id'];
         $visibality = true;
-        foreach ($project_inputs as $k => $input) {
+        $k = 0;
+        foreach ($project_inputs as $input) {
+
             if ($k > 30) {
                 $visibality = false;
             }
@@ -181,6 +203,7 @@ class DoubleResponseDataTable extends DataTable
             $columnName = preg_replace('/s[0-9]+/', '', $column, 1);
             $columns['ori_' . $columnName] = ['data' => 'ori_' . $columnName, 'name' => 'ori_' . $columnName, 'title' => title_case('(1) ' . $columnName), 'defaultContent' => 'N', 'searchable' => false, 'visibality' => $visibality];
             $columns['dou_' . $columnName] = ['data' => 'dou_' . $columnName, 'name' => 'dou_' . $columnName, 'title' => title_case('(2) ' . $columnName), 'defaultContent' => 'N', 'searchable' => false, 'visibality' => $visibality];
+            $k++;
         }
         return $columns;
     }

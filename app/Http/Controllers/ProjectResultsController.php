@@ -536,7 +536,7 @@ class ProjectResultsController extends Controller
         return $sampleResponse->render('projects.survey.' . $project->type . '.response-sample', compact('project', $project), compact('filter', $filter));
     }
 
-    public function responseRateDouble($project_id, DoubleResponseDataTable $doubleResponse)
+    public function responseRateDouble($project_id, $section, DoubleResponseDataTable $doubleResponse)
     {
         $project = $this->projectRepository->findWithoutFail($project_id);
         if (empty($project)) {
@@ -544,10 +544,21 @@ class ProjectResultsController extends Controller
 
             return redirect(route('projects.index'));
         }
+        $settings = [
+            'project_id' => $project->id,
+            'section' => $section,
+        ];
+        $sections_array = $project->sections;
+        $sections = [];
+        foreach ($sections_array as $sect_key => $sect) {
+            $sections[$sect_key] = $sect['sectionname'];
+        }
 
         $doubleResponse->setProject($project);
 
-        return $doubleResponse->render('projects.survey.' . $project->type . '.response-double');
+        $doubleResponse->setSection($section);
+
+        return $doubleResponse->render('projects.survey.' . $project->type . '.response-double', compact('sections', $sections), compact('settings', $settings));
     }
 
     public function originUse($project_id, $qid, $survey_id, Request $request)

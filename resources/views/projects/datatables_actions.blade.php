@@ -14,7 +14,7 @@
     <a href="{{ route('projects.response.filter', [$id, 'state']) }}" class='btn btn-default btn-sm'>
         <i class="glyphicon glyphicon-equalizer"></i> {!! trans('messages.response') !!}
     </a>
-    <a href="{{ route('projects.response.double', $id) }}" class='btn btn-default btn-sm'>
+    <a href="{{ route('projects.response.double', [$id, 0]) }}" class='btn btn-default btn-sm'>
         <i class="glyphicon glyphicon-transfer"></i> {!! trans('messages.double_entry') !!}
     </a>
 </div>
