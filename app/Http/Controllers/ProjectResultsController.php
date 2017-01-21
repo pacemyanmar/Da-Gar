@@ -50,11 +50,15 @@ class ProjectResultsController extends Controller
 
             return redirect(route('projects.index'));
         }
+        $auth = Auth::user();
 
         if ($project->status != 'published') {
             Flash::error('Project need to build form.');
-
-            return redirect(route('projects.edit', [$project->id]));
+            if ($auth->role->level > 5) {
+                return redirect(route('projects.edit', [$project->id]));
+            } else {
+                return redirect(route('projects.index'));
+            }
         }
 
         if ($resultDataTable instanceof SurveyResultDataTable) {
@@ -301,7 +305,7 @@ class ProjectResultsController extends Controller
     {
         $project = $this->projectRepository->findWithoutFail($project_id);
         $auth = Auth::user();
-        if ($project->status == 'new') {
+        if ($project->status != 'published') {
             Flash::warning("Project need to build to show '$project->project' form.");
 
             return redirect(route('projects.index'));
@@ -365,6 +369,13 @@ class ProjectResultsController extends Controller
     public function save($project_id, $samplable, Request $request)
     {
         $project = $this->projectRepository->findWithoutFail($project_id);
+
+        if ($project->status != 'published') {
+            Flash::warning("Project need to build to show '$project->project' form.");
+
+            return redirect(route('projects.index'));
+        }
+
         $questions = $project->questions;
 
         $dblink = strtolower($project->dblink);
@@ -528,6 +539,11 @@ class ProjectResultsController extends Controller
 
             return redirect(route('projects.index'));
         }
+        if ($project->status != 'published') {
+            Flash::warning("Project need to build to show '$project->project' response rate.");
+
+            return redirect(route('projects.index'));
+        }
 
         $sampleResponse->setProject($project);
 
@@ -544,6 +560,13 @@ class ProjectResultsController extends Controller
 
             return redirect(route('projects.index'));
         }
+
+        if ($project->status != 'published') {
+            Flash::warning("Project need to build to show '$project->project' double response rate.");
+
+            return redirect(route('projects.index'));
+        }
+
         $settings = [
             'project_id' => $project->id,
             'section' => $section,
