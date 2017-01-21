@@ -317,7 +317,7 @@ class SurveyResultDataTable extends DataTable
         return [
             'dom' => 'Brtip',
             'ordering' => false,
-            'authWidth' => false,
+            'autoWidth' => false,
             //'sServerMethod' => 'POST',
             'scrollX' => true,
             'fixedColumns' => true,

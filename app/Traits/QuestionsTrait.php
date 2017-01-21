@@ -56,7 +56,8 @@ trait QuestionsTrait
             }
 
             if (!array_key_exists('inputid', $a)) {
-                $a['inputid'] = strtolower('s' . $section_id . $qnum . 'i' . $k);
+                $input_index = (is_numeric($a['value'])) ? $a['value'] : $k;
+                $a['inputid'] = strtolower('s' . $section_id . $qnum . 'i' . $input_index);
             }
 
             if (!array_key_exists('section', $a)) {

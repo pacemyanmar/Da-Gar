@@ -26,10 +26,6 @@ Route::group(['prefix' => 'projects/{project}'], function () {
     Route::post('/usedouble/{survey_id}', ['as' => 'projects.response.double.use', 'uses' => 'ProjectResultsController@doubleUse']);
 });
 
-Route::group(['prefix' => 'projects/{project}/response'], function () {
-
-});
-
 Route::group(['prefix' => 'projects/{project}/surveys'], function () {
 
     Route::match(['get', 'post'], '/{sample_type?}', ['as' => 'projects.surveys.index', 'uses' => 'ProjectResultsController@index']);

@@ -544,14 +544,8 @@ class ProjectResultsController extends Controller
 
             return redirect(route('projects.index'));
         }
-        $sample = new Sample();
-        $sample = $sample->setRelatedTable($project->dbname)->query()
-            ->where('project_id', $project->id)
-            ->with(['resultWithTable' => function ($query) use ($project) {
-                return $query->from($project->dbname);
-            }]);
-        dd($sample->get());
-        //$sampleResponse->setProject($project);
+
+        $doubleResponse->setProject($project);
 
         return $doubleResponse->render('projects.survey.' . $project->type . '.response-double');
     }

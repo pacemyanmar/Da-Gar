@@ -21,15 +21,6 @@ class SurveyResult extends Model
     public static $rules = [
     ];
 
-    protected $table;
-
-    public function setTable($table = null)
-    {
-        $this->setTable($table);
-        $this->table = $table;
-        return $this;
-    }
-
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      **/
