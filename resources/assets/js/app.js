@@ -13,7 +13,7 @@ require('./bootstrap');
  * the application, or feel free to tweak this setup for your needs.
  */
 
-Vue.component('example', require('./components/Example.vue'));
+//Vue.component('example', require('./components/Example.vue'));
 
 
 // Form reset method from stackoverflow
@@ -30,13 +30,13 @@ global.sendAjax = function (url,data) {
 		  method: "POST",
 		  data: data
 		});
-		 
+
 		request.done(function( msg ) {
-			console.log(msg);		  
+			alert(msg.message);
 		});
-		 
+
 		request.fail(function( jqXHR, textStatus ) {
-		  	console.log( "Request failed: " + textStatus );
+			alert(jqXHR.responseJSON.message);
 		});
 
 		request.always(function(){
@@ -50,32 +50,32 @@ jQuery(document).ready(function() {
 			{ 'X-CSRF-TOKEN': Laravel.csrfToken }
 		});
 	var offset = 150;
-	 
+
 	var duration = 300;
-	 
+
 	jQuery(window).scroll(function() {
-	 
+
 	if (jQuery(this).scrollTop() > offset) {
-	 
+
 	jQuery('.btn-float').fadeIn(duration);
-	 
+
 	} else {
-	 
+
 	jQuery('.btn-float').fadeOut(duration);
-	 
+
 	}
-	 
-	}); 
-	 
-	 
+
+	});
+
+
 	jQuery('.btn-float-to-up').click(function(event) {
-	 
+
 	event.preventDefault();
-	 
+
 	jQuery('html, body').animate({scrollTop: 0}, duration);
-	 
+
 	return false;
-	 
+
 	})
- 
+
 });

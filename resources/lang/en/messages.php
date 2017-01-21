@@ -24,6 +24,8 @@ return [
     'in_report' => 'In Report',
     'double_entry' => 'Double Entry',
     'save' => 'Save',
+    'saved' => 'Saved!',
+    'no_result_submitted' => 'No result submitted!',
     'sort_project' => 'Sort Project',
     'rebuild_form' => 'Rebuild Form',
     'build_form' => 'Build Form',

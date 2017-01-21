@@ -77,7 +77,6 @@ window.url="{!! route('projects.surveys.save', ['project' => $project->id, 'samp
 </style>
 <script type='text/javascript'>
     (function($) {
-        $('form').reset();
 
         $('.save').click(function(event){
             event.preventDefault();

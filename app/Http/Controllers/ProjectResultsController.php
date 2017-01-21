@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\DataTables\DoubleResponseDataTable;
 use App\DataTables\SampleResponseDataTable;
 use App\DataTables\SurveyResultDataTable;
+use App\Http\Controllers\AppBaseController;
 use App\Models\Sample;
 use App\Models\SampleData;
 use App\Models\SurveyResult;
@@ -16,7 +17,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Laracasts\Flash\Flash;
 
-class ProjectResultsController extends Controller
+class ProjectResultsController extends AppBaseController
 {
     /** @var  ProjectRepository */
     private $projectRepository;
@@ -401,7 +402,7 @@ class ProjectResultsController extends Controller
         $results = $request->only('result')['result'];
 
         if (empty($results)) {
-            return json_encode(['status' => 'error', 'message' => 'No result submitted!']);
+            return $this->sendError(trans('messages.no_result_submitted'), $code = 404);
         }
         //$results['samplable_id'] = $dblink;
         //$results['samplable_id'] = $sample_dblink->id;
@@ -528,7 +529,7 @@ class ProjectResultsController extends Controller
         }
         $sample->save(); // update Sample::class
 
-        return json_encode(['status' => 'success', 'message' => 'Saved!', 'data' => $result]);
+        return $this->sendResponse($result, trans('messages.saved'));
     }
 
     public function responseRateSample($project_id, $filter, SampleResponseDataTable $sampleResponse)
