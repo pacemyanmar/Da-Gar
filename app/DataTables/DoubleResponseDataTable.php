@@ -32,6 +32,7 @@ class DoubleResponseDataTable extends DataTable
     {
         return $this->datatables
             ->eloquent($this->query())
+            ->addIndexColumn()
         //->addColumn('action', 'path.to.action.view')
             ->make(true, true);
     }
@@ -55,7 +56,9 @@ class DoubleResponseDataTable extends DataTable
         foreach ($project_inputs as $input) {
             $column = $input->inputid;
             $columnName = preg_replace('/s[0-9]+/', '', $column, 1);
-            $columns[] = $origin_db . '.' . $column . ' AS ori_' . $columnName . ',' . $double_db . '.' . $column . ' AS dou_' . $columnName;
+            $oriCol = 'ori_' . $columnName;
+            $douCol = 'dou_' . $columnName;
+            $columns[] = $origin_db . '.' . $column . ' AS ' . $oriCol . ',' . $double_db . '.' . $column . ' AS ' . $douCol . ', IF(' . $origin_db . '.' . $column . ' = ' . $double_db . '.' . $column . ', TRUE, FALSE) AS ' . $columnName;
         }
 
         $select_columns = implode(',', $columns);
@@ -103,6 +106,29 @@ class DoubleResponseDataTable extends DataTable
 
     protected function getBuilderParameters()
     {
+
+        $rowCallBack = "function( row, data, index ) {";
+
+        $project = $this->project;
+        $section = $this->section;
+        $project_inputs = $project->load(['inputs' => function ($query) use ($section) {
+            return $query->where('survey_inputs.section', $section);
+        }])->inputs;
+
+        foreach ($project_inputs as $input) {
+            $column = $input->inputid;
+            $columnName = preg_replace('/s[0-9]+/', '', $column, 1);
+            $ori = 'ori_' . $columnName;
+            $dou = 'dou_' . $columnName;
+            $rowCallBack .= "
+                            if( data.$ori == data.$dou ) {
+                                $('.$columnName').css('background-color', 'green');
+                            }else{
+                                $('.$columnName').css('background-color', 'red');
+                            }";
+        }
+        $rowCallBack .= "}";
+
         return [
             'dom' => 'Brtip',
             'ordering' => false,
@@ -171,7 +197,9 @@ class DoubleResponseDataTable extends DataTable
                                 });
                             });
                         }",
+            // /'createdRow' => function () use ($rowCallBack) {return $rowCallBack;},
         ];
+
     }
 
     /**
@@ -201,8 +229,40 @@ class DoubleResponseDataTable extends DataTable
             }
             $column = $input->inputid;
             $columnName = preg_replace('/s[0-9]+/', '', $column, 1);
-            $columns['ori_' . $columnName] = ['data' => 'ori_' . $columnName, 'name' => 'ori_' . $columnName, 'title' => title_case('(1) ' . $columnName), 'defaultContent' => 'N', 'searchable' => false, 'visibality' => $visibality];
-            $columns['dou_' . $columnName] = ['data' => 'dou_' . $columnName, 'name' => 'dou_' . $columnName, 'title' => title_case('(2) ' . $columnName), 'defaultContent' => 'N', 'searchable' => false, 'visibality' => $visibality];
+
+            $render = "function (data, type, full, meta) {
+                            if(type === 'display') {
+                                if(full.$columnName) {
+                                    return '<span class=\'label label-success\'>'+data+'</span>';
+                                } else {
+                                    return '<span class=\'label label-danger\'>'+data+'</span>';
+                                }
+                            }
+                            return data;
+                        }";
+            $columns['ori_' . $columnName] = [
+                'data' => 'ori_' . $columnName,
+                'name' => 'ori_' . $columnName,
+                'title' => title_case('(1) ' . $columnName),
+                'defaultContent' => 'N', 'searchable' => false,
+                'visibality' => $visibality,
+                'className' => trim($columnName),
+                'render' => function () use ($render) {
+                    return $render;
+                },
+            ];
+            $columns['dou_' . $columnName] = [
+                'data' => 'dou_' . $columnName,
+                'name' => 'dou_' . $columnName,
+                'title' => title_case('(2) ' . $columnName),
+                'defaultContent' => 'N',
+                'searchable' => false,
+                'visibality' => $visibality,
+                'className' => trim($columnName),
+                'render' => function () use ($render) {
+                    return $render;
+                },
+            ];
             $k++;
         }
         return $columns;
