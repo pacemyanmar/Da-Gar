@@ -27,6 +27,8 @@ return [
     'saved' => 'သိမ်းပြီးပါပြီ!',
     'no_result_submitted' => 'မည်သည့်အချက်အလက်မျှ မပို့ခဲ့ပါ!',
     'no_project' => 'ပရောဂျက်မတွေ့ပါ!',
+    'no_result1' => 'No result in first entry!',
+    'no_result1' => 'No result in double entry!',
     'sort_project' => 'အစီအစဥ်တကျစီရန်',
     'rebuild_form' => 'ဖောင်ပြန် ဆောက်ရန်',
     'build_form' => 'ဖောင် တည်ဆောက်ရန်',

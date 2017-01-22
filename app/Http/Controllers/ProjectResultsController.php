@@ -601,7 +601,16 @@ class ProjectResultsController extends AppBaseController
         $dou_table = $ori_table . '_double';
 
         $ori_result = $sample->resultWithTable($ori_table)->first(); // used first() because of one to one relation
+
+        if (empty($ori_result)) {
+            return $this->sendError(trans('messages.no_result1'), $code = 404);
+        }
+
         $dou_result = $sample->resultWithTable($dou_table)->first();
+
+        if (empty($dou_result)) {
+            return $this->sendError(trans('messages.no_result2'), $code = 404);
+        }
 
         $dou_result->setTable($dou_table);
         $dou_result->{$column} = $ori_result->{$column};
@@ -631,7 +640,16 @@ class ProjectResultsController extends AppBaseController
         $ori_table = $project->dbname;
         $dou_table = $ori_table . '_double';
         $ori_result = $sample->resultWithTable($ori_table)->first(); // used first() because of one to one relation
+
+        if (empty($ori_result)) {
+            return $this->sendError(trans('messages.no_result1'), $code = 404);
+        }
+
         $dou_result = $sample->resultWithTable($dou_table)->first();
+
+        if (empty($dou_result)) {
+            return $this->sendError(trans('messages.no_result2'), $code = 404);
+        }
 
         $ori_result->setTable($ori_table);
         $ori_result->{$column} = $dou_result->{$column};
