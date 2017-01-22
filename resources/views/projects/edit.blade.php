@@ -259,6 +259,18 @@
         },
         typeUserAttrs: {
           text: {
+            skip: {
+              label: 'Skip',
+              type: 'text',
+              name: 'skip',
+              placeholder: 'Space seperated list of Question Number'
+            },
+            goto: {
+              label: 'Go to',
+              type: 'text',
+              name: 'goto',
+              placeholder: 'Single Question Number'
+            },
             optional: {
               label: 'Optional',
               type: 'checkbox',
@@ -266,6 +278,18 @@
             }
           },
           date: {
+            skip: {
+              label: 'Skip',
+              type: 'text',
+              name: 'skip',
+              placeholder: 'Space seperated list of Question Number'
+            },
+            goto: {
+              label: 'Go to',
+              type: 'text',
+              name: 'goto',
+              placeholder: 'Single Question Number'
+            },
             optional: {
               label: 'Optional',
               type: 'checkbox',
@@ -273,6 +297,18 @@
             }
           },
           number: {
+            skip: {
+              label: 'Skip',
+              type: 'text',
+              name: 'skip',
+              placeholder: 'Space seperated list of Question Number'
+            },
+            goto: {
+              label: 'Go to',
+              type: 'text',
+              name: 'goto',
+              placeholder: 'Single Question Number'
+            },
             optional: {
               label: 'Optional',
               type: 'checkbox',

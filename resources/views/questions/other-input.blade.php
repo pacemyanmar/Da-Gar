@@ -36,3 +36,25 @@ if($element->type == 'number') {
     	</div>
 
     </div>
+
+@if(!empty($element->skip) && !isset($editing))
+    @push('document-ready')
+    if($("input[name='result[{!! $element->inputid !!}]']").val() != "") {
+            $("{!! $element->skip !!}").prop("disabled", true);
+        } else {
+            $("{!! $element->skip !!}").prop("disabled", false);
+        }
+    $("input[name='result[{!! $element->inputid !!}]']").on('focusout',function(){
+        if($("input[name='result[{!! $element->inputid !!}]']").val() != "") {
+            $("{!! $element->skip !!}").prop("disabled", true);
+            @if(isset($element->extras['goto']))
+                $("body, html").animate({
+                  scrollTop: $("{!! $element->extras['goto'] !!}").offset().top
+                }, 600);
+            @endif
+        } else {
+            $("{!! $element->skip !!}").prop("disabled", false);
+        }
+    });
+    @endpush
+@endif
