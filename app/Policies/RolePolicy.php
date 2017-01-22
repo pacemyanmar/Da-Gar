@@ -47,7 +47,8 @@ class RolePolicy
      */
     public function update(User $auth)
     {
-        return $auth->role->level == 9;
+        return false;
+        //return $auth->role->level == 9;
     }
 
     /**
@@ -59,6 +60,7 @@ class RolePolicy
      */
     public function delete(User $auth)
     {
-        return $auth->role->level == 9;
+        return false;
+        //return $auth->role->level == 9;
     }
 }

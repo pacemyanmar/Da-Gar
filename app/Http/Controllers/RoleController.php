@@ -9,6 +9,7 @@ use App\Http\Requests\UpdateRoleRequest;
 use App\Models\Role;
 use App\Repositories\RoleRepository;
 use Flash;
+use Illuminate\Auth\Access\AuthorizationException;
 use Response;
 
 class RoleController extends AppBaseController
