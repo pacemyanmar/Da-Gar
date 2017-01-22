@@ -6,6 +6,7 @@ use App\DataTables\ProjectDataTable;
 use App\Http\Controllers\AppBaseController;
 use App\Http\Requests\CreateProjectRequest;
 use App\Http\Requests\UpdateProjectRequest;
+use App\Models\Project;
 use App\Repositories\ProjectRepository;
 use App\Scopes\OrderByScope;
 use Flash;
@@ -36,6 +37,12 @@ class ProjectController extends AppBaseController
      */
     public function index(ProjectDataTable $projectDataTable)
     {
+        try {
+            $this->authorize('index', Project::class);
+        } catch (AuthorizationException $e) {
+            Flash::error($e->getMessage());
+            return redirect()->back();
+        }
         return $projectDataTable->render('projects.index');
     }
 
@@ -46,6 +53,12 @@ class ProjectController extends AppBaseController
      */
     public function create()
     {
+        try {
+            $this->authorize('create', Project::class);
+        } catch (AuthorizationException $e) {
+            Flash::error($e->getMessage());
+            return redirect()->back();
+        }
         return view('projects.create');
     }
 
@@ -58,6 +71,13 @@ class ProjectController extends AppBaseController
      */
     public function store(CreateProjectRequest $request)
     {
+        try {
+            $this->authorize('create', Project::class);
+        } catch (AuthorizationException $e) {
+            Flash::error($e->getMessage());
+            return redirect()->back();
+        }
+
         $input = $request->except(['samples']);
         if (!isset($input['sections'])) {
             $input['sections'][0] = [
@@ -117,6 +137,13 @@ class ProjectController extends AppBaseController
     {
         $project = $this->projectRepository->findWithoutFail($id);
 
+        try {
+            $this->authorize('view', $project);
+        } catch (AuthorizationException $e) {
+            Flash::error($e->getMessage());
+            return redirect()->back();
+        }
+
         if (empty($project)) {
             Flash::error('Project not found');
 
@@ -141,6 +168,12 @@ class ProjectController extends AppBaseController
     public function edit($id)
     {
         $project = $this->projectRepository->findWithoutFail($id);
+        try {
+            $this->authorize('update', $project);
+        } catch (AuthorizationException $e) {
+            Flash::error($e->getMessage());
+            return redirect()->back();
+        }
 
         if (empty($project)) {
             Flash::error('Project not found');
@@ -164,6 +197,13 @@ class ProjectController extends AppBaseController
     public function update($id, UpdateProjectRequest $request)
     {
         $project = $this->projectRepository->findWithoutFail($id);
+
+        try {
+            $this->authorize('update', $project);
+        } catch (AuthorizationException $e) {
+            Flash::error($e->getMessage());
+            return redirect()->back();
+        }
 
         if (empty($project)) {
             Flash::error('Project not found');
@@ -224,6 +264,13 @@ class ProjectController extends AppBaseController
     {
         $project = $this->projectRepository->findWithoutFail($id);
 
+        try {
+            $this->authorize('delete', $project);
+        } catch (AuthorizationException $e) {
+            Flash::error($e->getMessage());
+            return redirect()->back();
+        }
+
         if (empty($project)) {
             Flash::error('Project not found');
 
@@ -242,6 +289,14 @@ class ProjectController extends AppBaseController
     public function sort($id)
     {
         $project = $this->projectRepository->findWithoutFail($id);
+
+        try {
+            $this->authorize('update', $project);
+        } catch (AuthorizationException $e) {
+            Flash::error($e->getMessage());
+            return redirect()->back();
+        }
+
         $questions = $project->questions;
 
         foreach ($questions as $question) {
@@ -261,6 +316,13 @@ class ProjectController extends AppBaseController
     {
         // get project instance Project::class
         $project = $this->projectRepository->findWithoutFail($id);
+
+        try {
+            $this->authorize('update', $project);
+        } catch (AuthorizationException $e) {
+            Flash::error($e->getMessage());
+            return redirect()->back();
+        }
 
         // get unique collection of inputs
         $fields = $project->inputs->unique('inputid');

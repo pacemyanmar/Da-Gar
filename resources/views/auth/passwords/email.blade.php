@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>SMS Laravel Generator</title>
+    <title>{!! settings('app_name', 'Kanaung SMS Default'); !!}</title>
 
     <!-- Tell the browser to be responsive to screen width -->
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
@@ -34,7 +34,7 @@
 <body class="hold-transition login-page">
 <div class="login-box">
     <div class="login-logo">
-        <a href="{{ url('/home') }}"><b>SMS </b>Generator</a>
+        <a href="{{ url('/home') }}">{!! settings('app_name', 'Kanaung SMS Default'); !!}</a>
     </div>
 
     <!-- /.login-logo -->

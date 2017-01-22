@@ -6,6 +6,7 @@ use App\DataTables\RoleDataTable;
 use App\Http\Controllers\AppBaseController;
 use App\Http\Requests\CreateRoleRequest;
 use App\Http\Requests\UpdateRoleRequest;
+use App\Models\Role;
 use App\Repositories\RoleRepository;
 use Flash;
 use Response;
@@ -29,6 +30,12 @@ class RoleController extends AppBaseController
      */
     public function index(RoleDataTable $roleDataTable)
     {
+        try {
+            $this->authorize('index', Role::class);
+        } catch (AuthorizationException $e) {
+            Flash::error($e->getMessage());
+            return redirect()->back();
+        }
         return $roleDataTable->render('roles.index');
     }
 
@@ -39,6 +46,12 @@ class RoleController extends AppBaseController
      */
     public function create()
     {
+        try {
+            $this->authorize('create', Role::class);
+        } catch (AuthorizationException $e) {
+            Flash::error($e->getMessage());
+            return redirect()->back();
+        }
         return view('roles.create');
     }
 
@@ -51,6 +64,13 @@ class RoleController extends AppBaseController
      */
     public function store(CreateRoleRequest $request)
     {
+        try {
+            $this->authorize('create', Role::class);
+        } catch (AuthorizationException $e) {
+            Flash::error($e->getMessage());
+            return redirect()->back();
+        }
+
         $input = $request->all();
 
         $role = $this->roleRepository->create($input);
@@ -70,6 +90,13 @@ class RoleController extends AppBaseController
     public function show($id)
     {
         $role = $this->roleRepository->findWithoutFail($id);
+
+        try {
+            $this->authorize('view', $role);
+        } catch (AuthorizationException $e) {
+            Flash::error($e->getMessage());
+            return redirect()->back();
+        }
 
         if (empty($role)) {
             Flash::error('Role not found');
@@ -91,6 +118,13 @@ class RoleController extends AppBaseController
     {
         $role = $this->roleRepository->findWithoutFail($id);
 
+        try {
+            $this->authorize('update', $role);
+        } catch (AuthorizationException $e) {
+            Flash::error($e->getMessage());
+            return redirect()->back();
+        }
+
         if (empty($role)) {
             Flash::error('Role not found');
 
@@ -111,7 +145,12 @@ class RoleController extends AppBaseController
     public function update($id, UpdateRoleRequest $request)
     {
         $role = $this->roleRepository->findWithoutFail($id);
-
+        try {
+            $this->authorize('update', $role);
+        } catch (AuthorizationException $e) {
+            Flash::error($e->getMessage());
+            return redirect()->back();
+        }
         if (empty($role)) {
             Flash::error('Role not found');
 
@@ -135,7 +174,12 @@ class RoleController extends AppBaseController
     public function destroy($id)
     {
         $role = $this->roleRepository->findWithoutFail($id);
-
+        try {
+            $this->authorize('delete', $role);
+        } catch (AuthorizationException $e) {
+            Flash::error($e->getMessage());
+            return redirect()->back();
+        }
         if (empty($role)) {
             Flash::error('Role not found');
 

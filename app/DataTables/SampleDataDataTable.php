@@ -3,6 +3,7 @@
 namespace App\DataTables;
 
 use App\Models\SampleData;
+use Illuminate\Support\Facades\Auth;
 use Yajra\Datatables\Services\DataTable;
 
 class SampleDataDataTable extends DataTable
@@ -13,10 +14,12 @@ class SampleDataDataTable extends DataTable
      */
     public function ajax()
     {
-        return $this->datatables
-            ->eloquent($this->query())
-            ->addColumn('action', 'sample_datas.datatables_actions')
-            ->make(true);
+        $table = $this->datatables
+            ->eloquent($this->query());
+        if (Auth::user()->role->level > 5) {
+            $table->addColumn('action', 'sample_datas.datatables_actions');
+        }
+        return $table->make(true);
     }
 
     /**
@@ -38,9 +41,8 @@ class SampleDataDataTable extends DataTable
      */
     public function html()
     {
-        return $this->builder()
+        $builder = $this->builder()
             ->columns($this->getColumns())
-            ->addAction(['width' => '10%', 'title' => trans('messages.action')])
             ->ajax('')
             ->parameters([
                 'dom' => 'Bfrtip',
@@ -92,6 +94,11 @@ class SampleDataDataTable extends DataTable
                     'colvis',
                 ],
             ]);
+        if (Auth::user()->role->level > 5) {
+            $builder->addAction(['width' => '10%', 'title' => trans('messages.action')]);
+        }
+
+        return $builder;
     }
 
     /**

@@ -15,7 +15,7 @@ class AddUserRoleIdColumn extends Migration
     {
         Schema::table('users', function (Blueprint $table) {
             $table->string('username')->after('name');
-            $table->unsignedInteger('role_id')->after('password');
+            $table->unsignedInteger('role_id')->nullable()->after('password');
             $table->boolean('confirmed')->default(0);
             $table->string('confirmation_code')->nullable();
         });

@@ -7,12 +7,18 @@ use App\Http\Controllers\AppBaseController;
 use App\Http\Requests\CreateUserRequest;
 use App\Http\Requests\UpdateUserRequest;
 use App\Models\Role;
+use App\Models\User;
 use App\Repositories\UserRepository;
-use Flash;
+use App\Traits\UserRegisterTraits;
+use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Redirect;
+use Laracasts\Flash\Flash;
 use Response;
 
 class UserController extends AppBaseController
 {
+    use UserRegisterTraits;
     /** @var  UserRepository */
     private $userRepository;
 
@@ -34,6 +40,12 @@ class UserController extends AppBaseController
      */
     public function index(UserDataTable $userDataTable)
     {
+        try {
+            $this->authorize('index', User::class);
+        } catch (AuthorizationException $e) {
+            Flash::error($e->getMessage());
+            return redirect()->back();
+        }
         return $userDataTable->render('users.index');
     }
 
@@ -44,6 +56,13 @@ class UserController extends AppBaseController
      */
     public function create()
     {
+        try {
+            $this->authorize('create', User::class);
+        } catch (AuthorizationException $e) {
+            Flash::error($e->getMessage());
+            return redirect()->back();
+        }
+
         $roles = $this->role->pluck('description', 'id');
         return view('users.create')->with('roles', $roles);
     }
@@ -57,7 +76,16 @@ class UserController extends AppBaseController
      */
     public function store(CreateUserRequest $request)
     {
+        try {
+            $this->authorize('create', User::class);
+        } catch (AuthorizationException $e) {
+            Flash::error($e->getMessage());
+            return redirect()->back();
+        }
+
         $input = $request->all();
+
+        $input['password'] = bcrypt($input['password']);
 
         $user = $this->userRepository->create($input);
 
@@ -76,6 +104,12 @@ class UserController extends AppBaseController
     public function show($id)
     {
         $user = $this->userRepository->findWithoutFail($id);
+        try {
+            $this->authorize('view', $user);
+        } catch (AuthorizationException $e) {
+            Flash::error($e->getMessage());
+            return redirect()->back();
+        }
 
         if (empty($user)) {
             Flash::error('User not found');
@@ -96,7 +130,12 @@ class UserController extends AppBaseController
     public function edit($id)
     {
         $user = $this->userRepository->findWithoutFail($id);
-
+        try {
+            $this->authorize('update', $user);
+        } catch (AuthorizationException $e) {
+            Flash::error($e->getMessage());
+            return redirect()->back();
+        }
         if (empty($user)) {
             Flash::error('User not found');
 
@@ -119,14 +158,37 @@ class UserController extends AppBaseController
     public function update($id, UpdateUserRequest $request)
     {
         $user = $this->userRepository->findWithoutFail($id);
-
+        try {
+            $this->authorize('update', $user);
+        } catch (AuthorizationException $e) {
+            Flash::error($e->getMessage());
+            return redirect()->back();
+        }
         if (empty($user)) {
             Flash::error('User not found');
 
-            return redirect(route('users.index'));
+            return redirect()->back()->withInput();
         }
 
-        $user = $this->userRepository->update($request->all(), $id);
+        $input = $request->all();
+
+        $new_role = $this->role->find($request->input('role_id'));
+
+        if (empty($new_role)) {
+            Flash::error('Updating role not found');
+
+            return redirect()->back()->withInput();
+        }
+        $auth = Auth::user();
+        if ($new_role->level > $auth->role->level) {
+            Flash::error("You are not allowed to update to " . $new_role->description);
+
+            return redirect()->back()->withInput();
+        }
+
+        $input['password'] = bcrypt($input['password']);
+
+        $user = $this->userRepository->update($input, $id);
 
         Flash::success('User updated successfully.');
 
@@ -143,7 +205,12 @@ class UserController extends AppBaseController
     public function destroy($id)
     {
         $user = $this->userRepository->findWithoutFail($id);
-
+        try {
+            $this->authorize('delete', $user);
+        } catch (AuthorizationException $e) {
+            Flash::error($e->getMessage());
+            return redirect()->back();
+        }
         if (empty($user)) {
             Flash::error('User not found');
 

@@ -16,7 +16,7 @@ class RoleTableSeeder extends Seeder
             [
                 'level' => '9',
                 'group' => 'admin',
-                'role_name' => 'admin',
+                'role_name' => 'super_admin',
                 'description' => 'Super Admin',
                 'created_at' => Carbon::now('Asia/Rangoon'),
                 'updated_at' => Carbon::now('Asia/Rangoon'),
@@ -38,7 +38,7 @@ class RoleTableSeeder extends Seeder
                 'updated_at' => Carbon::now('Asia/Rangoon'),
             ],
             [
-                'level' => '5',
+                'level' => '4',
                 'group' => 'data',
                 'role_name' => 'doublechecker',
                 'description' => 'Double Checker',

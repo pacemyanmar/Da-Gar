@@ -2,10 +2,13 @@
 
 namespace App\Http\Controllers\Auth;
 
-use App\User;
-use Validator;
 use App\Http\Controllers\Controller;
+use App\Models\Role;
+use App\Models\User;
+use App\Repositories\UserRepository;
+use App\Traits\UserRegisterTraits;
 use Illuminate\Foundation\Auth\RegistersUsers;
+use Validator;
 
 class RegisterController extends Controller
 {
@@ -18,25 +21,29 @@ class RegisterController extends Controller
     | validation and creation. By default this controller uses a trait to
     | provide this functionality without requiring any additional code.
     |
-    */
+     */
 
-    use RegistersUsers;
+    use RegistersUsers, UserRegisterTraits;
 
     /**
      * Where to redirect users after login / registration.
      *
      * @var string
      */
-    protected $redirectTo = '/home';
+    protected $redirectTo = '/';
+
+    /** @var  UserRepository */
+    private $userRepository;
 
     /**
      * Create a new controller instance.
      *
      * @return void
      */
-    public function __construct()
+    public function __construct(UserRepository $userRepo)
     {
         $this->middleware('guest');
+        $this->userRepository = $userRepo;
     }
 
     /**
@@ -54,8 +61,8 @@ class RegisterController extends Controller
             'name' => 'required|max:255',
             'email' => 'required|email|max:255|unique:users',
             'password' => 'required|min:6|confirmed',
-            'terms' => 'required'
-        ],$messages);
+            'terms' => 'required',
+        ], $messages);
     }
 
     /**
@@ -66,10 +73,24 @@ class RegisterController extends Controller
      */
     protected function create(array $data)
     {
-        return User::create([
+        $all = User::all();
+
+        if (empty($all)) {
+            $role = $superAdmin = Role::where('role_name', 'super_admin')->first();
+        } else {
+            $role = $guest = Role::where('role_name', 'guest')->first();
+        }
+        if (!array_key_exists('username', $data)) {
+            $data['username'] = preg_replace('/[_\-]+/', '', snake_case($data['name']));
+        }
+        $user = User::create([
             'name' => $data['name'],
             'email' => $data['email'],
+            'username' => $data['username'],
             'password' => bcrypt($data['password']),
         ]);
+        $user->role()->associate($role);
+        $user->save();
+        return $user;
     }
 }

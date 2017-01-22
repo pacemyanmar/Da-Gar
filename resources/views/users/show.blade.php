@@ -11,7 +11,10 @@
             <div class="box-body">
                 <div class="row" style="padding-left: 20px">
                     @include('users.show_fields')
+                    <div class="form-group">
                     <a href="{!! route('users.index') !!}" class="btn btn-default">Back</a>
+                    <a href="{!! route('users.edit', $user->id) !!}" class="btn btn-info">Edit</a>
+                    </div>
                 </div>
             </div>
         </div>

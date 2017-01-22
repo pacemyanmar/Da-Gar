@@ -76,17 +76,12 @@ class User extends Authenticatable
     public static $rules = [
         'name' => 'required|max:255',
         'email' => 'required|email|max:255|unique:users,id',
-        'username' => 'required|alpha_num|max:255|unique:users,id',
+        //'username' => 'required|alpha_num|max:255|unique:users,id',
         'password' => 'required|min:6|confirmed',
     ];
 
     public function role()
     {
         return $this->belongsTo(Role::class, 'role_id');
-    }
-
-    public function setPasswordAttribute($value)
-    {
-        $this->attributes['password'] = bcrypt($value);
     }
 }
