@@ -26,6 +26,7 @@ return [
     'save' => 'Save',
     'saved' => 'Saved!',
     'no_result_submitted' => 'No result submitted!',
+    'no_project' => 'No project found!',
     'sort_project' => 'Sort Project',
     'rebuild_form' => 'Rebuild Form',
     'build_form' => 'Build Form',

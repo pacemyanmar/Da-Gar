@@ -515,7 +515,7 @@ class ProjectResultsController extends AppBaseController
 
         $old_result = $sample->resultWithTable($dbname);
 
-        $old_result = $old_result->first();
+        $old_result = $old_result->first(); // used first() because of one to one relation
 
         if (!empty($old_result)) {
             $old_result->setTable($dbname);
@@ -585,14 +585,64 @@ class ProjectResultsController extends AppBaseController
         return $doubleResponse->render('projects.survey.' . $project->type . '.response-double', compact('sections', $sections), compact('settings', $settings));
     }
 
-    public function originUse($project_id, $qid, $survey_id, Request $request)
+    public function originUse($project_id, $survey_id, $column, Request $request)
     {
-        # code...
+        $project = $this->projectRepository->findWithoutFail($project_id);
+        if (empty($project)) {
+            return $this->sendError(trans('messages.no_project'), $code = 404);
+        }
+        $sample = $this->sampleRepository->findWithoutFail($survey_id);
+
+        if (empty($sample)) {
+            return $this->sendError(trans('messages.no_project'), $code = 404);
+        }
+
+        $ori_table = $project->dbname;
+        $dou_table = $ori_table . '_double';
+
+        $ori_result = $sample->resultWithTable($ori_table)->first(); // used first() because of one to one relation
+        $dou_result = $sample->resultWithTable($dou_table)->first();
+
+        $dou_result->setTable($dou_table);
+        $dou_result->{$column} = $ori_result->{$column};
+
+        $dou_result->save();
+
+        if ($dou_result) {
+            return $this->sendResponse($dou_result, 'Data updated to second dataset!');
+        }
+
+        return $this->sendError(trans('messages.no_result_submitted'), $code = 404);
     }
 
-    public function doubleUse($project_id, $qid, $survey_id, Request $request)
+    public function doubleUse($project_id, $survey_id, $column, Request $request)
     {
-        # code...
+        $project = $this->projectRepository->findWithoutFail($project_id);
+        if (empty($project)) {
+            return $this->sendError(trans('messages.no_project'), $code = 404);
+        }
+
+        $sample = $this->sampleRepository->findWithoutFail($survey_id);
+
+        if (empty($sample)) {
+            return $this->sendError(trans('messages.no_project'), $code = 404);
+        }
+
+        $ori_table = $project->dbname;
+        $dou_table = $ori_table . '_double';
+        $ori_result = $sample->resultWithTable($ori_table)->first(); // used first() because of one to one relation
+        $dou_result = $sample->resultWithTable($dou_table)->first();
+
+        $ori_result->setTable($ori_table);
+        $ori_result->{$column} = $dou_result->{$column};
+
+        $ori_result->save();
+
+        if ($ori_result) {
+            return $this->sendResponse($ori_result, 'Data updated to first dataset!');
+        }
+
+        return $this->sendError(trans('messages.no_result_submitted'), $code = 404);
     }
 
 }

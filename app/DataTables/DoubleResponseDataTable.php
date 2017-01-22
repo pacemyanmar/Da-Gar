@@ -62,7 +62,7 @@ class DoubleResponseDataTable extends DataTable
         }
 
         $select_columns = implode(',', $columns);
-        $sample->select('sample_datas.idcode', 'samples.form_id', DB::raw($select_columns));
+        $sample->select('samples.id as samples_id', 'sample_datas.idcode', 'samples.form_id', DB::raw($select_columns));
 
         $sample->leftjoin('sample_datas', function ($join) {
             $join->on('samples.sample_data_id', 'sample_datas.id');
@@ -197,6 +197,24 @@ class DoubleResponseDataTable extends DataTable
                                 });
                             });
                         }",
+            'drawCallback' => function () {return "function(){
+                $('.usethis').on('click', function(e){
+                        if(!confirm('" . trans('messages.are_you_sure') . "')) return;
+                        var request = $.ajax({
+                                type: 'GET',
+                                url: $(this).data('url'),
+                                data: $(this).serialize(),
+                                success: function (data) {
+                                    alert('OK. Data updated!');
+                                }
+                            });
+                        request.fail(function( jqXHR, textStatus ) {
+                            alert(jqXHR.responseJSON.message);
+                        });
+                        e.preventDefault();
+                        LaravelDataTables['dataTableBuilder'].ajax.reload();
+                    });
+            }";},
             // /'createdRow' => function () use ($rowCallBack) {return $rowCallBack;},
         ];
 
@@ -217,8 +235,10 @@ class DoubleResponseDataTable extends DataTable
         $origin_db = $project->dbname;
         $double_db = $project->dbname . '_double';
         $columns = ['idcode', 'form_id'];
+        $columns['samples_id'] = ['data' => 'samples_id', 'name' => 'samples_id', 'visible' => false, 'orderable' => false];
         $visibality = true;
         $k = 0;
+        $baseUrl = url("projects/$project->id");
         foreach ($project_inputs as $input) {
 
             if ($k > 30) {
@@ -230,12 +250,22 @@ class DoubleResponseDataTable extends DataTable
             $column = $input->inputid;
             $columnName = preg_replace('/s[0-9]+/', '', $column, 1);
 
-            $render = "function (data, type, full, meta) {
+            $ori_render = "function (data, type, full, meta) {
                             if(type === 'display') {
                                 if(full.$columnName) {
                                     return '<span class=\'label label-success\'>'+data+'</span>';
                                 } else {
-                                    return '<span class=\'label label-danger\'>'+data+'</span>';
+                                    return '<span class=\'label label-danger\'>'+data+'</span><button class=\'btn btn-xs btn-warning usethis\' type=\'button\' data-url=\'$baseUrl/useorigin/'+full.samples_id+'/$column\'>Use this</button>';
+                                }
+                            }
+                            return data;
+                        }";
+            $dou_render = "function (data, type, full, meta) {
+                            if(type === 'display') {
+                                if(full.$columnName) {
+                                    return '<span class=\'label label-success\'>'+data+'</span>';
+                                } else {
+                                    return '<span class=\'label label-danger\'>'+data+'</span><button class=\'btn btn-xs btn-warning usethis\' type=\'button\' data-url=\'$baseUrl/usedouble/'+full.samples_id+'/$column\'>Use this</button>';
                                 }
                             }
                             return data;
@@ -245,10 +275,10 @@ class DoubleResponseDataTable extends DataTable
                 'name' => 'ori_' . $columnName,
                 'title' => title_case('(1) ' . $columnName),
                 'defaultContent' => 'N', 'searchable' => false,
-                'visibality' => $visibality,
+                'visible' => $visibality,
                 'className' => trim($columnName),
-                'render' => function () use ($render) {
-                    return $render;
+                'render' => function () use ($ori_render) {
+                    return $ori_render;
                 },
             ];
             $columns['dou_' . $columnName] = [
@@ -257,10 +287,10 @@ class DoubleResponseDataTable extends DataTable
                 'title' => title_case('(2) ' . $columnName),
                 'defaultContent' => 'N',
                 'searchable' => false,
-                'visibality' => $visibality,
+                'visible' => $visibality,
                 'className' => trim($columnName),
-                'render' => function () use ($render) {
-                    return $render;
+                'render' => function () use ($dou_render) {
+                    return $dou_render;
                 },
             ];
             $k++;
