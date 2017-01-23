@@ -410,9 +410,9 @@ class ProjectResultsController extends AppBaseController
         // group by all inputs with section and loop
         foreach ($project->inputs->groupBy('section') as $section => $section_inputs) {
             // get all inputs array of inputid and skip in a section which is not optional
-            $max_total_inputs = $section_inputs->where('optional', 0)->pluck('skip', 'inputid')->toArray();
+            $max_total_inputs = $section_inputs->where('optional', 0)->pluck('inputid', 'skip')->toArray();
 
-            $inputs_with_skip = array_filter($max_total_inputs); // from database only inputs with skip column
+            $inputs_with_skip = array_filter(array_flip($max_total_inputs)); // from database only inputs with skip column remove NULL
 
             $submitted_inputs_with_skip = array_intersect_key($inputs_with_skip, $results);
 
@@ -421,23 +421,25 @@ class ProjectResultsController extends AppBaseController
             $submitted_total_inputs = array_intersect_key($max_total_inputs_by_name, $results);
 
             $classNames = [];
+
             $skips = [];
             // array of inputs with skip column from database
             foreach ($submitted_inputs_with_skip as $skip_input => $skipped) {
                 // explode by commas all skip classes
-                $skipped_inputs = explode(',', $skipped);
+                $skipped_inputs_arr = explode(',', $skipped);
 
                 unset($max_total_inputs[$skip_input]);
                 // loop skip classes .s0q4,.s0q5
-                foreach ($skipped_inputs as $skipid) {
+                foreach ($skipped_inputs_arr as $skipid) {
                     // TODO: remove trailing space
                     //$classNames[] = ' ' . str_slug($skipid); // inputid from skip column
-                    $classNames[] = str_slug($skipid);
+                    $classNames[] = $className = trim(str_slug($skipid));
+                    $section_inputs->where('className', 'like', '%' . $className . '%');
                 }
             }
-
             // find inputs to skip based on submitted results
             $skipped_inputs = $section_inputs->whereIn('className', $classNames)->pluck('name', 'inputid')->toArray();
+            //$skipped_inputs = $section_inputs->pluck('className', 'inputid')->toArray();
 
             if (!empty($skipped_inputs)) {
                 foreach ($skipped_inputs as $toskip => $name) {

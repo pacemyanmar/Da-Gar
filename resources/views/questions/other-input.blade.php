@@ -39,7 +39,7 @@ if($element->type == 'number') {
 
 @if(!empty($element->skip) && !isset($editing))
     @push('document-ready')
-    if($("input[name='result[{!! $element->inputid !!}]']").val() != "") {
+    if($("input[name='result[{!! $element->inputid !!}]']").val() != "" || $("input[name='result[{!! $element->inputid !!}]']").prop("disabled") == true) {
             $("{!! $element->skip !!}").prop("disabled", true);
         } else {
             $("{!! $element->skip !!}").prop("disabled", false);

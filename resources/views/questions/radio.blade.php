@@ -13,7 +13,7 @@
 		} else {
 			$("{!! $element->skip !!}").prop("disabled", false);
 		}
-	$("#{!! $element->id !!}").click(function(){
+	$("input[name='result[{!! $element->inputid !!}]']").change(function(){
 		if($("input[name='result[{!! $element->inputid !!}]']:checked").val() == {!! $element->value !!}) {
 			$("{!! $element->skip !!}").prop("disabled", true);
 			@if(isset($element->extras['goto']))
