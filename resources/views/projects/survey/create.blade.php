@@ -67,6 +67,23 @@ window.url="{!! route('projects.surveys.save', ['project' => $project->id, 'samp
 @endsection
 
 @push('before-body-end')
+<!-- Modal -->
+  <div class="modal fade" id="alert" role="dialog">
+    <div class="modal-dialog modal-sm">
+
+      <!-- Modal content-->
+      <div class="modal-content">
+
+        <div class="modal-body">
+          <p id="submitted">Some text in the modal.</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
 <style type="text/css">
 .invalid {
     border: 1px solid red;
@@ -74,12 +91,31 @@ window.url="{!! route('projects.surveys.save', ['project' => $project->id, 'samp
 .hf-warning {
   color:red;
 }
+.modal {
+  text-align: center;
+  padding: 0!important;
+}
+
+.modal:before {
+  content: '';
+  display: inline-block;
+  height: 100%;
+  vertical-align: middle;
+  margin-right: -4px;
+}
+
+.modal-dialog {
+  display: inline-block;
+  text-align: left;
+  vertical-align: middle;
+}
 </style>
 <script type='text/javascript'>
     (function($) {
 
         $('.save').click(function(event){
             event.preventDefault();
+            $('.loading').removeClass("hidden");
 
             var id = $(this).data('id');
 
@@ -92,8 +128,31 @@ window.url="{!! route('projects.surveys.save', ['project' => $project->id, 'samp
 
             var ajaxData = $.merge(info_data, section_data);
 
-            sendAjax(url,ajaxData);
+            request = sendAjax(url,ajaxData)
 
+            console.log(request);
+
+            request.done(function( msg ) {
+                $('#submitted').html(msg.message);
+
+                $('#alert').modal('show');
+            });
+
+            request.fail(function( jqXHR, textStatus ) {
+                $('#submitted').html(jqXHR.responseJSON.message);
+
+                $('#alert').modal('show');
+
+            });
+
+            request.always(function(){
+                setTimeout(function(){
+                $('.loading').addClass("hidden");
+                }, 400);
+            });
+            $('#alert').on('hidden.bs.modal', function () {
+                window.location.href = "{{ route('projects.surveys.index', $project->id) }}";
+            })
             $('#'+id).find(":input").filter(function(){ return !this.value; }).removeAttr("disabled");
 
         });

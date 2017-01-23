@@ -30,18 +30,7 @@ global.sendAjax = function (url,data) {
 		  method: "POST",
 		  data: data
 		});
-
-		request.done(function( msg ) {
-			alert(msg.message);
-		});
-
-		request.fail(function( jqXHR, textStatus ) {
-			alert(jqXHR.responseJSON.message);
-		});
-
-		request.always(function(){
-			$('.loading').addClass("hidden");
-		});
+		return request;
 }
 
 jQuery(document).ready(function() {
