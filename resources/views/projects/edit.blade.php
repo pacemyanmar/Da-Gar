@@ -130,6 +130,9 @@
       var qid = button.data('qid') // Extract info from data-* attributes
       var qnum = button.data('qnum')
       var question = button.data('question')
+      var double = button.data('double')
+      var optional = button.data('optional')
+      var report = button.data('report')
       var sort = button.data('sort')
       var section = button.data('section')
       var layout = button.data('layout')
@@ -140,7 +143,9 @@
       var modal = $(this)
       modal.find( "input[name='qnum']" ).val(qnum)
       modal.find( "input[name='question']" ).val(question)
-
+      modal.find( "input[name='double_entry']").prop('checked', double)
+      modal.find( "input[name='optional']").prop('checked', optional)
+      modal.find( "input[name='report']").prop('checked', report)
       if(sort) {
       modal.find( "input[name='sort']" ).val(sort)
       }

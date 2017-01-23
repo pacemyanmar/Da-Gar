@@ -188,13 +188,13 @@
                 </td>
                 <td style="">
                     <div class="toggle">
-                    {!! Form::checkbox("sections[$section_key][optional]", 'Optional', null, ['class' => 'magic-checkbox optional ', 'id' => 'optional'.$section_key]) !!}
+                    {!! Form::checkbox("sections[$section_key][optional]", 1, null, ['class' => 'magic-checkbox optional ', 'id' => 'optional'.$section_key]) !!}
                     <label class="normal-text" for="optional{!! $section_key !!}"></label>
                     </div>
                 </td>
                 <td style="">
                     <div class="toggle">
-                    {!! Form::checkbox("sections[$section_key][double]", 'Double', null, ['class' => 'magic-checkbox double ', 'id' => 'double'.$section_key]) !!}
+                    {!! Form::checkbox("sections[$section_key][double]", 1, null, ['class' => 'magic-checkbox double ', 'id' => 'double'.$section_key]) !!}
                     <label class="normal-text" for="double{!! $section_key !!}"></label>
                     </div>
                 </td>
