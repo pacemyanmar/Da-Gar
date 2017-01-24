@@ -174,7 +174,7 @@ return [
         Prettus\Repository\Providers\RepositoryServiceProvider::class,
         \InfyOm\Generator\InfyOmGeneratorServiceProvider::class,
         InfyOm\AdminLTETemplates\AdminLTETemplatesServiceProvider::class,
-        Jenssegers\Mongodb\MongodbServiceProvider::class,
+        //Jenssegers\Mongodb\MongodbServiceProvider::class,
 
         /**
          * https://github.com/edvinaskrucas/settings
