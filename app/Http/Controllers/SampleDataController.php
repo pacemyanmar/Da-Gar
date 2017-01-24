@@ -193,6 +193,8 @@ class SampleDataController extends AppBaseController
                     "village_tract" => ($row->village_tract) ? $row->village_tract : null,
                     "village" => ($row->village) ? $row->village : null,
                     "name" => ($row->name) ? $row->name : null,
+                    "father" => ($row->father) ? $row->father : null,
+                    "mother" => ($row->mother) ? $row->mother : null,
                     "current_org" => ($row->current_occupation) ? $row->current_occupation : null,
                     "mobile" => ($row->phone_no_1) ? $row->phone_no_1 : null,
                     "line_phone" => ($row->phone_no_2) ? $row->phone_no_2 : null,
@@ -215,6 +217,51 @@ class SampleDataController extends AppBaseController
                 $row_attr = array_merge($type, $group, $attr);
 
                 $data = $sampleData->updateOrCreate($row_attr, $row_array);
+            });
+        });
+        Flash::success($file . ' Data imported successfully.');
+        return redirect()->back();
+    }
+
+    public function importTranslation(Request $request)
+    {
+        $file = $request->file('samplefile');
+        $type = $request->only('type');
+        $group = $request->only('dbgroup');
+        $lang = \App::getLocale();
+        Excel::load($file, function ($reader) use ($type, $group, $lang) {
+            $reader->each(function ($row) use ($type, $group, $lang) {
+                $attr = [
+                    "idcode" => ($row->id_code) ? $row->id_code : null,
+                    "sample" => ($row->sample) ? $row->sample : 1,
+                ];
+                $row_attr = array_merge($type, $group, $attr);
+
+                $sampleData = SampleData::where('idcode', $row_attr['idcode'])
+                    ->where('sample', $row_attr['sample'])
+                    ->where('dbgroup', $row_attr['dbgroup'])
+                    ->where('type', $row_attr['type'])->first();
+
+                $sampleData->idcode = ($row->id_code) ? (string) $row->id_code : null;
+                $sampleData->sample = ($row->sample) ? $row->sample : 1;
+                $sampleData->state_trans = [$lang => ($row->state) ? $row->state : null];
+                $sampleData->district_trans = [$lang => ($row->district) ? $row->district : null];
+                $sampleData->township_trans = [$lang => ($row->township) ? $row->township : null];
+                $sampleData->village_tract_trans = [$lang => ($row->village_tract) ? $row->village_tract : null];
+                $sampleData->village_trans = [$lang => ($row->village) ? $row->village : null];
+                $sampleData->name_trans = [$lang => ($row->name) ? $row->name : null];
+                $sampleData->father_trans = [$lang => ($row->father) ? $row->father : null];
+                $sampleData->mother_trans = [$lang => ($row->mother) ? $row->mother : null];
+                $sampleData->gender_trans = [$lang => ($row->gender) ? $row->gender : null];
+                $sampleData->nrc_id_trans = [$lang => ($row->nrc_no) ? $row->nrc_no : null];
+                $sampleData->ethnicity_trans = [$lang => ($row->ethnicity) ? $row->ethnicity : null];
+                $sampleData->education_trans = [$lang => ($row->edu_background) ? $row->edu_background : null];
+                $sampleData->address_trans = [$lang => ($row->mailing_address) ? $row->mailing_address : null];
+                $sampleData->language_trans = [$lang => ($row->language) ? $row->language : null];
+                $sampleData->bank_information_trans = [$lang => ($row->bank_information) ? $row->bank_information : null];
+                $sampleData->mobile_provider_trans = [$lang => ($row->mobile_provider) ? $row->mobile_provider : null];
+
+                $sampleData->save();
             });
         });
         Flash::success($file . ' Data imported successfully.');
