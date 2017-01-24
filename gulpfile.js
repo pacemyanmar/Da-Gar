@@ -16,6 +16,7 @@ require('laravel-elixir-vue-2');
 elixir(mix => {
     // by using versioning on js and css files, all dependencies related files and directory should be in "build" dir.
     mix.copy('resources/assets/vendor/bootstrap/dist/fonts', 'public/build/fonts')
+        .copy('resources/assets/fonts/NotoSansMyanmar', 'public/build/fonts')
         .copy('resources/assets/vendor/font-awesome/fonts', 'public/build/fonts')
         .copy('resources/assets/vendor/ionicons/fonts','public/build/fonts')
         .copy('resources/assets/vendor/adminlte/img', 'public/build/img')

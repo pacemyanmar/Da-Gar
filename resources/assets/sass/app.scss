@@ -7,7 +7,34 @@
 
 // Bootstrap
 @import "node_modules/bootstrap-sass/assets/stylesheets/bootstrap";
+/*
+ * Noto Sans Myanmar (Myanmar) http://www.google.com/fonts/earlyaccess
+ */
+@font-face {
+  font-family: 'Noto Sans Myanmar';
+  font-style: normal;
+  font-weight: 400;
+  src: url(../fonts/NotoSansMyanmar-Regular.eot);
+  src: url(../fonts/NotoSansMyanmar-Regular.eot?#iefix) format('embedded-opentype'),
+       url(../fonts/NotoSansMyanmar-Regular.woff2) format('woff2'),
+       url(../fonts/NotoSansMyanmar-Regular.woff) format('woff'),
+       url(../fonts/NotoSansMyanmar-Regular.ttf) format('truetype');
+}
+@font-face {
+  font-family: 'Noto Sans Myanmar';
+  font-style: normal;
+  font-weight: 700;
+  src: url(../fonts/NotoSansMyanmar-Bold.eot);
+  src: url(../fonts/NotoSansMyanmar-Bold.eot?#iefix) format('embedded-opentype'),
+       url(../fonts/NotoSansMyanmar-Bold.woff2) format('woff2'),
+       url(../fonts/NotoSansMyanmar-Bold.woff) format('woff'),
+       url(../fonts/NotoSansMyanmar-Bold.ttf) format('truetype');
+}
 
+.zawgyi {
+  font-family: 'Zawgyi-One' !important;
+  font-style: normal;
+}
 table.dataTable thead .sorting_asc {
 	    background-image: none !important;
 }
@@ -29,19 +56,19 @@ table.dataTable thead .sort_desc {
 
 
 .btn-float {
- 
+
 margin: 0;
- 
+
 position: fixed;
- 
+
 right: 0;
-  
+
 z-index: 100;
- 
+
 display: none;
- 
+
 text-decoration: none;
-  
+
 }
 
 .btn-float-bottom {
@@ -52,7 +79,7 @@ text-decoration: none;
 	up: 0;
 }
 
-/* 
+/*
 @credit https://codepen.io/MattIn4D/pen/LiKFC
 Absolute Center Spinner */
 .loading {
