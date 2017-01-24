@@ -15,7 +15,6 @@
         "infyomlabs/swagger-generator": "dev-master",
         "jlapp/swaggervel": "dev-master",
         "doctrine/dbal": "~2.3",
-        "jenssegers/mongodb": "~3.1",
         "telerivet/telerivet-php-client": "^1.1",
         "edvinaskrucas/settings": "^2.0",
         "telerivet-psr/telerivet-php-client": "dev-master",
