@@ -4,11 +4,14 @@
  */
  $dblink = [
     'enumerator' => 'Enumerator',
+    'spotchecker' => 'Spot Checker',
     'voter' => 'Voter List',
  ];
+
+ $dbgroup = ['1' => 'Group 1','2' => 'Group 2','3' => 'Group 3','4' => 'Group 4','5' => 'Group 5'];
  $type = [
-    'db2sample' => 'Database to sample (left join)',
-    'sample2db' => 'Sample to Database (inner join)',
+    'db2sample' => 'Survey',
+    'sample2db' => 'Incident',
  ]
 
 @endphp
@@ -22,25 +25,40 @@
 </div>
 
 @if(!isset($project) || (isset($project) && $project->status == 'new'))
+<div class="col-sm-12">
+<div class="row">
 <!-- DB Link Field -->
-<div class="form-group col-sm-6 has-error">
-    {!! Form::label('dblink', 'Database name to link: ') !!}
+<div class="col-sm-3">
+<div class="form-group has-error">
+    {!! Form::label('dblink', 'Sample list to link: ') !!}
     {!! Form::select('dblink', $dblink,(isset($project))?$project->dblink:null, ['class' => 'form-control toggle']) !!}
     <span class="text-red">* Red fields cannot change after form built.</span>
 </div>
+</div>
+
+<!-- DB Link Group -->
+<div class="col-sm-3">
+<div class="form-group has-error">
+    {!! Form::label('dbgroup', 'Sample list group: ') !!}
+    {!! Form::select('dbgroup', $dbgroup,(isset($project))?$project->dbgroup:null, ['class' => 'form-control toggle']) !!}
+    <span class="text-red">* Red fields cannot change after form built.</span>
+</div>
+</div>
 
 <!-- Type Field -->
-<div class="col-sm-6"'>
-<div class="row">
-<div class="form-group col-sm-6 has-error">
-    {!! Form::label('type', 'Linked database type: ') !!}
+<div class="col-sm-3"'>
+<div class="form-group has-error">
+    {!! Form::label('type', 'Database type: ') !!}
     {!! Form::select('type', $type,(isset($project))?$project->type:null, ['class' => 'form-control toggle']) !!}
 </div>
+</div>
+<div class="col-sm-3">
 <!-- Type Field -->
-<div class="form-group col-sm-6 has-error">
+<div class="form-group has-error">
     {!! Form::label('copies', 'Copies of form for a sample: ') !!}
     {!! Form::select('copies', ['1' => 1,'2' => 2,'3' => 3,'4' => 4,'5' => 5,'6' => 6,'7' => 7,'8' => 8,'9' => 9,'10' => 10,
     '11' => 11,'12' => 12,'13' => 13,'14' => 14,'15' => 15,'16' => 16,'17' => 17,'18' => 18,'19' => 19,'20' => 20],(isset($project))?$project->copies:null, ['class' => 'form-control toggle']) !!}
+</div>
 </div>
 </div>
 </div>

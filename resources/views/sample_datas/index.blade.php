@@ -31,9 +31,38 @@
       </div>
 
       <div class="modal-body">
+      <h4> Your CSV file should include following columns (ID Code is mandatory)</h4>
+      <table class="table table-striped">
+          <tr>
+              <th>ID Code</th>
+              <th>State</th>
+              <th>District</th>
+              <th>Township</th>
+              <th>Village_Tract</th>
+              <th>Village</th>
+              <th>Name</th>
+              <th>N.R.C No.</th>
+              <th>Gender</th>
+              <th>Date of Birth</th>
+              <th>Edu Background</th>
+            </tr>
+            <tr>
+              <th>Father</th>
+              <th>Mother</th>
+              <th>Ethinicity</th>
+              <th>Language</th>
+              <th>Current occupation</th>
+              <th>Phone no. (1)</th>
+              <th>Phone no. (2)</th>
+              <th>Address</th>
+              <th>Bank Information</th>
+              <th>Mobile Provider</th>
+          </tr>
+      </table>
+      <h4> Data type and Data group will be used when building form and generating sample list for data entry.</h4>
         <div class="input-group">
             <span class="input-group-addon" id="datatype">Data Type: </span>
-            {!! Form::select('type', ['enumerator' => 'Enumerator', 'location' => 'Location', 'voter' => 'Voter'], null, ['class' => 'form-control', 'aria-describedby' => 'datatype']) !!}
+            {!! Form::select('type', ['enumerator' => 'Enumerator', 'spotchecker' => 'Spot Checker', 'location' => 'Location', 'voter' => 'Voter'], null, ['class' => 'form-control', 'aria-describedby' => 'datatype']) !!}
         </div>
          <div class="input-group">
             <span class="input-group-addon" id="dbgroup">Data Group: </span>

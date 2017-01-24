@@ -93,6 +93,51 @@ class SampleDataDataTable extends DataTable
                     ],
                     'colvis',
                 ],
+                'initComplete' => "function () {
+                            this.api().columns(['0']).every(function () {
+                                var column = this;
+                                var br = document.createElement(\"br\");
+                                var input = document.createElement(\"input\");
+                                input.className = 'form-control input-sm';
+                                input.style.width = '90%';
+                                $(br).appendTo($(column.header()));
+                                $(input).appendTo($(column.header()))
+                                .on('change', function () {
+                                    column.search($(this).val(), false, false, true).draw();
+                                });
+                            });
+                            this.api().columns([1]).every( function () {
+                              var column = this;
+                              var select = $('<select style=\"width:80px !important\"><option value=\"\">-</option><option value=\"enumerator\">Enumerator</option><option value=\"spotchecker\">Spot Checker</option><option value=\"location\">Location</option><option value=\"voter\">Voter</option></select>')
+                              .appendTo( $(column.header()) )
+                              .on( 'change', function () {
+                              var val = $.fn.dataTable.util.escapeRegex(
+                                          $(this).val()
+                                          );
+
+                                  column
+                                  .search( val ? val : '', false, false )
+                                  .draw();
+                              } );
+                              select.addClass('form-control input-sm');
+                              } );
+
+                              this.api().columns([2]).every( function () {
+                              var column = this;
+                              var select = $('<select style=\"width:80px !important\"><option value=\"\">-</option><option value=\"1\">Group 1</option><option value=\"2\">Group 2</option><option value=\"3\">Group 3</option><option value=\"4\">Group 4</option><option value=\"5\">Group 5</option></select>')
+                              .appendTo( $(column.header()) )
+                              .on( 'change', function () {
+                              var val = $.fn.dataTable.util.escapeRegex(
+                                          $(this).val()
+                                          );
+
+                                  column
+                                  .search( val ? val : '', false, false )
+                                  .draw();
+                              } );
+                              select.addClass('form-control input-sm');
+                              } );
+                        }",
             ]);
         if (Auth::user()->role->level > 5) {
             $builder->addAction(['width' => '10%', 'title' => trans('messages.action')]);
@@ -109,8 +154,9 @@ class SampleDataDataTable extends DataTable
     private function getColumns()
     {
         return [
-            'idcode' => ['name' => 'idcode', 'data' => 'idcode', 'title' => trans('messages.idcode')],
-            'type' => ['name' => 'type', 'data' => 'type', 'title' => trans('messages.type')],
+            'idcode' => ['name' => 'idcode', 'data' => 'idcode', 'orderable' => false, 'title' => trans('messages.idcode')],
+            'type' => ['name' => 'type', 'data' => 'type', 'orderable' => false, 'title' => trans('messages.type')],
+            'dbgroup' => ['name' => 'dbgroup', 'data' => 'dbgroup', 'orderable' => false, 'title' => trans('messages.dbgroup')],
             'name' => ['name' => 'name', 'data' => 'name', 'title' => trans('messages.name')],
             'gender' => ['name' => 'gender', 'data' => 'gender', 'title' => trans('messages.gender')],
             'nrc_id' => ['name' => 'nrc_id', 'data' => 'nrc_id', 'title' => trans('messages.nrc_id')],
@@ -123,6 +169,10 @@ class SampleDataDataTable extends DataTable
             'township' => ['name' => 'township', 'data' => 'township', 'title' => trans('messages.township')],
             'district' => ['name' => 'district', 'data' => 'district', 'title' => trans('messages.district')],
             'state' => ['name' => 'state', 'data' => 'state', 'title' => trans('messages.state')],
+            'education' => ['name' => 'education', 'data' => 'education', 'title' => trans('messages.education')],
+            'language' => ['name' => 'language', 'data' => 'language', 'title' => trans('messages.language')],
+            'bank_information' => ['name' => 'bank_information', 'data' => 'bank_information', 'title' => trans('messages.bank')],
+            'mobile_provider' => ['name' => 'mobile_provider', 'data' => 'mobile_provider', 'title' => trans('messages.mobile_provider')],
             //'parent_id' => ['name' => 'parent_id', 'data' => 'parent_id'],
             //'created_at' => ['name' => 'created_at', 'data' => 'created_at'],
             //'updated_at' => ['name' => 'updated_at', 'data' => 'updated_at'],

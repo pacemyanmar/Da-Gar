@@ -158,12 +158,34 @@ class SampleDataController extends AppBaseController
         $type = $request->only('type');
         $group = $request->only('dbgroup');
         Excel::load($file, function ($reader) use ($type, $group) {
-
             $reader->each(function ($row) use ($type, $group) {
+                //dd($row);
+                /**
+                "pace_id" => "02202"
+                "state_region" => "Bago (East)"
+                "district" => "Bago"
+                "township" => "Kyauktaga"
+                "ward" => null
+                "village_tract" => "Inn Pat Lel"
+                "village" => "Bon Taw"
+                "m" => "U Soe Win"
+                "nrc_no" => "7/NyaLaPa(N)102212"
+                "gender" => "M"
+                "date_of_birth" => "27.7.62"
+                "edu_background" => "B.Sc (Botany)"
+                "ethinicity" => "Bamar"
+                "language" => null
+                "current_occupation" => null
+                "phone_no_1" => "09-428010716"
+                "phone_no_2" => "09-794143708"
+                "address" => "No (30) MyoMa(4) Ward, Zayyarminlwin Ward, Kyauktaga"
+                "bank_information" => null
+                "mobile_singal_info" => "MPT-OOREDOO"
+                 */
                 $sampleData = new SampleData();
 
                 $row_array = [
-                    "idcode" => ($row->idcode) ? $row->idcode : null,
+                    "idcode" => ($row->id_code) ? (string) $row->id_code : null,
                     "sample" => ($row->sample) ? $row->sample : 1,
                     "state" => ($row->state) ? $row->state : null,
                     "district" => ($row->district) ? $row->district : null,
@@ -171,19 +193,22 @@ class SampleDataController extends AppBaseController
                     "village_tract" => ($row->village_tract) ? $row->village_tract : null,
                     "village" => ($row->village) ? $row->village : null,
                     "name" => ($row->name) ? $row->name : null,
-                    "current_org" => ($row->current_org) ? $row->current_org : null,
-                    "mobile" => ($row->mobile) ? $row->mobile : null,
-                    "line_phone" => ($row->line_phone) ? $row->line_phone : null,
-                    "nrc_id" => ($row->nrc_id) ? $row->nrc_id : null,
+                    "current_org" => ($row->current_occupation) ? $row->current_occupation : null,
+                    "mobile" => ($row->phone_no_1) ? $row->phone_no_1 : null,
+                    "line_phone" => ($row->phone_no_2) ? $row->phone_no_2 : null,
+                    "nrc_id" => ($row->nrc_no) ? $row->nrc_no : null,
                     "gender" => ($row->gender) ? $row->gender : null,
                     "ethnicity" => ($row->ethnicity) ? $row->ethnicity : null,
-                    "dob" => ($row->dob) ? date("Y-m-d", strtotime($row->dob)) : null,
-                    "education" => ($row->education) ? $row->education : null,
+                    "dob" => ($row->date_of_birth) ? date("Y-m-d", strtotime($row->date_of_birth)) : null,
+                    "education" => ($row->edu_background) ? $row->edu_background : null,
                     "email" => ($row->email) ? $row->email : null,
                     "address" => ($row->mailing_address) ? $row->mailing_address : null,
+                    "language" => ($row->language) ? $row->language : null,
+                    "bank_information" => ($row->bank_information) ? $row->bank_information : null,
+                    "mobile_provider" => ($row->mobile_provider) ? $row->mobile_provider : null,
                 ];
                 $attr = [
-                    "idcode" => ($row->idcode) ? $row->idcode : null,
+                    "idcode" => ($row->id_code) ? $row->id_code : null,
                     "sample" => ($row->sample) ? $row->sample : 1,
                 ];
                 $row_array = array_merge($type, $group, $row_array);

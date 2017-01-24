@@ -15,14 +15,15 @@ class Project extends Model
 
     public $fillable = [
         'project',
+        'dbname',
+        'dblink',
         'type',
+        'dbgroup',
         'sections',
         'samples',
         'copies',
-        'dblink',
-        'dbname',
-        'status',
         'index_columns',
+        'status',
         'project_trans',
     ];
 
