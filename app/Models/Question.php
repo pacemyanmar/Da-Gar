@@ -61,7 +61,7 @@ class Question extends Model
      * @var array
      */
     public static $rules = [
-        'qnum' => 'required|alpha_num|unique_with:questions,section,sort,project_id',
+        'qnum' => 'required|alpha_num|unique_with:questions,project_id',
         'question' => 'required',
         'raw_ans' => 'required',
         'section' => 'required',

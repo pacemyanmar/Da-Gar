@@ -56,7 +56,7 @@ trait QuestionsTrait
             }
 
             if (!array_key_exists('inputid', $a)) {
-                $input_index = (is_numeric($a['value'])) ? $a['value'] : $k;
+                $input_index = (array_key_exists('value', $a) && is_numeric($a['value'])) ? $a['value'] : $k;
                 $a['inputid'] = strtolower('s' . $section_id . $qnum . 'i' . $input_index);
             }
 
@@ -77,7 +77,7 @@ trait QuestionsTrait
             }
 
             if (array_key_exists('goto', $a)) {
-                $qnumid = str_slug('s' . $section_id . $a['goto']);
+                $qnumid = str_slug('qnum' . $a['goto']);
                 $a['extras']['goto'] = '#' . $qnumid;
             }
 
@@ -122,7 +122,7 @@ trait QuestionsTrait
                     $answer[] = array_merge($a, $av);
                 }
 
-                continue;
+                continue; // this is require to remove 'radio-group' as input type
             } elseif ($a['type'] == 'radio-group' && $layout == 'matrix') {
                 /**
                  * if input type is radio-group and layout is matrix, add input type "radio" to each options and
@@ -203,7 +203,8 @@ trait QuestionsTrait
     private static function format_input(&$value, $key, $param_array)
     {
         $input_id = str_slug('p' . $param_array['p'] . 's' . $param_array['s'] . $param_array['q'] . 'i' . $param_array['i']);
-        $input_class = str_slug('s' . $param_array['s'] . $param_array['q']);
+        $input_class = str_slug('qnum' . $param_array['q']);
+        //$input_class = str_slug('s' . $param_array['s'] . $param_array['q']);
         /**
         if ($key == 'name') {
         $value = $param;
@@ -213,7 +214,7 @@ trait QuestionsTrait
         if ($key == 'skip') {
             $qnum_array = explode(' ', $value);
             foreach ($qnum_array as $qnum) {
-                $qids[] = '.' . str_slug('s' . $param_array['s'] . $qnum);
+                $qids[] = '.' . str_slug('qnum' . $qnum);
             }
             $value = implode(',', $qids);
         }
