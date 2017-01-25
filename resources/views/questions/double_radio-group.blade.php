@@ -23,6 +23,19 @@ $layoutError = false;
 		{!! Form::radio("result[".$radio->inputid."]", $radio->value, (isset($double_results) && $radio->value == $double_results->{$radio->inputid}), ['data-origin' =>(isset($results) && $radio->value == $results->{$radio->inputid}), 'id' => $radio->id,'class' => ' magic-radio '.$radio->className.' '.$sectionClass, 'autocomplete' => 'off']) !!}<label class="normal-text" for='{{ $radio->id }}'><!-- dummy for magic radio --></label>
 		@if(str_contains(strtolower($label), 'other'))
 		{!! Form::text("result[".$radio->inputid."]", (isset($double_results))?$double_results->{$radio->inputid}:null, ['class' => $radio->className, 'autocomplete' => 'off', 'id' => $radio->id]) !!}
+			@push('document-ready')
+				$("input[name='result[{!! $radio->inputid !!}]']").change(function(e){
+					if($("input[name='result[{!! $radio->inputid !!}]']:checked").val() == {!! $radio->value !!}) {
+						$("#{!! $radio->id.'other' !!}").prop('required', true).addClass('has-error');
+					} else {
+						$("#{!! $radio->id.'other' !!}").prop('required', false).removeClass('has-error');
+					}
+				});
+
+				if($("input[name='result[{!! $radio->inputid !!}]']:checked").val() == {!! $radio->value !!}) {
+					$("#{!! $radio->id.'other' !!}").prop('required', true).addClass('has-error');
+				}
+			@endpush
 		@endif
 		</td>
 		@endforeach
