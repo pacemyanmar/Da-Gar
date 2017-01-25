@@ -28,14 +28,17 @@ $layoutError = false;
 			@push('document-ready')
 				$("input[name='result[{!! $radio->inputid !!}]']").change(function(e){
 					if($("input[name='result[{!! $radio->inputid !!}]']:checked").val() == {!! $radio->value !!}) {
-						$("#{!! $radio->id.'other' !!}").prop('required', true).addClass('has-error');
+						$("#{!! $radio->id.'other' !!}").prop('disabled', false).prop('required', true).addClass('has-error');
 					} else {
-						$("#{!! $radio->id.'other' !!}").prop('required', false).removeClass('has-error');
+						$("#{!! $radio->id.'other' !!}").prop('disabled', true).prop('required', false).removeClass('has-error');
 					}
 				});
 
-				if($("input[name='result[{!! $radio->inputid !!}]']:checked").val() == {!! $radio->value !!}) {
+				if($("#{!! $radio->id.'other' !!}").val() != "") {
 					$("#{!! $radio->id.'other' !!}").prop('required', true).addClass('has-error');
+					$("#{!! $radio->id !!}").prop('checked', true);
+				} else {
+					$("#{!! $radio->id.'other' !!}").prop('disabled', true).prop('required', false).removeClass('has-error');
 				}
 			@endpush
 		@endif

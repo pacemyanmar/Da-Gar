@@ -9,14 +9,17 @@
 			@push('document-ready')
 				$("input[name='result[{!! $element->inputid !!}]']").change(function(e){
 					if($("input[name='result[{!! $element->inputid !!}]']:checked").val() == {!! $element->value !!}) {
-						$("#{!! $element->id.'other' !!}").prop('required', true).addClass('has-error');
+						$("#{!! $element->id.'other' !!}").prop('disabled', false).prop('required', true).addClass('has-error');
 					} else {
-						$("#{!! $element->id.'other' !!}").prop('required', false).removeClass('has-error');
+						$("#{!! $element->id.'other' !!}").prop('disabled', true).prop('required', false).removeClass('has-error');
 					}
 				});
 
-				if($("input[name='result[{!! $element->inputid !!}]']:checked").val() == {!! $element->value !!}) {
+				if($("#{!! $element->id.'other' !!}").val() != "") {
 					$("#{!! $element->id.'other' !!}").prop('required', true).addClass('has-error');
+					$("#{!! $element->id !!}").prop('checked', true);
+				} else {
+					$("#{!! $element->id.'other' !!}").prop('disabled', true).prop('required', false).removeClass('has-error');
 				}
 			@endpush
 		@endif

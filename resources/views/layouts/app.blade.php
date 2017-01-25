@@ -149,7 +149,32 @@
     <!-- Combined vendor js -->
     <script src="{{ elixir('js/vendor.js') }}"></script>
     <script type="text/javascript">
-        hyperform(window);
+        @if(\App::getLocale() == 'mm')
+        hyperform.add_translation("mm",{
+            TextTooLong: 'စာလုံးအေရအတွက်အား %l အောက်သို့ လျှော့ချပါ (လောလောဆယ် %l စာလုံးအား အသုံးပြုထားသည်).',
+            TextTooShort:"စာလုံးအေရအတွက်အား %l ထက်ပိုသုံးပါ (လောလောဆယ် %l စာလုံးအား အသုံးပြုထားသည်).",
+            ValueMissing: 'ဒီအကွက်ကို ဖြည့်ပေးပါ။',
+            CheckboxMissing: 'ဆက်လုပ်လိုလျှင် ဒီအကွက်အား အမှန်ခြစ်ပါ။',
+            RadioMissing: 'ဒီထဲက တစ်ခုခုကို ရွေးပါ။',
+            FileMissing: 'ဖိုင်တစ်ဖိုင် ရွေးပေးပါ။',
+            SelectMissing: 'စာရင်းထဲမှ တစ်ခုခုအား ရွေးပါ။',
+            InvalidEmail: 'အီးမေးလ်လိပ်စာ ဖြည့်ပါ။',
+            InvalidURL: 'URL ဖြည့်ပါ။',
+            PatternMismatch: 'သတ်မှတ်ပုံစံအတိုင်း ဖြည့်သွင်းပါ။',
+            PatternMismatchWithTitle: 'သတ်မှတ်ပုံစံအတိုင်း ဖြည့်သွင်းပါ။: %l.',
+            NumberRangeOverflow: '%l ထက်မများသော တန်ဖိုးတစ်ခုရွေးပါ။',
+            DateRangeOverflow: '%l အောက် မငယ်သော တန်ဖိုးတစ်ခုရွေးပါ။',
+            TimeRangeOverflow: '%l ထက်နောက်မကျသော အချိန်ရွေးပါ။',
+            NumberRangeUnderflow: '%l အောက် မငယ်သော တန်ဖိုးတစ်ခု ရွေးပါ။',
+            DateRangeUnderflow: '%l ထက် မစောသော တစ်ရက် ရွေးပါ။',
+            TimeRangeUnderflow: '%l ထက် မစောသော အချိန်တစ်ခု ရွေးပါ။',
+            StepMismatch: 'မှန်ကန်သော တန်ဖိုးအား ဖြည့်ပါ။ အနီးစပ်ဆုံးမှာ %l နှင့် %l တို့ဖြစ်သည်။',
+            StepMismatchOneValue: 'မှန်ကန်သော တန်ဖိုးအား ဖြည့်ပါ။ အနီးစပ်ဆုံးမှာ %l ဖြစ်သည်',
+            BadInputNumber: 'ဂဏန်း တစ်ခုဖြစ်ည့သွင်းပါ။'
+        });
+        hyperform.set_language("mm");
+        @endif
+        hyperform(window, {revalidate: 'oninput'});
     </script>
 
     <!-- app script -->

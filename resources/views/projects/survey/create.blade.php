@@ -175,7 +175,6 @@ window.url="{!! route('projects.surveys.save', ['project' => $project->id, 'samp
             }
             input.reportValidity();
         });
-
     })(jQuery);
     </script>
 @endpush
