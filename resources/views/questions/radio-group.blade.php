@@ -19,7 +19,14 @@ $layoutError = false;
 		@if(isset($label))
 		<td>{!! $label !!}</td>
 		@foreach($element as $radio)
-		<td>{!! Form::radio("result[".$radio->inputid."]", $radio->value, (isset($results) && $radio->value == $results->{$radio->inputid}), ['id' => $radio->id,'class' => ' magic-radio '.$radio->className.' '.$sectionClass, 'autocomplete' => 'off']) !!}<label class="normal-text" for='{{ $radio->id }}'><!-- dummy for magic radio --></label></td>
+		<td>
+		{!! Form::radio("result[".$radio->inputid."]", $radio->value, (isset($results) && $radio->value == $results->{$radio->inputid}), ['id' => $radio->id,'class' => ' magic-radio '.$radio->className.' '.$sectionClass, 'autocomplete' => 'off']) !!}
+		<label class="normal-text" for='{{ $radio->id }}'><!-- dummy for magic radio -->
+		@if(str_contains(strtolower($label), 'other'))
+		{!! Form::text("result[".$radio->inputid."]", (isset($results))?$results->{$radio->inputid}:null, ['class' => $radio->className, 'autocomplete' => 'off', 'id' => $radio->id]) !!}
+		@endif
+		</label>
+		</td>
 		@endforeach
 		@else
 		@php
