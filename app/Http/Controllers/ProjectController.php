@@ -380,6 +380,8 @@ class ProjectController extends AppBaseController
                 $double_status = $input->inputid . '_ds';
                 switch ($input->type) {
                     case 'radio':
+                        $inputType = 'string';
+                        break;
                     case 'checkbox':
                         $inputType = 'unsignedSmallInteger';
                         break;
@@ -437,6 +439,8 @@ class ProjectController extends AppBaseController
 
                         switch ($input->type) {
                             case 'radio':
+                                $inputType = 'string';
+                                break;
                             case 'checkbox':
                                 $inputType = 'unsignedSmallInteger';
                                 break;
@@ -474,6 +478,8 @@ class ProjectController extends AppBaseController
                     Schema::table($dbname, function ($table) use ($input, $project) {
                         switch ($input->type) {
                             case 'radio':
+                                $inputType = 'string';
+                                break;
                             case 'checkbox':
                                 $inputType = 'unsignedSmallInteger';
                                 break;

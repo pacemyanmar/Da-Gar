@@ -151,7 +151,11 @@ window.url="{!! route('projects.surveys.save', ['project' => $project->id, 'samp
                 }, 400);
             });
             $('#alert').on('hidden.bs.modal', function () {
-                window.location.href = "{{ route('projects.surveys.index', $project->id) }}";
+                if(id == 'survey-form') {
+                    window.location.href = "{{ route('projects.surveys.index', $project->id) }}";
+                } else {
+                    //window.location.reload();
+                }
             })
             $('#'+id).find(":input").filter(function(){ return !this.value; }).removeAttr("disabled");
 

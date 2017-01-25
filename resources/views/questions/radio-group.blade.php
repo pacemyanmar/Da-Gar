@@ -22,6 +22,7 @@ $layoutError = false;
 		<td>
 		{!! Form::radio("result[".$radio->inputid."]", $radio->value, (isset($results) && $radio->value == $results->{$radio->inputid}), ['id' => $radio->id,'class' => ' magic-radio '.$radio->className.' '.$sectionClass, 'autocomplete' => 'off']) !!}
 		<label class="normal-text" for='{{ $radio->id }}'><!-- dummy for magic radio -->
+		@if($radio->value != '') <span class="label label-primary badge">{!! $radio->value !!}</span> @endif
 		@if(str_contains(strtolower($label), 'other'))
 		{!! Form::text("result[".$radio->inputid."]", (isset($results))?$results->{$radio->inputid}:null, ['class' => $radio->className, 'autocomplete' => 'off', 'id' => $radio->id.'other']) !!}
 			@push('document-ready')
@@ -38,7 +39,6 @@ $layoutError = false;
 				}
 			@endpush
 		@endif
-		@if($radio->value != '') <span class="label label-primary badge">{!! $radio->value !!}</span> @endif
 		</label>
 		</td>
 		@endforeach
