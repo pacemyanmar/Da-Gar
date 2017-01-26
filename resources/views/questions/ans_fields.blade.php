@@ -74,7 +74,7 @@ $ans_in_col = round($anscount / $col_group_count);
 					$j++;
 				@endphp
 
-				@if(Auth::user()->role->level > 8 && isset($editing))
+				@if(Auth::user()->role->level >= 8 && isset($editing))
                         <div class="btn-group">
                         {!! Form::open(['route' => ['translate', $element->id], 'method' => 'post', 'class' => 'translation']) !!}
                         <div class="input-group">

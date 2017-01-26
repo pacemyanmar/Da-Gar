@@ -31,7 +31,7 @@
 </div>
 
 @endif
-@if(Auth::user()->role->level > 8)
+@if(Auth::user()->role->level >= 8)
 <div class="btn-group">
 {!! Form::open(['route' => ['translate', $id], 'method' => 'post', 'class' => 'translation']) !!}
 <div class="input-group">

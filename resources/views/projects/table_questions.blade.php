@@ -21,7 +21,7 @@
                 <td class="col-xs-9">
                     <div class="row"><label>{!! $question->question !!}</label></div>
                     <div id="accordion{!! $question->css_id !!}" class="row collapse">
-                        @if(Auth::user()->role->level > 8)
+                        @if(Auth::user()->role->level >= 8)
                         <div class="btn-group form-inline" style="margin-bottom:20px;">
                         {!! Form::open(['route' => ['translate', $question->id], 'method' => 'post', 'class' => 'translation']) !!}
                               <div class="input-group">
