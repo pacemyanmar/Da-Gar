@@ -20,7 +20,8 @@
         "telerivet-psr/telerivet-php-client": "dev-master",
         "felixkiss/uniquewith-validator": "2.*",
         "bluora/laravel-model-json": "^1.4",
-        "ied3vil/language-switcher": "dev-master"
+        "ied3vil/language-switcher": "dev-master",
+        "herzcthu/kanaung-converter": "^1.0"
     },
     "require-dev": {
         "fzaninotto/faker": "~1.4",

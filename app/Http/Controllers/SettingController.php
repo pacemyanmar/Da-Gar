@@ -9,6 +9,7 @@ use App\Http\Requests\UpdateSettingRequest;
 use App\Repositories\SettingRepository;
 use Flash;
 use Illuminate\Http\Request;
+use Kanaung\Facades\Converter;
 use Krucas\Settings\Facades\Settings;
 use Response;
 
@@ -190,7 +191,7 @@ class SettingController extends AppBaseController
                         $extras = $classInstance->extras;
                         foreach ($columns as $column => $translation) {
 
-                            $extras['lang'][$locale][$column] = $translation;
+                            $extras['lang'][$locale][$column] = Converter::convert($translation, 'zawgyi', 'unicode');
                         }
 
                         $classInstance->extras = $extras;
@@ -203,7 +204,7 @@ class SettingController extends AppBaseController
                         foreach ($columns as $column => $translation) {
                             $translation_column = $column . '_trans';
                             $old_translation = $classInstance->{$translation_column};
-                            $new_translation[$locale] = $translation;
+                            $new_translation[$locale] = Converter::convert($translation, 'zawgyi', 'unicode');
                             if (!empty($old_translation)) {
                                 $updated_translation = array_merge($old_translation, $new_translation);
                             } else {
@@ -221,7 +222,7 @@ class SettingController extends AppBaseController
                 foreach ($columns as $column => $translation) {
                     $translation_column = $column . '_trans';
                     $old_translation = $classInstance->{$translation_column};
-                    $new_translation[$locale] = $translation;
+                    $new_translation[$locale] = Converter::convert($translation, 'zawgyi', 'unicode');
                     if (!empty($old_translation)) {
                         $updated_translation = array_merge($old_translation, $new_translation);
                     } else {

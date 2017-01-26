@@ -193,6 +193,8 @@ return [
          */
         ied3vil\LanguageSwitcher\Providers\LanguageSwitcherProvider::class,
 
+        Kanaung\ConverterServiceProvider::class,
+
         /*
          * Application Service Providers...
          */
@@ -256,6 +258,8 @@ return [
         'Debugbar' => Barryvdh\Debugbar\Facade::class,
 
         'Settings' => Krucas\Settings\Facades\Settings::class,
+
+        'Converter' => Kanaung\Facades\Converter::class,
     ],
 
 ];

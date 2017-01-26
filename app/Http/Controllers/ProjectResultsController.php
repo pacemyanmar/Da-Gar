@@ -111,7 +111,7 @@ class ProjectResultsController extends AppBaseController
                         break;
                     case 'idcode':
                         $columns[$column] = [
-                            'name' => 'sample_datas.idcode',
+                            'name' => 'idcode',
                             'data' => 'idcode',
                             'title' => ucfirst($name),
                             'orderable' => false,
@@ -146,27 +146,24 @@ class ProjectResultsController extends AppBaseController
             switch ($project->dblink) {
                 case 'voter':
                     $columns = [
-                        'idcode' => ['name' => 'sample_datas.idcode', 'data' => 'sample_datas.idcode', 'title' => 'Voter ID'],
+                        'idcode' => ['name' => 'idcode', 'data' => 'idcode', 'title' => 'Voter ID'],
                         'name' => ['name' => 'name', 'data' => 'name', 'title' => 'Name'],
                         'nrc_id' => ['name' => 'nrc_id', 'data' => 'nrc_id', 'title' => 'NRC ID'],
-                        'width' => '80px',
                     ];
                     break;
 
                 case 'enumerator':
                     $columns = [
-                        'idcode' => ['name' => 'sample_datas.idcode', 'data' => 'sample_datas.idcode', 'title' => 'Code'],
+                        'idcode' => ['name' => 'idcode', 'data' => 'idcode', 'title' => 'Code'],
                         'form_id' => ['name' => 'form_id', 'data' => 'form_id', 'title' => 'Form No.'],
                         'name' => ['name' => 'name', 'data' => 'name', 'title' => 'Name'],
                         'nrc_id' => ['name' => 'nrc_id', 'data' => 'nrc_id', 'title' => 'NRC ID'],
-                        'width' => '80px',
                     ];
 
                 default:
                     $columns = [
-                        'idcode' => ['name' => 'sample_datas.idcode', 'data' => 'sample_datas.idcode', 'title' => 'Code'],
+                        'idcode' => ['name' => 'idcode', 'data' => 'idcode', 'title' => 'Code'],
                         'form_id' => ['name' => 'form_id', 'data' => 'form_id', 'title' => 'Form No.'],
-                        'width' => '80px',
                     ];
                     break;
             }
