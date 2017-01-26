@@ -1,12 +1,23 @@
 @php
 $layoutError = false;
+$locale = \App::getLocale();
 @endphp
 <table class="table table-responsive" >
 	<thead>
 		<th></th>
 		@foreach ($question->surveyInputs->pluck('extras','inputid') as $element)
 			@if(isset($element['group']))
-				<th>{!! $element['group'] !!}</th>
+				<th>
+					@if(array_key_exists('lang',$element) && isset($element['lang'][$locale]))
+						@if(isset($element['lang'][$locale]['group']))
+						{!! $element['lang'][$locale]['group'] !!}
+						@else
+						{!! $element['group'] !!}
+						@endif
+					@else
+					{!! $element['group'] !!}
+					@endif
+				</th>
 			@else
 				@php
 					$layoutError = true;
