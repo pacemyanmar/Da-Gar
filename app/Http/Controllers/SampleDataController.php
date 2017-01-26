@@ -186,6 +186,7 @@ class SampleDataController extends AppBaseController
 
                 $row_array = [
                     "idcode" => ($row->id_code) ? (string) $row->id_code : null,
+                    "spotchecker_code" => ($row->spotchecker_code) ? (string) $row->spotchecker_code : null,
                     "sample" => ($row->sample) ? $row->sample : 1,
                     "state" => ($row->state) ? $row->state : null,
                     "district" => ($row->district) ? $row->district : null,
@@ -243,6 +244,7 @@ class SampleDataController extends AppBaseController
                     ->where('type', $row_attr['type'])->first();
 
                 $sampleData->idcode = ($row->id_code) ? (string) $row->id_code : null;
+                $sampleData->spotchecker_code = ($row->spotchecker_code) ? (string) $row->spotchecker_code : null;
                 $sampleData->sample = ($row->sample) ? $row->sample : 1;
                 $sampleData->state_trans = [$lang => ($row->state) ? $row->state : null];
                 $sampleData->district_trans = [$lang => ($row->district) ? $row->district : null];
