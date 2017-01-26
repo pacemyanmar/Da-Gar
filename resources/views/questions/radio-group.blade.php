@@ -1,12 +1,38 @@
 @php
 $layoutError = false;
+$locale = \App::getLocale();
+$translation = (Auth::user()->role->level >= 8 && isset($editing));
 @endphp
+
 <table class="table table-responsive" >
 	<thead>
 		<th></th>
-		@foreach ($question->surveyInputs->pluck('extras','inputid') as $element)
+		@foreach ($question->surveyInputs->pluck('extras','inputid') as $inputid => $element)
 			@if(isset($element['group']))
-				<th>{!! $element['group'] !!}</th>
+				<th>
+					@if(array_key_exists('lang',$element) && isset($element['lang'][$locale]))
+						@if(isset($element['lang'][$locale]['group']))
+						{!! $element['lang'][$locale]['group'] !!}
+						@else
+						{!! $element['group'] !!}
+						@endif
+					@else
+					{!! $element['group'] !!}
+					@endif
+					@if($translation)
+						{!! Form::open(['route' => ['translate', 'group'], 'method' => 'post', 'class' => 'translation']) !!}
+						<div class="input-group">
+						<input type="text" name="columns[group]" class="form-control input-sm" placeholder="{!! trans('messages.add_translation') !!}">
+						<input type="hidden" name="qid" value="{!! $question->id !!}">
+						<input type="hidden" name="input" value="{!! $inputid !!}">
+						<input type="hidden" name="model" value="survey_input">
+				        <span class="input-group-btn">
+				          <button class="btn btn-default input-sm" type="submit">{!! trans('messages.save') !!}</button>
+				        </span>
+				        </div>
+				        {!! Form::close() !!}
+					@endif
+				</th>
 			@else
 				@php
 					$layoutError = true;
@@ -16,13 +42,32 @@ $layoutError = false;
 	</thead>
 	@foreach ($question->surveyInputs->groupBy('label') as $label => $element)
 	<tr>
-		@if(isset($label))
-		<td>{!! $label !!}</td>
+		@if(!empty($label))
+		<td>
+			{!! $label !!}
+			@if($translation)
+				{!! Form::open(['route' => ['translate', 'group'], 'method' => 'post', 'class' => 'translation']) !!}
+				@foreach($element->where('label', $label) as $input)
+					<input type="hidden" name="input[]" value="{!! $input->id !!}">
+					<input type="hidden" name="group[]" value="{!! $input->extras['group'] !!}">
+				@endforeach
+				<div class="input-group">
+				<input type="text" name="columns[label]" class="form-control input-sm" placeholder="{!! trans('messages.add_translation') !!}">
+				<input type="hidden" name="model" value="survey_input">
+		        <span class="input-group-btn">
+		          <button class="btn btn-default input-sm" type="submit">{!! trans('messages.save') !!}</button>
+		        </span>
+		        </div>
+		        {!! Form::close() !!}
+			@endif
+		</td>
 		@foreach($element as $radio)
 		<td>
 		{!! Form::radio("result[".$radio->inputid."]", $radio->value, (isset($results) && $radio->value == $results->{$radio->inputid}), ['id' => $radio->id,'class' => ' magic-radio '.$radio->className.' '.$sectionClass, 'autocomplete' => 'off']) !!}
 		<label class="normal-text" for='{{ $radio->id }}'><!-- dummy for magic radio -->
-		@if($radio->value != '') <span class="label label-primary badge">{!! $radio->value !!}</span> @endif
+		@if($radio->value != '')
+			<span class="label label-primary badge">{!! $radio->value !!}</span>
+		@endif
 		@if(str_contains(strtolower($label), 'other'))
 		{!! Form::text("result[".$radio->inputid."]", (isset($results))?$results->{$radio->inputid}:null, ['class' => $radio->className, 'autocomplete' => 'off', 'id' => $radio->id.'other']) !!}
 			@push('document-ready')

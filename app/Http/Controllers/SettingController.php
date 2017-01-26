@@ -176,24 +176,64 @@ class SettingController extends AppBaseController
         }
 
         $columns = $request->input('columns'); //array
+
         if (!empty($model) && class_exists('App\Models\\' . studly_case($model))) {
             // set dblink model class
             $class = 'App\Models\\' . studly_case($model);
-            $classInstance = $class::find($id);
-            foreach ($columns as $column => $translation) {
-                $translation_column = $column . '_trans';
-                $old_translation = $classInstance->{$translation_column};
-                $new_translation[$locale] = $translation;
-                if (!empty($old_translation)) {
-                    $updated_translation = array_merge($old_translation, $new_translation);
-                } else {
-                    $updated_translation = $new_translation;
-                }
-                $classInstance->{$translation_column} = $updated_translation;
+            if ($id == 'group') {
+                //dd($request->all());
+                $qid = $request->input('qid');
+                $inputs = $request->input('input');
+                if ($qid) {
+                    $classInstances = $class::where('question_id', $qid)->where('inputid', $inputs)->get();
+                    foreach ($classInstances as $classInstance) {
+                        $extras = $classInstance->extras;
+                        foreach ($columns as $column => $translation) {
 
-                $classInstance->save();
+                            $extras['lang'][$locale][$column] = $translation;
+                        }
+
+                        $classInstance->extras = $extras;
+
+                        $classInstance->save();
+                    }
+                } else {
+                    foreach ($inputs as $input_id) {
+                        $classInstance = $class::find($input_id);
+                        foreach ($columns as $column => $translation) {
+                            $translation_column = $column . '_trans';
+                            $old_translation = $classInstance->{$translation_column};
+                            $new_translation[$locale] = $translation;
+                            if (!empty($old_translation)) {
+                                $updated_translation = array_merge($old_translation, $new_translation);
+                            } else {
+                                $updated_translation = $new_translation;
+                            }
+                            $classInstance->{$translation_column} = $updated_translation;
+
+                            $classInstance->save();
+                        }
+                    }
+                }
+            } else {
+
+                $classInstance = $class::find($id);
+                foreach ($columns as $column => $translation) {
+                    $translation_column = $column . '_trans';
+                    $old_translation = $classInstance->{$translation_column};
+                    $new_translation[$locale] = $translation;
+                    if (!empty($old_translation)) {
+                        $updated_translation = array_merge($old_translation, $new_translation);
+                    } else {
+                        $updated_translation = $new_translation;
+                    }
+                    $classInstance->{$translation_column} = $updated_translation;
+
+                    $classInstance->save();
+                }
             }
         }
-        return redirect()->back();
+
+        return $this->sendResponse($classInstance, trans('messages.saved'));
     }
 }
