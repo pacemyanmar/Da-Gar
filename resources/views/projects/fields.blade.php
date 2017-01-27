@@ -89,6 +89,11 @@
                 </label>
             </td>
             <td>
+                {!! Form::checkbox("index_columns[spotchecker_code]", 'Spotchecker', null, ['class' => 'magic-checkbox ', 'id' => 'spotchecker_code']) !!}
+                <label class="normal-text" for="spotchecker_code">Spotchecker
+                </label>
+            </td>
+            <td>
                 {!! Form::checkbox("index_columns[nrc_id]", 'NRC ID', null, ['class' => 'magic-checkbox ', 'id' => 'nrc_id']) !!}
                 <label class="normal-text" for="nrc_id">NRC ID
                 </label>

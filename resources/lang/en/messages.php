@@ -51,6 +51,7 @@ return [
     'form_id' => 'Form No.',
     'sample' => 'Sample',
     'observer' => 'Observer',
+    'spotchecker' => 'Spotchecker',
     'dob' => 'DOB',
     'father' => 'Father',
     'mother' => 'Mother',
