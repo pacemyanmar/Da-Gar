@@ -173,6 +173,12 @@ class SurveyResultDataTable extends DataTable
         //$count = sizeof($unique_inputs);
         // run query
         $query = Sample::query();
+        if ($auth->role->role_name == 'doublechecker') {
+            $query->whereRaw(DB::raw('(samples.qc_user_id is null or samples.qc_user_id = ' . $auth->id . ')'));
+        }
+        if ($auth->role->role_name == 'entryclerk') {
+            $query->whereRaw(DB::raw('(samples.user_id is null or samples.user_id = ' . $auth->id . ')'));
+        }
         $query->leftjoin('users as user', function ($join) {
             $join->on('user.id', 'samples.user_id');
         });
@@ -217,14 +223,6 @@ class SurveyResultDataTable extends DataTable
         }
 
         $query->where('project_id', $project->id);
-        if ($auth->role->role_name == 'doublechecker') {
-            $query->whereNull('qc_user_id')
-                ->orWhere('qc_user_id', $auth->id);
-        }
-        if ($auth->role->role_name == 'entryclerk') {
-            $query->whereNull('samples.user_id')
-                ->orWhere('samples.user_id', $auth->id);
-        }
 
         return $this->applyScopes($query);
     }
