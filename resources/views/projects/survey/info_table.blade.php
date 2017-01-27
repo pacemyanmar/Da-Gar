@@ -12,7 +12,7 @@
                     <tr>
                         @if($project->index_columns)
                             @foreach($project->index_columns as $column => $columnName)
-                                <th>{!! $columnName !!}</th>
+                                <th>{!! trans('messages.'.snake_case(strtolower($columnName))) !!}</th>
                             @endforeach
                         @else
                             @foreach($sample->fillable as $column)
@@ -20,10 +20,10 @@
                             @endforeach
                         @endif
                         @if(count($project->samples) > 1)
-                        <th>Sample</th>
+                        <th>{!! trans('messages.sample') !!}</th>
                         @endif
                         @if($project->copies > 1)
-                        <th>Form ID</th>
+                        <th>{!! trans('messages.form_id') !!}</th>
                         @endif
                     </tr>
                 </thead>

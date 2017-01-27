@@ -373,7 +373,7 @@ class SurveyResultDataTable extends DataTable
                                 var br = document.createElement(\"br\");
                                 var input = document.createElement(\"input\");
                                 input.className = 'form-control input-sm';
-                                input.style.width = '80px';
+                                input.style.width = '80%';
                                 $(br).appendTo($(column.header()));
                                 $(input).appendTo($(column.header()))
                                 .on('change', function () {
@@ -382,7 +382,7 @@ class SurveyResultDataTable extends DataTable
                             });
                             this.api().columns([$statusCols]).every( function () {
                               var column = this;
-                              var select = $('<select style=\"width:80px !important\"><option value=\"\">-</option><option value=\"0\">Missing</option><option value=\"1\">Complete</option><option value=\"2\">incomplete</option><option value=\"3\">Error</option></select>')
+                              var select = $('<select style=\"width:80% !important\"><option value=\"\">-</option><option value=\"0\">Missing</option><option value=\"1\">Complete</option><option value=\"2\">incomplete</option><option value=\"3\">Error</option></select>')
                               .appendTo( $(column.header()) )
                               .on( 'change', function () {
                               var val = $.fn.dataTable.util.escapeRegex(

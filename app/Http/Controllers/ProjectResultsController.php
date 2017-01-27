@@ -94,7 +94,7 @@ class ProjectResultsController extends AppBaseController
                         $columns[$column] = [
                             'name' => 'user.name',
                             'data' => 'username',
-                            'title' => ucfirst($name),
+                            'title' => trans('messages.userid'),
                             'orderable' => false,
                             'defaultContent' => 'N/A',
                             'width' => '80px',
@@ -104,7 +104,7 @@ class ProjectResultsController extends AppBaseController
                         $columns[$column] = [
                             'name' => 'sample_datas.name',
                             'data' => 'name',
-                            'title' => ucfirst($name),
+                            'title' => trans('messages.name'),
                             'orderable' => false,
                             'defaultContent' => 'N/A',
                             'width' => '80px',
@@ -114,7 +114,7 @@ class ProjectResultsController extends AppBaseController
                         $columns[$column] = [
                             'name' => 'idcode',
                             'data' => 'idcode',
-                            'title' => ucfirst($name),
+                            'title' => trans('messages.idcode'),
                             'orderable' => false,
                             'defaultContent' => 'N/A',
                             'width' => '80px',
@@ -124,7 +124,7 @@ class ProjectResultsController extends AppBaseController
                         $columns[$column] = [
                             'name' => 'sample_datas.mobile',
                             'data' => 'mobile',
-                            'title' => ucfirst($name),
+                            'title' => trans('messages.mobile'),
                             'orderable' => false,
                             'defaultContent' => 'N/A',
                             'width' => '80px',
@@ -135,7 +135,7 @@ class ProjectResultsController extends AppBaseController
                         $columns[$column] = [
                             'name' => $column,
                             'data' => $column,
-                            'title' => ucfirst($name),
+                            'title' => trans('messages.' . strtolower($name)),
                             'orderable' => false,
                             'width' => '80px',
                         ];
