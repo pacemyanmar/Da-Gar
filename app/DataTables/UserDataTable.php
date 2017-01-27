@@ -103,6 +103,7 @@ class UserDataTable extends DataTable
     {
         return [
             'name' => ['name' => 'name', 'data' => 'name', 'title' => trans('messages.name')],
+            'code' => ['name' => 'code', 'data' => 'code', 'title' => trans('messages.dataentrycode')],
             'email' => ['name' => 'email', 'data' => 'email', 'title' => trans('messages.email')],
             'role' => ['name' => 'role.description', 'data' => 'role.description', 'title' => trans('messages.role')],
             'created_at' => ['name' => 'created_at', 'data' => 'created_at', 'title' => trans('messages.created_at')],
