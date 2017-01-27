@@ -34,6 +34,7 @@ return [
     'build_form' => 'ဖောင် တည်ဆောက်ရန်',
     'click_to_expend' => 'ကြည့်ရန် နှိပ်ပါ',
     'idcode' => 'ID ကုဒ်',
+    'sample' => 'ကျပန်းနေရာ',
     'spotchecker_code' => 'စစ်တမ်းကောက်ယူသူ အမှတ်',
     'dataentrycode' => 'အချက်အလက်သွင်းသူ အမှတ်',
     'name' => 'အမည်',

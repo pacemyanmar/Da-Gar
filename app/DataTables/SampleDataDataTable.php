@@ -124,7 +124,7 @@ class SampleDataDataTable extends DataTable
 
                               this.api().columns([3]).every( function () {
                               var column = this;
-                              var select = $('<select style=\"width:80px !important\"><option value=\"\">-</option><option value=\"1\">Group 1</option><option value=\"2\">Group 2</option><option value=\"3\">Group 3</option><option value=\"4\">Group 4</option><option value=\"5\">Group 5</option></select>')
+                              var select = $('<select style=\"width:80% !important\"><option value=\"\">-</option><option value=\"1\">Group 1</option><option value=\"2\">Group 2</option><option value=\"3\">Group 3</option><option value=\"4\">Group 4</option><option value=\"5\">Group 5</option></select>')
                               .appendTo( $(column.header()) )
                               .on( 'change', function () {
                               var val = $.fn.dataTable.util.escapeRegex(
@@ -158,6 +158,7 @@ class SampleDataDataTable extends DataTable
             'spotchecker_code' => ['name' => 'spotchecker_code', 'data' => 'spotchecker_code', 'orderable' => false, 'title' => trans('messages.spotchecker_code')],
             'type' => ['name' => 'type', 'data' => 'type', 'orderable' => false, 'title' => trans('messages.type')],
             'dbgroup' => ['name' => 'dbgroup', 'data' => 'dbgroup', 'orderable' => false, 'title' => trans('messages.dbgroup')],
+            'sample' => ['name' => 'sample', 'data' => 'sample', 'orderable' => false, 'title' => trans('messages.sample')],
             'name' => ['name' => 'name', 'data' => 'name', 'title' => trans('messages.name')],
             'gender' => ['name' => 'gender', 'data' => 'gender', 'title' => trans('messages.gender')],
             'nrc_id' => ['name' => 'nrc_id', 'data' => 'nrc_id', 'title' => trans('messages.nrc_id')],

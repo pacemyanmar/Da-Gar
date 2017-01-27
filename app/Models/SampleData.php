@@ -21,6 +21,7 @@ class SampleData extends Model
         'spotchecker_code',
         'type',
         'dbgroup',
+        'sample',
         'name',
         'gender',
         'nrc_id',

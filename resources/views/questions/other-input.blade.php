@@ -2,9 +2,9 @@
 if($element->type == 'date') $element->className .= ' form-control date';
 
 $options = [
-'class' => $element->className.' form-control '.$sectionClass,
+'class' => $element->className.' form-control zawgyi '.$sectionClass,
 'id' => $element->id,
-'placeholder' => $element->label,
+'placeholder' => Kanaung\Facades\Converter::convert($element->label,'unicode','zawgyi'),
 'aria-describedby'=> $element->id.'-addons',
 'autocomplete' => 'off'
 ];
@@ -32,7 +32,7 @@ if($element->type == 'number') {
             @endif
             @if($element->status != 'published') <span class="label label-warning badge">{!! $element->status !!}</span> @endif
     		</span>
-    		{!! Form::input($element->type,"result[".$element->inputid."]", (isset($results))?$results->{$element->inputid}:null, $options) !!}
+    		{!! Form::input($element->type,"result[".$element->inputid."]", (isset($results))?Kanaung\Facades\Converter::convert($results->{$element->inputid},'unicode','zawgyi'):null, $options) !!}
     	</div>
 
     </div>

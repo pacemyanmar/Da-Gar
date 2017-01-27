@@ -85,6 +85,9 @@ window.url="{!! route('projects.surveys.save', ['project' => $project->id, 'samp
     </div>
   </div>
 <style type="text/css">
+.zawgyi {
+    font-family: "Zawgyi-One" !important;
+}
 .invalid {
     border: 1px solid red;
 }
