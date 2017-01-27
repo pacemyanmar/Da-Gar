@@ -159,7 +159,6 @@ class SampleDataController extends AppBaseController
         $group = $request->only('dbgroup');
         Excel::load($file, function ($reader) use ($type, $group) {
             $reader->each(function ($row) use ($type, $group) {
-                //dd($row);
                 /**
                 "pace_id" => "02202"
                 "state_region" => "Bago (East)"

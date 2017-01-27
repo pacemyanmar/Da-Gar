@@ -34,6 +34,7 @@ return [
     'build_form' => 'Build Form',
     'click_to_expend' => 'Click to expend',
     'idcode' => 'ID Code',
+    'spotchecker_code' => 'Enumerator Code',
     'name' => 'Name',
     'email' => 'Email',
     'type' => 'Type',

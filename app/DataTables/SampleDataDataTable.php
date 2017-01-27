@@ -94,7 +94,7 @@ class SampleDataDataTable extends DataTable
                     'colvis',
                 ],
                 'initComplete' => "function () {
-                            this.api().columns(['0']).every(function () {
+                            this.api().columns(['0, 1']).every(function () {
                                 var column = this;
                                 var br = document.createElement(\"br\");
                                 var input = document.createElement(\"input\");
@@ -106,7 +106,7 @@ class SampleDataDataTable extends DataTable
                                     column.search($(this).val(), false, false, true).draw();
                                 });
                             });
-                            this.api().columns([1]).every( function () {
+                            this.api().columns([2]).every( function () {
                               var column = this;
                               var select = $('<select style=\"width:80px !important\"><option value=\"\">-</option><option value=\"enumerator\">Enumerator</option><option value=\"spotchecker\">Spot Checker</option><option value=\"location\">Location</option><option value=\"voter\">Voter</option></select>')
                               .appendTo( $(column.header()) )
@@ -122,7 +122,7 @@ class SampleDataDataTable extends DataTable
                               select.addClass('form-control input-sm');
                               } );
 
-                              this.api().columns([2]).every( function () {
+                              this.api().columns([3]).every( function () {
                               var column = this;
                               var select = $('<select style=\"width:80px !important\"><option value=\"\">-</option><option value=\"1\">Group 1</option><option value=\"2\">Group 2</option><option value=\"3\">Group 3</option><option value=\"4\">Group 4</option><option value=\"5\">Group 5</option></select>')
                               .appendTo( $(column.header()) )
@@ -155,6 +155,7 @@ class SampleDataDataTable extends DataTable
     {
         return [
             'idcode' => ['name' => 'idcode', 'data' => 'idcode', 'orderable' => false, 'title' => trans('messages.idcode')],
+            'spotchecker_code' => ['name' => 'spotchecker_code', 'data' => 'spotchecker_code', 'orderable' => false, 'title' => trans('messages.spotchecker_code')],
             'type' => ['name' => 'type', 'data' => 'type', 'orderable' => false, 'title' => trans('messages.type')],
             'dbgroup' => ['name' => 'dbgroup', 'data' => 'dbgroup', 'orderable' => false, 'title' => trans('messages.dbgroup')],
             'name' => ['name' => 'name', 'data' => 'name', 'title' => trans('messages.name')],
