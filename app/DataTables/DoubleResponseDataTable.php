@@ -132,7 +132,7 @@ class DoubleResponseDataTable extends DataTable
         return [
             'dom' => 'Brtip',
             'ordering' => false,
-            'searching' => false,
+            //'searching' => false,
             //'autoWidth' => false,
             //'sServerMethod' => 'POST',
             'scrollX' => true,
@@ -274,7 +274,8 @@ class DoubleResponseDataTable extends DataTable
                 'data' => 'ori_' . $columnName,
                 'name' => 'ori_' . $columnName,
                 'title' => title_case('(1) ' . $columnName),
-                'defaultContent' => 'N', 'searchable' => false,
+                'defaultContent' => 'N',
+                'searchable' => false,
                 'visible' => $visibality,
                 'className' => trim($columnName),
                 'render' => function () use ($ori_render) {
