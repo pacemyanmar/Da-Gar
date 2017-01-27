@@ -120,6 +120,16 @@ class ProjectResultsController extends AppBaseController
                             'width' => '80px',
                         ];
                         break;
+                    case 'form_id':
+                        $columns[$column] = [
+                            'name' => 'form_id',
+                            'data' => 'form_id',
+                            'title' => trans('messages.form_id'),
+                            'orderable' => false,
+                            'defaultContent' => 'N/A',
+                            'width' => '80px',
+                        ];
+                        break;
                     case 'mobile':
                         $columns[$column] = [
                             'name' => 'sample_datas.mobile',
@@ -137,6 +147,7 @@ class ProjectResultsController extends AppBaseController
                             'data' => $column,
                             'title' => trans('messages.' . strtolower($name)),
                             'orderable' => false,
+                            'visible' => false,
                             'width' => '80px',
                         ];
                         break;
