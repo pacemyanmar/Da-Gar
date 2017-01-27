@@ -58,6 +58,7 @@ return [
     'village' => 'Village',
     'village_tract' => 'Village Tract',
     'village tract' => 'Village Tract',
+    'villagetract' => 'Village Tract',
     'township' => 'Township',
     'district' => 'District',
     'state' => 'State',

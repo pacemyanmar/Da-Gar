@@ -58,6 +58,7 @@ return [
     'village' => 'ရွာ/ရပ်ကွက်',
     'village_tract' => 'ကျေးရွာအုပ်စု',
     'village tract' => 'ကျေးရွာအုပ်စု',
+    'villagetract' => 'ကျေးရွာအုပ်စု',
     'township' => 'မြို့နယ်',
     'district' => 'ခရိုင်',
     'state' => 'တိုင်း/ပြည်နယ်',
