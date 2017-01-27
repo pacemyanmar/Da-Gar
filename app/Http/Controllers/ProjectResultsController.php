@@ -15,6 +15,7 @@ use App\Repositories\SampleRepository;
 use App\Repositories\SurveyInputRepository;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Kanaung\Facades\Converter;
 use Laracasts\Flash\Flash;
 
 class ProjectResultsController extends AppBaseController
@@ -226,7 +227,9 @@ class ProjectResultsController extends AppBaseController
 
         foreach ($project->inputs as $k => $input) {
             $column = $input->inputid;
-            $input_columns[$column] = ['name' => $column, 'data' => $column, 'title' => $column, 'class' => 'result', 'orderable' => false, 'width' => '80px'];
+            $title = preg_replace('/s[0-9]+|ir/', '', $column);
+            $title = strtoupper(preg_replace('/i/', '_', $title));
+            $input_columns[$column] = ['name' => $column, 'data' => $column, 'title' => $title, 'class' => 'result', 'orderable' => false, 'width' => '80px'];
             if (!$input->in_index) {
                 $input_columns[$column]['visible'] = false;
             }
@@ -515,6 +518,7 @@ class ProjectResultsController extends AppBaseController
         $old_result = $sample->resultWithTable($dbname);
 
         $old_result = $old_result->first(); // used first() because of one to one relation
+        array_walk($results, array($this, 'zawgyiUnicode'));
 
         if (!empty($old_result)) {
             $old_result->setTable($dbname);
@@ -529,6 +533,16 @@ class ProjectResultsController extends AppBaseController
         $sample->save(); // update Sample::class
 
         return $this->sendResponse($result, trans('messages.saved'));
+    }
+
+    private function zawgyiUnicode(&$value, $key)
+    {
+        $value = Converter::convert($value, 'zawgyi', 'unicode');
+    }
+
+    private function unicodeZawgyi(&$value, $key)
+    {
+        $value = Converter::convert($value, 'unicode', 'zawgyi');
     }
 
     public function responseRateSample($project_id, $filter, SampleResponseDataTable $sampleResponse)
