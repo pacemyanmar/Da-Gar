@@ -186,7 +186,11 @@ class UserController extends AppBaseController
             return redirect()->back()->withInput();
         }
 
-        $input['password'] = bcrypt($input['password']);
+        if (array_key_exists('password', $input) && !empty($input['password'])) {
+            $input['password'] = bcrypt($input['password']);
+        } else {
+            unset($input['password']);
+        }
 
         $user = $this->userRepository->update($input, $id);
 

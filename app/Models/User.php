@@ -79,7 +79,7 @@ class User extends Authenticatable
         'name' => 'required|max:255',
         'email' => 'required|email|max:255|unique:users,id',
         //'username' => 'required|alpha_num|max:255|unique:users,id',
-        'password' => 'required|min:6|confirmed',
+        'password' => 'min:6|confirmed',
     ];
 
     public function role()
