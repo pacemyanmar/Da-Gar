@@ -183,14 +183,22 @@ class SampleDataController extends AppBaseController
                  */
                 $sampleData = new SampleData();
 
+                $area_type = ($row->area_type) ? $row->area_type : null;
+
+                if (empty($area_type)) {
+                    $area_type = ($row->ward) ? 1 : 2;
+                }
+
                 $row_array = [
                     "idcode" => ($row->id_code) ? (string) $row->id_code : null,
                     "spotchecker_code" => ($row->spotchecker_code) ? (string) $row->spotchecker_code : null,
                     "sample" => ($row->sample) ? $row->sample : 1,
+                    "area_type" => $area_type,
                     "state" => ($row->state) ? $row->state : null,
                     "district" => ($row->district) ? $row->district : null,
                     "township" => ($row->township) ? $row->township : null,
                     "village_tract" => ($row->village_tract) ? $row->village_tract : null,
+                    "ward" => ($row->ward) ? $row->ward : null,
                     "village" => ($row->village) ? $row->village : null,
                     "name" => ($row->name) ? $row->name : null,
                     "father" => ($row->father) ? $row->father : null,
@@ -249,6 +257,7 @@ class SampleDataController extends AppBaseController
                 $sampleData->district_trans = [$lang => ($row->district) ? $row->district : null];
                 $sampleData->township_trans = [$lang => ($row->township) ? $row->township : null];
                 $sampleData->village_tract_trans = [$lang => ($row->village_tract) ? $row->village_tract : null];
+                $sampleData->ward_trans = [$lang => ($row->ward) ? $row->ward : null];
                 $sampleData->village_trans = [$lang => ($row->village) ? $row->village : null];
                 $sampleData->name_trans = [$lang => ($row->name) ? $row->name : null];
                 $sampleData->father_trans = [$lang => ($row->father) ? $row->father : null];

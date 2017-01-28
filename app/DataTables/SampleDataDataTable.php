@@ -159,6 +159,29 @@ class SampleDataDataTable extends DataTable
             'type' => ['name' => 'type', 'data' => 'type', 'orderable' => false, 'title' => trans('messages.type')],
             'dbgroup' => ['name' => 'dbgroup', 'data' => 'dbgroup', 'orderable' => false, 'title' => trans('messages.dbgroup')],
             'sample' => ['name' => 'sample', 'data' => 'sample', 'orderable' => false, 'title' => trans('messages.sample')],
+            'area_type' => [
+                'name' => 'area_type',
+                'data' => 'area_type',
+                'title' => trans('messages.area_type'),
+                'render' => function () {
+                    return "function(data,type,full,meta){
+                                        var html;
+                                        if(type === 'display') {
+                                            if(data == 1) {
+                                                html = '" . trans('messages.urban') . "';
+                                            } else if(data == 2) {
+                                                html = '" . trans('messages.rural') . "';
+                                            }  else {
+                                                html = '" . trans('messages.unknown') . "';
+                                            }
+                                        } else {
+                                            html = data;
+                                        }
+
+                                        return html;
+                                    }";
+                },
+            ],
             'name' => ['name' => 'name', 'data' => 'name', 'title' => trans('messages.name')],
             'gender' => ['name' => 'gender', 'data' => 'gender', 'title' => trans('messages.gender')],
             'nrc_id' => ['name' => 'nrc_id', 'data' => 'nrc_id', 'title' => trans('messages.nrc_id')],
@@ -167,6 +190,7 @@ class SampleDataDataTable extends DataTable
             'mother' => ['name' => 'mother', 'data' => 'mother', 'title' => trans('messages.mother')],
             'address' => ['name' => 'address', 'data' => 'address', 'title' => trans('messages.address')],
             'village' => ['name' => 'village', 'data' => 'village', 'title' => trans('messages.village')],
+            'ward' => ['name' => 'ward', 'data' => 'ward', 'title' => trans('messages.ward')],
             'village_tract' => ['name' => 'village_tract', 'data' => 'village_tract', 'title' => trans('messages.village_tract')],
             'township' => ['name' => 'township', 'data' => 'township', 'title' => trans('messages.township')],
             'district' => ['name' => 'district', 'data' => 'district', 'title' => trans('messages.district')],

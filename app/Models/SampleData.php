@@ -22,6 +22,7 @@ class SampleData extends Model
         'type',
         'dbgroup',
         'sample',
+        'area_type',
         'name',
         'gender',
         'nrc_id',
@@ -36,6 +37,7 @@ class SampleData extends Model
         'email',
         'address',
         'village',
+        'ward',
         'village_tract',
         'township',
         'district',
@@ -43,7 +45,6 @@ class SampleData extends Model
         'parent_id',
         'created_at',
         'updated_at',
-
         'name_trans',
         'gender_trans',
         'nrc_id_trans',
@@ -51,6 +52,7 @@ class SampleData extends Model
         'mother_trans',
         'address_trans',
         'village_trans',
+        'ward_trans',
         'village_tract_trans',
         'township_trans',
         'district_trans',
@@ -70,6 +72,7 @@ class SampleData extends Model
     protected $casts = [
         'id' => 'integer',
         'idcode' => 'string',
+        'spotchecker_code' => 'string',
         'type' => 'string',
         'name' => 'string',
         'gender' => 'string',
@@ -78,6 +81,7 @@ class SampleData extends Model
         'mother' => 'string',
         'address' => 'string',
         'village' => 'string',
+        'ward' => 'string',
         'village_tract' => 'string',
         'township' => 'string',
         'district' => 'string',
@@ -90,6 +94,7 @@ class SampleData extends Model
         'mother_trans' => 'array',
         'address_trans' => 'array',
         'village_trans' => 'array',
+        'ward_trans' => 'array',
         'village_tract_trans' => 'array',
         'township_trans' => 'array',
         'district_trans' => 'array',
@@ -139,6 +144,11 @@ class SampleData extends Model
     public function getVillageTractAttribute($value)
     {
         return $this->getTranslation('village_tract', $value);
+    }
+
+    public function getWardAttribute($value)
+    {
+        return $this->getTranslation('ward', $value);
     }
 
     public function getVillageAttribute($value)
