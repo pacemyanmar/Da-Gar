@@ -84,6 +84,8 @@ class ProjectResultsController extends AppBaseController
             $table->setSampleType($samplable);
         }
 
+        $dbname = $project->dbname;
+
         $columns = [
         ];
 
@@ -91,7 +93,7 @@ class ProjectResultsController extends AppBaseController
             foreach ($project->index_columns as $column => $name) {
                 switch ($column) {
                     case 'user_id':
-                        $columns[$column] = [
+                        $columns['user_id'] = [
                             'name' => 'user.name',
                             'data' => 'username',
                             'title' => trans('messages.userid'),
@@ -101,7 +103,7 @@ class ProjectResultsController extends AppBaseController
                         ];
                         break;
                     case 'name':
-                        $columns[$column] = [
+                        $columns['name'] = [
                             'name' => 'sample_datas.name',
                             'data' => 'name',
                             'title' => trans('messages.name'),
@@ -111,7 +113,7 @@ class ProjectResultsController extends AppBaseController
                         ];
                         break;
                     case 'idcode':
-                        $columns[$column] = [
+                        $columns['idcode'] = [
                             'name' => 'idcode',
                             'data' => 'idcode',
                             'title' => trans('messages.idcode'),
@@ -121,7 +123,7 @@ class ProjectResultsController extends AppBaseController
                         ];
                         break;
                     case 'form_id':
-                        $columns[$column] = [
+                        $columns['form_id'] = [
                             'name' => 'form_id',
                             'data' => 'form_id',
                             'title' => trans('messages.form_id'),
@@ -131,7 +133,7 @@ class ProjectResultsController extends AppBaseController
                         ];
                         break;
                     case 'mobile':
-                        $columns[$column] = [
+                        $columns['mobile'] = [
                             'name' => 'sample_datas.mobile',
                             'data' => 'mobile',
                             'title' => trans('messages.mobile'),
@@ -152,7 +154,7 @@ class ProjectResultsController extends AppBaseController
                         ];
                         break;
                 }
-
+                $exportColumns[$column] = trans('messages.' . strtolower($name));
             }
         } else {
             switch ($project->dblink) {
@@ -179,6 +181,10 @@ class ProjectResultsController extends AppBaseController
                     ];
                     break;
             }
+            $exportColumns['idcode'] = 'ID Code';
+            $exportColumns['form_id'] = 'Form No.';
+            $exportColumns['name'] = 'Name';
+            $exportColumns['nrc_id'] = 'NRC ID';
         }
 
         $baseColumns = $columns;
@@ -197,10 +203,10 @@ class ProjectResultsController extends AppBaseController
             }
 
             $section_columns[$sectionColumn] = [
-                'name' => $sectionColumn,
+                'name' => $dbname . '.' . $sectionColumn,
                 'data' => $sectionColumn,
                 'orderable' => false,
-                'searchable' => false,
+                'searchable' => true,
                 'width' => '80px',
                 'render' => function () {
                     return "function(data,type,full,meta){
@@ -224,9 +230,13 @@ class ProjectResultsController extends AppBaseController
                 },
                 'title' => $sectionname,
             ];
+
+            $exportSectionColumns[$sectionColumn] = $sectionColumn;
         }
 
         $table->setSectionColumns($section_columns);
+
+        $exportColumns = array_merge($exportColumns, $exportSectionColumns);
 
         $input_columns = [];
 
@@ -241,6 +251,7 @@ class ProjectResultsController extends AppBaseController
             $title = preg_replace('/s[0-9]+|ir/', '', $column);
             $title = strtoupper(preg_replace('/i/', '_', $title));
             $input_columns[$column] = ['name' => $column, 'data' => $column, 'title' => $title, 'class' => 'result', 'orderable' => false, 'width' => '80px'];
+            $input_columns[$column . '_status'] = ['name' => $column . '_status', 'data' => $column . '_status', 'title' => $title . '_status', 'orderable' => false, 'visible' => false];
             if (!$input->in_index) {
                 $input_columns[$column]['visible'] = false;
             }
@@ -249,10 +260,10 @@ class ProjectResultsController extends AppBaseController
 
         if ($project->status != 'new') {
             ksort($input_columns, SORT_NATURAL);
-            $columns = array_merge($columns, $section_columns, $input_columns);
+            $all_columns = array_merge($columns, $section_columns, $input_columns);
         }
 
-        $table->setColumns($columns);
+        $table->setColumns($all_columns);
 
         $statesCollections = $project->samplesData->groupBy('state');
         $locations['allStates'] = $project->samplesData->pluck('state')->unique();

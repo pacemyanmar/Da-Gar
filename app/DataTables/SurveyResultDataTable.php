@@ -23,6 +23,7 @@ class SurveyResultDataTable extends DataTable
     protected $sampleType;
 
     protected $joinMethod;
+
     /**
      * Project Setter
      * @param  App\Models\Project $project [Project Models from route]
@@ -158,11 +159,16 @@ class SurveyResultDataTable extends DataTable
         $unique_inputs = $this->project->inputs->pluck('inputid')->unique();
 
         $unique_inputs = $unique_inputs->toArray();
-        $columnsFromResults = array_merge($sectionColumns, $unique_inputs);
+
+        array_walk($unique_inputs, function (&$column, $index) use ($childTable) {
+            $column = $childTable . '.' . $column . ', IF(' . $childTable . '_double.' . $column . ' = ' . $childTable . '.' . $column . ', 1, 0) AS ' . $column . '_status';
+        });
         // modify column name to use in sql query TABLE.COLUMN format
-        array_walk($columnsFromResults, function (&$column, $index) use ($childTable) {
+        array_walk($sectionColumns, function (&$column, $index) use ($childTable) {
             $column = $childTable . '.' . $column;
         });
+
+        $columnsFromResults = array_merge($sectionColumns, $unique_inputs);
 
         $input_columns = implode(',', $columnsFromResults);
 
@@ -204,6 +210,9 @@ class SurveyResultDataTable extends DataTable
                     $join->on('samples.id', '=', $childTable . '.sample_id');
                 });
             }
+            $query->leftjoin($childTable . '_double', function ($join) use ($childTable) {
+                $join->on('samples.id', '=', $childTable . '_double.sample_id');
+            });
         }
 
         $filterColumns = Request::get('columns', []);

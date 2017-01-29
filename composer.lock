@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "829fe99c605a6be1f19f21b38a5f1f1e",
-    "content-hash": "f036852e211b3f3d1541f453cac44c03",
+    "hash": "d5489ea562bfb580d767d823cd2d2737",
+    "content-hash": "734c2ccfc5fe70082f423d4fb1d8bfb3",
     "packages": [
         {
             "name": "barryvdh/laravel-ide-helper",
@@ -1453,16 +1453,16 @@
         },
         {
             "name": "laravelcollective/html",
-            "version": "dev-master",
+            "version": "v5.3.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/LaravelCollective/html.git",
-                "reference": "c4c87916c34e04aa9d4e860315ab1858304d786a"
+                "reference": "2f7f2e127c6fed47f269ea29ab5efeb8f65e9d35"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/LaravelCollective/html/zipball/c4c87916c34e04aa9d4e860315ab1858304d786a",
-                "reference": "c4c87916c34e04aa9d4e860315ab1858304d786a",
+                "url": "https://api.github.com/repos/LaravelCollective/html/zipball/2f7f2e127c6fed47f269ea29ab5efeb8f65e9d35",
+                "reference": "2f7f2e127c6fed47f269ea29ab5efeb8f65e9d35",
                 "shasum": ""
             },
             "require": {
@@ -1479,11 +1479,6 @@
                 "phpunit/phpunit": "~5.4"
             },
             "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "5.3-dev"
-                }
-            },
             "autoload": {
                 "psr-4": {
                     "Collective\\Html\\": "src/"
@@ -1508,7 +1503,7 @@
             ],
             "description": "HTML and Form Builders for the Laravel Framework",
             "homepage": "http://laravelcollective.com",
-            "time": "2016-08-04 03:49:50"
+            "time": "2016-12-13 14:23:36"
         },
         {
             "name": "league/flysystem",
@@ -1658,23 +1653,23 @@
         },
         {
             "name": "maatwebsite/excel",
-            "version": "2.1.9",
+            "version": "2.1.10",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Maatwebsite/Laravel-Excel.git",
-                "reference": "b004c99b1d64c207b95a41f20392b3c0eabb8b04"
+                "reference": "a544a9b45b971499fb3b0fb7499ba0ac3b430233"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Maatwebsite/Laravel-Excel/zipball/b004c99b1d64c207b95a41f20392b3c0eabb8b04",
-                "reference": "b004c99b1d64c207b95a41f20392b3c0eabb8b04",
+                "url": "https://api.github.com/repos/Maatwebsite/Laravel-Excel/zipball/a544a9b45b971499fb3b0fb7499ba0ac3b430233",
+                "reference": "a544a9b45b971499fb3b0fb7499ba0ac3b430233",
                 "shasum": ""
             },
             "require": {
-                "illuminate/cache": "5.0.*|5.1.*|5.2.*|5.3.*",
-                "illuminate/config": "5.0.*|5.1.*|5.2.*|5.3.*",
-                "illuminate/filesystem": "5.0.*|5.1.*|5.2.*|5.3.*",
-                "illuminate/support": "5.0.*|5.1.*|5.2.*|5.3.*",
+                "illuminate/cache": "5.0.*|5.1.*|5.2.*|5.3.*|5.4.*",
+                "illuminate/config": "5.0.*|5.1.*|5.2.*|5.3.*|5.4.*",
+                "illuminate/filesystem": "5.0.*|5.1.*|5.2.*|5.3.*|5.4.*",
+                "illuminate/support": "5.0.*|5.1.*|5.2.*|5.3.*|5.4.*",
                 "nesbot/carbon": "~1.0",
                 "php": ">=5.5",
                 "phpoffice/phpexcel": "1.8.*",
@@ -1687,10 +1682,10 @@
                 "phpunit/phpunit": "~4.0"
             },
             "suggest": {
-                "illuminate/http": "5.0.*|5.1.*|5.2.*|5.3.*",
-                "illuminate/queue": "5.0.*|5.1.*|5.2.*|5.3.*",
-                "illuminate/routing": "5.0.*|5.1.*|5.2.*|5.3.*",
-                "illuminate/view": "5.0.*|5.1.*|5.2.*|5.3.*"
+                "illuminate/http": "5.0.*|5.1.*|5.2.*|5.3.*|5.4.*",
+                "illuminate/queue": "5.0.*|5.1.*|5.2.*|5.3.*|5.4.*",
+                "illuminate/routing": "5.0.*|5.1.*|5.2.*|5.3.*|5.4.*",
+                "illuminate/view": "5.0.*|5.1.*|5.2.*|5.3.*|5.4.*"
             },
             "type": "library",
             "autoload": {
@@ -1721,7 +1716,7 @@
                 "import",
                 "laravel"
             ],
-            "time": "2017-01-17 12:07:20"
+            "time": "2017-01-20 16:16:51"
         },
         {
             "name": "monolog/monolog",
@@ -3343,7 +3338,7 @@
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/herzcthu/telerivet-php-client/zipball/97e1e06a2d9a6d7a2d92f59144860384f50583a2",
+                "url": "https://api.github.com/repos/herzcthu/telerivet-php-client/zipball/765c749558c7d57104ad79d027772fcd79bb6c09",
                 "reference": "97e1e06a2d9a6d7a2d92f59144860384f50583a2",
                 "shasum": ""
             },
@@ -5369,7 +5364,6 @@
     "minimum-stability": "stable",
     "stability-flags": {
         "infyomlabs/laravel-generator": 20,
-        "laravelcollective/html": 20,
         "infyomlabs/adminlte-templates": 20,
         "infyomlabs/swagger-generator": 20,
         "jlapp/swaggervel": 20,

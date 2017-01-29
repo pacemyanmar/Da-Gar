@@ -21,7 +21,8 @@
         "felixkiss/uniquewith-validator": "2.*",
         "bluora/laravel-model-json": "^1.4",
         "ied3vil/language-switcher": "dev-master",
-        "herzcthu/kanaung-converter": "^1.0"
+        "herzcthu/kanaung-converter": "^1.0",
+        "maatwebsite/excel": "^2.1"
     },
     "require-dev": {
         "fzaninotto/faker": "~1.4",
