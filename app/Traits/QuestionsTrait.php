@@ -175,12 +175,17 @@ trait QuestionsTrait
                     } else {
                         $value['label'] = $label[$i];
                     }
-                    if (str_contains(strtolower($value['label']), 'other') || str_contains(strtolower($value['label']), 'text')) {
+
+                    if (str_contains(strtolower($value['label']), 'other') || str_contains(strtolower($value['label']), 'type')) {
                         $value['other'] = true;
                     }
                     $value['sort'] = $k . $i;
                     $value['extras']['group'] = $input['label'];
                     $value = array_merge($input, $value);
+                    if (str_contains(strtolower($value['label']), 'textonly')) {
+                        $value['type'] = 'text';
+                        $value['inputid'] = $value['inputid'] . $i;
+                    }
                     //$input['label_trans'] = json_encode([$lang => $value['label']]);
                     $inputs[] = new SurveyInput($value);
                 }

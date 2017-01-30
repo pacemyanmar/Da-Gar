@@ -7,24 +7,25 @@ $translation = (Auth::user()->role->level >= 8 && isset($editing));
 <table class="table table-responsive" >
 	<thead>
 		<th></th>
-		@foreach ($question->surveyInputs->pluck('extras','inputid') as $inputid => $element)
-			@if(isset($element['group']))
+		@foreach ($question->surveyInputs->keyBy('name') as $name => $element)
+
+			@if(isset($element->extras['group']))
 				<th>
-					@if(array_key_exists('lang',$element) && isset($element['lang'][$locale]))
-						@if(isset($element['lang'][$locale]['group']))
-						{!! $element['lang'][$locale]['group'] !!}
+					@if(array_key_exists('lang',$element->extras) && isset($element->extras['lang'][$locale]))
+						@if(isset($element->extras['lang'][$locale]['group']))
+						{!! $element->extras['lang'][$locale]['group'] !!}
 						@else
-						{!! $element['group'] !!}
+						{!! $element->extras['group'] !!}
 						@endif
 					@else
-					{!! $element['group'] !!}
+					{!! $element->extras['group'] !!}
 					@endif
 					@if($translation)
 						{!! Form::open(['route' => ['translate', 'group'], 'method' => 'post', 'class' => 'translation']) !!}
 						<div class="input-group">
 						<input type="text" name="columns[group]" class="form-control input-sm" placeholder="{!! trans('messages.add_translation') !!}">
 						<input type="hidden" name="qid" value="{!! $question->id !!}">
-						<input type="hidden" name="input" value="{!! $inputid !!}">
+						<input type="hidden" name="input" value="{!! $element->inputid !!}">
 						<input type="hidden" name="model" value="survey_input">
 				        <span class="input-group-btn">
 				          <button class="btn btn-default input-sm" type="submit">{!! trans('messages.save') !!}</button>
@@ -63,13 +64,26 @@ $translation = (Auth::user()->role->level >= 8 && isset($editing));
 		</td>
 		@foreach($element as $radio)
 		<td>
+		@if($radio->type == 'text')
+		@php
+			$options = [
+				'class' => $radio->className.' form-control zawgyi ',
+				'id' => $radio->id,
+				'placeholder' => Kanaung\Facades\Converter::convert($radio->label,'unicode','zawgyi'),
+				'aria-describedby'=> $radio->id.'-addons',
+				'autocomplete' => 'off'
+				];
+		@endphp
+		{!! Form::input($radio->type,"result[".$radio->inputid."]", (isset($results))?Kanaung\Facades\Converter::convert($results->{$radio->inputid},'unicode','zawgyi'):null, $options) !!}
+		@else
 		{!! Form::radio("result[".$radio->inputid."]", $radio->value, (isset($results) && $radio->value == $results->{$radio->inputid}), ['id' => $radio->id,'class' => ' magic-radio '.$radio->className.' '.$sectionClass, 'autocomplete' => 'off']) !!}
+		@endif
 		<label class="normal-text" for='{{ $radio->id }}'><!-- dummy for magic radio -->
 		@if($radio->value != '')
 			<span class="label label-primary badge">{!! $radio->value !!}</span>
 		@endif
 		@if($radio->other)
-		{!! Form::text("result[".$radio->inputid."]", (isset($results))?$results->{$radio->inputid}:null, ['class' => $radio->className.' form-control input-sm', 'autocomplete' => 'off', 'id' => $radio->id.'other', 'style' => 'width:80%']) !!}
+		{!! Form::text("result[".$radio->inputid."]", (isset($results) && $radio->value == $results->{$radio->inputid})?$results->{$radio->inputid}:null, ['class' => $radio->className.' form-control input-sm', 'autocomplete' => 'off', 'id' => $radio->id.'other', 'style' => 'width:80%']) !!}
 			@push('document-ready')
 				$("input[name='result[{!! $radio->inputid !!}]']").change(function(e){
 					if($("input[name='result[{!! $radio->inputid !!}]']:checked").val() == '{!! $radio->value !!}') {
