@@ -69,7 +69,7 @@ $translation = (Auth::user()->role->level >= 8 && isset($editing));
 			<span class="label label-primary badge">{!! $radio->value !!}</span>
 		@endif
 		@if(str_contains(strtolower($label), 'other'))
-		{!! Form::text("result[".$radio->inputid."]", (isset($results))?$results->{$radio->inputid}:null, ['class' => $radio->className, 'autocomplete' => 'off', 'id' => $radio->id.'other']) !!}
+		{!! Form::text("result[".$radio->inputid."]", (isset($results))?$results->{$radio->inputid}:null, ['class' => $radio->className.' form-control input-sm', 'autocomplete' => 'off', 'id' => $radio->id.'other', 'style' => 'width:80%']) !!}
 			@push('document-ready')
 				$("input[name='result[{!! $radio->inputid !!}]']").change(function(e){
 					if($("input[name='result[{!! $radio->inputid !!}]']:checked").val() == {!! $radio->value !!}) {
