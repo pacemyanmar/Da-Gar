@@ -368,8 +368,8 @@ class SurveyResultDataTable extends DataTable
                     'text' => '<i class="fa fa-download"></i> ' . trans('messages.export'),
                     'buttons' => [
                         'exportPostCsv',
-                        'exportPostExcel',
-                        'exportPostPdf',
+                        //'exportPostExcel',
+                        //'exportPostPdf',
                     ],
                 ],
                 'colvis',
