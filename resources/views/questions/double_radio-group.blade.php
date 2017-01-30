@@ -35,11 +35,11 @@ $locale = \App::getLocale();
 		<label class="normal-text" for='{{ $radio->id }}'>
 		@if($radio->value != '') <span class="label label-primary badge">{!! $radio->value !!}</span> @endif
 
-		@if(str_contains(strtolower($label), 'other'))
+		@if($radio->other)
 		{!! Form::text("result[".$radio->inputid."]", (isset($double_results))?$double_results->{$radio->inputid}:null, ['class' => $radio->className, 'autocomplete' => 'off', 'id' => $radio->id]) !!}
 			@push('document-ready')
 				$("input[name='result[{!! $radio->inputid !!}]']").change(function(e){
-					if($("input[name='result[{!! $radio->inputid !!}]']:checked").val() == {!! $radio->value !!}) {
+					if($("input[name='result[{!! $radio->inputid !!}]']:checked").val() == '{!! $radio->value !!}') {
 						$("#{!! $radio->id.'other' !!}").prop('disabled', false).prop('required', true).addClass('has-error');
 					} else {
 						$("#{!! $radio->id.'other' !!}").prop('disabled', true).prop('required', false).removeClass('has-error');

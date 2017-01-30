@@ -118,6 +118,9 @@ trait QuestionsTrait
                     $av['type'] = 'radio';
                     $av['id'] = $param . 'o' . $j;
                     $av['sort'] = $qsort . $j;
+                    if (str_contains(strtolower($av['label']), 'other') || str_contains(strtolower($av['label']), 'text')) {
+                        $av['other'] = true;
+                    }
                     // merge $a and $av to get input array as $answer
                     $answer[] = array_merge($a, $av);
                 }
@@ -134,6 +137,7 @@ trait QuestionsTrait
                     $av['type'] = 'radio';
                     $av['id'] = $param . 'o' . $j;
                     $av['sort'] = $qsort . $j;
+
                     $a['values'][$j] = array_merge($option, $av);
                 }
 
@@ -170,6 +174,9 @@ trait QuestionsTrait
                         $label[$i] = $value['label'];
                     } else {
                         $value['label'] = $label[$i];
+                    }
+                    if (str_contains(strtolower($value['label']), 'other') || str_contains(strtolower($value['label']), 'text')) {
+                        $value['other'] = true;
                     }
                     $value['sort'] = $k . $i;
                     $value['extras']['group'] = $input['label'];

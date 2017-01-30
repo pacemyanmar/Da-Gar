@@ -280,6 +280,11 @@
               label: 'Optional',
               type: 'checkbox',
               name: 'optional'
+            },
+            other: {
+              label: 'Show Other Textbox',
+              type: 'checkbox',
+              name: 'other'
             }
           },
           date: {
@@ -299,6 +304,11 @@
               label: 'Optional',
               type: 'checkbox',
               name: 'optional'
+            },
+            other: {
+              label: 'Show Other Textbox',
+              type: 'checkbox',
+              name: 'other'
             }
           },
           number: {
@@ -318,6 +328,11 @@
               label: 'Optional',
               type: 'checkbox',
               name: 'optional'
+            },
+            other: {
+              label: 'Show Other Textbox',
+              type: 'checkbox',
+              name: 'other'
             }
           },
           checkbox: {
@@ -341,6 +356,11 @@
             value: {
               type: 'number',
               placeholder: 'Only number allow'
+            },
+            other: {
+              label: 'Show Other Textbox',
+              type: 'checkbox',
+              name: 'other'
             }
           },
           radio: {
@@ -364,6 +384,11 @@
             value: {
               type: 'number',
               placeholder: 'Only number allow'
+            },
+            other: {
+              label: 'Show Other Textbox',
+              type: 'checkbox',
+              name: 'other'
             }
           },
           'radio-group': {

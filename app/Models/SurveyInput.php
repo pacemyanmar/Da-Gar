@@ -40,6 +40,7 @@ class SurveyInput extends Model
         'optional',
         'logic',
         'extras',
+        'other',
     ];
 
     /**
