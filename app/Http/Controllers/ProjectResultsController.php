@@ -142,7 +142,7 @@ class ProjectResultsController extends AppBaseController
                             'title' => trans('messages.mobile'),
                             'orderable' => false,
                             'defaultContent' => 'N/A',
-                            'width' => '80px',
+                            'width' => '120px',
                         ];
                         break;
 

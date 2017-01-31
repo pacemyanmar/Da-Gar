@@ -73,7 +73,7 @@ class SampleResponseDataTable extends DataTable
         });
 
         if ($project->status != 'new') {
-            $query->select('sample_datas.' . $this->filter, DB::raw('GROUP_CONCAT(DISTINCT user.name) as user_name', 'GROUP_CONCAT(DISTINCT update_user.name) as update_user', 'GROUP_CONCAT(DISTINCT qc_user.name) as qc_user'), DB::raw($sectionColumnsStr));
+            $query->select('sample_datas.' . $this->filter, DB::raw('SUM(IF(' . $childTable . '.id, 1, 0)) AS total'), DB::raw('GROUP_CONCAT(DISTINCT user.name) as user_name', 'GROUP_CONCAT(DISTINCT update_user.name) as update_user', 'GROUP_CONCAT(DISTINCT qc_user.name) as qc_user'), DB::raw($sectionColumnsStr));
             $query->leftjoin('sample_datas', function ($join) {
                 $join->on('samples.sample_data_id', 'sample_datas.id');
             });
@@ -178,6 +178,7 @@ class SampleResponseDataTable extends DataTable
         $columns = [
             //'idcode' => ['data' => 'idcode', 'name' => 'idcode', 'title' => 'ID Code'],
             "$filter" => ['data' => "$filter", 'name' => 'sample_datas.' . $filter, 'orderable' => false],
+            "total" => ['data' => 'total', 'name' => 'total', 'orderable' => false],
             //'user_name' => ['data' => 'user_name', 'name' => 'user.name', 'defaultContent' => 'N/A'],
             //'update_user' => ['data' => 'update_user', 'name' => 'update_user.name', 'defaultContent' => 'N/A'],
         ];
