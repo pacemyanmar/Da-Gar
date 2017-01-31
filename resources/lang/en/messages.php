@@ -69,6 +69,8 @@ return [
     'district' => 'District',
     'state' => 'State',
     'education' => 'Education',
+    'current_org' => 'Current Occupation',
+    'ethnicity' => 'Ethnicity',
     'language' => 'Language',
     'dbgroup' => 'DB Group',
     'bank' => 'Bank',

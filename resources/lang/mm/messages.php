@@ -69,6 +69,8 @@ return [
     'district' => 'ခရိုင်',
     'state' => 'တိုင်း/ပြည်နယ်',
     'education' => 'ပညာအရည်အချင်း',
+    'ethnicity' => 'လူမျိုး',
+    'current_org' => 'လက်ရှိ အလုပ်အကိုင်',
     'language' => 'ဘာသာစကား',
     'bank' => 'ဘဏ်',
     'mobile_provider' => 'Mobile Provider',

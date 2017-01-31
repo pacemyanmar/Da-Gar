@@ -64,6 +64,33 @@ class SampleData extends Model
         'mobile_provider_trans',
     ];
 
+    public static $export = [
+        'idcode' => 'idcode',
+        'spotchecker_code' => 'spotchecker_code',
+        'type' => 'type',
+        'sample' => 'sample',
+        'area_type' => 'area_type',
+        'name' => 'name',
+        'gender' => 'gender',
+        'nrc_id' => 'nrc_id',
+        'dob' => 'dob',
+        'father' => 'father',
+        'mother' => 'mother',
+        'ethnicity' => 'ethnicity',
+        'current_org' => 'current_org',
+        'mobile' => 'mobile',
+        'line_phone' => 'phone',
+        'education' => 'education',
+        'email' => 'email',
+        'address' => 'address',
+        'village' => 'village',
+        'ward' => 'ward',
+        'village_tract' => 'village_tract',
+        'township' => 'township',
+        'district' => 'district',
+        'state' => 'state',
+    ];
+
     /**
      * The attributes that should be casted to native types.
      *

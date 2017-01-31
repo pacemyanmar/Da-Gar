@@ -89,8 +89,11 @@ class ProjectResultsController extends AppBaseController
         $columns = [
         ];
 
+        $samplesData = SampleData::$export;
+
         if ($project->index_columns) {
-            foreach ($project->index_columns as $column => $name) {
+            $sampleDataColumns = array_merge($samplesData, $project->index_columns);
+            foreach ($sampleDataColumns as $column => $name) {
                 switch ($column) {
                     case 'user_id':
                         $columns['user_id'] = [
