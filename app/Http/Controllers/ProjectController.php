@@ -403,8 +403,13 @@ class ProjectController extends AppBaseController
                         ->index()
                         ->nullable();
                 } else {
-                    $table->$inputType($input->inputid)
-                        ->nullable();
+                    if ($inputType == 'string') {
+                        $table->string($input->inputid, 100)
+                            ->nullable();
+                    } else {
+                        $table->$inputType($input->inputid)
+                            ->nullable();
+                    }
                 }
             }
         });
@@ -457,8 +462,13 @@ class ProjectController extends AppBaseController
                                 $inputType = 'string';
                                 break;
                         }
-                        $table->$inputType($input->inputid)
-                            ->change();
+                        if ($inputType == 'string') {
+                            $table->string($input->inputid, 100)
+                                ->change();
+                        } else {
+                            $table->$inputType($input->inputid)
+                                ->change();
+                        }
 
                         $index = DB::select(DB::raw("show index from $dbname where Column_name ='$input->inputid'"));
 
@@ -501,8 +511,13 @@ class ProjectController extends AppBaseController
                                 ->index()
                                 ->nullable();
                         } else {
-                            $table->$inputType($input->inputid)
-                                ->nullable();
+                            if ($inputType == 'string') {
+                                $table->string($input->inputid, 100)
+                                    ->nullable();
+                            } else {
+                                $table->$inputType($input->inputid)
+                                    ->nullable();
+                            }
                         }
                     });
                 }
