@@ -218,7 +218,7 @@ class SurveyResultDataTable extends DataTable
         $filterColumns = Request::get('columns', []);
 
         foreach ($filterColumns as $index => $column) {
-            if (array_key_exists($filterColumns[$index]['name'], $this->tableSectionColumns) && $filterColumns[$index]['search']['value'] != '') {
+            if (in_array($filterColumns[$index]['name'], $sectionColumns) && $filterColumns[$index]['search']['value'] != '') {
 
                 $columnName = $filterColumns[$index]['name'];
                 $value = $filterColumns[$index]['search']['value'];

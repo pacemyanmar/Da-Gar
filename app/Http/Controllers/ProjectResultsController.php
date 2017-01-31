@@ -206,7 +206,7 @@ class ProjectResultsController extends AppBaseController
                 'name' => $dbname . '.' . $sectionColumn,
                 'data' => $sectionColumn,
                 'orderable' => false,
-                'searchable' => true,
+                'searchable' => false,
                 'width' => '80px',
                 'render' => function () {
                     return "function(data,type,full,meta){
