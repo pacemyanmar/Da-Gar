@@ -53,6 +53,7 @@ return [
     'area_type' => 'Area',
     'urban' => 'Urban',
     'rural' => 'Rural',
+    'unknown' => 'Unknown',
     'observer' => 'Observer',
     'spotchecker' => 'Spotchecker',
     'dob' => 'DOB',
