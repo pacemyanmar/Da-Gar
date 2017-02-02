@@ -49,7 +49,7 @@ $locale = \App::getLocale();
 		@if($radio->value != '') <span class="label label-primary badge">{!! $radio->value !!}</span> @endif
 
 		@if($radio->other)
-		{!! Form::text("result[".$radio->inputid."]", (isset($double_results) && $radio->value == $double_results->{$radio->inputid})?$double_results->{$radio->inputid}:null, ['class' => $radio->className, 'autocomplete' => 'off', 'id' => $radio->id]) !!}
+		{!! Form::text("result[".$radio->inputid."]", (isset($double_results) && $radio->value == $double_results->{$radio->inputid})?$double_results->{$radio->inputid}:null, ['class' => $radio->className.' form-control input-sm', 'autocomplete' => 'off', 'id' => $radio->id.'other', 'style' => 'width:80%']) !!}
 			@push('document-ready')
 				$("input[name='result[{!! $radio->inputid !!}]']").change(function(e){
 					if($("input[name='result[{!! $radio->inputid !!}]']:checked").val() == '{!! $radio->value !!}') {
