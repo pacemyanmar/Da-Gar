@@ -5,17 +5,17 @@ $locale = \App::getLocale();
 <table class="table table-responsive" >
 	<thead>
 		<th></th>
-		@foreach ($question->surveyInputs->pluck('extras','inputid') as $element)
-			@if(isset($element['group']))
+		@foreach ($question->surveyInputs->keyBy('name') as $name => $element)
+			@if(isset($element->extras['group']))
 				<th>
-					@if(array_key_exists('lang',$element) && isset($element['lang'][$locale]))
-						@if(isset($element['lang'][$locale]['group']))
-						{!! $element['lang'][$locale]['group'] !!}
+					@if(array_key_exists('lang',$element->extras) && isset($element->extras['lang'][$locale]))
+						@if(isset($element->extras['lang'][$locale]['group']))
+						{!! $element->extras['lang'][$locale]['group'] !!}
 						@else
-						{!! $element['group'] !!}
+						{!! $element->extras['group'] !!}
 						@endif
 					@else
-					{!! $element['group'] !!}
+					{!! $element->extras['group'] !!}
 					@endif
 				</th>
 			@else
