@@ -35,6 +35,7 @@ return [
     'click_to_expend' => 'Click to expend',
     'idcode' => 'ID Code',
     'sample' => 'Sample',
+    'username' => 'Data Clerk',
     'spotchecker_code' => 'Enumerator Code',
     'dataentrycode' => 'Data Clerk Code',
     'name' => 'Name',

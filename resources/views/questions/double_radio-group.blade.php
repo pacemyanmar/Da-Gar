@@ -41,7 +41,7 @@ $locale = \App::getLocale();
 				'autocomplete' => 'off'
 				];
 		@endphp
-		{!! Form::input($radio->type,"result[".$radio->inputid."]", (isset($results))?Kanaung\Facades\Converter::convert($double_results->{$radio->inputid},'unicode','zawgyi'):null, $options) !!}
+		{!! Form::input($radio->type,"result[".$radio->inputid."]", (isset($double_results))?Kanaung\Facades\Converter::convert($double_results->{$radio->inputid},'unicode','zawgyi'):null, $options) !!}
 		@else
 		{!! Form::radio("result[".$radio->inputid."]", $radio->value, (isset($double_results) && $radio->value == $double_results->{$radio->inputid}), ['data-origin' =>(isset($results) && $radio->value == $results->{$radio->inputid}), 'id' => $radio->id,'class' => ' magic-radio '.$radio->className.' '.$sectionClass, 'autocomplete' => 'off']) !!}
 		@endif
