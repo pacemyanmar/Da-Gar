@@ -5,17 +5,17 @@ $locale = \App::getLocale();
 <table class="table table-responsive" >
 	<thead>
 		<th></th>
-		@foreach ($question->surveyInputs->pluck('extras','inputid') as $element)
-			@if(isset($element['group']))
+		@foreach ($question->surveyInputs->keyBy('name') as $name => $element)
+			@if(isset($element->extras['group']))
 				<th>
-					@if(array_key_exists('lang',$element) && isset($element['lang'][$locale]))
-						@if(isset($element['lang'][$locale]['group']))
-						{!! $element['lang'][$locale]['group'] !!}
+					@if(array_key_exists('lang',$element->extras) && isset($element->extras['lang'][$locale]))
+						@if(isset($element->extras['lang'][$locale]['group']))
+						{!! $element->extras['lang'][$locale]['group'] !!}
 						@else
-						{!! $element['group'] !!}
+						{!! $element->extras['group'] !!}
 						@endif
 					@else
-					{!! $element['group'] !!}
+					{!! $element->extras['group'] !!}
 					@endif
 				</th>
 			@else
@@ -41,7 +41,7 @@ $locale = \App::getLocale();
 				'autocomplete' => 'off'
 				];
 		@endphp
-		{!! Form::input($radio->type,"result[".$radio->inputid."]", (isset($results))?Kanaung\Facades\Converter::convert($double_results->{$radio->inputid},'unicode','zawgyi'):null, $options) !!}
+		{!! Form::input($radio->type,"result[".$radio->inputid."]", (isset($double_results))?Kanaung\Facades\Converter::convert($double_results->{$radio->inputid},'unicode','zawgyi'):null, $options) !!}
 		@else
 		{!! Form::radio("result[".$radio->inputid."]", $radio->value, (isset($double_results) && $radio->value == $double_results->{$radio->inputid}), ['data-origin' =>(isset($results) && $radio->value == $results->{$radio->inputid}), 'id' => $radio->id,'class' => ' magic-radio '.$radio->className.' '.$sectionClass, 'autocomplete' => 'off']) !!}
 		@endif
@@ -49,7 +49,7 @@ $locale = \App::getLocale();
 		@if($radio->value != '') <span class="label label-primary badge">{!! $radio->value !!}</span> @endif
 
 		@if($radio->other)
-		{!! Form::text("result[".$radio->inputid."]", (isset($double_results) && $radio->value == $double_results->{$radio->inputid})?$double_results->{$radio->inputid}:null, ['class' => $radio->className, 'autocomplete' => 'off', 'id' => $radio->id]) !!}
+		{!! Form::text("result[".$radio->inputid."]", (isset($double_results) && $radio->value == $double_results->{$radio->inputid})?$double_results->{$radio->inputid}:null, ['class' => $radio->className.' form-control input-sm', 'autocomplete' => 'off', 'id' => $radio->id.'other', 'style' => 'width:80%']) !!}
 			@push('document-ready')
 				$("input[name='result[{!! $radio->inputid !!}]']").change(function(e){
 					if($("input[name='result[{!! $radio->inputid !!}]']:checked").val() == '{!! $radio->value !!}') {
