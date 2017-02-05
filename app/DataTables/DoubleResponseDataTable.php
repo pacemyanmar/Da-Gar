@@ -241,12 +241,6 @@ class DoubleResponseDataTable extends DataTable
         $baseUrl = url("projects/$project->id");
         foreach ($project_inputs as $input) {
 
-            if ($k > 30) {
-                $visibality = false;
-            }
-            if ($k > 90) {
-                break;
-            }
             $column = $input->inputid;
             $columnName = preg_replace('/s[0-9]+/', '', $column, 1);
 
