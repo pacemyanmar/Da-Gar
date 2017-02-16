@@ -197,7 +197,7 @@ class DoubleResponseDataTable extends DataTable
                                 });
                             });
                         }",
-            'drawCallback' => function () {return "function(){
+            'drawCallback' => "function(){
                 $('.usethis').on('click', function(e){
                         if(!confirm('" . trans('messages.are_you_sure') . "')) return;
                         var request = $.ajax({
@@ -214,7 +214,7 @@ class DoubleResponseDataTable extends DataTable
                         e.preventDefault();
                         LaravelDataTables['dataTableBuilder'].ajax.reload();
                     });
-            }";},
+            }",
             // /'createdRow' => function () use ($rowCallBack) {return $rowCallBack;},
         ];
 
