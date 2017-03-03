@@ -17,8 +17,4 @@ Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:api');
 
-Route::resource('projects', 'ProjectAPIController');
-
-Route::resource('questions', 'QuestionAPIController');
-
 //Route::match(['get', 'post'], 'voters/sms', ['as' => 'voters.sms', 'uses' => 'VoterAPIController@sms']);
