@@ -1,8 +1,8 @@
 <?php
 
-use Faker\Factory as Faker;
 use App\Models\SurveyResult;
 use App\Repositories\SurveyResultRepository;
+use Faker\Factory as Faker;
 
 trait MakeSurveyResultTrait
 {
@@ -48,7 +48,7 @@ trait MakeSurveyResultTrait
             'samplable_id' => $fake->randomDigitNotNull,
             'samplable_type' => $fake->word,
             'survey_input_id' => $fake->randomDigitNotNull,
-            'project_id' => $fake->randomDigitNotNull
+            'project_id' => $fake->randomDigitNotNull,
         ], $surveyResultFields);
     }
 }

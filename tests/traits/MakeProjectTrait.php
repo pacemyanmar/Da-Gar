@@ -1,8 +1,8 @@
 <?php
 
-use Faker\Factory as Faker;
 use App\Models\Project;
 use App\Repositories\ProjectRepository;
+use Faker\Factory as Faker;
 
 trait MakeProjectTrait
 {
@@ -47,7 +47,7 @@ trait MakeProjectTrait
             'sections' => $fake->text,
             'dblink' => $fake->word,
             'created_at' => $fake->word,
-            'updated_at' => $fake->word
+            'updated_at' => $fake->word,
         ], $projectFields);
     }
 }

@@ -1,7 +1,7 @@
 <?php
 
-use Illuminate\Foundation\Testing\WithoutMiddleware;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
+use Illuminate\Foundation\Testing\WithoutMiddleware;
 
 class ProjectApiTest extends TestCase
 {
@@ -24,7 +24,7 @@ class ProjectApiTest extends TestCase
     public function testReadProject()
     {
         $project = $this->makeProject();
-        $this->json('GET', '/api/v1/projects/'.$project->id);
+        $this->json('GET', '/api/v1/projects/' . $project->id);
 
         $this->assertApiResponse($project->toArray());
     }
@@ -37,7 +37,7 @@ class ProjectApiTest extends TestCase
         $project = $this->makeProject();
         $editedProject = $this->fakeProjectData();
 
-        $this->json('PUT', '/api/v1/projects/'.$project->id, $editedProject);
+        $this->json('PUT', '/api/v1/projects/' . $project->id, $editedProject);
 
         $this->assertApiResponse($editedProject);
     }
@@ -48,10 +48,10 @@ class ProjectApiTest extends TestCase
     public function testDeleteProject()
     {
         $project = $this->makeProject();
-        $this->json('DELETE', '/api/v1/projects/'.$project->iidd);
+        $this->json('DELETE', '/api/v1/projects/' . $project->iidd);
 
         $this->assertApiSuccess();
-        $this->json('GET', '/api/v1/projects/'.$project->id);
+        $this->json('GET', '/api/v1/projects/' . $project->id);
 
         $this->assertResponseStatus(404);
     }

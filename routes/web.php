@@ -48,6 +48,8 @@ Route::post('projects/{project}/dbcreate', ['as' => 'projects.dbcreate', 'uses' 
 
 Route::get('projects/sort/{project}', ['as' => 'projects.sort', 'uses' => ProjectController::class . '@sort']);
 
+Route::get('projects/migrate', ['as' => 'projects.migrate', 'uses' => ProjectController::class . '@migrate']);
+
 Route::resource('projects', 'ProjectController');
 
 Route::post('questions', ['as' => 'questions.store', 'uses' => QuestionController::class . '@store']);

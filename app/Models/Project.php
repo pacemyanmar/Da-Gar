@@ -75,6 +75,11 @@ class Project extends Model
         return $this->hasMany(Sample::class);
     }
 
+    public function sectionsDb()
+    {
+        return $this->hasMany(Section::class);
+    }
+
     /**
      * Projects and sample_datas has pivot relation.
      * samples is pivot table

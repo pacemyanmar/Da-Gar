@@ -7,6 +7,7 @@ use App\Http\Controllers\AppBaseController;
 use App\Http\Requests\CreateProjectRequest;
 use App\Http\Requests\UpdateProjectRequest;
 use App\Models\Project;
+use App\Models\Section;
 use App\Repositories\ProjectRepository;
 use App\Scopes\OrderByScope;
 use Flash;
@@ -47,6 +48,22 @@ class ProjectController extends AppBaseController
         return $projectDataTable->render('projects.index');
     }
 
+    public function migrate()
+    {
+        $projects = $this->projectRepository->all();
+        foreach ($projects as $project) {
+            foreach ($project->sections as $sort => $section) {
+                $section['sort'] = $sort;
+                $sections_to_save[] = new Section($section);
+            }
+
+            $project->sectionsDb()->saveMany($sections_to_save);
+            unset($sections_to_save);
+        }
+
+        DB::statement('update questions join sections on sections.sort=questions.section AND sections.project_id=questions.project_id set questions.section=sections.id');
+    }
+
     /**
      * Show the form for creating a new Project.
      *
@@ -80,6 +97,7 @@ class ProjectController extends AppBaseController
         }
 
         $input = $request->except(['samples']);
+
         if (!isset($input['sections'])) {
             $input['sections'][0] = [
                 'sectionname' => 'Survey',
@@ -108,6 +126,15 @@ class ProjectController extends AppBaseController
         // $input['project_trans'] = json_encode([$lang => $input['project']]);
 
         $project = $this->projectRepository->create($input);
+
+        $sections = $input['sections'];
+
+        foreach ($sections as $sort => $section) {
+            $section['sort'] = $sort;
+            $sections_to_save[] = new Section($section);
+        }
+
+        $project->sectionsDb()->saveMany($sections_to_save);
 
         // update survey_inputs as s join questions as q on s.question_id = q.id join projects as p on q.project_id = p.id set s.double_entry = 1, q.double_entry = 1 where p.id = 1 and q.section = 1;
 
@@ -237,16 +264,44 @@ class ProjectController extends AppBaseController
         // $input['project_trans'] = array_merge($new_translation, $translation);
 
         $project = $this->projectRepository->update($input, $id);
+        $sections = $input['sections'];
 
-        foreach ($input['sections'] as $skey => $section) {
+        foreach ($sections as $skey => $section) {
             if (!empty($section)) {
-                if (isset($section['double'])) {
+                if (isset($section['indouble'])) {
                     $query = "update survey_inputs as s join questions as q on s.question_id = q.id join projects as p on q.project_id = p.id set s.double_entry = 1, s.status = 'new', q.double_entry = 1 where p.id = $project->id and q.section = $skey";
                 } else {
                     $query = "update survey_inputs as s join questions as q on s.question_id = q.id join projects as p on q.project_id = p.id set s.double_entry = 0, s.status = 'new', q.double_entry = 0 where p.id = $project->id and q.section = $skey";
                 }
                 DB::update(DB::raw($query));
+                $section['sort'] = $skey;
+                // find section to update
+                if (array_key_exists('sectionid', $section)) {
+                    $oldsection = Section::find($section['sectionid']);
+                }
+
+                if (isset($oldsection)) {
+                    $oldsection->sort = $skey;
+                    $oldsection->sectionname = $section['sectionname'];
+                    if (isset($section['descriptions'])) {
+                        $oldsection->descriptions = $section['descriptions'];
+                    }
+                    if (isset($section['indouble'])) {
+                        $oldsection->indouble = true;
+                    }
+                    if (isset($section['optional'])) {
+                        $oldsection->optional = true;
+                    }
+
+                    $oldsection->save();
+                } else {
+                    // create new instance if section cannot find
+                    $sections_to_save[] = new Section($section);
+                }
             }
+        }
+        if (!empty($sections_to_save)) {
+            $project->sectionsDb()->saveMany($sections_to_save);
         }
 
         Flash::success('Project updated successfully.');

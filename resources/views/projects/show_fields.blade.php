@@ -4,8 +4,7 @@
         <th class="col-xs-11">{!! trans('messages.question') !!}</th>
     </thead>
     <tbody>
-        @foreach($project->questions as $question)
-            @if($question->section == $section_key)
+        @foreach($section->questions as $question)
             <tr id="{!! $question->css_id !!}">
                 <td class="col-xs-1">
                 <label>{!! $question->qnum !!}</label>
@@ -25,7 +24,6 @@
                     </div>
                 </td>
             </tr>
-            @endif
         @endforeach
     </tbody>
 </table>

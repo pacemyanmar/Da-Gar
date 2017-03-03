@@ -32,15 +32,15 @@ window.url="{!! route('projects.surveys.save', ['project' => $project->id, 'samp
         @include('projects.survey.info_table')
 
         <div id="survey-form">
-        @foreach($project->sections as $section_key => $section)
+        @foreach($project->sectionsDb as $section_key => $section)
         @php
             //section as css class name
-            $sectionClass = str_slug($section['sectionname'], $separator = "-")
+            $sectionClass = str_slug($section->sectionname, $separator = "-")
         @endphp
         <div class="panel panel-primary" id="{!! $sectionClass !!}">
             <div class="panel-heading">
                 <div class="panel-title">
-                    {!! $section['sectionname'] !!} <small> {!! (!empty($section['descriptions']))?" | ".$section['descriptions']:"" !!}</small>
+                    {!! $section->sectionname !!} <small> {!! (!empty($section->descriptions))?" | ".$section->descriptions:"" !!}</small>
                 </div>
             </div>
             <div class="panel-body">

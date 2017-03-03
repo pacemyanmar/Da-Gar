@@ -50,8 +50,8 @@
     </div>
   </div>
 
-  @if(is_array($project->sections))
-  @foreach($project->sections as $section_key => $section)
+  @if(!$project->sectionsDb->isEmpty())
+  @foreach($project->sectionsDb as $section_key => $section)
   @php
             //section as css class name
             $sectionClass = str_slug($section['sectionname'], $separator = "-");
@@ -60,8 +60,8 @@
   <div class="panel panel-primary">
     <div class="panel-heading">
       <div class="panel-title">
-        {!! $section['sectionname'] !!} <small> {!! (!empty($section['descriptions']))?" | ".$section['descriptions']:"" !!}</small>
-        <span class="pull-right"><a href="#" class='btn btn-success' data-toggle="modal" data-target="#qModal" data-qurl="{!! route('questions.store') !!}" data-section="{!! $section_key !!}" data-method='POST'><i class="glyphicon glyphicon-plus"></i></a></span>
+        {!! $section->sectionname !!} <small> {!! (!empty($section->descriptions))?" | ".$section->descriptions:"" !!}</small>
+        <span class="pull-right"><a href="#" class='btn btn-success' data-toggle="modal" data-target="#qModal" data-qurl="{!! route('questions.store') !!}" data-section="{!! $section->id !!}" data-method='POST'><i class="glyphicon glyphicon-plus"></i></a></span>
       </div>
     </div>
     <div class="panel-body">

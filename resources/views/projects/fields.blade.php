@@ -198,9 +198,10 @@
         </thead>
         <tbody id="container" class="no-border-x no-border-y ui-sortable">
         @if(isset($project))
-            @if(is_array($project->sections))
-            @foreach($project->sections as $section_key => $section)
+            @if(!$project->sectionsDb->isEmpty())
+            @foreach($project->sectionsDb as $section_key => $section)
             <tr class="item" style="display: table-row;">
+                {!! Form::hidden("sections[$section_key][sectionid]", isset($section->id)?$section->id:null) !!}
                 <td style="vertical-align: middle">
                     <p class="toggle" style="display:initial">{!! (isset($section['sectionname']))?$section['sectionname']:'' !!}</p>
                     {!! Form::text("sections[$section_key][sectionname]", null, ['class' => 'form-control sectionname toggle']) !!}
@@ -217,7 +218,7 @@
                 </td>
                 <td style="">
                     <div class="toggle">
-                    {!! Form::checkbox("sections[$section_key][double]", 1, null, ['class' => 'magic-checkbox double ', 'id' => 'double'.$section_key]) !!}
+                    {!! Form::checkbox("sections[$section_key][indouble]", 1, null, ['class' => 'magic-checkbox double ', 'id' => 'double'.$section_key]) !!}
                     <label class="normal-text" for="double{!! $section_key !!}"></label>
                     </div>
                 </td>

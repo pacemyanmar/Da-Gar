@@ -1,8 +1,8 @@
 <?php
 
-use Faker\Factory as Faker;
 use App\Models\Question;
 use App\Repositories\QuestionRepository;
+use Faker\Factory as Faker;
 
 trait MakeQuestionTrait
 {
@@ -46,7 +46,7 @@ trait MakeQuestionTrait
             'question' => $fake->word,
             'answers' => $fake->text,
             'sort' => $fake->randomDigitNotNull,
-            'project_id' => $fake->randomDigitNotNull
+            'project_id' => $fake->randomDigitNotNull,
         ], $questionFields);
     }
 }

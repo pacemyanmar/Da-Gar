@@ -36,7 +36,7 @@ trait QuestionsTrait
             /**
              * create unique name attribute for each input
              */
-            $param = str_slug('p' . $project_id . 's' . $section_id . $qnum . 'i' . $k);
+            $param = str_slug('p' . $project_id . $qnum . 'i' . $k);
 
             /**
              * assign className attribute using format_input method
@@ -57,7 +57,7 @@ trait QuestionsTrait
 
             if (!array_key_exists('inputid', $a)) {
                 $input_index = (array_key_exists('value', $a) && is_numeric($a['value'])) ? $a['value'] : $k;
-                $a['inputid'] = strtolower('s' . $section_id . $qnum . 'i' . $input_index);
+                $a['inputid'] = strtolower('p' . $project_id . $qnum . 'i' . $input_index);
             }
 
             if (!array_key_exists('section', $a)) {
@@ -142,10 +142,9 @@ trait QuestionsTrait
                 }
 
             } elseif ($a['type'] == 'radio') {
-                $a['name'] = str_slug('p' . $project_id . 's' . $section_id . $qnum . 'r');
-                $a['inputid'] = strtolower('s' . $section_id . $qnum . 'ir');
+                $a['name'] = $a['inputid'] = str_slug('p' . $project_id . $qnum . 'ir');
             } elseif ($a['type'] == 'checkbox') {
-                $a['name'] = str_slug('p' . $project_id . 's' . $section_id . $qnum . 'c');
+                $a['name'] = str_slug('p' . $project_id . $qnum . 'c');
             } else {
                 $a['id'] = $param;
             }
@@ -214,7 +213,7 @@ trait QuestionsTrait
      */
     private static function format_input(&$value, $key, $param_array)
     {
-        $input_id = str_slug('p' . $param_array['p'] . 's' . $param_array['s'] . $param_array['q'] . 'i' . $param_array['i']);
+        $input_id = str_slug('p' . $param_array['p'] . $param_array['q'] . 'i' . $param_array['i']);
         $input_class = str_slug('qnum' . $param_array['q']);
         //$input_class = str_slug('s' . $param_array['s'] . $param_array['q']);
         /**
