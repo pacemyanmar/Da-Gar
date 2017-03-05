@@ -278,9 +278,6 @@ class ProjectController extends AppBaseController
                 // find section to update
                 if (array_key_exists('sectionid', $section)) {
                     $oldsection = Section::find($section['sectionid']);
-                }
-
-                if (isset($oldsection)) {
                     $oldsection->sort = $skey;
                     $oldsection->sectionname = $section['sectionname'];
                     if (isset($section['descriptions'])) {
