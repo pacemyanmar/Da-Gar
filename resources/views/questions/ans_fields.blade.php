@@ -41,6 +41,8 @@ $ans_in_col = round($anscount / $col_group_count);
 ?>
 @if($question->layout == 'matrix')
 	@include('questions.'.$prefix.'radio-group')
+@elseif($question->layout == 'ballot')
+	@include('questions.'.$prefix.'ballot-table')
 @else
 	@for($i=0,$j=0;$i<$col_group_count; $i++)
 		@if($j == ($i * $ans_in_col))

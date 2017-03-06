@@ -1577,6 +1577,7 @@ function formBuilderEventsFn() {
         },
         subtype: 'Type',
         text: 'Text Field',
+        template: 'Template',
         textArea: 'Text Area',
         toggle: 'Toggle',
         warning: 'Warning!',
@@ -1618,7 +1619,8 @@ function formBuilderEventsFn() {
         text: ['text', 'password', 'email', 'color', 'tel'].map(subtypeDefault),
         header: ['h1', 'h2', 'h3'].map(subtypeDefault),
         button: ['button', 'submit', 'reset'].map(subtypeDefault),
-        paragraph: ['p', 'address', 'blockquote', 'canvas', 'output'].map(subtypeDefault)
+        paragraph: ['p', 'address', 'blockquote', 'canvas', 'output'].map(subtypeDefault),
+        template: ['household', 'ballot'].map(subtypeDefault),
       };
     }();
 
@@ -1737,6 +1739,13 @@ function formBuilderEventsFn() {
         type: 'text',
         className: 'text-input',
         name: 'text-input'
+      }
+    }, {
+      label: opts.messages.template,
+      attrs: {
+        type: 'template',
+        className: 'template-input',
+        name: 'template-input'
       }
     }, {
       label: opts.messages.textArea,

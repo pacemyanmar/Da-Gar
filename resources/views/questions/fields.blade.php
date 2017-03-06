@@ -16,6 +16,7 @@
 	<option value="2cols">2 Columns</option>
 	<option value="3cols">3 Columns</option>
 	<option value="matrix">Matrix Table (Use only with radio button)</option>
+    <option value="ballot">Ballot Table</option>
 </select>
 </div>
 
