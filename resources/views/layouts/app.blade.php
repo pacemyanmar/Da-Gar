@@ -186,9 +186,10 @@
 
     <script type="text/javascript">
     (function($) {
-        @stack('document-ready')
+        @stack('document-ready');
     })(jQuery);
     </script>
+
     <div class="loading hidden">Loading&#8230;</div>
      @stack('before-body-end')
 </body>
