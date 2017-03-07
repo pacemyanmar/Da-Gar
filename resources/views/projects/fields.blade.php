@@ -63,6 +63,13 @@
 </div>
 </div>
 @endif
+<div class="form-group col-sm-12">
+    {!! Form::label('parties', 'Parties:', ['class' => 'toggle']) !!}
+    @if(isset($project))
+    <h3 class="toggle" style="display:initial">{!! $project->parties !!}</h3>
+    @endif
+    {!! Form::text('parties', null, ['class' => 'form-control toggle', 'placeholder' => 'Commas seperates list of parties']) !!}
+</div>
 <!-- Type Field -->
 <div class="form-group col-sm-12">
     {!! Form::label('index_columns', 'Columns to show in list (Choose appropriate columns): ',['class' => 'toggle']) !!}
@@ -201,24 +208,24 @@
             @if(!$project->sectionsDb->isEmpty())
             @foreach($project->sectionsDb as $section_key => $section)
             <tr class="item" style="display: table-row;">
-                {!! Form::hidden("sections[$section_key][sectionid]", isset($section->id)?$section->id:null) !!}
+                {!! Form::hidden("sections[][sectionid]", isset($section->id)?$section->id:null) !!}
                 <td style="vertical-align: middle">
-                    <p class="toggle" style="display:initial">{!! (isset($section['sectionname']))?$section['sectionname']:'' !!}</p>
-                    {!! Form::text("sections[$section_key][sectionname]", null, ['class' => 'form-control sectionname toggle']) !!}
+                    <p class="toggle" style="display:initial">{!! (isset($section->sectionname))?$section->sectionname:'' !!}</p>
+                    {!! Form::text("sections[][sectionname]", (isset($section->sectionname))?$section->sectionname:null, ['class' => 'form-control sectionname toggle']) !!}
                 </td>
                 <td style="vertical-align: middle">
-                    <p class="toggle" style="display:initial">{!! (isset($section['descriptions']))?$section['descriptions']:'' !!}</p>
-                    {!! Form::text("sections[$section_key][descriptions]", null, ['class' => 'form-control descriptions toggle']) !!}
+                    <p class="toggle" style="display:initial">{!! (isset($section->descriptions))?$section->descriptions:'' !!}</p>
+                    {!! Form::text("sections[][descriptions]", (isset($section->descriptions))?$section->descriptions:null, ['class' => 'form-control descriptions toggle']) !!}
                 </td>
                 <td style="">
                     <div class="toggle">
-                    {!! Form::checkbox("sections[$section_key][optional]", 1, null, ['class' => 'magic-checkbox optional ', 'id' => 'optional'.$section_key]) !!}
+                    {!! Form::checkbox("sections[][optional]", 1, ($section->optional)?$section->optional:null, ['class' => 'magic-checkbox optional ', 'id' => 'optional'.$section_key]) !!}
                     <label class="normal-text" for="optional{!! $section_key !!}"></label>
                     </div>
                 </td>
                 <td style="">
                     <div class="toggle">
-                    {!! Form::checkbox("sections[$section_key][indouble]", 1, null, ['class' => 'magic-checkbox double ', 'id' => 'double'.$section_key]) !!}
+                    {!! Form::checkbox("sections[][indouble]", 1, ($section->indouble)?$section->indouble:null, ['class' => 'magic-checkbox double ', 'id' => 'double'.$section_key]) !!}
                     <label class="normal-text" for="double{!! $section_key !!}"></label>
                     </div>
                 </td>

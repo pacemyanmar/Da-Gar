@@ -240,11 +240,7 @@ class ProjectController extends AppBaseController
         }
 
         $input = $request->except('samples');
-        if (!isset($input['sections'])) {
-            $input['sections'][0] = [
-                'sectionname' => 'Survey',
-            ];
-        }
+
         $samples = $request->input('samples');
         foreach ($samples as $sample) {
             $key = $sample['name'];
@@ -266,14 +262,14 @@ class ProjectController extends AppBaseController
         $project = $this->projectRepository->update($input, $id);
         $sections = $input['sections'];
 
+        if (empty($sections)) {
+            $sections[0] = [
+                'sectionname' => 'Survey',
+            ];
+        }
+
         foreach ($sections as $skey => $section) {
             if (!empty($section)) {
-                if (isset($section['indouble'])) {
-                    $query = "update survey_inputs as s join questions as q on s.question_id = q.id join projects as p on q.project_id = p.id set s.double_entry = 1, s.status = 'new', q.double_entry = 1 where p.id = $project->id and q.section = $skey";
-                } else {
-                    $query = "update survey_inputs as s join questions as q on s.question_id = q.id join projects as p on q.project_id = p.id set s.double_entry = 0, s.status = 'new', q.double_entry = 0 where p.id = $project->id and q.section = $skey";
-                }
-                DB::update(DB::raw($query));
                 $section['sort'] = $skey;
                 // find section to update
                 if (array_key_exists('sectionid', $section)) {
@@ -291,6 +287,12 @@ class ProjectController extends AppBaseController
                     }
 
                     $oldsection->save();
+                    if (isset($section['indouble'])) {
+                        $query = "update survey_inputs as s join questions as q on s.question_id = q.id join projects as p on q.project_id = p.id set s.double_entry = 1, s.status = 'new', q.double_entry = 1 where p.id = $project->id and q.section = $oldsection->id";
+                    } else {
+                        $query = "update survey_inputs as s join questions as q on s.question_id = q.id join projects as p on q.project_id = p.id set s.double_entry = 0, s.status = 'new', q.double_entry = 0 where p.id = $project->id and q.section = $oldsection->id";
+                    }
+                    DB::update(DB::raw($query));
                 } else {
                     // create new instance if section cannot find
                     $sections_to_save[] = new Section($section);
@@ -422,11 +424,27 @@ class ProjectController extends AppBaseController
             $table->unsignedInteger('user_id')->index();
             $table->unsignedInteger('update_user_id')->index()->nullable();
             $table->timestamps();
-            foreach ($project->sections as $key => $section) {
+            foreach ($project->sectionsDb as $key => $section) {
                 $section_num = $key + 1;
                 $table->unsignedSmallInteger('section' . $section_num . 'status')->index()->default(0); // 0 => missing, 1 => complete, 2 => incomplete, 3 => error
                 //$table->json('section' . $key)->nullable();
             }
+
+            $table->unsignedInteger('voters')->index()->default(0);
+            $table->unsignedInteger('advanced_voters')->index()->default(0);
+            if (!empty($project->parties)) {
+                foreach ($project->parties as $party) {
+                    $table->unsignedInteger($party . '_station')->index()->nullable();
+                    $table->unsignedInteger($party . '_advanced')->index()->nullable();
+                    $table->unsignedInteger($party . '_station')->index()->nullable();
+                }
+            }
+
+            $table->unsignedInteger('rem1')->index()->default(0);
+            $table->unsignedInteger('rem2')->index()->default(0);
+            $table->unsignedInteger('rem3')->index()->default(0);
+            $table->unsignedInteger('rem4')->index()->default(0);
+            $table->unsignedInteger('rem5')->index()->default(0);
             foreach ($fields as $input) {
                 $double_column = $input->inputid . '_d';
                 $double_status = $input->inputid . '_ds';
@@ -473,13 +491,26 @@ class ProjectController extends AppBaseController
 
     private function updateTable($dbname, $project, $fields)
     {
-        foreach ($project->sections as $key => $section) {
+        foreach ($project->sectionsDb as $key => $section) {
             $section_num = $key + 1;
             $section_name = 'section' . $section_num . 'status';
             if (!Schema::hasColumn($dbname, $section_name)) {
                 Schema::table($dbname, function ($table) use ($section_name) {
                     $table->unsignedSmallInteger($section_name)->index()->default(0); // 0 => missing, 1 => complete, 2 => incomplete, 3 => error
                 });
+            }
+        }
+        if (!empty($project->parties)) {
+            foreach ($project->parties as $party) {
+                if (!Schema::hasColumn($dbname, $party . '_station')) {
+                    $table->unsignedInteger($party . '_station')->index()->nullable();
+                }
+                if (!Schema::hasColumn($dbname, $party . '_advanced')) {
+                    $table->unsignedInteger($party . '_advanced')->index()->nullable();
+                }
+                if (!Schema::hasColumn($dbname, $party . '_station')) {
+                    $table->unsignedInteger($party . '_station')->index()->nullable();
+                }
             }
         }
         // if table exists, loop inputs

@@ -260,6 +260,18 @@
               $('.required-wrap', fld).remove();
               $('.access-wrap', fld).remove();
             }
+          },
+          template: {
+            onadd: function (fld) {
+              $('.name-wrap', fld).remove();
+              $('.required-wrap', fld).remove();
+              $('.access-wrap', fld).remove();
+            },
+            onclone: function (fld) {
+              $('.name-wrap', fld).remove();
+              $('.required-wrap', fld).remove();
+              $('.access-wrap', fld).remove();
+            }
           }
         },
         typeUserAttrs: {
