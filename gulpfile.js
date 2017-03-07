@@ -37,6 +37,7 @@ elixir(mix => {
             'datatables/media/css/dataTables.bootstrap.min.css',
             'datatables.net-buttons-bs/css/buttons.bootstrap.min.css',
             'magic-check/css/magic-check.min.css',
+            'jqueryui-datepicker/datepicker.css',
     	],'public/css/vendor.css','resources/assets/vendor/')
     	.scripts([
             // Order is important
@@ -64,7 +65,8 @@ elixir(mix => {
             'datatables.net-buttons-bs/js/buttons.bootstrap.min.js',
             'moment/min/moment-with-locales.min.js',
             'adminlte/dist/js/app.min.js',
-            'hyperform/dist/hyperform.min.js'
+            'hyperform/dist/hyperform.min.js',
+            'jqueryui-datepicker/datepicker.js'
     		],'public/js/vendor.js','resources/assets/vendor/')
     	.sass('app.scss')
        	.webpack('app.js')

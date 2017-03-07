@@ -37,7 +37,7 @@
 <!-- Dob Field -->
 <div class="form-group col-sm-6">
     {!! Form::label('dob', 'Dob:') !!}
-    {!! Form::date('dob', null, ['class' => 'form-control']) !!}
+    {!! Form::date('dob', null, ['class' => 'form-control date']) !!}
 </div>
 
 <!-- Father Field -->
@@ -93,3 +93,15 @@
     {!! Form::submit('Save', ['class' => 'btn btn-primary']) !!}
     <a href="{!! route('sampleDatas.index') !!}" class="btn btn-default">Cancel</a>
 </div>
+
+@push("before-head-end")
+<style>
+    input[type=date]::-webkit-inner-spin-button, input[type=date]::-webkit-calendar-picker-indicator {
+   display: none;
+}
+</style>
+@endpush
+
+@push('document-ready')
+    $( ".date" ).datepicker({ dateFormat: 'yy-mm-dd',changeYear: true,changeMonth: true});
+@endpush
