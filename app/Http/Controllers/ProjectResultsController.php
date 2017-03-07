@@ -545,6 +545,9 @@ class ProjectResultsController extends AppBaseController
         $old_result = $old_result->first(); // used first() because of one to one relation
         array_walk($results, array($this, 'zawgyiUnicode'));
 
+        $ballot = $request->input('ballot');
+        $ballot_remark = $request->input('ballot_remark');
+
         if (!empty($old_result)) {
             $old_result->setTable($dbname);
             $old_result->fill($results);

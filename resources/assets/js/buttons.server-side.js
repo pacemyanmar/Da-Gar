@@ -11,6 +11,7 @@
     };
 
     var _downloadFromUrl = function (url, params) {
+        $.LoadingOverlay("show");
         var postUrl = url + '';
         var xhr = new XMLHttpRequest();
         xhr.open('POST', postUrl, true);
@@ -58,6 +59,7 @@
         };
         xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
         xhr.send($.param(params));
+        $.LoadingOverlay("hide");
     };
 
 

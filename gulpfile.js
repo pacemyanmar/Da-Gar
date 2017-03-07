@@ -22,6 +22,7 @@ elixir(mix => {
         .copy('resources/assets/vendor/adminlte/img', 'public/build/img')
         .copy('resources/assets/vendor/datatables/media/images', 'public/build/images')
         .copy('resources/assets/vendor/ion-checkradio/img', 'public/build/img')
+        .copy('resources/assets/vendor/gasparesganga-jquery-loading-overlay/src/loading.gif', 'public/build/img')
         .copy('resources/assets/js/buttons.server-side.js', 'public/vendor/datatables/buttons.server-side.js')
         .copy('resources/assets/images', 'public/images')
         .styles([
@@ -66,7 +67,8 @@ elixir(mix => {
             'moment/min/moment-with-locales.min.js',
             'adminlte/dist/js/app.min.js',
             'hyperform/dist/hyperform.min.js',
-            'jqueryui-datepicker/datepicker.js'
+            'jqueryui-datepicker/datepicker.js',
+            'gasparesganga-jquery-loading-overlay/src/loadingoverlay.min.js'
     		],'public/js/vendor.js','resources/assets/vendor/')
     	.sass('app.scss')
        	.webpack('app.js')

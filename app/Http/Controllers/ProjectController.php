@@ -119,7 +119,7 @@ class ProjectController extends AppBaseController
         $short_project_name = preg_replace('/[^a-zA-Z0-9]/', '_', $short_project_name);
         $unique = uniqid();
         $short_unique = substr($unique, 0, 5);
-        $input['dbname'] = snake_case($short_project_name . '_' . $short_unique);
+        $input['dbname'] = snake_case(strtolower($short_project_name) . '_' . $short_unique);
 
         // $lang = config('app.fallback_locale');
 

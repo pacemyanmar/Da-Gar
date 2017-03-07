@@ -188,9 +188,15 @@
     (function($) {
         @stack('document-ready');
     })(jQuery);
+
+    $(document).ajaxStart(function(){
+        $.LoadingOverlay("show");
+    });
+    $(document).ajaxStop(function(){
+        $.LoadingOverlay("hide");
+    });
     </script>
 
-    <div class="loading hidden">Loading&#8230;</div>
      @stack('before-body-end')
 </body>
 </html>
