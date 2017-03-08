@@ -1,3 +1,6 @@
+@php
+$parties = ['USDP','NLD']; //to remove later
+@endphp
 <div class="row">
 <div class="col-sm-8">
 <table class="table table-bordered table-responsive" style="vertical-align:middle">
@@ -37,6 +40,7 @@
 			<p>In words</p>
 		</th>
 	</tr>
+	@foreach($parties as $party)
 	<tr valign="top">
 		<td>
 		</td>
@@ -44,13 +48,13 @@
 
 		</td>
 		<td>
-			<p>USDP</p>
+			<p>{!! $party !!}</p>
 		</td>
 		<td>
-			<input type="number" name="ballot[usdp][station]" class="form-control input-sm">
+			<input type="number" name="result[ballot][{{$party}}][station]" class="form-control input-sm">
 		</td>
 		<td>
-			<input type="number" name="ballot[usdp][advanced]" class="form-control input-sm">
+			<input type="number" name="result[ballot][{{$party}}][advanced]" class="form-control input-sm">
 		</td>
 		<td>
 
@@ -59,6 +63,7 @@
 
 		</td>
 	</tr>
+	@endforeach
 	<tr>
 		<td colspan="9" width="100%" height="89" valign="top">
 			<p>Witnesses</p>
@@ -75,7 +80,7 @@
 	<p>1 - Ballots issued on e-day</p>
 </td>
 <td class="col-sm-5">
-	<input type="number" name="ballot_remark[rem1]" class="form-control input-sm">
+	<input type="number" name="result[ballot_remark][rem1]" class="form-control input-sm">
 </td>
 <tr>
 <tr>
@@ -83,7 +88,7 @@
 	<p>2 - Ballots received for advanced voting</p>
 </td>
 <td class="col-sm-5">
-	<input type="number" name="ballot_remark[rem2]" class="form-control input-sm">
+	<input type="number" name="result[ballot_remark][rem2]" class="form-control input-sm">
 </td>
 <tr>
 <tr>
@@ -91,7 +96,7 @@
 	<p>3 - Valid</p>
 </td>
 <td class="col-sm-5">
-	<input type="number" name="ballot_remark[rem3]" class="form-control input-sm">
+	<input type="number" name="result[ballot_remark][rem3]" class="form-control input-sm">
 </td>
 <tr>
 <tr>
@@ -99,7 +104,7 @@
 	<p>4 - Invalid</p>
 </td>
 <td class="col-sm-5">
-	<input type="number" name="ballot_remark[rem4]" class="form-control input-sm">
+	<input type="number" name="result[ballot_remark][rem4]" class="form-control input-sm">
 </td>
 <tr>
 <tr>
@@ -107,7 +112,7 @@
 	<p>5 - Missing</p>
 </td>
 <td class="col-sm-5">
-	<input type="number" name="ballot_remark[rem5]" class="form-control input-sm">
+	<input type="number" name="result[ballot_remark][rem5]" class="form-control input-sm">
 </td>
 <tr>
 

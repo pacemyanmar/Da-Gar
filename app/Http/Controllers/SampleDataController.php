@@ -216,6 +216,7 @@ class SampleDataController extends AppBaseController
                     "language" => ($row->language) ? $row->language : null,
                     "bank_information" => ($row->bank_information) ? $row->bank_information : null,
                     "mobile_provider" => ($row->mobile_provider) ? $row->mobile_provider : null,
+                    "parties" => ($row->parties) ? $row->parties : null,
                 ];
                 $attr = [
                     "idcode" => ($row->id_code) ? $row->id_code : null,

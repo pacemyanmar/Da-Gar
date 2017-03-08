@@ -430,21 +430,21 @@ class ProjectController extends AppBaseController
                 //$table->json('section' . $key)->nullable();
             }
 
-            $table->unsignedInteger('voters')->index()->default(0);
-            $table->unsignedInteger('advanced_voters')->index()->default(0);
+            //$table->unsignedInteger('registered_voters')->index()->default(0);
+            //$table->unsignedInteger('advanced_voters')->index()->default(0);
             if (!empty($project->parties)) {
-                foreach ($project->parties as $party) {
+                $parties = explode(',', $project->parties);
+                foreach ($parties as $party) {
                     $table->unsignedInteger($party . '_station')->index()->nullable();
                     $table->unsignedInteger($party . '_advanced')->index()->nullable();
-                    $table->unsignedInteger($party . '_station')->index()->nullable();
                 }
-            }
 
-            $table->unsignedInteger('rem1')->index()->default(0);
-            $table->unsignedInteger('rem2')->index()->default(0);
-            $table->unsignedInteger('rem3')->index()->default(0);
-            $table->unsignedInteger('rem4')->index()->default(0);
-            $table->unsignedInteger('rem5')->index()->default(0);
+                $table->unsignedInteger('rem1')->index()->default(0);
+                $table->unsignedInteger('rem2')->index()->default(0);
+                $table->unsignedInteger('rem3')->index()->default(0);
+                $table->unsignedInteger('rem4')->index()->default(0);
+                $table->unsignedInteger('rem5')->index()->default(0);
+            }
             foreach ($fields as $input) {
                 $double_column = $input->inputid . '_d';
                 $double_status = $input->inputid . '_ds';
@@ -501,17 +501,31 @@ class ProjectController extends AppBaseController
             }
         }
         if (!empty($project->parties)) {
-            foreach ($project->parties as $party) {
+            $parties = explode(',', $project->parties);
+            foreach ($parties as $party) {
                 if (!Schema::hasColumn($dbname, $party . '_station')) {
                     $table->unsignedInteger($party . '_station')->index()->nullable();
                 }
                 if (!Schema::hasColumn($dbname, $party . '_advanced')) {
                     $table->unsignedInteger($party . '_advanced')->index()->nullable();
                 }
-                if (!Schema::hasColumn($dbname, $party . '_station')) {
-                    $table->unsignedInteger($party . '_station')->index()->nullable();
-                }
             }
+            if (!Schema::hasColumn($dbname, 'rem1')) {
+                $table->unsignedInteger('rem1')->index()->default(0);
+            }
+            if (!Schema::hasColumn($dbname, 'rem2')) {
+                $table->unsignedInteger('rem2')->index()->default(0);
+            }
+            if (!Schema::hasColumn($dbname, 'rem3')) {
+                $table->unsignedInteger('rem3')->index()->default(0);
+            }
+            if (!Schema::hasColumn($dbname, 'rem4')) {
+                $table->unsignedInteger('rem4')->index()->default(0);
+            }
+            if (!Schema::hasColumn($dbname, 'rem5')) {
+                $table->unsignedInteger('rem5')->index()->default(0);
+            }
+
         }
         // if table exists, loop inputs
         foreach ($fields as $input) {

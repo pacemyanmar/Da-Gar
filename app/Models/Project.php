@@ -36,7 +36,7 @@ class Project extends Model
         'project' => 'string',
         'project_trans' => 'array',
         'type' => 'string',
-        'parties' => 'array',
+        'parties' => 'string',
         'samples' => 'array',
         'copies' => 'integer',
         'dblink' => 'string',

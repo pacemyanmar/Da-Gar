@@ -1620,7 +1620,7 @@ function formBuilderEventsFn() {
         header: ['h1', 'h2', 'h3'].map(subtypeDefault),
         button: ['button', 'submit', 'reset'].map(subtypeDefault),
         paragraph: ['p', 'address', 'blockquote', 'canvas', 'output'].map(subtypeDefault),
-        template: ['household', 'ballot'].map(subtypeDefault),
+        template: ['ballot-table', 'registered-voters', 'advanced-voters'].map(subtypeDefault),
       };
     }();
 

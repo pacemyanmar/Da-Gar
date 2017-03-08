@@ -150,7 +150,7 @@ class SurveyResultDataTable extends DataTable
         $project = $this->project;
         $childTable = $project->dbname;
         $sectionColumns = [];
-        foreach ($project->sections as $k => $section) {
+        foreach ($project->sectionsDb as $k => $section) {
             $sectionColumns[] = 'section' . ($k + 1) . 'status';
         }
 

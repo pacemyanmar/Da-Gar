@@ -62,6 +62,7 @@ class SampleData extends Model
         'language_trans',
         'bank_information_trans',
         'mobile_provider_trans',
+        'parties',
     ];
 
     public static $export = [

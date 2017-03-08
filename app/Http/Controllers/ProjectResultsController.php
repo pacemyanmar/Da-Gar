@@ -196,7 +196,7 @@ class ProjectResultsController extends AppBaseController
 
         $section_columns = [];
         $wordcount = 17;
-        foreach ($project->sections as $k => $section) {
+        foreach ($project->sectionsDb as $k => $section) {
             $sectionColumn = 'section' . ($k + 1) . 'status';
             $sectionname = $section['sectionname'];
             // if string long to show in label show as tooltip
@@ -421,14 +421,38 @@ class ProjectResultsController extends AppBaseController
 
         $surveyResult->setTable($dbname);
 
-        $sample_type = $request->only('sample');
-
         // get all result array from form
-        $results = $request->only('result')['result'];
+        $results = $request->input('result');
 
         if (empty($results)) {
             return $this->sendError(trans('messages.no_result_submitted'), $code = 404);
         }
+        if (array_key_exists('ballot', $results)) {
+            $ballots = $results['ballot'];
+            unset($results['ballot']);
+            foreach ($ballots as $party => $ballot) {
+                $results[$party . '_station'] = $ballot['station'];
+                $results[$party . '_advanced'] = $ballot['advanced'];
+            }
+        }
+        if (array_key_exists('ballot_remark', $results)) {
+            $ballot_remark = $results['ballot_remark'];
+            unset($results['ballot_remark']);
+            foreach ($ballot_remark as $rem => $vote) {
+                $results[$rem] = $vote;
+            }
+        }
+        if (array_key_exists('registered-voters', $results)) {
+            $registered_voters = $results['registered-voters'];
+            unset($results['registered-voters']);
+            $results['registered_voters'] = $registered_voters;
+        }
+        if (array_key_exists('advanced-voters', $results)) {
+            $advanced_voters = $results['advanced-voters'];
+            unset($results['advanced-voters']);
+            $results['advanced_voters'] = $advanced_voters;
+        }
+
         //$results['samplable_id'] = $dblink;
         //$results['samplable_id'] = $sample_dblink->id;
         $sectionstatus = [];
@@ -521,7 +545,9 @@ class ProjectResultsController extends AppBaseController
 
         }
 
-        $results['sample'] = (isset($sample_type['sample'])) ? $sample_type['sample'] : 1;
+        $sample_type = $request->input('sample');
+
+        $results['sample'] = (isset($sample_type)) ? $sample_type : 1;
 
         // sample (country|region|1|2)
         //$results['sample'] = (!empty($request->only('samplable_type')['samplable_type'])) ? $request->only('samplable_type')['samplable_type'] : '';
@@ -544,9 +570,6 @@ class ProjectResultsController extends AppBaseController
 
         $old_result = $old_result->first(); // used first() because of one to one relation
         array_walk($results, array($this, 'zawgyiUnicode'));
-
-        $ballot = $request->input('ballot');
-        $ballot_remark = $request->input('ballot_remark');
 
         if (!empty($old_result)) {
             $old_result->setTable($dbname);
