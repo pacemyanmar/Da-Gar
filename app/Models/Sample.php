@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Eloquent as Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
 /**
@@ -85,6 +86,31 @@ class Sample extends Model
         $localKey = $this->getKeyName();
 
         return new HasOne($instance->newQuery(), $this, $instance->getTable() . '.' . $foreignKey, $localKey);
+    }
+
+    /**
+     * Define a one-to-many relationship.
+     *
+     * @param  string  $related
+     * @param  string  $foreignKey
+     * @param  string  $localKey
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function resultsWithTable($table = null)
+    {
+        $foreignKey = $this->getForeignKey();
+
+        if (empty($table)) {
+            $table = $this->relatedTable;
+        }
+
+        $instance = new SurveyResult();
+
+        $instance->setTable($table);
+
+        $localKey = $this->getKeyName();
+
+        return new HasMany($instance->newQuery(), $this, $instance->getTable() . '.' . $foreignKey, $localKey);
     }
 
 }

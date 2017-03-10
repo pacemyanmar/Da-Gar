@@ -278,4 +278,5 @@ class SampleDataController extends AppBaseController
         Flash::success($file . ' Data imported successfully.');
         return redirect()->back();
     }
+
 }

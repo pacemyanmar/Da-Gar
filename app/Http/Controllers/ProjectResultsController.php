@@ -442,14 +442,14 @@ class ProjectResultsController extends AppBaseController
                 $results[$rem] = $vote;
             }
         }
-        if (array_key_exists('registered-voters', $results)) {
-            $registered_voters = $results['registered-voters'];
-            unset($results['registered-voters']);
+        if (array_key_exists('registered_voters', $results)) {
+            $registered_voters = $results['registered_voters'];
+            unset($results['registered_voters']);
             $results['registered_voters'] = $registered_voters;
         }
-        if (array_key_exists('advanced-voters', $results)) {
-            $advanced_voters = $results['advanced-voters'];
-            unset($results['advanced-voters']);
+        if (array_key_exists('advanced_voters', $results)) {
+            $advanced_voters = $results['advanced_voters'];
+            unset($results['advanced_voters']);
             $results['advanced_voters'] = $advanced_voters;
         }
 

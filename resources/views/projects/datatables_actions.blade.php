@@ -1,8 +1,14 @@
 
 <div class='btn-group'>
+    @if($type == 'sample2db')
+    <a href="{{ route('projects.surveys.index', $id) }}" class='btn btn-default btn-sm'>
+        <i class="glyphicon glyphicon-eye-open"></i> {!! trans('messages.list_incidents') !!}
+    </a>
+    @else
     <a href="{{ route('projects.surveys.index', $id) }}" class='btn btn-default btn-sm'>
         <i class="glyphicon glyphicon-eye-open"></i> {!! trans('messages.list_samples') !!}
     </a>
+    @endif
     @if(Auth::user()->role->level > 5)
     <a href="{{ route('projects.edit', $id) }}" class='btn btn-default btn-sm'>
         <i class="glyphicon glyphicon-edit"></i> {!! trans('messages.edit') !!}

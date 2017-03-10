@@ -1,5 +1,5 @@
 @php
-$parties = ['USDP','NLD']; //to remove later
+$parties = explode(',', $project->parties); //to remove later
 @endphp
 <div class="row">
 <div class="col-sm-8">

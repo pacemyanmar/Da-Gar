@@ -148,7 +148,8 @@ trait QuestionsTrait
             } elseif ($a['type'] == 'template' && $a['subtype'] == 'ballot-table') {
                 continue;
             } elseif ($a['type'] == 'template') {
-                $a['type'] = $a['inputid'] = $a['subtype'];
+                $a['type'] = $a['subtype'];
+                $a['inputid'] = str_replace('-', '_', $a['subtype']);
                 unset($a['subtype']);
             } else {
                 $a['id'] = $param;

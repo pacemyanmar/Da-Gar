@@ -13,6 +13,7 @@ use App\Scopes\OrderByScope;
 use Flash;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Response;
@@ -623,5 +624,12 @@ class ProjectController extends AppBaseController
         // change input status to published
         $project->inputs()->withoutGlobalScope(OrderByScope::class)
             ->update(['status' => 'published']);
+    }
+
+    public function search($project_id, Request $request)
+    {
+        $sample_id = $request->input('sample');
+        $project = $this->projectRepository->findWithoutFail($project_id);
+        dd($project->samplesData()->where('idcode', $sample_id)->first());
     }
 }

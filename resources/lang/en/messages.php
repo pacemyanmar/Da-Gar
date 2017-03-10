@@ -20,6 +20,7 @@ return [
     'add_new' => 'Add New',
     'edit' => 'Edit',
     'list_samples' => 'List Samples',
+    'list_incidents' => 'List Incidents',
     'response' => 'Response',
     'in_report' => 'In Report',
     'double_entry' => 'Double Entry',

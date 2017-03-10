@@ -20,7 +20,7 @@
         $selectColumns = ['village', 'village_tract', 'township', 'district', 'state'];
 
         $selectColumns = array_intersect_key($columns, array_flip($selectColumns));
-
+        $selectColsArr = [];
         foreach ($selectColumns as $key => $value) {
             $selectColsArr[] = $columnName[$key];
         }
@@ -28,7 +28,7 @@
         $statusColumns = [''];
 
         $statusColumns = array_intersect_key($columns, array_flip($statusColumns));
-
+        $statusColsArr = [];
         foreach ($statusColumns as $key => $value) {
             $statusColsArr[] = $columnName[$key];
         }
@@ -50,6 +50,19 @@
         @include('flash::message')
 
         <div class="clearfix"></div>
+        <div class="box box-primary">
+            <div class="box-body">
+                {!! Form::open(['route' => ['projects.sample.search', $project->id], 'id' => 'project', 'method' => 'GET']) !!}
+                    <div class="col-sm-3 input-group">
+                      {!! Form::text('sample',null, ['class' => 'form-control', 'placeholder' => 'Add location code']) !!}
+                      <span class="input-group-btn">
+                        <button class="btn btn-success" type="submit">Report Incident!</button>
+                      </span>
+                    </div><!-- /input-group -->
+
+                {!! Form::close() !!}
+            </div>
+        </div>
         <div class="box box-primary">
             <div class="box-body">
                     @include('projects.survey.'.$project->type.'.table')

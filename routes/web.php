@@ -24,6 +24,7 @@ Route::group(['prefix' => 'projects/{project}'], function () {
     Route::match(['get', 'post'], '/double/{section}', ['as' => 'projects.response.double', 'uses' => 'ProjectResultsController@responseRateDouble']);
     Route::match(['get', 'post'], '/useorigin/{survey_id}/{column}', ['as' => 'projects.response.origin.use', 'uses' => 'ProjectResultsController@originUse']);
     Route::match(['get', 'post'], '/usedouble/{survey_id}/{column}', ['as' => 'projects.response.double.use', 'uses' => 'ProjectResultsController@doubleUse']);
+    Route::get('/search/sample', ['as' => 'projects.sample.search', 'uses' => 'ProjectController@search']);
 });
 
 Route::group(['prefix' => 'projects/{project}/surveys'], function () {
