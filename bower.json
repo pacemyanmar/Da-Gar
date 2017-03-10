@@ -26,6 +26,7 @@
     "jquery-idletimer": "^1.0.1",
     "hyperform": "0.8.15",
     "hyperform-l10n": "0.8.0",
-    "jqueryui-datepicker": "*"
+    "jqueryui-datepicker": "*",
+    "gasparesganga-jquery-loading-overlay": "^1.5.3"
   }
 }
