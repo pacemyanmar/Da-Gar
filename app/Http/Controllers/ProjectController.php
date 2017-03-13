@@ -269,11 +269,14 @@ class ProjectController extends AppBaseController
             ];
         }
 
+        $sectionsDb = $project->sectionsDb->pluck('id', 'id');
+
         foreach ($sections as $skey => $section) {
             if (!empty($section)) {
                 $section['sort'] = $skey;
                 // find section to update
                 if (array_key_exists('sectionid', $section)) {
+                    unset($sectionsDb[$section['sectionid']]);
                     $oldsection = Section::find($section['sectionid']);
                     $oldsection->sort = $skey;
                     $oldsection->sectionname = $section['sectionname'];
@@ -300,6 +303,16 @@ class ProjectController extends AppBaseController
                 }
             }
         }
+
+        //delete removed section
+        if (!empty($sectionsDb)) {
+            foreach ($sectionsDb as $section_id) {
+                $del_section = Section::find($section_id);
+                $del_section->questions()->delete();
+                $del_section->delete();
+            }
+        }
+
         if (!empty($sections_to_save)) {
             $project->sectionsDb()->saveMany($sections_to_save);
         }
