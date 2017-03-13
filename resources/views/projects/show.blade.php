@@ -2,7 +2,7 @@
 
 @section('content')
     <section class="content-header">
-        <h1>            
+        <h1>
             {!! Form::label('name', $project->project) !!}
         </h1>
     </section>
@@ -11,10 +11,10 @@
             <div class="panel-heading">
                 <div class="panel-title">
                     Information | Validation
-                </div>                  
+                </div>
             </div>
             <div class="panel-body">
-                @include("projects.$project->dblink.$project->type.search")
+                @include("projects.survey.$project->type.search")
             </div>
         </div>
     </div>

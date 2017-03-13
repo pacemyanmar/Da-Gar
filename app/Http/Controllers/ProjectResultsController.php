@@ -430,27 +430,33 @@ class ProjectResultsController extends AppBaseController
         if (array_key_exists('ballot', $results)) {
             $ballots = $results['ballot'];
             unset($results['ballot']);
+            $party_station_counts = [];
+            $party_advanced_counts = [];
             foreach ($ballots as $party => $ballot) {
-                $results[$party . '_station'] = $ballot['station'];
-                $results[$party . '_advanced'] = $ballot['advanced'];
+                $party_station_counts = $results[$party . '_station'] = $ballot['station'];
+                $party_advanced_counts = $results[$party . '_advanced'] = $ballot['advanced'];
             }
         }
+
         if (array_key_exists('ballot_remark', $results)) {
             $ballot_remark = $results['ballot_remark'];
             unset($results['ballot_remark']);
             foreach ($ballot_remark as $rem => $vote) {
                 $results[$rem] = $vote;
             }
+            $rem = count($ballot_remark);
         }
+
         if (array_key_exists('registered_voters', $results)) {
-            $registered_voters = $results['registered_voters'];
+            $rv = $results['registered_voters'];
             unset($results['registered_voters']);
-            $results['registered_voters'] = $registered_voters;
+            $results['registered_voters'] = $rv;
         }
+
         if (array_key_exists('advanced_voters', $results)) {
-            $advanced_voters = $results['advanced_voters'];
+            $av = $results['advanced_voters'];
             unset($results['advanced_voters']);
-            $results['advanced_voters'] = $advanced_voters;
+            $results['advanced_voters'] = $av;
         }
 
         //$results['samplable_id'] = $dblink;
@@ -537,9 +543,38 @@ class ProjectResultsController extends AppBaseController
                 }
 
                 if ($q) {
-                    $section_status = $results['section' . $section_key . 'status'] = 2;
+                    $results['section' . $section_key . 'status'] = 2;
                 } else {
-                    $section_status = $results['section' . $section_key . 'status'] = 1;
+                    $results['section' . $section_key . 'status'] = 1;
+                }
+            }
+
+            if (isset($rem)) {
+                if ($rem == 5 && !empty($rv) && !empty($av)) {
+                    // ballot remarks is submited and have 5 results
+                    $results['section' . $section_key . 'status'] = 1;
+                    $rem1 = $ballot_remark['rem1'];
+                    $rem2 = $ballot_remark['rem2'];
+                    $rem3 = $ballot_remark['rem3'];
+                    $rem4 = $ballot_remark['rem4'];
+                    $rem5 = $ballot_remark['rem5'];
+                    $total_votes = $rem1 + $rem2;
+                    $total_counted = $rem3 + $rem4 + $rem5;
+                    $total_party_advanced = array_sum($party_advanced_counts);
+                    //  Rem(1) + Rem(2) != Rem(3) + Rem(4) + Rem(5) ||
+                    //  Rem(4) / (Rem(1) + Rem(2)) > 0.15 ||
+                    //  Rem(5) / (Rem(1) + Rem(2)) > 0.15 ||
+                    //  Rem(2) / (Rem(1) + Rem(2)) > 0.1 ||
+                    //  EA < (Rem(1) + Rem(2)) ||
+                    //  EB != Rem(2) ||
+                    //  Adv(USDP) + Adv(NLD) > Rem(2)
+
+                    if ($total_votes != $total_counted || ($rem4 / $total_votes > 0.15) || ($rem5 / $total_votes > 0.15) || ($rem2 / $total_votes > 0.15) || ($av / ($rv + $av) > 0.1) || ($rv < $total_votes) || ($av != $rem2) || $total_party_advanced > $rem2) {
+                        $results['section' . $section_key . 'status'] = 3;
+                    }
+
+                } else {
+                    $results['section' . $section_key . 'status'] = 2;
                 }
             }
 
