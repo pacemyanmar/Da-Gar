@@ -433,8 +433,8 @@ class ProjectResultsController extends AppBaseController
             $party_station_counts = [];
             $party_advanced_counts = [];
             foreach ($ballots as $party => $ballot) {
-                $party_station_counts = $results[$party . '_station'] = $ballot['station'];
-                $party_advanced_counts = $results[$party . '_advanced'] = $ballot['advanced'];
+                $party_station_counts[] = $results[$party . '_station'] = $ballot['station'];
+                $party_advanced_counts[] = $results[$party . '_advanced'] = $ballot['advanced'];
             }
         }
 
@@ -505,7 +505,7 @@ class ProjectResultsController extends AppBaseController
                     }
                 }
             }
-            $section_key = $section + 1;
+            $section_key = $section;
             // if section not empty in form submit
             if (!empty($submitted_total_inputs)) {
 
