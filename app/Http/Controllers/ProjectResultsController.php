@@ -505,7 +505,7 @@ class ProjectResultsController extends AppBaseController
                     }
                 }
             }
-            $section_key = $section + 1;
+            $section_key = $section;
             // if section not empty in form submit
             if (!empty($submitted_total_inputs)) {
 
@@ -549,7 +549,8 @@ class ProjectResultsController extends AppBaseController
                 }
             }
 
-            if (isset($rem)) {
+            $voters = $section_inputs->whereIn('inputid', ['registered_voters', 'advanced_voters'])->all();
+            if (!empty($voters) && isset($rem)) {
                 if ($rem == 5 && !empty($rv) && !empty($av)) {
                     // ballot remarks is submited and have 5 results
                     $results['section' . $section_key . 'status'] = 1;
