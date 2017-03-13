@@ -463,7 +463,8 @@ class ProjectResultsController extends AppBaseController
         //$results['samplable_id'] = $sample_dblink->id;
         $sectionstatus = [];
         // group by all inputs with section and loop
-        foreach ($project->inputs->groupBy('section') as $section => $section_inputs) {
+        $project_by_section = $project->inputs->groupBy('section');
+        foreach ($project_by_section as $section => $section_inputs) {
             // get all inputs array of inputid and skip in a section which is not optional
             $max_total_inputs = $section_inputs->where('optional', 0)->pluck('inputid', 'skip')->toArray();
 
@@ -504,11 +505,10 @@ class ProjectResultsController extends AppBaseController
                     }
                 }
             }
-
+            $section_key = $section + 1;
             // if section not empty in form submit
             if (!empty($submitted_total_inputs)) {
 
-                $section_key = $section + 1;
                 $checked_inputs = [];
                 $qsum = [];
                 $q = 0;
