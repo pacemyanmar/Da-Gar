@@ -433,8 +433,8 @@ class ProjectResultsController extends AppBaseController
             $party_station_counts = [];
             $party_advanced_counts = [];
             foreach ($ballots as $party => $ballot) {
-                $party_station_counts = $results[$party . '_station'] = $ballot['station'];
-                $party_advanced_counts = $results[$party . '_advanced'] = $ballot['advanced'];
+                $party_station_counts[] = $results[$party . '_station'] = $ballot['station'];
+                $party_advanced_counts[] = $results[$party . '_advanced'] = $ballot['advanced'];
             }
         }
 
