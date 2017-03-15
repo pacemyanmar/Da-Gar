@@ -686,10 +686,10 @@ class ProjectResultsController extends AppBaseController
             'project_id' => $project->id,
             'section' => $section,
         ];
-        $sections_array = $project->sections;
+        $sections_array = $project->sectionsDb;
         $sections = [];
-        foreach ($sections_array as $sect_key => $sect) {
-            $sections[$sect_key] = $sect['sectionname'];
+        foreach ($sections_array as $sect) {
+            $sections[$sect->id] = $sect->sectionname;
         }
 
         $doubleResponse->setProject($project);

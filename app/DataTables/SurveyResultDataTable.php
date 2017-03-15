@@ -181,6 +181,7 @@ class SurveyResultDataTable extends DataTable
         $query = Sample::query();
         if ($auth->role->role_name == 'doublechecker') {
             $query->whereRaw(DB::raw('(samples.qc_user_id is null or samples.qc_user_id = ' . $auth->id . ')'));
+            $resultdbname = $childTable . '_double';
         }
         if ($auth->role->role_name == 'entryclerk') {
             $query->whereRaw(DB::raw('(samples.user_id is null or samples.user_id = ' . $auth->id . ')'));
@@ -233,6 +234,43 @@ class SurveyResultDataTable extends DataTable
 
         $query->where('project_id', $project->id);
 
+        $district = Request::input('district');
+
+        if (!empty($district)) {
+            $query->where('district', $district);
+        }
+
+        $state = Request::input('state');
+
+        if (!empty($state)) {
+            $query->where('state', $state);
+            $total = Request::input('total');
+            if ($total) {
+                $query->where(function ($q) use ($sectionColumns) {
+                    foreach ($sectionColumns as $section) {
+                        $q->whereNotNull($section)->orWhere($section, '<>', 0);
+                    }
+
+                });
+            }
+
+        }
+
+        $section = Request::input('section');
+
+        $status = Request::input('status');
+
+        if (!empty($section)) {
+            // if (!isset($resultdbname)) {
+            //     $resultdbname = $childTable;
+            // }
+            if ($status) {
+                $query->where($childTable . '.' . $section, $status);
+            } else {
+                $query->where(function ($q) use ($childTable, $section, $status) {$q->whereNull($childTable . '.' . $section)->orWhere($childTable . '.' . $section, $status);});
+            }
+
+        }
         return $this->applyScopes($query);
     }
 
