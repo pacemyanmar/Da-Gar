@@ -1,5 +1,7 @@
 @extends('layouts.app')
-
+@section('meta')
+<meta name="csrf-token" content="{{ csrf_token() }}">
+@endsection
 @section('content')
     <section class="content-header">
         <h1 class="pull-left">Projects Sample Response Rate</h1>
@@ -21,13 +23,17 @@
         <div class="clearfix"></div>
         <div class="box box-primary">
             <div class="box-body">
-                    @include('projects.table')
+                    @include('projects.survey.db2sample.table')
             </div>
         </div>
     </div>
 @endsection
 
 @push('document-ready')
+    $.ajaxSetup({
+      headers:
+      { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') }
+    });
     $('#responseBy').on('change', function(e){
         var filterurl = $(this).val();
         console.log(filterurl);
