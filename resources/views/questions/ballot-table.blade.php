@@ -51,7 +51,7 @@ $parties = explode(',', $project->parties); //to remove later
 			<p>{!! $party !!}</p>
 		</td>
 		<td>
-			<input type="number" name="result[ballot][{{$party}}][station]"	class="form-control input-sm">
+			<input type="number" name="result[ballot][{{$party}}][station]" class="form-control input-sm">
 		</td>
 		<td>
 			<input type="number" name="result[ballot][{{$party}}][advanced]" class="form-control input-sm">

@@ -11,6 +11,7 @@
                <option value="{!! route('projects.response.filter', [$project->id, 'state']) !!}" @if($filter === 'state') selected="selected" @endif>State</option>
                <option value="{!! route('projects.response.filter', [$project->id, 'name']) !!}" @if($filter === 'name') selected="selected" @endif>Enumerator</option>
                <option value="{!! route('projects.response.filter', [$project->id, 'district']) !!}" @if($filter === 'district') selected="selected" @endif>District</option>
+               <option value="{!! route('projects.response.filter', [$project->id, 'district']) !!}" @if($filter === 'township') selected="selected" @endif>Township</option>
            </select>
            </label>
         </span>
