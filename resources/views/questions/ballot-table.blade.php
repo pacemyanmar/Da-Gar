@@ -51,10 +51,10 @@ $parties = explode(',', $project->parties); //to remove later
 			<p>{!! $party !!}</p>
 		</td>
 		<td>
-			<input type="number" name="result[ballot][{{$party}}][station]" class="form-control input-sm">
+			{!! Form::number("result[ballot][".$party."][station]", (isset($results))?Kanaung\Facades\Converter::convert($results->{$party.'_station'},'unicode','zawgyi'):null, ['class' => 'form-control input-sm']) !!}
 		</td>
 		<td>
-			<input type="number" name="result[ballot][{{$party}}][advanced]" class="form-control input-sm">
+			{!! Form::number("result[ballot][".$party."][advanced]", (isset($results))?Kanaung\Facades\Converter::convert($results->{$party.'_advanced'},'unicode','zawgyi'):null, ['class' => 'form-control input-sm']) !!}
 		</td>
 		<td>
 
@@ -80,7 +80,7 @@ $parties = explode(',', $project->parties); //to remove later
 	<p>1 - Ballots issued on e-day</p>
 </td>
 <td class="col-sm-5">
-	<input type="number" name="result[ballot_remark][rem1]" class="form-control input-sm">
+	{!! Form::number("result[ballot_remark][rem1]", (isset($results))?Kanaung\Facades\Converter::convert($results->rem1,'unicode','zawgyi'):null, ['class' => 'form-control input-sm']) !!}
 </td>
 <tr>
 <tr>
@@ -88,7 +88,7 @@ $parties = explode(',', $project->parties); //to remove later
 	<p>2 - Ballots received for advanced voting</p>
 </td>
 <td class="col-sm-5">
-	<input type="number" name="result[ballot_remark][rem2]" class="form-control input-sm">
+	{!! Form::number("result[ballot_remark][rem2]", (isset($results))?Kanaung\Facades\Converter::convert($results->rem2,'unicode','zawgyi'):null, ['class' => 'form-control input-sm']) !!}
 </td>
 <tr>
 <tr>
@@ -96,7 +96,7 @@ $parties = explode(',', $project->parties); //to remove later
 	<p>3 - Valid</p>
 </td>
 <td class="col-sm-5">
-	<input type="number" name="result[ballot_remark][rem3]" class="form-control input-sm">
+	{!! Form::number("result[ballot_remark][rem3]", (isset($results))?Kanaung\Facades\Converter::convert($results->rem3,'unicode','zawgyi'):null, ['class' => 'form-control input-sm']) !!}
 </td>
 <tr>
 <tr>
@@ -104,7 +104,7 @@ $parties = explode(',', $project->parties); //to remove later
 	<p>4 - Invalid</p>
 </td>
 <td class="col-sm-5">
-	<input type="number" name="result[ballot_remark][rem4]" class="form-control input-sm">
+	{!! Form::number("result[ballot_remark][rem4]", (isset($results))?Kanaung\Facades\Converter::convert($results->rem4,'unicode','zawgyi'):null, ['class' => 'form-control input-sm']) !!}
 </td>
 <tr>
 <tr>
@@ -112,7 +112,7 @@ $parties = explode(',', $project->parties); //to remove later
 	<p>5 - Missing</p>
 </td>
 <td class="col-sm-5">
-	<input type="number" name="result[ballot_remark][rem5]" class="form-control input-sm">
+	{!! Form::number("result[ballot_remark][rem5]", (isset($results))?Kanaung\Facades\Converter::convert($results->rem5,'unicode','zawgyi'):null, ['class' => 'form-control input-sm']) !!}
 </td>
 <tr>
 
