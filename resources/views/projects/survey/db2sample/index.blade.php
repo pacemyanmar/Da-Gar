@@ -35,6 +35,9 @@
 @endphp
 @section('content')
     <section class="content-header">
+        <a href="{{ route('projects.surveys.index', $project->id) }}" class='btn btn-primary pull-right'>
+        <i class="fa fa-refresh" aria-hidden="true"></i> Reload
+    </a><br>
         <h1 class="pull-left">{{ $project->project}}</h1>
     </section>
     <div class="content">
