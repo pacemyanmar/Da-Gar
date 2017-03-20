@@ -246,13 +246,14 @@ class ProjectResultsController extends AppBaseController
         $project->load('samplesDb.data');
 
         $project->load(['inputs' => function ($query) {
-            $query->where('status', 'published');
+            $query->where('status', 'published')->orderBy('sort', 'asc');
         }]);
 
-        foreach ($project->inputs as $k => $input) {
+        foreach ($project->inputs as $input) {
             $column = $input->inputid;
-            $title = preg_replace('/s[0-9]+|ir/', '', $column);
-            $title = strtoupper(preg_replace('/i/', '_', $title));
+            //$title = preg_replace('/s[0-9]+|ir/', '', $column);
+            //$title = strtoupper(preg_replace('/i/', '_', $title));
+            $title = $input->question->qnum;
             $input_columns[$column] = ['name' => $column, 'data' => $column, 'title' => $title, 'class' => 'result', 'orderable' => false, 'width' => '80px'];
             $input_columns[$column . '_status'] = ['name' => $column . '_status', 'data' => $column . '_status', 'title' => $title . '_status', 'orderable' => false, 'visible' => false];
             if (!$input->in_index) {
@@ -260,9 +261,21 @@ class ProjectResultsController extends AppBaseController
             }
 
         }
+        $parties = explode(',', $project->parties);
+        if (!empty($parties)) {
+            foreach ($parties as $party) {
+                $input_columns[$party . '_station'] = ['name' => $party . '_station', 'data' => $party . '_station', 'title' => $party . ' Station', 'orderable' => false, 'class' => 'result', 'width' => '80px', 'visible' => false];
+                $input_columns[$party . '_advanced'] = ['name' => $party . '_advanced', 'data' => $party . '_advanced', 'title' => $party . ' Advanced', 'orderable' => false, 'class' => 'result', 'width' => '80px', 'visible' => false];
+            }
+            $input_columns['rem1'] = ['name' => 'rem1', 'data' => 'rem1', 'title' => 'Remark 1', 'orderable' => false, 'class' => 'result', 'width' => '80px', 'visible' => false];
+            $input_columns['rem2'] = ['name' => 'rem2', 'data' => 'rem2', 'title' => 'Remark 2', 'orderable' => false, 'class' => 'result', 'width' => '80px', 'visible' => false];
+            $input_columns['rem3'] = ['name' => 'rem3', 'data' => 'rem3', 'title' => 'Remark 3', 'orderable' => false, 'class' => 'result', 'width' => '80px', 'visible' => false];
+            $input_columns['rem4'] = ['name' => 'rem4', 'data' => 'rem4', 'title' => 'Remark 4', 'orderable' => false, 'class' => 'result', 'width' => '80px', 'visible' => false];
+            $input_columns['rem5'] = ['name' => 'rem5', 'data' => 'rem5', 'title' => 'Remark 5', 'orderable' => false, 'class' => 'result', 'width' => '80px', 'visible' => false];
+        }
 
         if ($project->status != 'new') {
-            ksort($input_columns, SORT_NATURAL);
+            //ksort($input_columns, SORT_NATURAL);
             $all_columns = array_merge($columns, $section_columns, $input_columns);
         }
 
