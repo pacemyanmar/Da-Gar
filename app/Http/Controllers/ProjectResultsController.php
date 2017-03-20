@@ -145,7 +145,36 @@ class ProjectResultsController extends AppBaseController
                             'width' => '120px',
                         ];
                         break;
-
+                    case 'state':
+                        $columns['state'] = [
+                            'name' => 'sample_datas.state',
+                            'data' => 'state',
+                            'title' => trans('messages.state'),
+                            'orderable' => false,
+                            'defaultContent' => 'N/A',
+                            'width' => '120px',
+                        ];
+                        break;
+                    case 'district':
+                        $columns['district'] = [
+                            'name' => 'sample_datas.district',
+                            'data' => 'district',
+                            'title' => trans('messages.district'),
+                            'orderable' => false,
+                            'defaultContent' => 'N/A',
+                            'width' => '120px',
+                        ];
+                        break;
+                    case 'township':
+                        $columns['township'] = [
+                            'name' => 'sample_datas.township',
+                            'data' => 'township',
+                            'title' => trans('messages.township'),
+                            'orderable' => false,
+                            'defaultContent' => 'N/A',
+                            'width' => '120px',
+                        ];
+                        break;
                     default:
                         $columns[$column] = [
                             'name' => $column,
@@ -255,7 +284,10 @@ class ProjectResultsController extends AppBaseController
             //$title = strtoupper(preg_replace('/i/', '_', $title));
             $title = $input->question->qnum;
             $input_columns[$column] = ['name' => $column, 'data' => $column, 'title' => $title, 'class' => 'result', 'orderable' => false, 'width' => '80px'];
-            $input_columns[$column . '_status'] = ['name' => $column . '_status', 'data' => $column . '_status', 'title' => $title . '_status', 'orderable' => false, 'visible' => false];
+            if (empty($project->parties)) {
+                $input_columns[$column . '_status'] = ['name' => $column . '_status', 'data' => $column . '_status', 'title' => $title . '_status', 'orderable' => false, 'visible' => false];
+            }
+
             if (!$input->in_index) {
                 $input_columns[$column]['visible'] = false;
             }

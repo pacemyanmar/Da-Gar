@@ -62,6 +62,32 @@ class SampleResponseDataTable extends DataTable
 
         $sectionColumnsStr = implode(',', $sectionColumns);
 
+        if ($project->status != 'new') {
+            switch ($this->filter) {
+                case 'user':
+                    # code...
+                    $filter = 'user';
+                    $query->select('user.name AS ' . $filter, DB::raw('SUM(IF(' . $childTable . '.id, 1, 0)) AS total'), DB::raw($sectionColumnsStr));
+                    $query->groupBy($filter);
+                    break;
+
+                default:
+                    # code...
+                    $filter = $this->filter;
+                    $query->select('sample_datas.' . $filter, DB::raw('SUM(IF(' . $childTable . '.id, 1, 0)) AS total'), DB::raw('GROUP_CONCAT(DISTINCT user.name) as user_name', 'GROUP_CONCAT(DISTINCT update_user.name) as update_user', 'GROUP_CONCAT(DISTINCT qc_user.name) as qc_user'), DB::raw($sectionColumnsStr));
+                    $query->groupBy('sample_datas.' . $filter);
+                    break;
+            }
+
+            $query->leftjoin('sample_datas', function ($join) {
+                $join->on('samples.sample_data_id', 'sample_datas.id');
+            });
+
+            $query->leftjoin($childTable, function ($join) use ($childTable) {
+                $join->on('samples.id', '=', $childTable . '.sample_id');
+            });
+        }
+
         $query->leftjoin('users as user', function ($join) {
             $join->on('user.id', 'samples.user_id');
         });
@@ -71,19 +97,7 @@ class SampleResponseDataTable extends DataTable
         $query->leftjoin('users as qc_user', function ($join) {
             $join->on('qc_user.id', 'samples.qc_user_id');
         });
-
-        if ($project->status != 'new') {
-            $query->select('sample_datas.' . $this->filter, DB::raw('SUM(IF(' . $childTable . '.id, 1, 0)) AS total'), DB::raw('GROUP_CONCAT(DISTINCT user.name) as user_name', 'GROUP_CONCAT(DISTINCT update_user.name) as update_user', 'GROUP_CONCAT(DISTINCT qc_user.name) as qc_user'), DB::raw($sectionColumnsStr));
-            $query->leftjoin('sample_datas', function ($join) {
-                $join->on('samples.sample_data_id', 'sample_datas.id');
-            });
-
-            $query->leftjoin($childTable, function ($join) use ($childTable) {
-                $join->on('samples.id', '=', $childTable . '.sample_id');
-            });
-        }
         $query->where('project_id', $project->id);
-        $query->groupBy('sample_datas.' . $this->filter);
 
         return $this->applyScopes($query);
     }
@@ -180,7 +194,11 @@ class SampleResponseDataTable extends DataTable
             "$filter" => ['data' => "$filter", 'name' => 'sample_datas.' . $filter, 'orderable' => false, "render" => function () use ($project, $filter) {
                 return "function ( data, type, full, meta ) {
                                     if(type == 'display') {
-                                      return '<a href=" . route('projects.surveys.index', [$project->id]) . "/?" . $filter . "='+ encodeURI(full." . $filter . ") +'>' + data + '</a>';
+                                        if(data){
+                                              return '<a href=" . route('projects.surveys.index', [$project->id]) . "/?" . $filter . "='+ encodeURI(full." . $filter . ") +'>' + data + '</a>';
+                                          } else {
+                                            return '<a href=" . route('projects.surveys.index', [$project->id]) . "/?" . $filter . "=none> None </a>';
+                                          }
                                     } else {
                                       return data;
                                     }

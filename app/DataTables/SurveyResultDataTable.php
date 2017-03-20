@@ -246,6 +246,22 @@ class SurveyResultDataTable extends DataTable
         }
 
         $query->where('project_id', $project->id);
+        $dataclerk = Request::input('user');
+
+        if (!empty($dataclerk)) {
+            if ($dataclerk == 'none') {
+                $query->whereNull('user.name');
+            } else {
+                $query->where('user.name', $dataclerk);
+            }
+
+        }
+
+        $township = Request::input('township');
+
+        if (!empty($township)) {
+            $query->where('township', $township);
+        }
 
         $district = Request::input('district');
 
@@ -257,16 +273,16 @@ class SurveyResultDataTable extends DataTable
 
         if (!empty($state)) {
             $query->where('state', $state);
-            $total = Request::input('total');
-            if ($total) {
-                $query->where(function ($q) use ($sectionColumns) {
-                    foreach ($sectionColumns as $section) {
-                        $q->whereNotNull($section)->orWhere($section, '<>', 0);
-                    }
+        }
 
-                });
-            }
+        $total = Request::input('total');
+        if ($total) {
+            $query->where(function ($q) use ($sectionColumns) {
+                foreach ($sectionColumns as $section) {
+                    $q->whereNotNull($section)->orWhere($section, '<>', 0);
+                }
 
+            });
         }
 
         $section = Request::input('section');
@@ -411,15 +427,15 @@ class SurveyResultDataTable extends DataTable
                 ],
             ],
             'buttons' => [
-                'print',
+                //'print',
                 //'reset',
-                'reload',
+                //'reload',
                 [
                     'extend' => 'collection',
                     'text' => '<i class="fa fa-download"></i> ' . trans('messages.export'),
                     'buttons' => [
                         'exportPostCsv',
-                        //'exportPostExcel',
+                        'exportPostExcel',
                         //'exportPostPdf',
                     ],
                 ],

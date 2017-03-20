@@ -9,9 +9,9 @@
         <label>Response rate by:
            <select autocomplete="off" id="responseBy" class="form-control input-md">
                <option value="{!! route('projects.response.filter', [$project->id, 'state']) !!}" @if($filter === 'state') selected="selected" @endif>State</option>
-               <option value="{!! route('projects.response.filter', [$project->id, 'name']) !!}" @if($filter === 'name') selected="selected" @endif>Enumerator</option>
                <option value="{!! route('projects.response.filter', [$project->id, 'district']) !!}" @if($filter === 'district') selected="selected" @endif>District</option>
-               <option value="{!! route('projects.response.filter', [$project->id, 'district']) !!}" @if($filter === 'township') selected="selected" @endif>Township</option>
+               <option value="{!! route('projects.response.filter', [$project->id, 'township']) !!}" @if($filter === 'township') selected="selected" @endif>Township</option>
+               <option value="{!! route('projects.response.filter', [$project->id, 'user']) !!}" @if($filter === 'user') selected="selected" @endif>Data Clerk</option>
            </select>
            </label>
         </span>
