@@ -6,9 +6,10 @@
 <thead>
 <tr>
 <th rowspan="2" width="80px">State</th>
-<th rowspan="2">Total</th>
+<th rowspan="2" width="70px">Total Forms</th>
+<th rowspan="2" width="70px">Total</th>
 @foreach($project->sectionsDb as $section)
-<th colspan="4">{{$section->sectionname}}</th>
+<th colspan="4" width="250px">{{$section->sectionname}}</th>
 @endforeach
 </tr>
 <tr>
