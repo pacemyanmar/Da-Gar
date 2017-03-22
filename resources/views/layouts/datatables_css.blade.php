@@ -9,5 +9,4 @@ table{
   table-layout: fixed; // ***********add this
   word-wrap:break-word; // ***********and this
 }
-
 </style>
