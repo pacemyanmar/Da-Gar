@@ -508,8 +508,13 @@ class ProjectResultsController extends AppBaseController
         //$results['samplable_id'] = $sample_dblink->id;
         $sectionstatus = [];
         // group by all inputs with section and loop
+        $results_to_save = $results;
+        array_walk($results_to_save, array($this, 'zawgyiUnicode'));
         $project_by_section = $project->inputs->groupBy('section');
+
         foreach ($project_by_section as $section => $section_inputs) {
+            $origin_inputs = $section_inputs;
+
             // get all inputs array of inputid and skip in a section which is not optional
             $max_total_inputs = $section_inputs->where('optional', 0)->pluck('inputid', 'skip')->toArray();
 
@@ -595,6 +600,7 @@ class ProjectResultsController extends AppBaseController
             }
 
             $voters = $section_inputs->whereIn('inputid', ['registered_voters', 'advanced_voters'])->all();
+
             if (!empty($voters) && isset($rem)) {
                 if ($rem == 5 && !empty($rv) && !empty($av)) {
                     // ballot remarks is submited and have 5 results
@@ -624,11 +630,21 @@ class ProjectResultsController extends AppBaseController
                 }
             }
 
+            // get all inputs in a section
+            $section_all_inputs = $origin_inputs->pluck('inputid')->unique()->toArray();
+
+            // check section has submitted results
+            $section_submitted = array_intersect_key(array_flip($section_all_inputs), $results);
+
+            if (!empty($section_submitted)) {
+                $empty_inputs = array_fill_keys($section_all_inputs, null);
+                $results_to_save = array_merge($empty_inputs, $results);
+            }
         }
 
         $sample_type = $request->input('sample');
 
-        $results['sample'] = (isset($sample_type)) ? $sample_type : 1;
+        $results_to_save['sample'] = (isset($sample_type)) ? $sample_type : 1;
 
         // sample (country|region|1|2)
         //$results['sample'] = (!empty($request->only('samplable_type')['samplable_type'])) ? $request->only('samplable_type')['samplable_type'] : '';
@@ -645,20 +661,19 @@ class ProjectResultsController extends AppBaseController
             $sample->user_id = $auth_user->id;
         }
 
-        $results['user_id'] = $auth_user->id;
+        $results_to_save['user_id'] = $auth_user->id;
 
         $old_result = $sample->resultWithTable($dbname);
 
         $old_result = $old_result->first(); // used first() because of one to one relation
-        array_walk($results, array($this, 'zawgyiUnicode'));
 
         if (!empty($old_result)) {
             $old_result->setTable($dbname);
-            $old_result->fill($results);
+            $old_result->fill($results_to_save);
 
-            $result = $old_result->save($results);
+            $result = $old_result->save();
         } else {
-            $surveyResult->fill($results);
+            $surveyResult->fill($results_to_save);
 
             $result = $sample->resultWithTable($dbname)->save($surveyResult);
         }
@@ -820,6 +835,29 @@ class ProjectResultsController extends AppBaseController
         }
 
         return $this->sendError(trans('messages.no_result_submitted'), $code = 404);
+    }
+
+    public function analysis($project_id)
+    {
+        $project = $this->projectRepository->findWithoutFail($project_id);
+        if (empty($project)) {
+            Flash::error('Project not found');
+
+            return redirect(route('projects.index'));
+        }
+        $project->load(['inputs']);
+
+        $sample_query = 'project.id';
+
+        foreach ($project->inputs as $input) {
+            $sample_query .= ' , SUM(IF(' . $input->inputid . ',1,0)) AS ' . $input->inputid;
+        }
+
+        dd($sample_query);
+
+        return view('projects.analysis')
+            ->with('project', $project)
+            ->with('questions', $project->questions);
     }
 
 }
