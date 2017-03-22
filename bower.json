@@ -27,6 +27,7 @@
     "hyperform": "0.8.15",
     "hyperform-l10n": "0.8.0",
     "jqueryui-datepicker": "*",
-    "gasparesganga-jquery-loading-overlay": "^1.5.3"
+    "gasparesganga-jquery-loading-overlay": "^1.5.3",
+    "d3": "^3.5.17"
   }
 }

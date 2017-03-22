@@ -68,7 +68,8 @@ elixir(mix => {
             'adminlte/dist/js/app.min.js',
             'hyperform/dist/hyperform.min.js',
             'jqueryui-datepicker/datepicker.js',
-            'gasparesganga-jquery-loading-overlay/src/loadingoverlay.min.js'
+            'gasparesganga-jquery-loading-overlay/src/loadingoverlay.min.js',
+            'd3/d3.min.js'
     		],'public/js/vendor.js','resources/assets/vendor/')
     	.sass('app.scss')
        	.webpack('app.js')

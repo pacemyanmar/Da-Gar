@@ -15,6 +15,7 @@ use App\Repositories\SampleRepository;
 use App\Repositories\SurveyInputRepository;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Kanaung\Facades\Converter;
 use Laracasts\Flash\Flash;
 
@@ -847,17 +848,21 @@ class ProjectResultsController extends AppBaseController
         }
         $project->load(['inputs']);
 
-        $sample_query = 'project.id';
+        $sample_query = 'project_id, count(project_id) as total';
 
         foreach ($project->inputs as $input) {
-            $sample_query .= ' , SUM(IF(' . $input->inputid . ',1,0)) AS ' . $input->inputid;
+            $sample_query .= ' , SUM(IF(' . $input->inputid . '=' . $input->value . ',1,0)) AS ' . $input->inputid . '_' . $input->value;
         }
-
-        dd($sample_query);
+        $query = DB::table('samples')->select(DB::raw($sample_query));
+        $query->where('project_id', $project->id);
+        $query->leftjoin($project->dbname, $project->dbname . '.sample_id', '=', 'samples.id');
+        $query->groupBy('project_id');
+        $results_count = $query->first();
 
         return view('projects.analysis')
             ->with('project', $project)
-            ->with('questions', $project->questions);
+            ->with('questions', $project->questions)
+            ->with('results', $results_count);
     }
 
 }
