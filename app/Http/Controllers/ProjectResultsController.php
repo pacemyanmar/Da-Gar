@@ -677,7 +677,6 @@ class ProjectResultsController extends AppBaseController
 
             $result = $sample->resultWithTable($dbname)->save($surveyResult);
         }
-
         $sample->save(); // update Sample::class
 
         return $this->sendResponse($result, trans('messages.saved'));
