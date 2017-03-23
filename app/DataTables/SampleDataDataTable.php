@@ -182,6 +182,7 @@ class SampleDataDataTable extends DataTable
                                     }";
                 },
             ],
+            'code' => ['name' => 'code', 'data' => 'code', 'title' => trans('messages.observer_id')],
             'name' => ['name' => 'name', 'data' => 'name', 'title' => trans('messages.name')],
             'gender' => ['name' => 'gender', 'data' => 'gender', 'title' => trans('messages.gender')],
             'nrc_id' => ['name' => 'nrc_id', 'data' => 'nrc_id', 'title' => trans('messages.nrc_id')],

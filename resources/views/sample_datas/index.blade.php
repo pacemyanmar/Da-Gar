@@ -137,7 +137,7 @@
         <div class="input-group">
             <span class="btn btn-primary btn-file" id="file">
                 <label for="upload" id="translate-file-label">Browse File</label>
-                {!! Form::file('samplefile', ['aria-describedby' => 'file', 'id'=>'upload']); !!}
+                {!! Form::file('samplefile', ['aria-describedby' => 'file', 'id'=>'transupload']); !!}
             </span>
         </div>
       </div>
@@ -189,7 +189,7 @@ $(document).ready(function(){
     });
 
     $('#translateModal').on('shown.bs.modal', function(event) {
-            $('#upload').on('change',function(e){
+            $('#transupload').on('change',function(e){
                 fileName = e.target.value.split( '\\' ).pop();
                 $('#translate-file-label').html(fileName);
             });
