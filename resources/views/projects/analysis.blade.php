@@ -1,5 +1,7 @@
 @extends('layouts.app')
-
+@php
+$colors = ["#3366CC","#DC3912","#FF9900","#a300e0","#109618","#990099", "#ffe200","#00e0d8","#00edff","#ff00fc","#91ff8e","#ff7225","#aa8bff","#ff00e1","#bc6f51"];
+@endphp
 @section('content')
     <section class="content-header">
         <h1>
@@ -55,11 +57,37 @@
                                 @if($question->layout == 'ballot')
                                     Ballot table
                                 @else
-                                <ul>
+                                @push('d3-js')
+                                    var d3{!! $question->id !!}Data=[];
+                                @endpush
+                                <div class="col-sm-5">
+                                <ul class="list-group">
                                 @foreach ($surveyInputs as $k => $element)
-                                   <li> {{ $element->label }} ( {{ number_format(($results->{$element->inputid.'_'.$element->value} * 100)/ $results->total, 2, '.', '') }} )</li>
+                                   <li class="list-group-item"> {{ $element->label }} ( {{ number_format(($results->{$element->inputid.'_'.$element->value} * 100)/ $results->total, 2, '.', '') }} % ) <span class="badge" style="background-color: {{ $colors[$k] }};  min-height:10px;">&nbsp</span></li>
+                                   @if($results->{$element->inputid.'_'.$element->value})
+                                   @push('d3-js')
+                                        var data{!! $element->inputid.'_'.$element->value !!} = {label:"{!! $element->label !!}", color:"{!! $colors[$k] !!}", value: {{ number_format(($results->{$element->inputid.'_'.$element->value} * 100)/ $results->total, 2, '.', '') }} }
+                                        d3{!! $question->id !!}Data.push(data{!! $element->inputid.'_'.$element->value !!});
+                                   @endpush
+                                   @endif
                                 @endforeach
+                                    @push('d3-js')
+                                        var data{!! $question->qnum.'_none' !!} = {label:"None", color:"#fff", value: {{ number_format(($results->{'q'.$question->qnum.'_none'} * 100)/ $results->total, 2, '.', '') }} }
+                                        d3{!! $question->id !!}Data.push(data{!! $question->qnum.'_none' !!});
+                                   @endpush
+                                   <li class="list-group-item">
+                                   Missing ({{ number_format(($results->{'q'.$question->qnum.'_none'} * 100)/ $results->total, 2, '.', '') }} % )
+                                   </li>
                                 </ul>
+                                </div>
+                                <div class="col-sm-7" id="d3-{!! $question->id !!}">
+                                    @push('d3-js')
+
+                                    var d3{!! $question->id !!}svg = d3.select("#d3-{!! $question->id !!}").append("svg").attr("width",700).attr("height",300);
+                                    d3{!! $question->id !!}svg.append("g").attr("id","d3{!! $question->id !!}Donut");
+                                    Donut3D.draw("d3{!! $question->id !!}Donut", d3{!! $question->id !!}Data, 450, 150, 130, 100, 30, 0);
+                                    @endpush
+                                </div>
                                 @endif
                                 </div>
                             </td>
@@ -201,21 +229,6 @@
     this.Donut3D = Donut3D;
 }();
 
-var salesData=[
-    {label:"Basic", color:"#3366CC", value: 120},
-    {label:"Plus", color:"#DC3912", value:323},
-    {label:"Lite", color:"#FF9900", value:543},
-    {label:"Elite", color:"#109618", value:31},
-    {label:"Delux", color:"#990099", value:90}
-];
-
-var svg = d3.select("body").append("svg").attr("width",700).attr("height",300);
-
-svg.append("g").attr("id","salesDonut");
-svg.append("g").attr("id","quotesDonut");
-
-Donut3D.draw("salesDonut", salesData, 150, 150, 130, 100, 30, 0.4);
-Donut3D.draw("quotesDonut", salesData, 450, 150, 130, 100, 30, 0);
 
 
 </script>
