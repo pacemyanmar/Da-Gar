@@ -22,6 +22,7 @@ return [
     'list_samples' => 'List Samples',
     'list_incidents' => 'List Incidents',
     'response' => 'Response',
+    'analysis' => 'Analysis',
     'in_report' => 'In Report',
     'double_entry' => 'Double Entry',
     'save' => 'Save',
