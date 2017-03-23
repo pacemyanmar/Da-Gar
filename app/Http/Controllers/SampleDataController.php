@@ -159,6 +159,7 @@ class SampleDataController extends AppBaseController
         $group = $request->only('dbgroup');
         Excel::load($file, function ($reader) use ($type, $group) {
             $reader->each(function ($row) use ($type, $group) {
+
                 /**
                 "pace_id" => "02202"
                 "state_region" => "Bago (East)"
@@ -200,21 +201,40 @@ class SampleDataController extends AppBaseController
                     "village_tract" => ($row->village_tract) ? $row->village_tract : null,
                     "ward" => ($row->ward) ? $row->ward : null,
                     "village" => ($row->village) ? $row->village : null,
-                    "name" => ($row->name) ? $row->name : null,
-                    "father" => ($row->father) ? $row->father : null,
-                    "mother" => ($row->mother) ? $row->mother : null,
-                    "current_org" => ($row->current_occupation) ? $row->current_occupation : null,
-                    "mobile" => ($row->phone_no_1) ? $row->phone_no_1 : null,
-                    "line_phone" => ($row->phone_no_2) ? $row->phone_no_2 : null,
-                    "nrc_id" => ($row->nrc_no) ? $row->nrc_no : null,
-                    "gender" => ($row->gender) ? $row->gender : null,
-                    "ethnicity" => ($row->ethnicity) ? $row->ethnicity : null,
-                    "dob" => ($row->date_of_birth) ? date("Y-m-d", strtotime($row->date_of_birth)) : null,
-                    "education" => ($row->edu_background) ? $row->edu_background : null,
-                    "email" => ($row->email) ? $row->email : null,
-                    "address" => ($row->mailing_address) ? $row->mailing_address : null,
-                    "language" => ($row->language) ? $row->language : null,
-                    "bank_information" => ($row->bank_information) ? $row->bank_information : null,
+                    "code" => ($row->observer_id) ? $row->observer_id : ($row->observer_1) ? $row->observer_1 : null,
+                    "name" => ($row->name) ? $row->name : ($row->name_1) ? $row->name_1 : null,
+                    "father" => ($row->father) ? $row->father : ($row->father_1) ? $row->father_1 : null,
+                    "mother" => ($row->mother) ? $row->mother : ($row->mother_1) ? $row->mother_1 : null,
+                    "current_org" => ($row->current_occupation) ? $row->current_occupation : ($row->current_occupation_1) ? $row->current_occupation_1 : null,
+                    "mobile" => ($row->phone_no_1) ? $row->phone_no_1 : ($row->phone_no_1_1) ? $row->phone_no_1_1 : null,
+                    "line_phone" => ($row->phone_no_2) ? $row->phone_no_2 : ($row->phone_no_2_1) ? $row->phone_no_2_1 : null,
+                    "nrc_id" => ($row->nrc_no) ? $row->nrc_no : ($row->nrc_no_1) ? $row->nrc_no_1 : null,
+                    "gender" => ($row->gender) ? $row->gender : ($row->gender_1) ? $row->gender_1 : null,
+                    "ethnicity" => ($row->ethnicity) ? $row->ethnicity : ($row->ethnicity_1) ? $row->ethnicity_1 : null,
+                    "dob" => ($row->date_of_birth) ? date("Y-m-d", strtotime($row->date_of_birth)) : ($row->date_of_birth_1) ? date("Y-m-d", strtotime($row->date_of_birth_1)) : null,
+                    "education" => ($row->edu_background) ? $row->edu_background : ($row->edu_background_1) ? $row->edu_background_1 : null,
+                    "email" => ($row->email) ? $row->email : ($row->email_1) ? $row->email_1 : null,
+                    "address" => ($row->mailing_address) ? $row->mailing_address : ($row->address_1) ? $row->address_1 : null,
+                    "language" => ($row->language) ? $row->language : ($row->language_1) ? $row->language_1 : null,
+                    "bank_information" => ($row->bank_information) ? $row->bank_information : ($row->bank_information_1) ? $row->bank_information_1 : null,
+
+                    "code2" => ($row->observer_2) ? $row->observer_2 : null,
+                    "name2" => ($row->name_2) ? $row->name_2 : null,
+                    "father2" => ($row->father_2) ? $row->father_2 : null,
+                    "mother2" => ($row->mother_2) ? $row->mother_2 : null,
+                    "current_org2" => ($row->current_occupation_2) ? $row->current_occupation_2 : null,
+                    "mobile2" => ($row->phone_no_1_2) ? $row->phone_no_1_2 : null,
+                    "line_phone2" => ($row->phone_no_2_2) ? $row->phone_no_2_2 : null,
+                    "nrc_id2" => ($row->nrc_no_2) ? $row->nrc_no_2 : null,
+                    "gender2" => ($row->gender_2) ? $row->gender_2 : null,
+                    "ethnicity2" => ($row->ethnicity_2) ? $row->ethnicity_2 : null,
+                    "dob2" => ($row->date_of_birth_2) ? date("Y-m-d", strtotime($row->date_of_birth_2)) : null,
+                    "education2" => ($row->edu_background_2) ? $row->edu_background_2 : null,
+                    "email2" => ($row->email_2) ? $row->email_2 : null,
+                    "address2" => ($row->mailing_address_2) ? $row->mailing_address_2 : null,
+                    "language2" => ($row->language_2) ? $row->language_2 : null,
+                    "bank_information2" => ($row->bank_information_2) ? $row->bank_information_2 : null,
+
                     "mobile_provider" => ($row->mobile_provider) ? $row->mobile_provider : null,
                     "parties" => ($row->parties) ? $row->parties : null,
                 ];
@@ -260,16 +280,29 @@ class SampleDataController extends AppBaseController
                 $sampleData->village_tract_trans = [$lang => ($row->village_tract) ? $row->village_tract : null];
                 $sampleData->ward_trans = [$lang => ($row->ward) ? $row->ward : null];
                 $sampleData->village_trans = [$lang => ($row->village) ? $row->village : null];
-                $sampleData->name_trans = [$lang => ($row->name) ? $row->name : null];
-                $sampleData->father_trans = [$lang => ($row->father) ? $row->father : null];
-                $sampleData->mother_trans = [$lang => ($row->mother) ? $row->mother : null];
-                $sampleData->gender_trans = [$lang => ($row->gender) ? $row->gender : null];
-                $sampleData->nrc_id_trans = [$lang => ($row->nrc_no) ? $row->nrc_no : null];
-                $sampleData->ethnicity_trans = [$lang => ($row->ethnicity) ? $row->ethnicity : null];
-                $sampleData->education_trans = [$lang => ($row->edu_background) ? $row->edu_background : null];
-                $sampleData->address_trans = [$lang => ($row->mailing_address) ? $row->mailing_address : null];
-                $sampleData->language_trans = [$lang => ($row->language) ? $row->language : null];
-                $sampleData->bank_information_trans = [$lang => ($row->bank_information) ? $row->bank_information : null];
+
+                $sampleData->name_trans = [$lang => ($row->name) ? $row->name : ($row->name_1) ? $row->name_1 : null];
+                $sampleData->father_trans = [$lang => ($row->father) ? $row->father : ($row->father_1) ? $row->father_1 : null];
+                $sampleData->mother_trans = [$lang => ($row->mother) ? $row->mother : ($row->mother_1) ? $row->mother_1 : null];
+                $sampleData->gender_trans = [$lang => ($row->gender) ? $row->gender : ($row->gender_1) ? $row->gender_1 : null];
+                $sampleData->nrc_id_trans = [$lang => ($row->nrc_no) ? $row->nrc_no : ($row->nrc_no_1) ? $row->nrc_no_1 : null];
+                $sampleData->ethnicity_trans = [$lang => ($row->ethnicity) ? $row->ethnicity : ($row->ethnicity_1) ? $row->ethnicity_1 : null];
+                $sampleData->education_trans = [$lang => ($row->edu_background) ? $row->edu_background : ($row->edu_background_1) ? $row->edu_background_1 : null];
+                $sampleData->address_trans = [$lang => ($row->mailing_address) ? $row->mailing_address : ($row->mailing_address_1) ? $row->mailing_address_1 : null];
+                $sampleData->language_trans = [$lang => ($row->language) ? $row->language : ($row->language_1) ? $row->language_1 : null];
+                $sampleData->bank_information_trans = [$lang => ($row->bank_information) ? $row->bank_information : ($row->bank_information_2) ? $row->bank_information_2 : null];
+
+                $sampleData->name2_trans = [$lang => ($row->name_2) ? $row->name_2 : null];
+                $sampleData->father2_trans = [$lang => ($row->father_2) ? $row->father_2 : null];
+                $sampleData->mother2_trans = [$lang => ($row->mother_2) ? $row->mother_2 : null];
+                $sampleData->gender2_trans = [$lang => ($row->gender_2) ? $row->gender_2 : null];
+                $sampleData->nrc_id2_trans = [$lang => ($row->nrc_no_2) ? $row->nrc_no_2 : null];
+                $sampleData->ethnicity2_trans = [$lang => ($row->ethnicity_2) ? $row->ethnicity_2 : null];
+                $sampleData->education2_trans = [$lang => ($row->edu_background_2) ? $row->edu_background_2 : null];
+                $sampleData->address2_trans = [$lang => ($row->mailing_address_2) ? $row->mailing_address_2 : null];
+                //$sampleData->language2_trans = [$lang => ($row->language_2) ? $row->language_2 : null];
+                //$sampleData->bank_information2_trans = [$lang => ($row->bank_information_2) ? $row->bank_information_2 : null];
+
                 $sampleData->mobile_provider_trans = [$lang => ($row->mobile_provider) ? $row->mobile_provider : null];
 
                 $sampleData->save();

@@ -195,8 +195,10 @@
     $(document).ajaxStop(function(){
         $.LoadingOverlay("hide");
     });
-    </script>
 
+
+     @stack('d3-js')
+    </script>
      @stack('before-body-end')
 </body>
 </html>

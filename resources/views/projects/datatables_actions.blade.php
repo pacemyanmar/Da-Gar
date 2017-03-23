@@ -1,4 +1,4 @@
-
+<div class="row">
 <div class='btn-group'>
     @if($type == 'sample2db')
     <a href="{{ route('projects.surveys.index', $id) }}" class='btn btn-default btn-sm'>
@@ -53,3 +53,11 @@
 {!! Form::close() !!}
 </div>
 @endif
+</div>
+<div class="row">
+    <div class="btn-group">
+        <a href="{{ route('projects.analysis', $id) }}" class='btn btn-default btn-sm'>
+            <i class="fa fa-pie-chart"></i> {!! trans('messages.analysis') !!}
+        </a>
+    </div>
+</div>
