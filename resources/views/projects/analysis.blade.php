@@ -85,7 +85,7 @@ $colors = ["#3366CC","#DC3912","#FF9900","#a300e0","#109618","#990099", "#ffe200
 
                                     var d3{!! $question->id !!}svg = d3.select("#d3-{!! $question->id !!}").append("svg").attr("width",700).attr("height",300);
                                     d3{!! $question->id !!}svg.append("g").attr("id","d3{!! $question->id !!}Donut");
-                                    Donut3D.draw("d3{!! $question->id !!}Donut", d3{!! $question->id !!}Data, 450, 150, 130, 100, 30, 0);
+                                    Donut3D.draw("d3{!! $question->id !!}Donut", d3{!! $question->id !!}Data, 250, 150, 130, 100, 30, 0);
                                     @endpush
                                 </div>
                                 @endif
