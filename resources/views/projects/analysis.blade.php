@@ -65,7 +65,7 @@ $hasradio = false;
                                 <ul class="list-group">
                                 @foreach ($surveyInputs as $k => $element)
                                    <li class="list-group-item"><span class="badge" style="background-color: {{ $colors[$k] }};  min-height:10px;">&nbsp</span> {{ $element->label }} ( {{ number_format(($results->{$element->inputid.'_'.$element->value} * 100)/ $results->total, 2, '.', '') }} % ) </li>
-                                   @if($results->{$element->inputid.'_'.$element->value})
+
                                    @push('d3-js')
                                         var data{!! $element->inputid.'_'.$element->value !!} = {label:"{!! $element->label !!}", color:"{!! $colors[$k] !!}", value: {{ number_format(($results->{$element->inputid.'_'.$element->value} * 100)/ $results->total, 2, '.', '') }} }
                                         d3{!! $question->id !!}Data.push(data{!! $element->inputid.'_'.$element->value !!});
@@ -74,7 +74,6 @@ $hasradio = false;
                                    @php
                                     ${$question->qnum.'hasradio'} = $question->qnum;
                                    @endphp
-                                   @endif
                                    @endif
                                 @endforeach
                                    @if(isset(${$question->qnum.'hasradio'}))
