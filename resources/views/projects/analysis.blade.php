@@ -1,6 +1,7 @@
 @extends('layouts.app')
 @php
 $colors = ["#3366CC","#DC3912","#FF9900","#a300e0","#109618","#990099", "#ffe200","#00e0d8","#00edff","#ff00fc","#91ff8e","#ff7225","#aa8bff","#ff00e1","#bc6f51"];
+$hasradio = false;
 @endphp
 @section('content')
     <section class="content-header">
@@ -60,17 +61,23 @@ $colors = ["#3366CC","#DC3912","#FF9900","#a300e0","#109618","#990099", "#ffe200
                                 @push('d3-js')
                                     var d3{!! $question->id !!}Data=[];
                                 @endpush
-                                <div class="col-sm-5">
+                                <div class="col-sm-3">
                                 <ul class="list-group">
                                 @foreach ($surveyInputs as $k => $element)
-                                   <li class="list-group-item"> {{ $element->label }} ( {{ number_format(($results->{$element->inputid.'_'.$element->value} * 100)/ $results->total, 2, '.', '') }} % ) <span class="badge" style="background-color: {{ $colors[$k] }};  min-height:10px;">&nbsp</span></li>
+                                   <li class="list-group-item"><span class="badge" style="background-color: {{ $colors[$k] }};  min-height:10px;">&nbsp</span> {{ $element->label }} ( {{ number_format(($results->{$element->inputid.'_'.$element->value} * 100)/ $results->total, 2, '.', '') }} % ) </li>
                                    @if($results->{$element->inputid.'_'.$element->value})
                                    @push('d3-js')
                                         var data{!! $element->inputid.'_'.$element->value !!} = {label:"{!! $element->label !!}", color:"{!! $colors[$k] !!}", value: {{ number_format(($results->{$element->inputid.'_'.$element->value} * 100)/ $results->total, 2, '.', '') }} }
                                         d3{!! $question->id !!}Data.push(data{!! $element->inputid.'_'.$element->value !!});
                                    @endpush
+                                   @if( $element->type == 'radio')
+                                   @php
+                                    ${$question->qnum.'hasradio'} = $question->qnum;
+                                   @endphp
+                                   @endif
                                    @endif
                                 @endforeach
+                                   @if(isset(${$question->qnum.'hasradio'}))
                                     @push('d3-js')
                                         var data{!! $question->qnum.'_none' !!} = {label:"None", color:"#fff", value: {{ number_format(($results->{'q'.$question->qnum.'_none'} * 100)/ $results->total, 2, '.', '') }} }
                                         d3{!! $question->id !!}Data.push(data{!! $question->qnum.'_none' !!});
@@ -78,15 +85,22 @@ $colors = ["#3366CC","#DC3912","#FF9900","#a300e0","#109618","#990099", "#ffe200
                                    <li class="list-group-item">
                                    Missing ({{ number_format(($results->{'q'.$question->qnum.'_none'} * 100)/ $results->total, 2, '.', '') }} % )
                                    </li>
+                                   @endif
                                 </ul>
                                 </div>
-                                <div class="col-sm-7" id="d3-{!! $question->id !!}">
-                                    @push('d3-js')
+                                <div class="col-sm-9" id="d3-{!! $question->id !!}">
 
+                                    @push('d3-js')
+                                    @if(isset(${$question->qnum.'hasradio'}))
                                     var d3{!! $question->id !!}svg = d3.select("#d3-{!! $question->id !!}").append("svg").attr("width",700).attr("height",300);
                                     d3{!! $question->id !!}svg.append("g").attr("id","d3{!! $question->id !!}Donut");
+
                                     Donut3D.draw("d3{!! $question->id !!}Donut", d3{!! $question->id !!}Data, 250, 150, 130, 100, 30, 0);
+                                    @else
+                                    D3Bar.draw("#d3-{!! $question->id !!}", d3{!! $question->id !!}Data);
+                                    @endif
                                     @endpush
+
                                 </div>
                                 @endif
                                 </div>
@@ -227,9 +241,101 @@ $colors = ["#3366CC","#DC3912","#FF9900","#a300e0","#109618","#990099", "#ffe200
     }
 
     this.Donut3D = Donut3D;
+
+    var margin = {top: 40, right: 20, bottom: 30, left: 40},
+    width = 700 - margin.left - margin.right,
+    height = 300 - margin.top - margin.bottom;
+
+    var formatPercent = d3.format(".0%");
+
+    var x = d3.scale.ordinal()
+        .rangeRoundBands([0, width], .1);
+
+    var y = d3.scale.linear()
+        .range([height, 0]);
+
+    var xAxis = d3.svg.axis()
+        .scale(x)
+        .orient("bottom");
+
+    var yAxis = d3.svg.axis()
+        .scale(y)
+        .orient("left")
+        .ticks(10);
+
+    var D3Bar={};
+    // load the data
+    D3Bar.draw = function(id, data) {
+        // add the SVG element
+    var svg = d3.select(id).append("svg")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+      .append("g")
+        .attr("transform",
+              "translate(" + margin.left + "," + margin.top + ")");
+      x.domain(data.map(function(d) { return d.label; }));
+      y.domain([0, d3.max(data, function(d) { return d.value; })]);
+
+      svg.append("g")
+          .attr("class", "x axis")
+          .attr("transform", "translate(0," + height + ")")
+          .call(xAxis);
+
+      svg.append("g")
+          .attr("class", "y axis")
+          .call(yAxis)
+          .append("text")
+          .attr("transform", "rotate(-90)")
+          .attr("y", 6)
+          .attr("dy", ".71em")
+          .style("text-anchor", "end")
+          .text("Frequency");
+
+      svg.selectAll(".bar")
+          .data(data)
+          .enter().append("rect")
+          .attr("class", "bar")
+          .attr("x", function(d) { return x(d.label); })
+          .attr("width", x.rangeBand())
+          .attr("y", function(d) { return y(d.value); })
+          .attr("height", function(d) { return height - y(d.value); })
+          .style("fill", function(d) { return d.color});
+
+    svg.selectAll(".bartext")
+    .data(data)
+    .enter()
+    .append("text")
+    .attr("class", "bartext")
+    .attr("text-anchor", "middle")
+    .attr("fill", "white")
+    .attr("x", function(d,i) {
+        return x(d.label)+x.rangeBand()/2;
+    })
+    .attr("y", function(d,i) {
+        return y(d.value) + 20;
+    })
+    .text(function(d){
+       return d.value
+
+    });
+    }
+
+    this.D3Bar = D3Bar;
 }();
-
-
 
 </script>
 @endsection
+@push('before-head-end')
+<style type="text/css">
+        .axis {
+      font: 10px sans-serif;
+    }
+
+    .axis path,
+    .axis line {
+      fill: none;
+      stroke: #000;
+      shape-rendering: crispEdges;
+    }
+</style>
+@endpush
