@@ -227,13 +227,15 @@ class ProjectResultsController extends AppBaseController
         $section_columns = [];
         $wordcount = 17;
         foreach ($project->sectionsDb as $k => $section) {
-            $sectionColumn = 'section' . ($k + 1) . 'status';
+            $section_num = $k + 1;
+            $sectionColumn = 'section' . $section_num . 'status';
             $sectionname = $section['sectionname'];
+            $sectionshort = 'R' . $section_num . ' Status';
             // if string long to show in label show as tooltip
-            if (mb_strlen($section['sectionname']) > $wordcount) {
-                $sectionshort = str_limit($sectionname, $wordcount - 5);
-                $sectionname = "<span data-toggle='tooltip' data-placement='top' title='$sectionname' data-container='body'> $sectionshort <i class='fa fa-info-circle'></i></span>";
-            }
+            //if (mb_strlen($section['sectionname']) > $wordcount) {
+
+            $sectionname = "<span data-toggle='tooltip' data-placement='top' title='$sectionname' data-container='body'> $sectionshort <i class='fa fa-info-circle'></i></span>";
+            //}
 
             $section_columns[$sectionColumn] = [
                 'name' => $dbname . '.' . $sectionColumn,
@@ -283,7 +285,16 @@ class ProjectResultsController extends AppBaseController
             $column = $input->inputid;
             //$title = preg_replace('/s[0-9]+|ir/', '', $column);
             //$title = strtoupper(preg_replace('/i/', '_', $title));
-            $title = $input->question->qnum;
+            switch ($input->type) {
+                case 'radio':
+                    $title = $input->question->qnum;
+                    break;
+
+                default:
+                    $title = $input->question->qnum . ' ' . $input->value;
+                    break;
+            }
+
             $input_columns[$column] = ['name' => $column, 'data' => $column, 'title' => $title, 'class' => 'result', 'orderable' => false, 'width' => '80px'];
             if (empty($project->parties)) {
                 $input_columns[$column . '_status'] = ['name' => $column . '_status', 'data' => $column . '_status', 'title' => $title . '_status', 'orderable' => false, 'visible' => false];
