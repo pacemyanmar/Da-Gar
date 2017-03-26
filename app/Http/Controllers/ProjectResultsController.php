@@ -700,7 +700,9 @@ class ProjectResultsController extends AppBaseController
         $old_result = $sample->resultWithTable($dbname);
 
         $old_result = $old_result->first(); // used first() because of one to one relation
+        $results_to_save = array_filter($results_to_save);
         array_walk($results_to_save, array($this, 'zawgyiUnicode'));
+
         if (!empty($old_result)) {
             $old_result->setTable($dbname);
             $old_result->fill($results_to_save);
@@ -730,9 +732,11 @@ class ProjectResultsController extends AppBaseController
             '၈' => '8',
             '၉' => '9',
         ];
-        $value = strtr($value, $mya_en);
+        if (!is_numeric($value)) {
+            $value = strtr($value, $mya_en);
 
-        $value = Converter::convert($value, 'zawgyi', 'unicode');
+            $value = Converter::convert($value, 'zawgyi', 'unicode');
+        }
     }
 
     private function unicodeZawgyi(&$value, $key)
