@@ -538,7 +538,7 @@ class ProjectResultsController extends AppBaseController
         $sectionstatus = [];
         // group by all inputs with section and loop
         $results_to_save = $results;
-        array_walk($results_to_save, array($this, 'zawgyiUnicode'));
+
         $project_by_section = $project->inputs->groupBy('section');
 
         foreach ($project_by_section as $section_id => $section_inputs) {
@@ -710,7 +710,7 @@ class ProjectResultsController extends AppBaseController
         $old_result = $sample->resultWithTable($dbname);
 
         $old_result = $old_result->first(); // used first() because of one to one relation
-
+        array_walk($results_to_save, array($this, 'zawgyiUnicode'));
         if (!empty($old_result)) {
             $old_result->setTable($dbname);
             $old_result->fill($results_to_save);
@@ -723,7 +723,7 @@ class ProjectResultsController extends AppBaseController
         }
         $sample->save(); // update Sample::class
 
-        return $this->sendResponse($result, trans('messages.saved'));
+        return $this->sendResponse($results_to_save, trans('messages.saved'));
     }
 
     private function zawgyiUnicode(&$value, $key)
