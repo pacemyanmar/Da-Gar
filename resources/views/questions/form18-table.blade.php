@@ -1,5 +1,9 @@
 @php
-$parties = explode(',', $project->parties); //to remove later
+if(isset($sample)) {
+	$parties = explode(',', $sample->data->parties);
+} else {
+	$parties = explode(',', $project->parties); //to remove later
+}
 @endphp
 <div class="row">
 <div class="col-sm-8">
