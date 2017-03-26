@@ -95,7 +95,7 @@ return [
     'description' => 'Description',
     'created_at' => 'Created At',
     'updated_at' => 'Updated At',
-    'action' => 'Action',
+    'action' => '',
     'are_you_sure' => 'Are you sure?',
     'add_translation' => 'Add Translation',
     'print' => 'Print',

@@ -235,8 +235,8 @@ trait QuestionsTrait
         }
 
         if ($key == 'className') {
-            //$new_class = preg_replace('/checkbox|radio|group|\-/', '', $value);
-            $value = $input_class;
+            $new_class = preg_replace('/checkbox|radio|group|\-/', '', $value);
+            $value = $input_class . ' ' . $new_class;
         }
     }
 }

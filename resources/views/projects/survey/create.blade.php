@@ -116,6 +116,24 @@ window.url="{!! route('projects.surveys.save', ['project' => $project->id, 'samp
 <script type='text/javascript'>
     (function($) {
 
+    if($(".none").is(':checked')) {
+          //  $('.none').siblings().prop("disabled", true);
+        } else {
+          //  $('.none').siblings().prop("disabled", false);
+        }
+    $("input.none").change(function(e){
+        if($(this).is(':checked')) {
+            $(this).closest('.row').children().children().children().children('input:checkbox').each(function(i, obj) {
+             obj.disabled = true;
+            });
+            $(this).prop("disabled", false);
+        } else {
+            $(this).closest('.row').children().children().children().children('input:checkbox').each(function(i, obj) {
+             obj.disabled = false;
+            });
+        }
+    });
+
         $('.save').click(function(event){
             event.preventDefault();
             $('.loading').removeClass("hidden");
