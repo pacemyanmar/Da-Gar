@@ -166,7 +166,10 @@ class SurveyResultDataTable extends DataTable
 
             foreach ($parties as $party) {
                 $parties_arr[] = $party . '_station';
-                $parties_arr[] = $party . '_advanced';
+                if ($project->type != 'tabulation') {
+                    $parties_arr[] = $party . '_advanced';
+                }
+
             }
             $remarks = ['rem1', 'rem2', 'rem3', 'rem4', 'rem5'];
 

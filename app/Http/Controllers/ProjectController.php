@@ -450,7 +450,10 @@ class ProjectController extends AppBaseController
                 $parties = explode(',', $project->parties);
                 foreach ($parties as $party) {
                     $table->unsignedInteger($party . '_station')->index()->nullable();
-                    $table->unsignedInteger($party . '_advanced')->index()->nullable();
+                    if ($project->type != 'tabulation') {
+                        $table->unsignedInteger($party . '_advanced')->index()->nullable();
+                    }
+
                 }
 
                 $table->unsignedInteger('rem1')->index()->default(0);
@@ -520,9 +523,12 @@ class ProjectController extends AppBaseController
                 if (!Schema::hasColumn($dbname, $party . '_station')) {
                     $table->unsignedInteger($party . '_station')->index()->nullable();
                 }
-                if (!Schema::hasColumn($dbname, $party . '_advanced')) {
-                    $table->unsignedInteger($party . '_advanced')->index()->nullable();
+                if ($project->type != 'tabulation') {
+                    if (!Schema::hasColumn($dbname, $party . '_advanced')) {
+                        $table->unsignedInteger($party . '_advanced')->index()->nullable();
+                    }
                 }
+
             }
             if (!Schema::hasColumn($dbname, 'rem1')) {
                 $table->unsignedInteger('rem1')->index()->default(0);

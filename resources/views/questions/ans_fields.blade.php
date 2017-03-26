@@ -41,8 +41,10 @@ $ans_in_col = round($anscount / $col_group_count);
 ?>
 @if($question->layout == 'matrix')
 	@include('questions.'.$prefix.'radio-group')
-@elseif($question->layout == 'ballot')
-	@include('questions.'.$prefix.'ballot-table')
+@elseif($question->layout == 'form16')
+	@include('questions.'.$prefix.'form16-table')
+@elseif($question->layout == 'form18')
+	@include('questions.'.$prefix.'form18-table')
 @else
 	@for($i=0,$j=0;$i<$col_group_count; $i++)
 		@if($j == ($i * $ans_in_col))
