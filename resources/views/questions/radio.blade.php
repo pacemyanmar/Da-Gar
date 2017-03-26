@@ -24,6 +24,18 @@
 			@endpush
 		@endif
    	</label>
+   	@if($element->other)
+    @php
+    	$options = [
+		'class' => $element->className.' form-control zawgyi '.$sectionClass,
+		'id' => $element->id,
+		'placeholder' => Kanaung\Facades\Converter::convert($element->label,'unicode','zawgyi'),
+		'aria-describedby'=> $element->id.'-addons',
+		'autocomplete' => 'off'
+		];
+    @endphp
+    	{!! Form::text("result[".$element->inputid."]", (isset($results))?Kanaung\Facades\Converter::convert($results->{$element->inputid},'unicode','zawgyi'):null, $options) !!}
+    @endif
 </div>
 @if(!empty($element->skip) && !isset($editing))
 	@push('document-ready')

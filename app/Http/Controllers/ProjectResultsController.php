@@ -104,7 +104,7 @@ class ProjectResultsController extends AppBaseController
                             'title' => trans('messages.userid'),
                             'orderable' => false,
                             'defaultContent' => 'N/A',
-                            'width' => '80px',
+                            //'width' => '80px',
                         ];
                         break;
                     case 'name':
@@ -114,7 +114,7 @@ class ProjectResultsController extends AppBaseController
                             'title' => trans('messages.name'),
                             'orderable' => false,
                             'defaultContent' => 'N/A',
-                            'width' => '80px',
+                            //'width' => '80px',
                         ];
                         break;
                     case 'idcode':
@@ -124,7 +124,7 @@ class ProjectResultsController extends AppBaseController
                             'title' => trans('messages.idcode'),
                             'orderable' => false,
                             'defaultContent' => 'N/A',
-                            'width' => '80px',
+                            //'width' => '80px',
                         ];
                         break;
                     case 'form_id':
@@ -134,7 +134,7 @@ class ProjectResultsController extends AppBaseController
                             'title' => trans('messages.form_id'),
                             'orderable' => false,
                             'defaultContent' => 'N/A',
-                            'width' => '80px',
+                            //'width' => '80px',
                         ];
                         break;
                     case 'mobile':
@@ -144,7 +144,7 @@ class ProjectResultsController extends AppBaseController
                             'title' => trans('messages.mobile'),
                             'orderable' => false,
                             'defaultContent' => 'N/A',
-                            'width' => '120px',
+                            //'width' => '120px',
                         ];
                         break;
                     case 'state':
@@ -154,7 +154,7 @@ class ProjectResultsController extends AppBaseController
                             'title' => trans('messages.state'),
                             'orderable' => false,
                             'defaultContent' => 'N/A',
-                            'width' => '120px',
+                            //'width' => '120px',
                         ];
                         break;
                     case 'district':
@@ -164,7 +164,7 @@ class ProjectResultsController extends AppBaseController
                             'title' => trans('messages.district'),
                             'orderable' => false,
                             'defaultContent' => 'N/A',
-                            'width' => '120px',
+                            //'width' => '120px',
                         ];
                         break;
                     case 'township':
@@ -174,7 +174,7 @@ class ProjectResultsController extends AppBaseController
                             'title' => trans('messages.township'),
                             'orderable' => false,
                             'defaultContent' => 'N/A',
-                            'width' => '120px',
+                            //'width' => '120px',
                         ];
                         break;
                     default:
@@ -184,7 +184,7 @@ class ProjectResultsController extends AppBaseController
                             'title' => trans('messages.' . strtolower($name)),
                             'orderable' => false,
                             'visible' => false,
-                            'width' => '80px',
+                            //'width' => '80px',
                         ];
                         break;
                 }
@@ -231,7 +231,7 @@ class ProjectResultsController extends AppBaseController
             $section_num = $k + 1;
             $sectionColumn = 'section' . $section_num . 'status';
             $sectionname = $section['sectionname'];
-            $sectionshort = 'R' . $section_num . ' Status';
+            $sectionshort = 'R' . $section_num . '';
             // if string long to show in label show as tooltip
             //if (mb_strlen($section['sectionname']) > $wordcount) {
 
@@ -243,7 +243,7 @@ class ProjectResultsController extends AppBaseController
                 'data' => $sectionColumn,
                 'orderable' => false,
                 'searchable' => false,
-                'width' => '80px',
+                'width' => '40px',
                 'render' => function () {
                     return "function(data,type,full,meta){
                         var html;
