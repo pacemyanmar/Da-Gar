@@ -71,6 +71,9 @@ $ans_in_col = round($anscount / $col_group_count);
 				@if ($element->type == 'radio')
 					@include('questions.'.$prefix.'radio')
 				@endif
+				@if ($element->type == 'textarea')
+					@include('questions.'.$prefix.'textarea')
+				@endif
 				@if (in_array($element->type,['registered-voters','advanced-voters']))
 					@include('questions.'.$prefix.'ballot')
 				@endif

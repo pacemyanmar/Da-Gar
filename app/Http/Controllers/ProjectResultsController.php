@@ -909,7 +909,7 @@ class ProjectResultsController extends AppBaseController
         }
         $project->load(['inputs']);
 
-        $sample_query = 'project_id, count(project_id) as total';
+        $sample_query = 'project_id, count(project_id) as total, SUM(IF(' . $project->dbname . '.sample_id IS NOT NULL,1,0)) AS reported';
 
         foreach ($project->inputs as $input) {
             $sample_query .= ' , SUM(IF(' . $input->inputid . '=' . $input->value . ',1,0)) AS ' . $input->inputid . '_' . $input->value . ' , SUM(IF(' . $input->inputid . ' IS NULL,1,0)) AS q' . $input->question->qnum . '_none';

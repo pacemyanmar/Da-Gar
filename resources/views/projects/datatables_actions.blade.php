@@ -55,9 +55,11 @@
 @endif
 </div>
 <div class="row">
+@if(Auth::user()->role->level >= 8)
     <div class="btn-group">
         <a href="{{ route('projects.analysis', $id) }}" class='btn btn-default btn-sm'>
             <i class="fa fa-pie-chart"></i> {!! trans('messages.analysis') !!}
         </a>
     </div>
+@endif
 </div>
