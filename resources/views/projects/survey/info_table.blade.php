@@ -10,6 +10,7 @@
             <table class="table table-striped table-bordered table-hover">
                 <thead>
                     <tr>
+                        @if($project->type == 'sample2db')
                         @if($project->index_columns)
                             @foreach($project->index_columns as $column => $columnName)
                                 <th>{!! trans('messages.'.snake_case(strtolower($columnName))) !!}</th>
@@ -18,6 +19,12 @@
                             @foreach($sample->fillable as $column)
                                 <th>{!! ucwords($column) !!}</th>
                             @endforeach
+                        @endif
+                        @else
+                            <th>{!! trans('messages.idcode') !!}</th>
+                            <th>{!! trans('messages.state') !!}</th>
+                            <th>{!! trans('messages.township') !!}</th>
+                            <th>{!! trans('messages.polling_station') !!}</th>
                         @endif
                         @if(count($project->samples) > 1)
                         <th>{!! trans('messages.sample') !!}</th>
@@ -29,24 +36,31 @@
                 </thead>
                 <tbody>
                     <tr>
-                        @if($project->index_columns)
-                            @foreach($project->index_columns as $column => $columnName)
-                                @if($column == 'form_id')
-                                <td>
-                                    @if(isset($form))
-                                        <p>{!! $form !!}</p>
+                        @if($project->type == 'sample2db')
+                            @if($project->index_columns)
+                                @foreach($project->index_columns as $column => $columnName)
+                                    @if($column == 'form_id')
+                                    <td>
+                                        @if(isset($form))
+                                            <p>{!! $form !!}</p>
+                                        @else
+                                        {!! ucwords($sample->{$column}) !!}
+                                        @endif
+                                    </td>
                                     @else
-                                    {!! ucwords($sample->{$column}) !!}
+                                    <td>{!! ucwords($sample->data->{$column}) !!}</td>
                                     @endif
-                                </td>
-                                @else
-                                <td>{!! ucwords($sample->data->{$column}) !!}</td>
-                                @endif
-                            @endforeach
+                                @endforeach
+                            @else
+                                @foreach($sample->fillable as $column)
+                                    <td>{!! ucwords($sample->{$column}) !!}</td>
+                                @endforeach
+                            @endif
                         @else
-                            @foreach($sample->fillable as $column)
-                                <td>{!! ucwords($sample->{$column}) !!}</td>
-                            @endforeach
+                            <td>{!! ucwords($sample->data->idcode) !!}</td>
+                            <td>{!! ucwords($sample->data->state) !!}</td>
+                            <td>{!! ucwords($sample->data->township) !!}</td>
+                            <td>{!! ucwords($sample->data->village) !!}</td>
                         @endif
                         @if(count($project->samples) > 1)
                         <td>
@@ -82,6 +96,34 @@
                     </tr>
                 </tbody>
             </table>
+
+            @if($project->type != 'sample2db')
+            <table class="table table-striped table-bordered table-hover">
+            <thead>
+                <tr>
+                    <th>{!! trans('messages.observer_code') !!}</th>
+                    <th>{!! trans('messages.name') !!}</th>
+                    <th>{!! trans('messages.phone') !!}</th>
+                    <th>{!! trans('messages.phone2') !!}</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>{!! ucwords($sample->data->code) !!}</td>
+                    <td>{!! ucwords($sample->data->name) !!}</td>
+                    <td>{!! ucwords($sample->data->mobile) !!}</td>
+                    <td>{!! ucwords($sample->data->line_phone) !!}</td>
+                </tr>
+                <tr>
+                    <td>{!! ucwords($sample->data->code2) !!}</td>
+                    <td>{!! ucwords($sample->data->name2) !!}</td>
+                    <td>{!! ucwords($sample->data->mobile2) !!}</td>
+                    <td>{!! ucwords($sample->data->line_phone2) !!}</td>
+                </tr>
+            </tbody>
+
+            </table>
+            @endif
             </div>
         </div>
     </div>
