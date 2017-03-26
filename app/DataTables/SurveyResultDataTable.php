@@ -318,7 +318,7 @@ class SurveyResultDataTable extends DataTable
         ];
         $table = $this->builder()
             ->setTableAttributes($tableAttributes)
-            ->addAction(['width' => '80px', 'title' => trans('messages.action')])
+            ->addAction(['width' => '40px', 'title' => trans('messages.action')])
             ->columns($this->getColumns())
             ->ajax(['type' => 'POST', 'data' => '{"_method":"GET"}']);
 
