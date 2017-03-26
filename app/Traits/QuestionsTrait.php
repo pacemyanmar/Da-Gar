@@ -145,8 +145,6 @@ trait QuestionsTrait
                 $a['name'] = $a['inputid'] = str_slug('p' . $project_id . $qnum . 'ir');
             } elseif ($a['type'] == 'checkbox') {
                 $a['name'] = str_slug('p' . $project_id . $qnum . 'c');
-            } elseif ($a['type'] == 'template' && $a['subtype'] == 'ballot-table') {
-                continue;
             } elseif ($a['type'] == 'template') {
                 $a['type'] = $a['subtype'];
                 $a['inputid'] = str_replace('-', '_', $a['subtype']);

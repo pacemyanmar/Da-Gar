@@ -10,7 +10,8 @@
 
  $dbgroup = ['1' => 'Group 1','2' => 'Group 2','3' => 'Group 3','4' => 'Group 4','5' => 'Group 5'];
  $type = [
-    'db2sample' => 'Survey',
+    'db2sample' => 'SBO Survey',
+    'tabulation' => 'Tabulation Survey',
     'sample2db' => 'Incident',
  ]
 

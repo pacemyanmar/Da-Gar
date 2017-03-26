@@ -8,6 +8,7 @@ use App\DataTables\SurveyResultDataTable;
 use App\Http\Controllers\AppBaseController;
 use App\Models\Sample;
 use App\Models\SampleData;
+use App\Models\Section;
 use App\Models\SurveyResult;
 use App\Repositories\ProjectRepository;
 use App\Repositories\QuestionRepository;
@@ -306,10 +307,13 @@ class ProjectResultsController extends AppBaseController
 
         }
         $parties = explode(',', $project->parties);
-        if (!empty($parties)) {
+        if (!empty($parties) && $project->type != 'sample2db') {
             foreach ($parties as $party) {
                 $input_columns[$party . '_station'] = ['name' => $party . '_station', 'data' => $party . '_station', 'title' => $party . ' Station', 'orderable' => false, 'class' => 'result', 'width' => '80px', 'visible' => false];
-                $input_columns[$party . '_advanced'] = ['name' => $party . '_advanced', 'data' => $party . '_advanced', 'title' => $party . ' Advanced', 'orderable' => false, 'class' => 'result', 'width' => '80px', 'visible' => false];
+                if ($project->type != 'tabulation') {
+                    $input_columns[$party . '_advanced'] = ['name' => $party . '_advanced', 'data' => $party . '_advanced', 'title' => $party . ' Advanced', 'orderable' => false, 'class' => 'result', 'width' => '80px', 'visible' => false];
+                }
+
             }
             $input_columns['rem1'] = ['name' => 'rem1', 'data' => 'rem1', 'title' => 'Remark 1', 'orderable' => false, 'class' => 'result', 'width' => '80px', 'visible' => false];
             $input_columns['rem2'] = ['name' => 'rem2', 'data' => 'rem2', 'title' => 'Remark 2', 'orderable' => false, 'class' => 'result', 'width' => '80px', 'visible' => false];
@@ -374,7 +378,17 @@ class ProjectResultsController extends AppBaseController
             $locations['village_tract'][$village_tract]['village'] = $villageByvillage_tract[$village_tract] = $samplesData->pluck('village', 'village')->toArray();
         }
 
-        return $table->render('projects.survey.' . $project->type . '.index', compact('project'), compact('locations'));
+        switch ($project->type) {
+            case 'sample2db':
+                $project_type = $project->type;
+                break;
+
+            default:
+                $project_type = 'db2sample';
+                break;
+        }
+
+        return $table->render('projects.survey.' . $project_type . '.index', compact('project'), compact('locations'));
     }
 
     /**
@@ -491,7 +505,10 @@ class ProjectResultsController extends AppBaseController
             $party_advanced_counts = [];
             foreach ($ballots as $party => $ballot) {
                 $party_station_counts[] = $results[$party . '_station'] = $ballot['station'];
-                $party_advanced_counts[] = $results[$party . '_advanced'] = $ballot['advanced'];
+                if ($project->type != 'tabulation') {
+                    $party_advanced_counts[] = $results[$party . '_advanced'] = $ballot['advanced'];
+                }
+
             }
         }
 
@@ -506,14 +523,14 @@ class ProjectResultsController extends AppBaseController
 
         if (array_key_exists('registered_voters', $results)) {
             $rv = $results['registered_voters'];
-            unset($results['registered_voters']);
-            $results['registered_voters'] = $rv;
+            //unset($results['registered_voters']);
+            //$results['registered_voters'] = $rv;
         }
 
         if (array_key_exists('advanced_voters', $results)) {
             $av = $results['advanced_voters'];
-            unset($results['advanced_voters']);
-            $results['advanced_voters'] = $av;
+            //unset($results['advanced_voters']);
+            //$results['advanced_voters'] = $av;
         }
 
         //$results['samplable_id'] = $dblink;
@@ -524,7 +541,11 @@ class ProjectResultsController extends AppBaseController
         array_walk($results_to_save, array($this, 'zawgyiUnicode'));
         $project_by_section = $project->inputs->groupBy('section');
 
-        foreach ($project_by_section as $section => $section_inputs) {
+        foreach ($project_by_section as $section_id => $section_inputs) {
+
+            $section = Section::find($section_id);
+
+            $section_key = $section->sort + 1;
             $origin_inputs = $section_inputs;
 
             // get all inputs array of inputid and skip in a section which is not optional
@@ -567,7 +588,6 @@ class ProjectResultsController extends AppBaseController
                     }
                 }
             }
-            $section_key = $section;
             // if section not empty in form submit
             if (!empty($submitted_total_inputs)) {
 
@@ -611,10 +631,18 @@ class ProjectResultsController extends AppBaseController
                 }
             }
 
-            $voters = $section_inputs->whereIn('inputid', ['registered_voters', 'advanced_voters'])->all();
+            $voters = $section_inputs->where('inputid', 'ballot_table')->all();
 
             if (!empty($voters) && isset($rem)) {
-                if ($rem == 5 && !empty($rv) && !empty($av)) {
+                if ($rem != 5) {
+                    $results['section' . $section_key . 'status'] = 2;
+                }
+
+                if ($project->type != 'tabulation' && (empty($rv) || empty($av))) {
+                    $results['section' . $section_key . 'status'] = 2;
+                }
+
+                if ($rem == 5) {
                     // ballot remarks is submited and have 5 results
                     $results['section' . $section_key . 'status'] = 1;
                     $rem1 = $ballot_remark['rem1'];
@@ -633,12 +661,16 @@ class ProjectResultsController extends AppBaseController
                     //  EB != Rem(2) ||
                     //  Adv(USDP) + Adv(NLD) > Rem(2)
 
-                    if ($total_votes != $total_counted || ($rem4 / $total_votes > 0.15) || ($rem5 / $total_votes > 0.15) || ($rem2 / $total_votes > 0.15) || ($av / ($rv + $av) > 0.1) || ($rv < $total_votes) || ($av != $rem2) || $total_party_advanced > $rem2) {
+                    if ($total_votes != $total_counted || ($rem4 / $total_votes > 0.15) || ($rem5 / $total_votes > 0.15) || ($rem2 / $total_votes > 0.15)) {
                         $results['section' . $section_key . 'status'] = 3;
                     }
 
-                } else {
-                    $results['section' . $section_key . 'status'] = 2;
+                    if ($project->type != 'tabulation') {
+                        if (($av / ($rv + $av) > 0.1) || ($rv < $total_votes) || ($av != $rem2) || $total_party_advanced > $rem2) {
+                            $results['section' . $section_key . 'status'] = 3;
+                        }
+                    }
+
                 }
             }
 
@@ -735,8 +767,16 @@ class ProjectResultsController extends AppBaseController
         $sampleResponse->setProject($project);
 
         $sampleResponse->setFilter($filter);
+        switch ($project->type) {
+            case 'sample2db':
+                $project_type = $project->type;
+                break;
 
-        return $sampleResponse->render('projects.survey.' . $project->type . '.response-sample', compact('project', $project), compact('filter', $filter));
+            default:
+                $project_type = 'db2sample';
+                break;
+        }
+        return $sampleResponse->render('projects.survey.' . $project_type . '.response-sample', compact('project', $project), compact('filter', $filter));
     }
 
     public function responseRateDouble($project_id, $section, DoubleResponseDataTable $doubleResponse)
@@ -768,7 +808,17 @@ class ProjectResultsController extends AppBaseController
 
         $doubleResponse->setSection($section);
 
-        return $doubleResponse->render('projects.survey.' . $project->type . '.response-double', compact('sections', $sections), compact('settings', $settings));
+        switch ($project->type) {
+            case 'sample2db':
+                $project_type = $project->type;
+                break;
+
+            default:
+                $project_type = 'db2sample';
+                break;
+        }
+
+        return $doubleResponse->render('projects.survey.' . $project_type . '.response-double', compact('sections', $sections), compact('settings', $settings));
     }
 
     public function originUse($project_id, $survey_id, $column, Request $request)
