@@ -137,7 +137,12 @@ class SurveyResultDataTable extends DataTable
                 case 'user_id':
                     $column = 'user.name as username';
                     break;
-
+                case 'name':
+                    $column = 'IF(sample_datas.name2 IS NOT NULL,CONCAT(sample_datas.name,"(1) <br>",sample_datas.name2,"(2)"),sample_datas.name) as name';
+                    break;
+                case 'mobile':
+                    $column = 'IF(sample_datas.mobile2 IS NOT NULL,CONCAT(sample_datas.mobile,"(1) <br>",sample_datas.mobile2,"(2)"),sample_datas.mobile) as mobile';
+                    break;
                 default:
                     $column = 'sample_datas.' . $column;
                     break;
@@ -362,6 +367,41 @@ class SurveyResultDataTable extends DataTable
      */
     protected function getBuilderParameters()
     {
+        $locale = \App::getLocale();
+
+        $townships = $this->project->samplesData->pluck('township_trans', 'township')->unique();
+        $township_option = "";
+        foreach ($townships as $township => $tsp_trans) {
+            if ($locale == config('app.fallback_locale')) {
+                $township_option .= "<option value=\"$township\">$township</option>";
+            } else {
+                $township_option .= "<option value=\"$township\">$tsp_trans[$locale]</option>";
+            }
+
+        }
+
+        $districts = $this->project->samplesData->pluck('district_trans', 'district')->unique();
+        $district_option = "";
+        foreach ($districts as $district => $tsp_trans) {
+            if ($locale == config('app.fallback_locale')) {
+                $district_option .= "<option value=\"$district\">$district</option>";
+            } else {
+                $district_option .= "<option value=\"$district\">$tsp_trans[$locale]</option>";
+            }
+
+        }
+
+        $states = $this->project->samplesData->pluck('state_trans', 'state')->unique();
+        $state_option = "";
+        foreach ($states as $state => $tsp_trans) {
+            if ($locale == config('app.fallback_locale')) {
+                $state_option .= "<option value=\"$state\">$state</option>";
+            } else {
+                $state_option .= "<option value=\"$state\">$tsp_trans[$locale]</option>";
+            }
+
+        }
+
         $columnName = array_keys($this->tableColumns);
         $textColumns = ['idcode', 'name', 'nrc_id', 'form_id', 'mobile'];
 
@@ -376,9 +416,30 @@ class SurveyResultDataTable extends DataTable
         $selectColumns = ['village', 'village_tract', 'township', 'district', 'state'];
 
         $selectColumns = array_intersect_key($this->tableColumns, array_flip($selectColumns));
+        $locationColumns = [];
         $selectColsArr = [];
         foreach ($selectColumns as $key => $value) {
             $selectColsArr[] = $columnName[$key] + 1;
+            $locationColumns[$key] = $columnName[$key] + 1;
+        }
+        $select_js = "";
+        foreach ($locationColumns as $location => $column_key) {
+            $location_option = isset(${$location . '_option'}) ? ${$location . '_option'} : '';
+            $select_js .= "this.api().columns('$column_key').every( function () {
+                              var column = this;
+                              var select = $('<select style=\"width:80% !important\"><option value=\"\">-</option>$location_option</select>')
+                              .appendTo( $(column.header()) )
+                              .on( 'change', function () {
+                              var val = $.fn.dataTable.util.escapeRegex(
+                                          $(this).val()
+                                          );
+
+                                  column
+                                  .search( val ? val : '', false, false )
+                                  .draw();
+                              } );
+                              select.addClass('form-control input-sm');
+                              } );\n";
         }
 
         $statusColumns = array_intersect_key($this->tableColumns, $this->tableSectionColumns);
@@ -472,6 +533,7 @@ class SurveyResultDataTable extends DataTable
                               } );
                               select.addClass('form-control input-sm');
                               } );
+                              $select_js
                         }",
         ];
     }

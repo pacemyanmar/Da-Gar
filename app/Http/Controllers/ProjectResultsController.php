@@ -124,7 +124,7 @@ class ProjectResultsController extends AppBaseController
                             'title' => trans('messages.idcode'),
                             'orderable' => false,
                             'defaultContent' => 'N/A',
-                            //'width' => '80px',
+                            'width' => '60px',
                         ];
                         break;
                     case 'form_id':
@@ -152,16 +152,6 @@ class ProjectResultsController extends AppBaseController
                             'name' => 'sample_datas.state',
                             'data' => 'state',
                             'title' => trans('messages.state'),
-                            'orderable' => false,
-                            'defaultContent' => 'N/A',
-                            //'width' => '120px',
-                        ];
-                        break;
-                    case 'district':
-                        $columns['district'] = [
-                            'name' => 'sample_datas.district',
-                            'data' => 'district',
-                            'title' => trans('messages.district'),
                             'orderable' => false,
                             'defaultContent' => 'N/A',
                             //'width' => '120px',
