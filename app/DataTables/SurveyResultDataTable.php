@@ -166,6 +166,7 @@ class SurveyResultDataTable extends DataTable
         $unique_inputs = $inputs->toArray();
 
         $parties = explode(',', $project->parties);
+        $parties = array_filter($parties);
         if (!empty($parties)) {
             $parties_arr = [];
 
