@@ -205,9 +205,9 @@ class SurveyResultDataTable extends DataTable
             $query->whereRaw(DB::raw('(samples.qc_user_id is null or samples.qc_user_id = ' . $auth->id . ')'));
             $resultdbname = $childTable . '_double';
         }
-        if ($auth->role->role_name == 'entryclerk') {
-            $query->whereRaw(DB::raw('(samples.user_id is null or samples.user_id = ' . $auth->id . ')'));
-        }
+        // if ($auth->role->role_name == 'entryclerk') {
+        //     $query->whereRaw(DB::raw('(samples.user_id is null or samples.user_id = ' . $auth->id . ')'));
+        // }
         $query->leftjoin('users as user', function ($join) {
             $join->on('user.id', 'samples.user_id');
         });
@@ -249,7 +249,9 @@ class SurveyResultDataTable extends DataTable
                 if ($value) {
                     $query->where($columnName, '=', $value);
                 } else {
-                    $query->where($columnName, '=', $value)->orWhereNull($columnName);
+                    $query->where(function ($where) use ($columnName, $value) {
+                        $where->where($columnName, '=', $value)->orWhereNull($columnName);
+                    });
                 }
             }
         }

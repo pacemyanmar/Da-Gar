@@ -119,7 +119,7 @@ class ProjectResultsController extends AppBaseController
                         break;
                     case 'idcode':
                         $columns['idcode'] = [
-                            'name' => 'idcode',
+                            'name' => 'sample_datas.idcode',
                             'data' => 'idcode',
                             'title' => trans('messages.idcode'),
                             'orderable' => false,
