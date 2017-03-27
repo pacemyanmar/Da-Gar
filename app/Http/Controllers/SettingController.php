@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\AppBaseController;
@@ -16,13 +15,11 @@ class SettingController extends AppBaseController
 {
     /** @var  SettingRepository */
     private $settingRepository;
-
     public function __construct(SettingRepository $settingRepo)
     {
         $this->middleware('auth');
         $this->settingRepository = $settingRepo;
     }
-
     /**
      * Display a listing of the Questions.
      *
@@ -32,11 +29,9 @@ class SettingController extends AppBaseController
     public function index()
     {
         $settings = $this->settingRepository->all();
-
         return view('settings.index')
             ->with('settings', $settings);
     }
-
     /**
      * Display a listing of the Questions.
      *
@@ -46,14 +41,12 @@ class SettingController extends AppBaseController
     public function save(SaveSettingRequest $request)
     {
         $settings = $request->only('configs');
-
         foreach ($settings['configs'] as $key => $value) {
             Settings::set($key, $value);
         }
         Flash::info('Settings updated successfully.');
         return redirect()->back();
     }
-
     /**
      * Show the form for creating a new Setting.
      *
@@ -63,7 +56,6 @@ class SettingController extends AppBaseController
     {
         return view('settings.create');
     }
-
     /**
      * Store a newly created Setting in storage.
      *
@@ -75,14 +67,10 @@ class SettingController extends AppBaseController
     {
         $key = $request->only('key');
         $value = $request->only('value');
-
         $setting = Settings::set($key['key'], $value['value']);
-
         Flash::success('Setting saved successfully.');
-
         return redirect(route('settings.index'));
     }
-
     /**
      * Display the specified Setting.
      *
@@ -93,16 +81,12 @@ class SettingController extends AppBaseController
     public function show($id)
     {
         $setting = $this->settingRepository->findWithoutFail($id);
-
         if (empty($setting)) {
             Flash::error('Setting not found');
-
             return redirect(route('settings.index'));
         }
-
         return view('settings.show')->with('setting', $setting);
     }
-
     /**
      * Show the form fqor editing the specified Setting.
      *
@@ -113,16 +97,12 @@ class SettingController extends AppBaseController
     public function edit($id)
     {
         $setting = $this->settingRepository->findWithoutFail($id);
-
         if (empty($setting)) {
             Flash::error('Setting not found');
-
             return redirect(route('settings.index'));
         }
-
         return view('settings.edit')->with('setting', $setting);
     }
-
     /**
      * Update the specified Setting in storage.
      *
@@ -135,14 +115,10 @@ class SettingController extends AppBaseController
     {
         $key = $request->only('key');
         $value = $request->only('value');
-
         $setting = Settings::set($key['key'], $value['value']);
-
         Flash::success('Setting updated successfully.');
-
         return redirect(route('settings.index'));
     }
-
     /**
      * Remove the specified Setting from storage.
      *
@@ -153,20 +129,14 @@ class SettingController extends AppBaseController
     public function destroy($id)
     {
         $setting = $this->settingRepository->findWithoutFail($id);
-
         if (empty($setting)) {
             Flash::error('Setting not found');
-
             return redirect(route('settings.index'));
         }
-
         $this->settingRepository->delete($id);
-
         Flash::success('Setting deleted successfully.');
-
         return redirect(route('settings.index'));
     }
-
     public function translate($id, Request $request)
     {
         $model = $request->input('model');
@@ -174,9 +144,7 @@ class SettingController extends AppBaseController
         if ($locale == config('app.fallback_locale')) {
             return;
         }
-
         $columns = $request->input('columns'); //array
-
         if (!empty($model) && class_exists('App\Models\\' . studly_case($model))) {
             // set dblink model class
             $class = 'App\Models\\' . studly_case($model);
@@ -189,13 +157,10 @@ class SettingController extends AppBaseController
                     foreach ($classInstances as $classInstance) {
                         $extras = $classInstance->extras;
                         foreach ($columns as $column => $translation) {
-
                             //$extras['lang'][$locale][$column] = Converter::convert($translation, 'zawgyi', 'unicode');
                             $extras['lang'][$locale][$column] = $translation;
                         }
-
                         $classInstance->extras = $extras;
-
                         $classInstance->save();
                     }
                 } else {
@@ -212,13 +177,11 @@ class SettingController extends AppBaseController
                                 $updated_translation = $new_translation;
                             }
                             $classInstance->{$translation_column} = $updated_translation;
-
                             $classInstance->save();
                         }
                     }
                 }
             } else {
-
                 $classInstance = $class::find($id);
                 foreach ($columns as $column => $translation) {
                     $translation_column = $column . '_trans';
@@ -231,12 +194,10 @@ class SettingController extends AppBaseController
                         $updated_translation = $new_translation;
                     }
                     $classInstance->{$translation_column} = $updated_translation;
-
                     $classInstance->save();
                 }
             }
         }
-
         return $this->sendResponse($classInstance, trans('messages.saved'));
     }
 }
