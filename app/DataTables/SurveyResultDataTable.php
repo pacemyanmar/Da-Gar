@@ -249,7 +249,9 @@ class SurveyResultDataTable extends DataTable
                 if ($value) {
                     $query->where($columnName, '=', $value);
                 } else {
-                    $query->where($columnName, '=', $value)->orWhereNull($columnName);
+                    $query->where(function ($where) use ($columnName, $value) {
+                        $where->where($columnName, '=', $value)->orWhereNull($columnName);
+                    });
                 }
             }
         }
