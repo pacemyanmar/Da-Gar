@@ -192,6 +192,7 @@ class SampleDataController extends AppBaseController
 
                 $row_array = [
                     "idcode" => ($row->id_code) ? (string) $row->id_code : null,
+                    "ps_number" => ($row->ps_number) ? (string) $row->ps_number : null,
                     "spotchecker_code" => ($row->spotchecker_code) ? (string) $row->spotchecker_code : null,
                     "sample" => ($row->sample) ? $row->sample : 1,
                     "area_type" => $area_type,

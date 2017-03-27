@@ -241,7 +241,9 @@ class ProjectController extends AppBaseController
         }
 
         $input = $request->except('samples');
-
+        if (!array_key_exists('parties', $input)) {
+            $input['parties'] = null;
+        }
         $samples = $request->input('samples');
         foreach ($samples as $sample) {
             $key = $sample['name'];
@@ -470,7 +472,11 @@ class ProjectController extends AppBaseController
                         $inputType = 'string';
                         break;
                     case 'checkbox':
-                        $inputType = 'unsignedSmallInteger';
+                        if ($input->other) {
+                            $inputType = 'string';
+                        } else {
+                            $inputType = 'unsignedSmallInteger';
+                        }
                         break;
 
                     case 'number':
@@ -566,7 +572,11 @@ class ProjectController extends AppBaseController
                                 $inputType = 'string';
                                 break;
                             case 'checkbox':
-                                $inputType = 'unsignedSmallInteger';
+                                if ($input->other) {
+                                    $inputType = 'string';
+                                } else {
+                                    $inputType = 'unsignedSmallInteger';
+                                }
                                 break;
 
                             case 'number':

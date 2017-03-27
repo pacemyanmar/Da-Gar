@@ -18,6 +18,7 @@ class SampleData extends Model
 
     public $fillable = [
         'idcode',
+        'ps_number',
         'spotchecker_code',
         'type',
         'dbgroup',
