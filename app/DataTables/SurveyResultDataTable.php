@@ -368,7 +368,21 @@ class SurveyResultDataTable extends DataTable
      */
     protected function getBuilderParameters()
     {
+        $auth = Auth::user();
         $locale = \App::getLocale();
+        if ($auth->role->level > 7) {
+            $button = [
+                'extend' => 'collection',
+                'text' => '<i class="fa fa-download"></i> ' . trans('messages.export'),
+                'buttons' => [
+                    'exportPostCsv',
+                    'exportPostExcel',
+                    //'exportPostPdf',
+                ],
+            ];
+        } else {
+            $button = [];
+        }
 
         $townships = $this->project->samplesData->pluck('township_trans', 'township')->unique();
         $township_option = "";
@@ -495,15 +509,7 @@ class SurveyResultDataTable extends DataTable
                 //'print',
                 //'reset',
                 //'reload',
-                [
-                    'extend' => 'collection',
-                    'text' => '<i class="fa fa-download"></i> ' . trans('messages.export'),
-                    'buttons' => [
-                        'exportPostCsv',
-                        'exportPostExcel',
-                        //'exportPostPdf',
-                    ],
-                ],
+                $button,
                 'colvis',
             ],
             'initComplete' => "function () {

@@ -1,9 +1,10 @@
 <div class="form-group">
-	{!! Form::checkbox("result[".$element->inputid."]", $element->value, (isset($results) && $element->value == $results->{$element->inputid}), ['class' => 'magic-checkbox '.$element->className.' '.$sectionClass, 'id' => $element->id, 'autocomplete' => 'off']) !!}
+
+    @if($element->other)
+    {!! Form::checkbox("result[".$element->inputid."]", $element->value, (isset($results) && $results->{$element->inputid}), ['class' => 'magic-checkbox '.$element->className.' '.$sectionClass, 'id' => $element->id, 'autocomplete' => 'off']) !!}
 	<label class="normal-text" for="{!! $element->id !!}">{!! $element->label !!} @if($element->value != '') <span class="label label-primary badge">{!! $element->value !!}</span> @endif
 	@if($element->status != 'published') <span class="label label-warning badge">{!! $element->status !!}</span> @endif
     </label>
-    @if($element->other)
     @php
     	$options = [
 		'class' => $element->className.' form-control zawgyi '.$sectionClass,
@@ -14,6 +15,11 @@
 		];
     @endphp
     	{!! Form::text("result[".$element->inputid."]", (isset($results))?Kanaung\Facades\Converter::convert($results->{$element->inputid},'unicode','zawgyi'):null, $options) !!}
+    @else
+    {!! Form::checkbox("result[".$element->inputid."]", $element->value, (isset($results) && $element->value == $results->{$element->inputid}), ['class' => 'magic-checkbox '.$element->className.' '.$sectionClass, 'id' => $element->id, 'autocomplete' => 'off']) !!}
+	<label class="normal-text" for="{!! $element->id !!}">{!! $element->label !!} @if($element->value != '') <span class="label label-primary badge">{!! $element->value !!}</span> @endif
+	@if($element->status != 'published') <span class="label label-warning badge">{!! $element->status !!}</span> @endif
+    </label>
     @endif
 </div>
 @if(!empty($element->skip) && !isset($editing))
