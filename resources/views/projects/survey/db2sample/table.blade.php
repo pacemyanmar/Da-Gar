@@ -2,10 +2,10 @@
     @include('layouts.datatables_css')
 @endsection
 
-<table  class="table table-striped table-bordered" id="dataTableBuilder" width="100%">
+<table  class="table table-striped table-bordered table-responsive" id="dataTableBuilder">
 <thead>
 <tr>
-<th rowspan="2" width="80px">State</th>
+<th rowspan="2">State</th>
 <th rowspan="2" width="70px">Total Forms</th>
 <th rowspan="2" width="70px">Total</th>
 @foreach($project->sectionsDb as $section)

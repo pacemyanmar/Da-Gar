@@ -169,7 +169,7 @@ class SampleResponseDataTable extends DataTable
                                 var br = document.createElement(\"br\");
                                 var input = document.createElement(\"input\");
                                 input.className = 'form-control input-sm';
-                                input.style.width = '90%';
+                                input.style.width = '100px';
                                 $(br).appendTo($(column.header()));
                                 $(input).appendTo($(column.header()))
                                 .on('change', function () {
