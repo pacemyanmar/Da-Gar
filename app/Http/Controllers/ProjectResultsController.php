@@ -243,7 +243,7 @@ class ProjectResultsController extends AppBaseController
                             } else if(data == 2) {
                                 html = '<span class=\"glyphicon glyphicon-ban-circle text-warning\"></span>';
                             } else if(data == 3) {
-                                html = '<span class=\"glyphicon glyphicon-alert text-danger\"></span>';
+                                html = '<span class=\"glyphicon glyphicon-alert text-info\"></span>';
                             } else {
                                 html = '<span class=\"glyphicon glyphicon-remove text-danger\"></span>';
                             }
