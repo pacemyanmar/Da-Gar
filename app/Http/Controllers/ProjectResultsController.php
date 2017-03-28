@@ -650,15 +650,19 @@ class ProjectResultsController extends AppBaseController
                     //  EA < (Rem(1) + Rem(2)) ||
                     //  EB != Rem(2) ||
                     //  Adv(USDP) + Adv(NLD) > Rem(2)
+                    if (!empty($total_votes)) {
 
-                    if ($total_votes != $total_counted || ($rem4 / $total_votes > 0.15) || ($rem5 / $total_votes > 0.15) || ($rem2 / $total_votes > 0.15)) {
-                        $results['section' . $section_key . 'status'] = 3;
-                    }
-
-                    if ($project->type != 'tabulation') {
-                        if (($av / ($rv + $av) > 0.1) || ($rv < $total_votes) || ($av != $rem2) || $total_party_advanced > $rem2) {
+                        if ($total_votes != $total_counted || ($rem4 / $total_votes > 0.15) || ($rem5 / $total_votes > 0.15) || ($rem2 / $total_votes > 0.15)) {
                             $results['section' . $section_key . 'status'] = 3;
                         }
+
+                        if ($project->type != 'tabulation') {
+                            if (($av / ($rv + $av) > 0.1) || ($rv < $total_votes) || ($av != $rem2) || $total_party_advanced > $rem2) {
+                                $results['section' . $section_key . 'status'] = 3;
+                            }
+                        }
+                    } else {
+                        $results['section' . $section_key . 'status'] = 3;
                     }
 
                 }
@@ -700,7 +704,7 @@ class ProjectResultsController extends AppBaseController
         $old_result = $sample->resultWithTable($dbname);
 
         $old_result = $old_result->first(); // used first() because of one to one relation
-        $results_to_save = array_filter($results_to_save);
+        $results_to_save = array_filter($results_to_save, function ($value) {return $value !== '';});
         array_walk($results_to_save, array($this, 'zawgyiUnicode'));
 
         if (!empty($old_result)) {
