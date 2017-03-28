@@ -704,7 +704,7 @@ class ProjectResultsController extends AppBaseController
         $old_result = $sample->resultWithTable($dbname);
 
         $old_result = $old_result->first(); // used first() because of one to one relation
-        $results_to_save = array_filter($results_to_save);
+        $results_to_save = array_filter($results_to_save, function ($value) {return $value !== '';});
         array_walk($results_to_save, array($this, 'zawgyiUnicode'));
 
         if (!empty($old_result)) {
