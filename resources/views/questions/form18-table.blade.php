@@ -10,27 +10,27 @@ if(isset($sample)) {
 <table class="table table-bordered table-responsive" style="vertical-align:middle">
 	<tr valign="bottom">
 		<th rowspan="2" height="12">
-			<p>Serial</p>
+			<p>{!! trans('ballots.serial') !!}</p>
 		</th>
 		<th rowspan="2">
 			<p style="margin-bottom: 0in"><br/>
 
 			</p>
-			<p>Candidate</p>
+			<p>{!! trans('ballots.candidate') !!}</p>
 		</th>
 		<th rowspan="2">
-			<p>Party</p>
+			<p>{!! trans('ballots.party') !!}</p>
 		</th>
 		<th colspan="2">
-			<p>Votes Cast</p>
+			<p>{!! trans('ballots.votes_cast') !!}</p>
 		</th>
 	</tr>
 	<tr valign="bottom">
 		<th>
-			<p>In numbers</p>
+			<p>{!! trans('ballots.in_numbers') !!}</p>
 		</th>
 		<th>
-			<p>In words</p>
+			<p>{!! trans('ballots.in_words') !!}</p>
 		</th>
 	</tr>
 	@foreach($parties as $party)
@@ -52,18 +52,18 @@ if(isset($sample)) {
 	@endforeach
 	<tr>
 		<td colspan="7" width="100%" height="89" valign="top">
-			<p>Witnesses</p>
+			<p>{!! trans('ballots.witnesses') !!}</p>
 		</td>
 	</tr>
 </table>
 </div>
 <div class="col-sm-4">
 <table class="table table-bordered table-responsive">
-<tr><th colspan="2">Remarks</th></tr>
+<tr><th colspan="2">{!! trans('ballots.remarks') !!}</th></tr>
 
 <tr>
 <td>
-	<p>1 - Ballots issued on e-day</p>
+	<p>{!! trans('ballots.ballots_issued_on_e_day') !!}</p>
 </td>
 <td class="col-sm-5">
 	{!! Form::number("result[ballot_remark][rem1]", (isset($results))?Kanaung\Facades\Converter::convert($results->rem1,'unicode','zawgyi'):null, ['class' => 'form-control input-sm']) !!}
@@ -71,7 +71,7 @@ if(isset($sample)) {
 <tr>
 <tr>
 <td>
-	<p>2 - Ballots received for advanced voting</p>
+	<p>{!! trans('ballots.ballots_received_for_advanced_voting') !!}</p>
 </td>
 <td class="col-sm-5">
 	{!! Form::number("result[ballot_remark][rem2]", (isset($results))?Kanaung\Facades\Converter::convert($results->rem2,'unicode','zawgyi'):null, ['class' => 'form-control input-sm']) !!}
@@ -79,7 +79,7 @@ if(isset($sample)) {
 <tr>
 <tr>
 <td>
-	<p>3 - Valid</p>
+	<p>{!! trans('ballots.valid') !!}</p>
 </td>
 <td class="col-sm-5">
 	{!! Form::number("result[ballot_remark][rem3]", (isset($results))?Kanaung\Facades\Converter::convert($results->rem3,'unicode','zawgyi'):null, ['class' => 'form-control input-sm']) !!}
@@ -87,7 +87,7 @@ if(isset($sample)) {
 <tr>
 <tr>
 <td>
-	<p>4 - Invalid</p>
+	<p>{!! trans('ballots.invalid') !!}</p>
 </td>
 <td class="col-sm-5">
 	{!! Form::number("result[ballot_remark][rem4]", (isset($results))?Kanaung\Facades\Converter::convert($results->rem4,'unicode','zawgyi'):null, ['class' => 'form-control input-sm']) !!}
@@ -95,7 +95,7 @@ if(isset($sample)) {
 <tr>
 <tr>
 <td>
-	<p>5 - Missing</p>
+	<p>{!! trans('ballots.missing') !!}</p>
 </td>
 <td class="col-sm-5">
 	{!! Form::number("result[ballot_remark][rem5]", (isset($results))?Kanaung\Facades\Converter::convert($results->rem5,'unicode','zawgyi'):null, ['class' => 'form-control input-sm']) !!}

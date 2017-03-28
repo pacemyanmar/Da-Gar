@@ -22,7 +22,7 @@
         @include('flash::message')
 
         <div class="clearfix"></div>
-        <div class="box box-primary">
+        <div class="box box-default">
             <div class="box-body">
                     @include('projects.survey.db2sample.table')
             </div>
