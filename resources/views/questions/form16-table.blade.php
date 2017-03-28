@@ -131,14 +131,42 @@ if(isset($sample)) {
 </div>
 
 @push('document-ready')
-var rvotes = $( "input[name='result[registered_voters]']" ).val();
+	var rem1 = parseInt($('#rem1').val(), 10);
+	var rem2 = parseInt($('#rem2').val(), 10);
+	var rem3 = parseInt($('#rem3').val(), 10);
+	var rem4 = parseInt($('#rem4').val(), 10);
+	var rem5 = parseInt($('#rem5').val(), 10);
+
+	var totalrem = rem1 + rem2;
+
+	var rvotes = $( "input[name='result[registered_voters]']" ).val();
  	var avotes = $( "input[name='result[advanced_voters]']" ).val();
  	var rv = parseInt(rvotes,10);
  	var av = parseInt(avotes,10);
  	var votes = av / (rv + av);
 
- 	if(rvotes && avotes && (votes > 0.1)) {
-		$('#ballot-error').addClass('alert alert-danger ').html('Check EA and EB values. Advanced voters ratio is ' + votes);
+	var party_advanced = 0;
+    $('.party-advanced').each(function() {
+    	var each_advanced = parseInt($(this).val(),10);
+    	if(each_advanced){
+        	party_advanced += each_advanced;
+    	}
+    });
+
+    if(party_advanced > rem2){
+    	$('#ballot-error').addClass('alert alert-danger ').html('Check USDP and NLD advanced votes and Remarks 2.');
+    } else if(rem1 && rem2 && rem3 && rem4 && rem5 && ((rem1 + rem2) != (rem3 + rem4 + rem5) ) ){
+		$('#ballot-error').addClass('alert alert-danger ').html('Total ballots issued/cast <> total ballots counted. Check remarks 1 to 5.');
+ 	} else if( ( rem4 / (rem1 + rem2 )) > 0.15 ) {
+ 		$('#ballot-error').addClass('alert alert-danger ').html('High proportion of invalid votes compared to all cast votes. Check remarks 1,2 and 4. Ratio is ' + (rem4 / (rem1 + rem2 )) );
+ 	} else if( ( rem5 / (rem1 + rem2 )) > 0.15 ) {
+ 		$('#ballot-error').addClass('alert alert-danger ').html('High proportion of missing votes compared to all cast votes. Check remarks 1,2 and 5. Ratio is ' + (rem5 / (rem1 + rem2 )) );
+ 	} else if( ( rem2 / (rem1 + rem2 )) > 0.1 ) {
+ 		$('#ballot-error').addClass('alert alert-danger ').html('High proportion of advanced votes compared to all cast votes. Check remarks 1,2 and 5. Ratio is ' + (rem2 / (rem1 + rem2 )) );
+ 	} else if( rvotes && totalrem && rvotes < totalrem ) {
+ 		$('#ballot-error').addClass('alert alert-danger ').html('More votes than registered voters. Check remarks 1,2 and EA.' );
+ 	} else if( rem2 && avotes && avotes != rem2 ) {
+ 		$('#ballot-error').addClass('alert alert-danger ').html('Different number in Form 13 and Form 16. Check remarks 2 and EB.' );
  	} else {
  		$('#ballot-error').removeClass('alert alert-danger ').html('');
  	}
