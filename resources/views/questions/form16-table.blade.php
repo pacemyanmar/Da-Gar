@@ -61,10 +61,10 @@ if(isset($sample)) {
 			<p>{!! $party !!}</p>
 		</td>
 		<td>
-			{!! Form::number("result[ballot][".trim($party)."][station]", (isset($results))?Kanaung\Facades\Converter::convert($results->{$party.'_station'},'unicode','zawgyi'):null, ['class' => 'form-control input-sm party-station']) !!}
+			{!! Form::number("result[ballot][".trim($party)."][station]", (isset($results))?Kanaung\Facades\Converter::convert($results->{trim($party).'_station'},'unicode','zawgyi'):null, ['class' => 'form-control input-sm party-station']) !!}
 		</td>
 		<td>
-			{!! Form::number("result[ballot][".trim($party)."][advanced]", (isset($results))?Kanaung\Facades\Converter::convert($results->{$party.'_advanced'},'unicode','zawgyi'):null, ['class' => 'form-control input-sm party-advanced']) !!}
+			{!! Form::number("result[ballot][".trim($party)."][advanced]", (isset($results))?Kanaung\Facades\Converter::convert($results->{trim($party).'_advanced'},'unicode','zawgyi'):null, ['class' => 'form-control input-sm party-advanced']) !!}
 		</td>
 		<td>
 
