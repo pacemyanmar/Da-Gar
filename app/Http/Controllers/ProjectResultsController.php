@@ -239,13 +239,13 @@ class ProjectResultsController extends AppBaseController
                         var html;
                         if(type === 'display') {
                             if(data == 1) {
-                                html = '<img src=\'" . asset('images/complete.png') . "\'>';
+                                html = '<span class=\"glyphicon glyphicon-ok text-success\"></span>';
                             } else if(data == 2) {
-                                html = '<img src=\'" . asset('images/incomplete.png') . "\'>';
+                                html = '<span class=\"glyphicon glyphicon-ban-circle text-warning\"></span>';
                             } else if(data == 3) {
-                                html = '<img src=\'" . asset('images/error.png') . "\'>';
+                                html = '<span class=\"glyphicon glyphicon-alert text-danger\"></span>';
                             } else {
-                                html = '<img src=\'" . asset('images/missing.png') . "\'>';
+                                html = '<span class=\"glyphicon glyphicon-remove text-danger\"></span>';
                             }
                         } else {
                             html = data;
@@ -704,7 +704,7 @@ class ProjectResultsController extends AppBaseController
         $old_result = $sample->resultWithTable($dbname);
 
         $old_result = $old_result->first(); // used first() because of one to one relation
-        $results_to_save = array_filter($results_to_save, function ($value) {return $value !== '';});
+        $results_to_save = array_filter($results_to_save, function ($value) {return $value != '';});
         array_walk($results_to_save, array($this, 'zawgyiUnicode'));
 
         if (!empty($old_result)) {
