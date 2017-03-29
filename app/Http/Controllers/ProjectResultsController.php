@@ -48,7 +48,7 @@ class ProjectResultsController extends AppBaseController
     public function index($project_id, $samplable = null, SurveyResultDataTable $resultDataTable = null)
     {
         $project = $this->projectRepository->findWithoutFail($project_id);
-
+        $locale = \App::getLocale();
         if (empty($project)) {
             Flash::error('Project not found');
 
@@ -154,6 +154,24 @@ class ProjectResultsController extends AppBaseController
                             'title' => trans('messages.state'),
                             'orderable' => false,
                             'defaultContent' => 'N/A',
+                            'render' => function () use ($locale) {
+                                return "function(data,type,full,meta){
+                                    var html;
+                                    if(type === 'display') {
+                                        var state_trans = JSON.parse(full.state_trans);
+
+                                        if(state_trans.$locale) {
+                                            html = state_trans.$locale;
+                                        } else {
+                                            html =data;
+                                        }
+                                    } else {
+                                        html = data;
+                                    }
+
+                                    return html;
+                                }";
+                            },
                             //'width' => '120px',
                         ];
                         break;
@@ -164,6 +182,24 @@ class ProjectResultsController extends AppBaseController
                             'title' => trans('messages.township'),
                             'orderable' => false,
                             'defaultContent' => 'N/A',
+                            'render' => function () use ($locale) {
+                                return "function(data,type,full,meta){
+                                    var html;
+                                    if(type === 'display') {
+                                        var township_trans = JSON.parse(full.township_trans);
+
+                                        if(township_trans.$locale) {
+                                            html = township_trans.$locale;
+                                        } else {
+                                            html =data;
+                                        }
+                                    } else {
+                                        html = data;
+                                    }
+
+                                    return html;
+                                }";
+                            },
                             //'width' => '120px',
                         ];
                         break;
