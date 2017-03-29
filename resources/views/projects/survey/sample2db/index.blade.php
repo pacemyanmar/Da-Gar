@@ -13,6 +13,7 @@
         $textColumns = array_intersect_key($columns, array_flip($textColumns));
 
         $columnName = array_flip($columnName);
+        $textColsArr = [];
         foreach ($textColumns as $key => $value) {
             $textColsArr[] = $columnName[$key];
         }
