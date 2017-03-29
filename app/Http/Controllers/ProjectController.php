@@ -677,7 +677,7 @@ class ProjectController extends AppBaseController
         $sampleData = SampleData::where('idcode', $sample_id)->first();
 
         if (empty($sampleData)) {
-            Flash::error('Project not found');
+            Flash::error('Sample Data not found');
 
             return redirect()->back();
         }
