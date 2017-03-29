@@ -7,6 +7,8 @@ use App\Http\Controllers\AppBaseController;
 use App\Http\Requests\CreateProjectRequest;
 use App\Http\Requests\UpdateProjectRequest;
 use App\Models\Project;
+use App\Models\Sample;
+use App\Models\SampleData;
 use App\Models\Section;
 use App\Repositories\ProjectRepository;
 use App\Scopes\OrderByScope;
@@ -416,7 +418,10 @@ class ProjectController extends AppBaseController
 
         $project->status = 'published';
         $project->save();
-        dispatch(new \App\Jobs\GenerateSample($project)); // need to decide this to run once or every time project update
+        if ($project->type != 'sample2db') {
+            dispatch(new \App\Jobs\GenerateSample($project)); // need to decide this to run once or every time project update
+        }
+
         Flash::success('Form built successfully.');
 
         return redirect()->back();
@@ -661,6 +666,24 @@ class ProjectController extends AppBaseController
     {
         $sample_id = $request->input('sample');
         $project = $this->projectRepository->findWithoutFail($project_id);
-        dd($project->samplesData()->where('idcode', $sample_id)->first());
+        $sampleDb = $project->samplesDb()->first();
+        $sampleData = SampleData::where('idcode', $sample_id)->first();
+
+        $last_form_id = Sample::where('sample_data_id', $sampleData->id)
+            ->where('project_id', $project->id)
+            ->where('sample_data_type', $project->dblink)->pluck('form_id');
+        $max_form_id = $last_form_id->max() + 1;
+
+        return view('projects.survey.sample2db.info')
+            ->with('project', $project)
+            ->with('sample', $sampleData)
+            ->with('form_id', $max_form_id);
+
+    }
+
+    public function addIncident($project_id, $sampleData_id, $project_dblink, $max_form_id)
+    {
+        $sampleInstance = Sample::firstOrCreate(['sample_data_id' => $sampleData_id, 'form_id' => $max_form_id, 'project_id' => $project_id, 'sample_data_type' => $project_dblink]);
+        return redirect(route('projects.surveys.create', [$project_id, $sampleInstance->id, $max_form_id]));
     }
 }
