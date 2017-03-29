@@ -171,10 +171,10 @@ class SurveyResultDataTable extends DataTable
             $parties_arr = [];
 
             foreach ($parties as $party) {
-                $parties_arr[] = trim($party) . '_station';
                 if ($project->type != 'tabulation') {
-                    $parties_arr[] = trim($party) . '_advanced';
+                    $parties_arr[] = trim($party) . '_station';
                 }
+                $parties_arr[] = trim($party) . '_advanced';
 
             }
             $remarks = ['rem1', 'rem2', 'rem3', 'rem4', 'rem5'];

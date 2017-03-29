@@ -299,10 +299,10 @@ class ProjectResultsController extends AppBaseController
         $parties = explode(',', $project->parties);
         if (!empty($parties) && $project->type != 'sample2db') {
             foreach ($parties as $party) {
-                $input_columns[$party . '_station'] = ['name' => $party . '_station', 'data' => $party . '_station', 'title' => $party . ' Station', 'orderable' => false, 'class' => 'result', 'width' => '80px', 'visible' => false];
                 if ($project->type != 'tabulation') {
-                    $input_columns[$party . '_advanced'] = ['name' => $party . '_advanced', 'data' => $party . '_advanced', 'title' => $party . ' Advanced', 'orderable' => false, 'class' => 'result', 'width' => '80px', 'visible' => false];
+                    $input_columns[$party . '_station'] = ['name' => $party . '_station', 'data' => $party . '_station', 'title' => $party . ' Station', 'orderable' => false, 'class' => 'result', 'width' => '80px', 'visible' => false];
                 }
+                $input_columns[$party . '_advanced'] = ['name' => $party . '_advanced', 'data' => $party . '_advanced', 'title' => $party . ' Advanced', 'orderable' => false, 'class' => 'result', 'width' => '80px', 'visible' => false];
 
             }
             $input_columns['rem1'] = ['name' => 'rem1', 'data' => 'rem1', 'title' => 'Remark 1', 'orderable' => false, 'class' => 'result', 'width' => '80px', 'visible' => false];
@@ -494,10 +494,10 @@ class ProjectResultsController extends AppBaseController
             $party_station_counts = [];
             $party_advanced_counts = [];
             foreach ($ballots as $party => $ballot) {
-                $party_station_counts[] = $results[$party . '_station'] = $ballot['station'];
                 if ($project->type != 'tabulation') {
-                    $party_advanced_counts[] = $results[$party . '_advanced'] = $ballot['advanced'];
+                    $party_station_counts[] = $results[$party . '_station'] = $ballot['station'];
                 }
+                $party_advanced_counts[] = $results[$party . '_advanced'] = $ballot['advanced'];
 
             }
         }
@@ -640,8 +640,7 @@ class ProjectResultsController extends AppBaseController
                     $rem3 = $ballot_remark['rem3'];
                     $rem4 = $ballot_remark['rem4'];
                     $rem5 = $ballot_remark['rem5'];
-                    $total_votes = $rem1 + $rem2;
-                    $total_counted = $rem3 + $rem4 + $rem5;
+
                     $total_party_advanced = array_sum($party_advanced_counts);
                     //  Rem(1) + Rem(2) != Rem(3) + Rem(4) + Rem(5) ||
                     //  Rem(4) / (Rem(1) + Rem(2)) > 0.15 ||
@@ -650,19 +649,27 @@ class ProjectResultsController extends AppBaseController
                     //  EA < (Rem(1) + Rem(2)) ||
                     //  EB != Rem(2) ||
                     //  Adv(USDP) + Adv(NLD) > Rem(2)
-                    if (!empty($total_votes)) {
+                    if ($project->type != 'tabulation') {
+                        $total_votes = $rem1 + $rem2;
+                        $total_counted = $rem3 + $rem4 + $rem5;
 
-                        if ($total_votes != $total_counted || ($rem4 / $total_votes > 0.15) || ($rem5 / $total_votes > 0.15) || ($rem2 / $total_votes > 0.15)) {
-                            $results['section' . $section_key . 'status'] = 3;
-                        }
+                        if (!empty($total_votes)) {
 
-                        if ($project->type != 'tabulation') {
+                            if ($total_votes != $total_counted || ($rem4 / $total_votes > 0.15) || ($rem5 / $total_votes > 0.15) || ($rem2 / $total_votes > 0.15)) {
+                                $results['section' . $section_key . 'status'] = 3;
+                            }
+
                             if (($av / ($rv + $av) > 0.1) || ($rv < $total_votes) || ($av != $rem2) || $total_party_advanced > $rem2) {
                                 $results['section' . $section_key . 'status'] = 3;
                             }
+                        } else {
+                            $results['section' . $section_key . 'status'] = 3;
                         }
                     } else {
-                        $results['section' . $section_key . 'status'] = 3;
+                        // tabulation validation
+                        if (($rem1 != ($rem2 + $rem5)) || ($rem2 != ($rem3 + $rem4)) || $total_party_advanced > $rem3) {
+                            $results['section' . $section_key . 'status'] = 3;
+                        }
                     }
 
                 }

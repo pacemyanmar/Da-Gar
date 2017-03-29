@@ -456,10 +456,10 @@ class ProjectController extends AppBaseController
             if (!empty($project->parties)) {
                 $parties = explode(',', $project->parties);
                 foreach ($parties as $party) {
-                    $table->unsignedInteger($party . '_station')->index()->nullable();
                     if ($project->type != 'tabulation') {
-                        $table->unsignedInteger($party . '_advanced')->index()->nullable();
+                        $table->unsignedInteger($party . '_station')->index()->nullable();
                     }
+                    $table->unsignedInteger($party . '_advanced')->index()->nullable();
 
                 }
 
@@ -532,13 +532,14 @@ class ProjectController extends AppBaseController
             $parties = explode(',', $project->parties);
             Schema::table($dbname, function ($table) use ($project, $section_name, $parties, $dbname) {
                 foreach ($parties as $party) {
-                    if (!Schema::hasColumn($dbname, $party . '_station')) {
-                        $table->unsignedInteger($party . '_station')->index()->nullable();
-                    }
                     if ($project->type != 'tabulation') {
-                        if (!Schema::hasColumn($dbname, $party . '_advanced')) {
-                            $table->unsignedInteger($party . '_advanced')->index()->nullable();
+                        if (!Schema::hasColumn($dbname, $party . '_station')) {
+                            $table->unsignedInteger($party . '_station')->index()->nullable();
                         }
+                    }
+
+                    if (!Schema::hasColumn($dbname, $party . '_advanced')) {
+                        $table->unsignedInteger($party . '_advanced')->index()->nullable();
                     }
 
                 }

@@ -20,7 +20,7 @@ return [
     'add_new' => 'အသစ်လုပ်ရန်',
     'edit' => 'ပြင်ရန်',
     'list_samples' => 'ပုံစံစာရင်း',
-    'list_incidents' => 'List Incidents',
+    'list_incidents' => 'ထူခြားဖြစ်စဉ်စာရင်း',
     'response' => 'အဖြေရရှိနှုန်း',
     'analysis' => 'Analysis',
     'in_report' => 'ဇယားတွင်ပြရန်',
