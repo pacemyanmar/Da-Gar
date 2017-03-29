@@ -666,8 +666,21 @@ class ProjectController extends AppBaseController
     {
         $sample_id = $request->input('sample');
         $project = $this->projectRepository->findWithoutFail($project_id);
+
+        if (empty($project)) {
+            Flash::error('Project not found');
+
+            return redirect()->back();
+        }
+
         $sampleDb = $project->samplesDb()->first();
         $sampleData = SampleData::where('idcode', $sample_id)->first();
+
+        if (empty($sampleData)) {
+            Flash::error('Project not found');
+
+            return redirect()->back();
+        }
 
         $last_form_id = Sample::where('sample_data_id', $sampleData->id)
             ->where('project_id', $project->id)
