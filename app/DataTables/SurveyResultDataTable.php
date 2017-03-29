@@ -372,6 +372,9 @@ class SurveyResultDataTable extends DataTable
     {
         $auth = Auth::user();
         $locale = \App::getLocale();
+        $project = $this->project;
+        $sampleData = DB::table('sample_datas')->where('type', $project->dblink)->where('dbgroup', $project->dbgroup);
+
         if ($auth->role->level > 7) {
             $button = [
                 'extend' => 'collection',
@@ -386,35 +389,47 @@ class SurveyResultDataTable extends DataTable
             $button = [];
         }
 
-        $townships = $this->project->samplesData->pluck('township_trans', 'township')->unique();
+        $township_query = "township, township_trans";
+
+        $townships = $sampleData->select(DB::raw($township_query))->get()->unique();
+
         $township_option = "";
-        foreach ($townships as $township => $tsp_trans) {
+        foreach ($townships as $key => $township) {
             if ($locale == config('app.fallback_locale')) {
-                $township_option .= "<option value=\"$township\">$township</option>";
+                $township_option .= "<option value=\"$township->township\">$township->township</option>";
             } else {
-                $township_option .= "<option value=\"$township\">$tsp_trans[$locale]</option>";
+                $township_trans = json_decode($township->township_trans, true);
+
+                $township_option .= "<option value=\"$township->township\">$township_trans[$locale]</option>";
             }
 
         }
 
-        $districts = $this->project->samplesData->pluck('district_trans', 'district')->unique();
+        $district_query = "district, district_trans";
+
+        $districts = $sampleData->select(DB::raw($district_query))->get()->unique();
+
         $district_option = "";
-        foreach ($districts as $district => $tsp_trans) {
+        foreach ($districts as $key => $district) {
             if ($locale == config('app.fallback_locale')) {
-                $district_option .= "<option value=\"$district\">$district</option>";
+                $district_option .= "<option value=\"$district->district\">$district->district</option>";
             } else {
-                $district_option .= "<option value=\"$district\">$tsp_trans[$locale]</option>";
+                $district_trans = json_decode($district->district_trans, true);
+                $district_option .= "<option value=\"$district->district\">$district_trans[$locale]</option>";
             }
 
         }
 
-        $states = $this->project->samplesData->pluck('state_trans', 'state')->unique();
+        $state_query = "state, state_trans";
+        $states = $sampleData->select(DB::raw($state_query))->get()->unique();
+
         $state_option = "";
-        foreach ($states as $state => $tsp_trans) {
+        foreach ($states as $key => $state) {
             if ($locale == config('app.fallback_locale')) {
-                $state_option .= "<option value=\"$state\">$state</option>";
+                $state_option .= "<option value=\"$state->state\">$state->state</option>";
             } else {
-                $state_option .= "<option value=\"$state\">$tsp_trans[$locale]</option>";
+                $state_trans = json_decode($state->state_trans, true);
+                $state_option .= "<option value=\"$state->state\">$state_trans[$locale]</option>";
             }
 
         }
