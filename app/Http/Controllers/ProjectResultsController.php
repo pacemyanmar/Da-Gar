@@ -621,9 +621,10 @@ class ProjectResultsController extends AppBaseController
                 }
             }
 
-            $voters = $section_inputs->where('inputid', 'ballot_table')->all();
+            $voters = $origin_inputs->where('inputid', 'ballot_table')->all();
 
             if (!empty($voters) && isset($rem)) {
+
                 if ($rem != 5) {
                     $results['section' . $section_key . 'status'] = 2;
                 }
@@ -669,9 +670,11 @@ class ProjectResultsController extends AppBaseController
                         // tabulation validation
                         if (($rem1 != ($rem2 + $rem5)) || ($rem2 != ($rem3 + $rem4)) || $total_party_advanced > $rem3) {
                             $results['section' . $section_key . 'status'] = 3;
+                        } else {
+                            $results['section' . $section_key . 'status'] = 1;
                         }
+                        $tabulation = true;
                     }
-
                 }
             }
 
@@ -685,8 +688,10 @@ class ProjectResultsController extends AppBaseController
                 $empty_inputs = array_fill_keys($section_all_inputs, null);
                 $results_to_save = array_merge($empty_inputs, $results);
             }
+            if ($project->type == 'tabulation' && isset($tabulation)) {
+                $results_to_save = array_merge($results_to_save, $results);
+            }
         }
-
         $sample_type = $request->input('sample');
 
         $results_to_save['sample'] = (isset($sample_type)) ? $sample_type : 1;
