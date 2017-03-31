@@ -93,7 +93,7 @@ class SurveyResultDataTable extends DataTable
     public function ajax()
     {
         $orderTable = str_plural($this->project->dblink);
-        $orderBy = (isset($this->orderBy)) ? $orderTable . '.' . $this->orderBy : $orderTable . '.id';
+        $orderBy = (isset($this->orderBy)) ? $orderTable . '.' . $this->orderBy : 'sample_datas.idcode';
         $order = (isset($this->order)) ? $this->order : 'asc';
 
         $table = $this->datatables
@@ -102,7 +102,7 @@ class SurveyResultDataTable extends DataTable
 
         $table->addColumn('action', 'projects.sample_datatables_actions');
 
-        $table->orderColumn($orderBy, DB::raw('LENGTH(' . $orderBy . ')') . " $1");
+        //$table->orderColumn($orderBy, DB::raw('LENGTH(' . $orderBy . ')') . " $1");
 
         return $table->make(true);
     }
@@ -117,7 +117,7 @@ class SurveyResultDataTable extends DataTable
         $auth = Auth::user();
         // create table name
         $table = str_plural($this->project->dblink);
-        $orderBy = (isset($this->orderBy)) ? $table . '.' . $this->orderBy : $table . '.id';
+        $orderBy = (isset($this->orderBy)) ? $table . '.' . $this->orderBy : 'sample_datas.idcode';
         $order = (isset($this->order)) ? $this->order : 'asc';
 
         // dblink
@@ -131,7 +131,7 @@ class SurveyResultDataTable extends DataTable
         array_walk($tableColumnsArray, function (&$column, $index) use ($table) {
             switch ($column) {
                 case 'form_id':
-                    $column = 'samples.' . $column;
+                    $column = 'samples.' . $column . ' as sform_id';
                     break;
 
                 case 'user_id':
@@ -144,7 +144,7 @@ class SurveyResultDataTable extends DataTable
                     $column = 'IF(sample_datas.mobile2 IS NOT NULL,CONCAT(sample_datas.mobile,"(1) <br>",sample_datas.mobile2,"(2)"),sample_datas.mobile) as mobile';
                     break;
                 default:
-                    $column = 'sample_datas.' . $column;
+                    $column = 'sample_datas.' . $column . ' AS s' . $column;
                     break;
             }
 
@@ -194,7 +194,7 @@ class SurveyResultDataTable extends DataTable
 
         $input_columns = implode(',', $columnsFromResults);
 
-        $defaultColumns = "samples.id as samples_id, samples.form_id, sample_datas.idcode, sample_datas.id as data_id, sample_datas.*";
+        $defaultColumns = "samples.id as samples_id, samples.form_id, sample_datas.idcode,sample_datas.ps_number,sample_datas.spotchecker_code,sample_datas.type,sample_datas.dbgroup,sample_datas.sample,sample_datas.area_type,sample_datas.code,sample_datas.gender,sample_datas.nrc_id,sample_datas.dob,sample_datas.father,sample_datas.mother,sample_datas.ethnicity,sample_datas.current_org,sample_datas.line_phone,sample_datas.education,sample_datas.email,sample_datas.address,sample_datas.language,sample_datas.code2,sample_datas.name2,sample_datas.gender2,sample_datas.nrc_id2,sample_datas.dob2,sample_datas.father2,sample_datas.mother2,sample_datas.ethnicity2,sample_datas.current_org2,sample_datas.mobile2,sample_datas.line_phone2,sample_datas.education2,sample_datas.email2,sample_datas.address2,sample_datas.language2,sample_datas.village,sample_datas.ward,sample_datas.village_tract,sample_datas.township,sample_datas.district,sample_datas.state,sample_datas.parent_id,sample_datas.created_at,sample_datas.updated_at,sample_datas.name_trans,sample_datas.gender_trans,sample_datas.nrc_id_trans,sample_datas.father_trans,sample_datas.mother_trans,sample_datas.address_trans,sample_datas.village_trans,sample_datas.ward_trans,sample_datas.village_tract_trans,sample_datas.township_trans,sample_datas.district_trans,sample_datas.state_trans,sample_datas.education_trans,sample_datas.ethnicity_trans,sample_datas.language_trans,sample_datas.bank_information_trans,sample_datas.mobile_provider_trans,sample_datas.parties";
         if ($table == 'enumerators') {
 
         }
@@ -311,6 +311,7 @@ class SurveyResultDataTable extends DataTable
             }
 
         }
+        $query->orderBy('sample_datas.idcode', 'asc');
         return $this->applyScopes($query);
     }
 
