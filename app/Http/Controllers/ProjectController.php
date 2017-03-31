@@ -378,7 +378,7 @@ class ProjectController extends AppBaseController
 
             foreach ($inputs as $k => $input) {
                 $sk = $k + 1;
-                $input->sort = $tosort . $sk;
+                $input->sort = $tosort . sprintf('%02d', $sk);
                 $input->save();
             }
         }
