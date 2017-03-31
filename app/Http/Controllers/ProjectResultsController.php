@@ -322,9 +322,9 @@ class ProjectResultsController extends AppBaseController
                     break;
             }
 
-            $input_columns[$column] = ['name' => $column, 'data' => $column, 'title' => $title, 'class' => 'result', 'orderable' => false, 'width' => '80px'];
+            $input_columns[$column] = ['name' => $dbname . '.' . $column, 'data' => $column, 'title' => $title, 'class' => 'result', 'orderable' => false, 'width' => '80px'];
             if (empty($project->parties)) {
-                $input_columns[$column . '_status'] = ['name' => $column . '_status', 'data' => $column . '_status', 'title' => $title . '_status', 'orderable' => false, 'visible' => false];
+                $input_columns[$column . '_status'] = ['name' => $dbname . '.' . $column . '_status', 'data' => $column . '_status', 'title' => $title . '_status', 'orderable' => false, 'visible' => false];
             }
 
             if (!$input->in_index) {

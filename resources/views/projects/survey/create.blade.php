@@ -55,6 +55,8 @@ window.url="{!! route('projects.surveys.save', ['project' => $project->id, 'samp
                     $section_status = 'danger';
                     $icon = 'remove';
                 }
+            } else {
+                $section_status = 'primary';
             }
 
         @endphp
