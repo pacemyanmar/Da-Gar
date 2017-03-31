@@ -120,7 +120,19 @@ class QuestionController extends AppBaseController
 
         $form_input['raw_ans'] = str_replace("'", "&#39;", $form_input['raw_ans']);
 
-        $form_input['qstatus'] = 'modified';
+        $need_rebuild = false;
+
+        if ($question->qnum != $form_input['qnum']) {
+            $need_rebuild = true;
+        }
+
+        if ($question->raw_ans != $form_input['raw_ans']) {
+            $need_rebuild = true;
+        }
+
+        if ($need_rebuild) {
+            $form_input['qstatus'] = 'modified';
+        }
 
         // $lang = config('app.fallback_locale');
 
@@ -129,24 +141,25 @@ class QuestionController extends AppBaseController
         // $form_input['question_trans'] = json_encode([$lang => $form_input['question']]);
 
         $new_question = $this->questionRepository->update($form_input, $id);
+        if ($need_rebuild) {
+            $args = [
+                'question' => $new_question,
+                'project' => $project,
+                'section' => $section_id,
+            ];
 
-        $args = [
-            'question' => $new_question,
-            'project' => $project,
-            'section' => $section_id,
-        ];
+            $render = $this->to_render($args, $form_input);
 
-        $render = $this->to_render($args, $form_input);
+            $inputs = $this->getInputs($render);
 
-        $inputs = $this->getInputs($render);
+            $new_question->surveyInputs()->delete();
+            $new_question->surveyInputs()->saveMany($inputs);
 
-        $new_question->surveyInputs()->delete();
-        $new_question->surveyInputs()->saveMany($inputs);
-
-        $project = $new_question->project;
-        if (Schema::hasTable($project->dbname)) {
-            $project->status = 'modified';
-            $project->save();
+            $project = $new_question->project;
+            if (Schema::hasTable($project->dbname)) {
+                $project->status = 'modified';
+                $project->save();
+            }
         }
 
         return $this->sendResponse($question->toArray(), 'Question updated successfully');
