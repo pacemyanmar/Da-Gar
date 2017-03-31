@@ -141,18 +141,19 @@ window.url="{!! route('projects.surveys.save', ['project' => $project->id, 'samp
     (function($) {
 
     if($(".none").is(':checked')) {
-          //  $('.none').siblings().prop("disabled", true);
-        } else {
-          //  $('.none').siblings().prop("disabled", false);
+          $(".none:checked").closest('.row').children().children().children().children('input').each(function(i, obj) {
+             obj.disabled = true;
+            });
+            $(".none").prop("disabled", false);
         }
     $("input.none").change(function(e){
         if($(this).is(':checked')) {
-            $(this).closest('.row').children().children().children().children('input:checkbox').each(function(i, obj) {
+            $(this).closest('.row').children().children().children().children('input').each(function(i, obj) {
              obj.disabled = true;
             });
             $(this).prop("disabled", false);
         } else {
-            $(this).closest('.row').children().children().children().children('input:checkbox').each(function(i, obj) {
+            $(this).closest('.row').children().children().children().children('input').each(function(i, obj) {
              obj.disabled = false;
             });
         }
