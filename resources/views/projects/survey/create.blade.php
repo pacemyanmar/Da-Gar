@@ -168,7 +168,10 @@ window.url="{!! route('projects.surveys.save', ['project' => $project->id, 'samp
             $(this).prop("disabled", false);
         } else {
             $(this).closest('.row').children().children().children().children('input').each(function(i, obj) {
+            if(obj.type != 'text') {
+             obj.checked = false;
              obj.disabled = false;
+            }
             });
         }
     });
@@ -190,7 +193,7 @@ window.url="{!! route('projects.surveys.save', ['project' => $project->id, 'samp
 
             request = sendAjax(url,ajaxData)
 
-            console.log(request);
+            //console.log(request);
 
             request.done(function( msg ) {
                 $('#submitted').html(msg.message);
@@ -214,7 +217,7 @@ window.url="{!! route('projects.surveys.save', ['project' => $project->id, 'samp
                 if(id == 'survey-form') {
                     window.location.href = "{{ route('projects.surveys.index', $project->id) }}";
                 } else {
-                    //window.location.reload();
+                    window.location.reload();
                 }
             })
             $('#'+id).find(":input").filter(function(){ return !this.value; }).removeAttr("disabled");
