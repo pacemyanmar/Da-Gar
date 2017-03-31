@@ -35,35 +35,46 @@ window.url="{!! route('projects.surveys.save', ['project' => $project->id, 'samp
         @foreach($project->sectionsDb as $section_key => $section)
         @php
             //section as css class name
-            $sectionClass = str_slug($section->sectionname, $separator = "-")
+            $sectionClass = str_slug($section->sectionname, $separator = "-");
+            $section_num = $section_key + 1;
+            $section_status = $results->{'section'.$section_num.'status'};
+            if( isset($results) ) {
+                if( $section_status == 0) {
+                    $section_status = 'danger';
+                    $icon = 'remove';
+                } else if($section_status  == 1) {
+                    $section_status = 'success';
+                    $icon = 'ok';
+                } else if($section_status  == 2) {
+                    $section_status = 'warning';
+                    $icon = 'ban-circle';
+                } else if($section_status  == 3) {
+                    $section_status = 'info';
+                    $icon = 'alert';
+                } else {
+                    $section_status = 'danger';
+                    $icon = 'remove';
+                }
+            }
+
         @endphp
-        <div class="panel panel-primary" id="{!! $sectionClass !!}">
+        <div class="panel panel-{{ $section_status }}" id="{!! $sectionClass !!}">
             <div class="panel-heading">
                 <div class="panel-title">
                     {!! $section->sectionname !!} <small> {!! (!empty($section->descriptions))?" | ".$section->descriptions:"" !!}</small>
 
                     @if( isset($results) )
                         <span class="pull-right">
-                        @if($results->{'section'.($section_key + 1).'status'} == 0)
+                        <span class="badge">
+                            <span class="glyphicon glyphicon-{{ $icon }}"></span>
+                        </span>
+                        </span>
+                    @else
+                        <span class="pull-right">
                         <span class="badge">
                             <span class="glyphicon glyphicon-remove text-danger"></span>
                         </span>
-                        @elseif($results->{'section'.($section_key + 1).'status'} == 1)
-                        <span class="badge">
-                            <span class="glyphicon glyphicon-ok text-success"></span>
                         </span>
-                        @elseif($results->{'section'.($section_key + 1).'status'} == 2)
-                        <span class="badge">
-                            <span class="glyphicon glyphicon-ban-circle text-warning"></span>
-                        </span>
-                        @else($results->{'section'.($section_key + 1).'status'} == 3)
-                        <span class="badge">
-                            <span class="glyphicon glyphicon-alert text-danger"></span>
-                        </span>
-                        @endif
-                        </span>
-                    @else
-                        <span class="pull-right"><img src='{!! asset('images/missing.png') !!}'></span>
                     @endif
                 </div>
             </div>
