@@ -626,7 +626,11 @@ class ProjectController extends AppBaseController
                                 $inputType = 'string';
                                 break;
                             case 'checkbox':
-                                $inputType = 'unsignedSmallInteger';
+                                if ($input->other) {
+                                    $inputType = 'string';
+                                } else {
+                                    $inputType = 'unsignedSmallInteger';
+                                }
                                 break;
 
                             case 'number':
