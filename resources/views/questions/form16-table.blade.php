@@ -245,6 +245,12 @@ $( "input[name='result[advanced_voters]']" ).on('keyup', function(e){
  	} else {
  		$('#log7').remove();
  	}
+
+ 	if(error && !$('#ballot-error').is(':empty')) {
+ 		$('#ballot-error').addClass('alert alert-danger ');
+ 	} else {
+ 		$('#ballot-error').removeClass('alert alert-danger ').html('');
+ 	}
 })
 
 $('.remarks').on('keyup', function(e){

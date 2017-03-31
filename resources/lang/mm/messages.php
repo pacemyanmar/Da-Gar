@@ -86,7 +86,7 @@ return [
     'description' => 'ဖော်ပြချက်',
     'created_at' => 'ထည့်သွင်းချိန်',
     'updated_at' => 'ပြုပြင်ချိန်',
-    'action' => 'လုပ်ဆောင်ရန်',
+    'action' => '',
     'are_you_sure' => 'ဖျက်မှာ သေချာရဲ့လား',
     'add_translation' => 'ဘာသာပြန်ပါ',
     'print' => 'ပုံနှိပ်',
