@@ -128,17 +128,30 @@ if(isset($sample)) {
         	party_advanced += each_advanced;
     	}
     });
+    var error = false;
 
     if(party_advanced > rem3){
-    	$('#ballot-error').addClass('alert alert-danger ').html('Check USDP and NLD advanced votes and Remarks 3.');
-    } else if(rem1 && rem2 && rem5 && (rem1 != (rem2 + rem5) ) ) {
-		$('#ballot-error').addClass('alert alert-danger ').html('Check remarks 1, 2 and 5.');
- 	} else if( rem2 && rem3 && rem4 && ( rem2 != (rem3 + rem4)) ) {
- 		$('#ballot-error').addClass('alert alert-danger ').html('Check remarks 2, 3 and 4.' );
+    	error = true;
+    	$('#log10').remove();
+    	$('#ballot-error').append('<div id="log10">{{ trans('ballots.log10') }}<br></div>');
+    }
+    if(rem1 && rem2 && rem5 && (rem1 != (rem2 + rem5) ) ) {
+    	error = true;
+    	$('#log11').remove();
+		$('#ballot-error').append('<div id="log11">{{ trans('ballots.log11') }}<br></div>');
+ 	}
+ 	if( rem2 && rem3 && rem4 && ( rem2 != (rem3 + rem4)) ) {
+ 		error = true;
+ 		$('#log12').remove();
+ 		$('#ballot-error').append('<div id="log12">{{ trans('ballots.log12') }}<br></div>' );
+ 	}
+
+ 	if(error && !$('#ballot-error').is(':empty')) {
+ 		$('#ballot-error').addClass('alert alert-danger ');
+ 		error = false;
  	} else {
  		$('#ballot-error').removeClass('alert alert-danger ').html('');
  	}
-
 
 $('.remarks').on('keyup', function(e){
 	var rem1 = parseInt($('#rem1').val(), 10);
@@ -157,14 +170,35 @@ $('.remarks').on('keyup', function(e){
     });
 
     if(party_advanced > rem3){
-    	$('#ballot-error').addClass('alert alert-danger ').html('Check USDP and NLD advanced votes and Remarks 3.');
-    } else if(rem1 && rem2 && rem5 && (rem1 != (rem2 + rem5) ) ){
-		$('#ballot-error').addClass('alert alert-danger ').html('Check remarks 1, 2 and 5.');
- 	} else if( rem2 && rem3 && rem4 && ( rem2 != (rem3 + rem4)) ) {
- 		$('#ballot-error').addClass('alert alert-danger ').html('Check remarks 2, 3 and 4.' );
+    	error = true;
+    	$('#log10').remove();
+    	$('#ballot-error').append('<div id="log10">{{ trans('ballots.log10') }}<br></div>');
+    } else {
+    	$('#log10').remove();
+    }
+    if(rem1 && rem2 && rem5 && (rem1 != (rem2 + rem5) ) ){
+    	error = true;
+    	$('#log11').remove();
+		$('#ballot-error').append('<div id="log11">{{ trans('ballots.log11') }}<br></div>');
+ 	} else {
+ 		$('#log11').remove();
+ 	}
+
+ 	if( rem2 && rem3 && rem4 && ( rem2 != (rem3 + rem4)) ) {
+ 		error = true;
+ 		$('#log12').remove();
+ 		$('#ballot-error').append('<div id="log12">{{ trans('ballots.log12') }}<br></div>' );
+ 	} else {
+ 		$('#log12').remove();
+ 	}
+
+ 	if(error && !$('#ballot-error').is(':empty')) {
+ 		$('#ballot-error').addClass('alert alert-danger ');
+ 		error = false;
  	} else {
  		$('#ballot-error').removeClass('alert alert-danger ').html('');
  	}
+
 });
 
 
@@ -184,15 +218,37 @@ $('.party-advanced').on('keyup', function(e){
     	}
     });
 
+
     if(party_advanced > rem3){
-    	$('#ballot-error').addClass('alert alert-danger ').html('Check USDP and NLD advanced votes and Remarks 3.');
-    } else if(rem1 && rem2 && rem5 && (rem1 != (rem2 + rem5) ) ){
-		$('#ballot-error').addClass('alert alert-danger ').html('Check remarks 1, 2 and 5.');
- 	} else if( rem2 && rem3 && rem4 && ( rem2 != (rem3 + rem4)) ) {
- 		$('#ballot-error').addClass('alert alert-danger ').html('Check remarks 2, 3 and 4.' );
+    	error = true;
+    	$('#log10').remove();
+    	$('#ballot-error').append('<div id="log10">{{ trans('ballots.log10') }}<br></div>');
+    } else {
+    	$('#log10').remove();
+    }
+    if(rem1 && rem2 && rem5 && (rem1 != (rem2 + rem5) ) ){
+    	error = true;
+    	$('#log11').remove();
+		$('#ballot-error').append('<div id="log11">{{ trans('ballots.log11') }}<br></div>');
+ 	} else {
+ 		$('#log11').remove();
+ 	}
+
+ 	if( rem2 && rem3 && rem4 && ( rem2 != (rem3 + rem4)) ) {
+ 		error = true;
+ 		$('#log12').remove();
+ 		$('#ballot-error').append('<div id="log12">{{ trans('ballots.log12') }}<br></div>' );
+ 	} else {
+ 		$('#log12').remove();
+ 	}
+
+ 	if(error && !$('#ballot-error').is(':empty')) {
+ 		$('#ballot-error').addClass('alert alert-danger ');
+ 		error = false;
  	} else {
  		$('#ballot-error').removeClass('alert alert-danger ').html('');
  	}
+
 });
 
 

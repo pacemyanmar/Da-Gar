@@ -152,24 +152,43 @@ if(isset($sample)) {
         	party_advanced += each_advanced;
     	}
     });
-
+    var error = false;
     if(party_advanced > rem2){
-    	$('#ballot-error').addClass('alert alert-danger ').html('Check USDP and NLD advanced votes and Remarks 2.');
-    } else if(rem1 && rem2 && rem3 && rem4 && rem5 && ((rem1 + rem2) != (rem3 + rem4 + rem5) ) ){
-		$('#ballot-error').addClass('alert alert-danger ').html('Total ballots issued/cast <> total ballots counted. Check remarks 1 to 5.');
- 	} else if( ( rem4 / (rem1 + rem2 )) > 0.15 ) {
- 		$('#ballot-error').addClass('alert alert-danger ').html('High proportion of invalid votes compared to all cast votes. Check remarks 1,2 and 4. Ratio is ' + (rem4 / (rem1 + rem2 )) );
- 	} else if( ( rem5 / (rem1 + rem2 )) > 0.15 ) {
- 		$('#ballot-error').addClass('alert alert-danger ').html('High proportion of missing votes compared to all cast votes. Check remarks 1,2 and 5. Ratio is ' + (rem5 / (rem1 + rem2 )) );
- 	} else if( ( rem2 / (rem1 + rem2 )) > 0.1 ) {
- 		$('#ballot-error').addClass('alert alert-danger ').html('High proportion of advanced votes compared to all cast votes. Check remarks 1,2 and 5. Ratio is ' + (rem2 / (rem1 + rem2 )) );
- 	} else if( rvotes && totalrem && rvotes < totalrem ) {
- 		$('#ballot-error').addClass('alert alert-danger ').html('More votes than registered voters. Check remarks 1,2 and EA.' );
- 	} else if( rem2 && avotes && avotes != rem2 ) {
- 		$('#ballot-error').addClass('alert alert-danger ').html('Different number in Form 13 and Form 16. Check remarks 2 and EB.' );
+    	error = true;
+    	$('#ballot-error').append('<div id="log1">{{ trans('ballots.log1') }}<br></div>');
+    }
+
+    if(rem1 && rem2 && rem3 && rem4 && rem5 && ((rem1 + rem2) != (rem3 + rem4 + rem5) ) ){
+    	error = true;
+		$('#ballot-error').append('<div id="log2">{{ trans('ballots.log2') }}<br></div>');
+ 	}
+ 	if( ( rem4 / (rem1 + rem2 )) > 0.15 ) {
+ 		error = true;
+ 		$('#ballot-error').append('<div id="log3">{{ trans('ballots.log3') }} ' + (rem4 / (rem1 + rem2 ) ) + '<br></div>');
+ 	}
+ 	if( ( rem5 / (rem1 + rem2 )) > 0.15 ) {
+ 		error = true;
+ 		$('#ballot-error').append('<div id="log4">{{ trans('ballots.log4') }} ' + (rem5 / (rem1 + rem2 ))  + '<br></div>');
+ 	}
+ 	if( ( rem2 / (rem1 + rem2 )) > 0.1 ) {
+ 		error = true;
+ 		$('#ballot-error').append('<div id="log5">{{ trans('ballots.log5') }} ' + (rem2 / (rem1 + rem2 ))  + '<br></div>');
+ 	}
+ 	if( rvotes && totalrem && rvotes < totalrem ) {
+ 		error = true;
+ 		$('#ballot-error').append('<div id="log6">{{ trans('ballots.log6') }}<br></div>' );
+ 	}
+ 	if( rem2 && avotes && avotes != rem2 ) {
+ 		error = true;
+ 		$('#ballot-error').append('<div id="log7">{{ trans('ballots.log7') }}<br></div>' );
+ 	}
+
+ 	if(error && !$('#ballot-error').is(':empty')) {
+ 		$('#ballot-error').addClass('alert alert-danger ');
  	} else {
  		$('#ballot-error').removeClass('alert alert-danger ').html('');
  	}
+
 
 $( "input[name='result[registered_voters]']" ).on('keyup', function(e){
  	var rvotes = $( "input[name='result[registered_voters]']" ).val();
@@ -182,13 +201,28 @@ $( "input[name='result[registered_voters]']" ).on('keyup', function(e){
  	var votes = av / (rv + av);
 
  	if(rvotes && avotes && (votes > 0.1)) {
-		$('#ballot-error').addClass('alert alert-danger ').html('Check EA and EB values. High proportion of advanced votes compared to registered voters. Ratio is ' + votes);
- 	} else if( rvotes < totalrem ) {
- 		$('#ballot-error').addClass('alert alert-danger ').html('More votes than registered voters. Check remarks 1,2 and EA.' );
+ 		error = true;
+ 		$('#log8').remove();
+		$('#ballot-error').append('<div id="log8">{{ trans('ballots.log8') }} ' + votes + '<br></div>');
+ 	} else {
+ 		error = false;
+ 		$('#log8').remove();
+ 	}
+ 	if( rvotes < totalrem ) {
+ 		error = true;
+ 		$('#log6').remove();
+ 		$('#ballot-error').append('<div id="log6">{{ trans('ballots.log6') }}<br></div>' );
+ 	} else {
+ 		error = false;
+ 		$('#log6').remove();
+ 	}
+ 	if(error && !$('#ballot-error').is(':empty')) {
+ 		$('#ballot-error').addClass('alert alert-danger ');
  	} else {
  		$('#ballot-error').removeClass('alert alert-danger ').html('');
  	}
 })
+
 $( "input[name='result[advanced_voters]']" ).on('keyup', function(e){
  	var rvotes = $( "input[name='result[registered_voters]']" ).val();
  	var avotes = $( "input[name='result[advanced_voters]']" ).val();
@@ -198,11 +232,18 @@ $( "input[name='result[advanced_voters]']" ).on('keyup', function(e){
  	var votes = av / (rv + av);
 
  	if(rvotes && avotes && (votes > 0.1)) {
-		$('#ballot-error').addClass('alert alert-danger ').html('Check EA and EB values. High proportion of advanced votes compared to registered voters. Ratio is ' + votes);
- 	} else if( rem2 && avotes != rem2 ) {
- 		$('#ballot-error').addClass('alert alert-danger ').html('Different number in Form 13 and Form 16. Check remarks 2 and EB.' );
+ 		error = true;
+ 		$('#log8').remove();
+		$('#ballot-error').append('<div id="log8">{{ trans('ballots.log8') }} ' + votes + '<br></div>');
  	} else {
- 		$('#ballot-error').removeClass('alert alert-danger ').html('');
+ 		$('#log8').remove();
+ 	}
+ 	if( rem2 && avotes != rem2 ) {
+ 		error = true;
+ 		$('#log7').remove();
+ 		$('#ballot-error').append('<div id="log7">{{ trans('ballots.log7') }}<br></div>' );
+ 	} else {
+ 		$('#log7').remove();
  	}
 })
 
@@ -228,21 +269,60 @@ $('.remarks').on('keyup', function(e){
         	party_advanced += each_advanced;
     	}
     });
-
+    console.log(party_advanced);
     if(party_advanced > rem2){
-    	$('#ballot-error').addClass('alert alert-danger ').html('Check USDP and NLD advanced votes and Remarks 2.');
-    } else if(rem1 && rem2 && rem3 && rem4 && rem5 && ((rem1 + rem2) != (rem3 + rem4 + rem5) ) ){
-		$('#ballot-error').addClass('alert alert-danger ').html('Total ballots issued/cast <> total ballots counted. Check remarks 1 to 5.');
- 	} else if( ( rem4 / (rem1 + rem2 )) > 0.15 ) {
- 		$('#ballot-error').addClass('alert alert-danger ').html('High proportion of invalid votes compared to all cast votes. Check remarks 1,2 and 4. Ratio is ' + (rem4 / (rem1 + rem2 )) );
- 	} else if( ( rem5 / (rem1 + rem2 )) > 0.15 ) {
- 		$('#ballot-error').addClass('alert alert-danger ').html('High proportion of missing votes compared to all cast votes. Check remarks 1,2 and 5. Ratio is ' + (rem5 / (rem1 + rem2 )) );
- 	} else if( ( rem2 / (rem1 + rem2 )) > 0.1 ) {
- 		$('#ballot-error').addClass('alert alert-danger ').html('High proportion of advanced votes compared to all cast votes. Check remarks 1,2 and 5. Ratio is ' + (rem2 / (rem1 + rem2 )) );
- 	} else if( rvotes && totalrem && rvotes < totalrem ) {
- 		$('#ballot-error').addClass('alert alert-danger ').html('More votes than registered voters. Check remarks 1,2 and EA.' );
- 	} else if( rem2 && avotes && avotes != rem2 ) {
- 		$('#ballot-error').addClass('alert alert-danger ').html('Different number in Form 13 and Form 16. Check remarks 2 and EB.' );
+    	error = true;
+    	$('#log1').remove();
+    	$('#ballot-error').append('<div id="log1">{{ trans('ballots.log1') }}<br></div>');
+    } else {
+ 		$('#log1').remove();
+ 	}
+
+    if(rem1 && rem2 && rem3 && rem4 && rem5 && ((rem1 + rem2) != (rem3 + rem4 + rem5) ) ){
+    	error = true;
+    	$('#log2').remove();
+		$('#ballot-error').append('<div id="log2">{{ trans('ballots.log2') }}<br></div>');
+ 	} else {
+ 		$('#log2').remove();
+ 	}
+ 	if( ( rem4 / (rem1 + rem2 )) > 0.15 ) {
+ 		error = true;
+ 		$('#log3').remove();
+ 		$('#ballot-error').append('<div id="log3"> {{ trans('ballots.log3') }} ' + (rem4 / (rem1 + rem2 ) ) + '<br></div>');
+ 	} else {
+ 		$('#log3').remove();
+ 	}
+ 	if( ( rem5 / (rem1 + rem2 )) > 0.15 ) {
+ 		error = true;
+ 		$('#log4').remove();
+ 		$('#ballot-error').append('<div id="log4">{{ trans('ballots.log4') }} ' + (rem5 / (rem1 + rem2 ))  + '<br></div>');
+ 	} else {
+ 		$('#log4').remove();
+ 	}
+ 	if( ( rem2 / (rem1 + rem2 )) > 0.1 ) {
+ 		error = true;
+ 		$('#log5').remove();
+ 		$('#ballot-error').append('<div id="log5">{{ trans('ballots.log5') }} ' + (rem2 / (rem1 + rem2 ))  + '<br></div>');
+ 	} else {
+ 		$('#log5').remove();
+ 	}
+ 	if( rvotes && totalrem && rvotes < totalrem ) {
+ 		error = true;
+ 		$('#log6').remove();
+ 		$('#ballot-error').append('<div id="log6">{{ trans('ballots.log6') }}<br></div>' );
+ 	} else {
+ 		$('#log6').remove();
+ 	}
+ 	if( rem2 && avotes && avotes != rem2 ) {
+ 		error = true;
+ 		$('#log7').remove();
+ 		$('#ballot-error').append('<div id="log7">{{ trans('ballots.log7') }}<br></div>' );
+ 	} else {
+ 		$('#log7').remove();
+ 	}
+
+ 	if(error && !$('#ballot-error').is(':empty')) {
+ 		$('#ballot-error').addClass('alert alert-danger ');
  	} else {
  		$('#ballot-error').removeClass('alert alert-danger ').html('');
  	}
@@ -259,8 +339,16 @@ $('.party-advanced').on('keyup', function(e){
     	}
     });
     if(rem2 && party_advanced > rem2){
-    	$('#ballot-error').addClass('alert alert-danger ').html('Check USDP and NLD advanced votes and Remarks 2. (USDP + NLD) > Remarks 2');
-    }else {
+    	error = true;
+    	$('#log1').remove()
+    	$('#ballot-error').addClass('alert alert-danger ').html('<div id="log1">{{ trans('ballots.log1') }}<br></div>');
+    } else {
+    	$('#log1').remove()
+ 	}
+
+ 	if(error && !$('#ballot-error').is(':empty')) {
+ 		$('#ballot-error').addClass('alert alert-danger ');
+ 	} else {
  		$('#ballot-error').removeClass('alert alert-danger ').html('');
  	}
 });

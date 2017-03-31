@@ -8,13 +8,26 @@
     @php
     	$options = [
 		'class' => $element->className.' form-control zawgyi '.$sectionClass,
-		'id' => $element->id,
+		'id' => $element->id.'text',
 		'placeholder' => Kanaung\Facades\Converter::convert($element->label,'unicode','zawgyi'),
 		'aria-describedby'=> $element->id.'-addons',
-		'autocomplete' => 'off'
+		'autocomplete' => 'off',
+		'disabled' => true
 		];
     @endphp
     	{!! Form::text("result[".$element->inputid."]", (isset($results))?Kanaung\Facades\Converter::convert($results->{$element->inputid},'unicode','zawgyi'):null, $options) !!}
+    	@push('document-ready')
+    		if($('#{{ $element->id }}').is(':checked')){
+    				$('#{{ $element->id.'text' }}').prop('disabled', false);
+    			}
+    		$('#{{ $element->id }}').change(function(){
+    			if($(this).is(':checked')){
+    				$('#{{ $element->id.'text' }}').prop('disabled', false);
+    			} else {
+    				$('#{{ $element->id.'text' }}').prop('disabled', true);
+    			}
+    		});
+    	@endpush
     @else
     {!! Form::checkbox("result[".$element->inputid."]", $element->value, (isset($results) && $element->value == $results->{$element->inputid}), ['class' => 'magic-checkbox '.$element->className.' '.$sectionClass, 'id' => $element->id, 'autocomplete' => 'off']) !!}
 	<label class="normal-text" for="{!! $element->id !!}">{!! $element->label !!} @if($element->value != '') <span class="label label-primary badge">{!! $element->value !!}</span> @endif
