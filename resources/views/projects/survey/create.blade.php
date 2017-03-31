@@ -37,8 +37,9 @@ window.url="{!! route('projects.surveys.save', ['project' => $project->id, 'samp
             //section as css class name
             $sectionClass = str_slug($section->sectionname, $separator = "-");
             $section_num = $section_key + 1;
-            $section_status = $results->{'section'.$section_num.'status'};
+
             if( isset($results) ) {
+                $section_status = $results->{'section'.$section_num.'status'};
                 if( $section_status == 0) {
                     $section_status = 'danger';
                     $icon = 'remove';
