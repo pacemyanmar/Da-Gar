@@ -113,4 +113,11 @@ return [
     'paginate.previous' => 'နောက်ပြန်',
     'aria.sortAscending' => ': activate to sort column ascending',
     'aria.sortDescending' => ': activate to sort column descending',
+    'missing' => 'မရှိ',
+    'incomplete' => 'မပြည့်စုံ',
+    'complete' => 'ပြည်စုံ',
+    'error' => 'အမှား',
+    'saveall' => 'အားလုံးသိမ်း',
+    'savesection' => 'ဒီအပိုင်းကို သိမ်းပါ',
+    'back' => 'စာရင်း',
 ];

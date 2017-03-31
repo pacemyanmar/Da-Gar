@@ -545,7 +545,7 @@ class SurveyResultDataTable extends DataTable
                             });
                             this.api().columns([$statusCols]).every( function () {
                               var column = this;
-                              var select = $('<select style=\"width:80% !important\"><option value=\"\">-</option><option value=\"0\">Missing</option><option value=\"1\">Complete</option><option value=\"2\">incomplete</option><option value=\"3\">Error</option></select>')
+                              var select = $('<select style=\"width:80% !important\"><option value=\"\">-</option><option value=\"0\">" . trans('messages.missing') . "</option><option value=\"1\">" . trans('messages.complete') . "</option><option value=\"2\">" . trans('messages.incomplete') . "</option><option value=\"3\">" . trans('messages.error') . "</option></select>')
                               .appendTo( $(column.header()) )
                               .on( 'change', function () {
                               var val = $.fn.dataTable.util.escapeRegex(

@@ -123,4 +123,11 @@ return [
     'paginate.previous' => 'Previous',
     'aria.sortAscending' => ': activate to sort column ascending',
     'aria.sortDescending' => ': activate to sort column descending',
+    'missing' => 'Missing',
+    'incomplete' => 'Incomplete',
+    'complete' => 'Complete',
+    'error' => 'Error',
+    'saveall' => 'Save All',
+    'savesection' => 'Save this Section',
+    'back' => 'Back to List',
 ];
