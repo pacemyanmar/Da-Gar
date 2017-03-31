@@ -142,8 +142,8 @@ if(isset($sample)) {
  	}
  	if( rem2 && rem3 && rem4 && ( rem2 != (rem3 + rem4)) ) {
  		error = true;
- 		$('#log12').remove();
- 		$('#ballot-error').append('<div id="log12">{{ trans('ballots.log12') }}<br></div>' );
+ 		$('#log9').remove();
+ 		$('#ballot-error').append('<div id="log9">{{ trans('ballots.log9') }}<br></div>' );
  	}
 
  	if(error && !$('#ballot-error').is(':empty')) {
@@ -186,10 +186,10 @@ $('.remarks').on('keyup', function(e){
 
  	if( rem2 && rem3 && rem4 && ( rem2 != (rem3 + rem4)) ) {
  		error = true;
- 		$('#log12').remove();
- 		$('#ballot-error').append('<div id="log12">{{ trans('ballots.log12') }}<br></div>' );
+ 		$('#log9').remove();
+ 		$('#ballot-error').append('<div id="log9">{{ trans('ballots.log9') }}<br></div>' );
  	} else {
- 		$('#log12').remove();
+ 		$('#log9').remove();
  	}
 
  	if(error && !$('#ballot-error').is(':empty')) {
@@ -236,10 +236,10 @@ $('.party-advanced').on('keyup', function(e){
 
  	if( rem2 && rem3 && rem4 && ( rem2 != (rem3 + rem4)) ) {
  		error = true;
- 		$('#log12').remove();
- 		$('#ballot-error').append('<div id="log12">{{ trans('ballots.log12') }}<br></div>' );
+ 		$('#log9').remove();
+ 		$('#ballot-error').append('<div id="log9">{{ trans('ballots.log9') }}<br></div>' );
  	} else {
- 		$('#log12').remove();
+ 		$('#log9').remove();
  	}
 
  	if(error && !$('#ballot-error').is(':empty')) {
