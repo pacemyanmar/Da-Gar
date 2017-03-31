@@ -316,9 +316,10 @@ class ProjectResultsController extends AppBaseController
                 case 'radio':
                     $title = $input->question->qnum;
                     break;
-
-                default:
+                case 'checkbox':
                     $title = $input->question->qnum . ' ' . $input->value;
+                default:
+                    $title = $input->question->qnum . ' ' . $input->type . $input->value;
                     break;
             }
 

@@ -361,7 +361,7 @@ class SurveyResultDataTable extends DataTable
      */
     protected function filename()
     {
-        return $this->project->project . time();
+        return $this->project->project_en . '-' . date("Y-m-d-H-i-s");
     }
 
     /**

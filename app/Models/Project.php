@@ -102,4 +102,9 @@ class Project extends Model
         }
         return $value;
     }
+
+    public function getProjectEnAttribute($value)
+    {
+        return $this->attributes['project'];
+    }
 }
