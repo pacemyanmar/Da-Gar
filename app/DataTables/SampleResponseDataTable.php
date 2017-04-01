@@ -177,6 +177,34 @@ class SampleResponseDataTable extends DataTable
                                 });
                             });
                         }",
+            "footerCallback" => function () {return "function ( row, data, start, end, display ) {
+                            var api = this.api();
+                            total = api
+                                .column( 1 )
+                                .data()
+                                .reduce( function (a, b) {
+                                    return parseInt(a, 10) + parseInt(b, 10);
+                                }, 0 );
+                            api.columns().every(function(){
+                                  var column = this;
+                                  console.log(column.data());
+                                  var sum = column
+                                      .data()
+                                      .reduce(function (a, b) {
+                                         a = parseInt(a, 10);
+                                         if(isNaN(a)){ a = 0; }
+
+                                         b = parseInt(b, 10);
+                                         if(isNaN(b)){ b = 0; }
+
+                                         return a + b;
+                                      });
+
+                                  $(column.footer()).html(sum + ' (' + parseFloat((sum * 100)/ total).toFixed(1) + '%)');
+                              });
+
+                            $(api.column(0).footer()).html('Total');
+                        }";},
         ];
     }
 

@@ -31,6 +31,19 @@
 @endforeach
 </tr>
 </thead>
+<tfoot>
+<tr>
+<td>State</td>
+<td>Total Forms</td>
+<td>Total</td>
+@foreach($project->sectionsDb as $section)
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+@endforeach
+</tr>
+</tfoot>
 </table>
 
 @section('scripts')
