@@ -177,7 +177,7 @@ class SampleResponseDataTable extends DataTable
                                 });
                             });
                         }",
-            "footerCallback" => function () {return "function ( row, data, start, end, display ) {
+            "footerCallback" => "function ( row, data, start, end, display ) {
                             var api = this.api();
                             total = api
                                 .column( 1 )
@@ -204,7 +204,7 @@ class SampleResponseDataTable extends DataTable
                               });
 
                             $(api.column(0).footer()).html('Total');
-                        }";},
+                        }",
         ];
     }
 
