@@ -14,9 +14,9 @@ use App\Repositories\ProjectRepository;
 use App\Repositories\QuestionRepository;
 use App\Repositories\SampleRepository;
 use App\Repositories\SurveyInputRepository;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Request;
 use Kanaung\Facades\Converter;
 use Laracasts\Flash\Flash;
 
@@ -797,7 +797,7 @@ class ProjectResultsController extends AppBaseController
         $value = Converter::convert($value, 'unicode', 'zawgyi');
     }
 
-    public function responseRateSample($project_id, $filter, SampleResponseDataTable $sampleResponse)
+    public function responseRateSample($project_id, $filter, SampleResponseDataTable $sampleResponse, Request $request)
     {
         $project = $this->projectRepository->findWithoutFail($project_id);
         if (empty($project)) {
@@ -824,7 +824,7 @@ class ProjectResultsController extends AppBaseController
                 break;
         }
 
-        $section_num = Request::input('section');
+        $section_num = $request->input('section');
 
         if ($section_num) {
             $sampleResponse->setSection($section_num);
