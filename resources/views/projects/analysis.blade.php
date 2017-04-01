@@ -64,7 +64,7 @@ $hasradio = false;
                                 <div class="col-sm-3">
                                 <ul class="list-group">
                                 @foreach ($surveyInputs as $k => $element)
-                                   <li class="list-group-item"><span class="badge" style="background-color: {{ $colors[$k] }};  min-height:10px;">&nbsp</span> {{ $element->label }} ( {{ number_format(($results->{$element->inputid.'_'.$element->value} * 100)/ $results->reported, 2, '.', '') }} % ) </li>
+                                   <li class="list-group-item"><span class="badge" style="background-color: {{ $colors[$k] }};  min-height:10px;">&nbsp</span> {{ $element->label }} ( {{ $results->{$element->inputid.'_'.$element->value} }} - {{ number_format(($results->{$element->inputid.'_'.$element->value} * 100)/ $results->reported, 2, '.', '') }} % ) </li>
 
                                    @push('d3-js')
                                         var data{!! $element->inputid.'_'.$element->value !!} = {label:"{!! $element->label !!}", color:"{!! $colors[$k] !!}", value: {{ number_format(($results->{$element->inputid.'_'.$element->value} * 100)/ $results->reported, 2, '.', '') }} }
@@ -79,7 +79,7 @@ $hasradio = false;
                                    @if(isset(${$question->qnum.'hasradio'}))
 
                                    <li class="list-group-item">
-                                   Missing ({{ number_format(($results->{'q'.$question->qnum.'_none'} * 100)/ $results->total, 2, '.', '') }} % )
+                                   Missing ( {{ $results->{'q'.$question->qnum.'_none'} }} - {{ number_format(($results->{'q'.$question->qnum.'_none'} * 100)/ $results->total, 2, '.', '') }} % )
                                    </li>
                                    @endif
                                 </ul>
