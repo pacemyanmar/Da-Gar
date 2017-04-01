@@ -304,24 +304,26 @@ class SurveyResultDataTable extends DataTable
 
         if ($totalstatus) {
             $tsvar = explode('_', $totalstatus);
-            foreach ($tsvar as $var) {
-                switch ($var) {
-                    case 'missing':
-                        $status = 0;
-                        break;
-                    case 'complete':
-                        $status = 1;
-                        break;
-                    case 'incomplete':
-                        $status = 2;
-                        break;
-                    case 'error':
-                        $status = 3;
-                        break;
+            if (count($tsvar) == 2) {
+                foreach ($tsvar as $var) {
+                    switch ($var) {
+                        case 'missing':
+                            $status = 0;
+                            break;
+                        case 'complete':
+                            $status = 1;
+                            break;
+                        case 'incomplete':
+                            $status = 2;
+                            break;
+                        case 'error':
+                            $status = 3;
+                            break;
 
-                    default:
-                        $section = $var;
-                        break;
+                        default:
+                            $section = $var;
+                            break;
+                    }
                 }
             }
         }
