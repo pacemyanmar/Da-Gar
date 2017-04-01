@@ -131,6 +131,8 @@ if(isset($sample)) {
 </div>
 
 @push('document-ready')
+
+
 	var rem1 = parseInt($('#rem1').val(), 10);
 	var rem2 = parseInt($('#rem2').val(), 10);
 	var rem3 = parseInt($('#rem3').val(), 10);
@@ -158,7 +160,7 @@ if(isset($sample)) {
     	$('#ballot-error').append('<div id="log1">{{ trans('ballots.log1') }}<br></div>');
     }
 
-    if(rem1 && rem2 && rem3 && rem4 && rem5 && ((rem1 + rem2) != (rem3 + rem4 + rem5) ) ){
+    if( ( !isNaN((rem1 + rem2) ) && !isNaN((rem3 + rem4 + rem5)) ) && ((rem1 + rem2) != (rem3 + rem4 + rem5) ) ){
     	error = true;
 		$('#ballot-error').append('<div id="log2">{{ trans('ballots.log2') }}<br></div>');
  	}
@@ -275,7 +277,7 @@ $('.remarks').on('keyup', function(e){
         	party_advanced += each_advanced;
     	}
     });
-    console.log(party_advanced);
+
     if(party_advanced > rem2){
     	error = true;
     	$('#log1').remove();
@@ -284,7 +286,7 @@ $('.remarks').on('keyup', function(e){
  		$('#log1').remove();
  	}
 
-    if(rem1 && rem2 && rem3 && rem4 && rem5 && ((rem1 + rem2) != (rem3 + rem4 + rem5) ) ){
+    if( ( !isNaN((rem1 + rem2) ) && !isNaN((rem3 + rem4 + rem5)) ) && ((rem1 + rem2) != (rem3 + rem4 + rem5) ) ){
     	error = true;
     	$('#log2').remove();
 		$('#ballot-error').append('<div id="log2">{{ trans('ballots.log2') }}<br></div>');
