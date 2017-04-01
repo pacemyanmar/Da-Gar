@@ -14,9 +14,9 @@ use App\Repositories\ProjectRepository;
 use App\Repositories\QuestionRepository;
 use App\Repositories\SampleRepository;
 use App\Repositories\SurveyInputRepository;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Request;
 use Kanaung\Facades\Converter;
 use Laracasts\Flash\Flash;
 
@@ -823,7 +823,16 @@ class ProjectResultsController extends AppBaseController
                 $project_type = 'db2sample';
                 break;
         }
-        return $sampleResponse->render('projects.survey.' . $project_type . '.response-sample', compact('project', $project), compact('filter', $filter));
+
+        $section_num = Request::input('section');
+
+        if ($section_num) {
+            $sampleResponse->setSection($section_num);
+        }
+
+        $filters = ['type' => $filter, 'section_num' => $section_num];
+
+        return $sampleResponse->render('projects.survey.' . $project_type . '.response-sample', compact('project', $project), compact('filters', $filters));
     }
 
     public function responseRateDouble($project_id, $section, DoubleResponseDataTable $doubleResponse)

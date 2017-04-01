@@ -8,10 +8,10 @@
         <span class="pull-right">
         <label>Response rate by:
            <select autocomplete="off" id="responseBy" class="form-control input-md">
-               <option value="{!! route('projects.response.filter', [$project->id, 'state']) !!}" @if($filter === 'state') selected="selected" @endif>State</option>
-               <option value="{!! route('projects.response.filter', [$project->id, 'district']) !!}" @if($filter === 'district') selected="selected" @endif>District</option>
-               <option value="{!! route('projects.response.filter', [$project->id, 'township']) !!}" @if($filter === 'township') selected="selected" @endif>Township</option>
-               <option value="{!! route('projects.response.filter', [$project->id, 'user']) !!}" @if($filter === 'user') selected="selected" @endif>Data Clerk</option>
+               <option value="{!! route('projects.response.filter', [$project->id, 'state']) !!}" @if($filters['type'] === 'state') selected="selected" @endif>State</option>
+               <option value="{!! route('projects.response.filter', [$project->id, 'district']) !!}" @if($filters['type'] === 'district') selected="selected" @endif>District</option>
+               <option value="{!! route('projects.response.filter', [$project->id, 'township']) !!}" @if($filters['type'] === 'township') selected="selected" @endif>Township</option>
+               <option value="{!! route('projects.response.filter', [$project->id, 'user']) !!}" @if($filters['type'] === 'user') selected="selected" @endif>Data Clerk</option>
            </select>
            </label>
         </span>
@@ -25,6 +25,14 @@
         <div class="box box-default">
             <div class="box-body">
                     @include('projects.survey.db2sample.table')
+            </div>
+        </div>
+        <div class="box box-default">
+            <div class="box-body">
+               <a href="{{ url()->current() }}" class="btn btn-default">All</a>
+              @foreach($project->sectionsDb as $key => $section)
+                <a href="{{ url()->current() }}/?section={{ $key + 1 }}" class="btn btn-default">{{$section->sectionname}}</a>
+              @endforeach
             </div>
         </div>
     </div>

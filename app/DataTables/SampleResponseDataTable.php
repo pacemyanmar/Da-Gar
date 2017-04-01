@@ -12,6 +12,8 @@ class SampleResponseDataTable extends DataTable
 
     private $filter;
 
+    private $section;
+
     public function setProject($project)
     {
         $this->project = $project;
@@ -21,6 +23,12 @@ class SampleResponseDataTable extends DataTable
     public function setFilter($filter)
     {
         $this->filter = $filter;
+        return $this;
+    }
+
+    public function setSection($section)
+    {
+        $this->section = $section;
         return $this;
     }
     /**
@@ -111,7 +119,7 @@ class SampleResponseDataTable extends DataTable
     public function html()
     {
         $tableAttributes = [
-            'class' => 'table table-striped table-bordered',
+            'class' => 'table table-striped table-bordered table-responsive',
         ];
         return $this->builder()
             ->setTableAttributes($tableAttributes)
@@ -131,6 +139,7 @@ class SampleResponseDataTable extends DataTable
         return [
             'dom' => 'Brtip',
             'scrollX' => true,
+            'ordering' => false,
             'language' => [
                 "decimal" => trans('messages.decimal'),
                 "emptyTable" => trans('messages.emptyTable'),
@@ -170,8 +179,8 @@ class SampleResponseDataTable extends DataTable
                                 var column = this;
                                 var br = document.createElement(\"br\");
                                 var input = document.createElement(\"input\");
-                                input.className = 'form-control input-sm';
-                                input.style.width = '100px';
+                                input.className = 'form-control';
+                                input.style.width = '60px';
                                 $(br).appendTo($(column.header()));
                                 $(input).appendTo($(column.header()))
                                 .on('change', function () {
@@ -259,6 +268,9 @@ class SampleResponseDataTable extends DataTable
         $sectionColumns = [];
         foreach ($project->sectionsDb as $k => $section) {
             $section_key = ($k + 1);
+            if ($this->section && $this->section != $section_key) {
+                continue;
+            }
             $section_id = 'section' . $section_key . 'status';
             //$sectionname = $section->sectionname;
             //$sectionname = "<span data-toggle='tooltip' data-placement='top' title='$sectionname' data-container='body'> <i class='fa fa-info-circle'></i>Sect$section_key  </span>";
