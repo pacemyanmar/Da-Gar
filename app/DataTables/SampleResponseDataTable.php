@@ -98,6 +98,7 @@ class SampleResponseDataTable extends DataTable
             $join->on('qc_user.id', 'samples.qc_user_id');
         });
         $query->where('project_id', $project->id);
+        $query->where('sample_datas.sample', '<>', '0');
 
         return $this->applyScopes($query);
     }
