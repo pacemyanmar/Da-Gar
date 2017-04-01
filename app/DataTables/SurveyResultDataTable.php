@@ -345,6 +345,17 @@ class SurveyResultDataTable extends DataTable
             $query->where('sample_datas.sample', '<>', '0');
         }
 
+        $inputcolumn = Request::input('column');
+        $inputvalue = Request::input('value');
+        if ($inputcolumn && $inputvalue) {
+            if ($inputvalue == 'NULL') {
+                $query->whereNull($childTable . '.' . $inputcolumn);
+            } else {
+                $query->where($childTable . '.' . $inputcolumn, $inputvalue);
+            }
+
+        }
+
         $query->orderBy('sample_datas.idcode', 'asc');
         return $this->applyScopes($query);
     }
