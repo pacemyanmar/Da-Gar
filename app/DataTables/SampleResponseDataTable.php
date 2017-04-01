@@ -127,6 +127,7 @@ class SampleResponseDataTable extends DataTable
      */
     protected function getBuilderParameters()
     {
+        $project = $this->project;
         return [
             'dom' => 'Brtip',
             'scrollX' => true,
@@ -188,7 +189,7 @@ class SampleResponseDataTable extends DataTable
                                 }, 0 );
                             api.columns().every(function(){
                                   var column = this;
-                                  console.log(column.data());
+                                  console.log(column.dataSrc());
                                   var sum = column
                                       .data()
                                       .reduce(function (a, b) {
@@ -201,7 +202,7 @@ class SampleResponseDataTable extends DataTable
                                          return a + b;
                                       });
 
-                                  $(column.footer()).html(sum + ' (' + parseFloat((sum * 100)/ total).toFixed(1) + '%)');
+                                  $(column.footer()).html('<a href=" . route('projects.surveys.index', [$project->id]) . "/?nosample=1&totalstatus='+column.dataSrc()+'>' + sum + ' (' + parseFloat((sum * 100)/ total).toFixed(1) + '%)</a>');
                               });
 
                             $(api.column(0).footer()).html('Total');
@@ -224,9 +225,9 @@ class SampleResponseDataTable extends DataTable
                 return "function ( data, type, full, meta ) {
                                     if(type == 'display') {
                                         if(data){
-                                              return '<a href=" . route('projects.surveys.index', [$project->id]) . "/?" . $filter . "='+ encodeURI(full." . $filter . ") +'>' + data + '</a>';
+                                              return '<a href=" . route('projects.surveys.index', [$project->id]) . "/?nosample=1&" . $filter . "='+ encodeURI(full." . $filter . ") +'>' + data + '</a>';
                                           } else {
-                                            return '<a href=" . route('projects.surveys.index', [$project->id]) . "/?" . $filter . "=none> None </a>';
+                                            return '<a href=" . route('projects.surveys.index', [$project->id]) . "/?nosample=1&" . $filter . "=none> None </a>';
                                           }
                                     } else {
                                       return data;
@@ -236,7 +237,7 @@ class SampleResponseDataTable extends DataTable
             "alltotal" => ['data' => 'alltotal', 'name' => 'alltotal', 'title' => 'All Forms', 'orderable' => false, "render" => function () use ($project, $filter) {
                 return "function ( data, type, full, meta ) {
                                     if(type == 'display') {
-                                      return '<a href=" . route('projects.surveys.index', [$project->id]) . "/?" . $filter . "='+ encodeURI(full." . $filter . ") +'&alltotal=1>' + data + '</a>';
+                                      return '<a href=" . route('projects.surveys.index', [$project->id]) . "/?nosample=1&" . $filter . "='+ encodeURI(full." . $filter . ") +'&alltotal=1>' + data + '</a>';
                                     } else {
                                       return data;
                                     }
@@ -245,7 +246,7 @@ class SampleResponseDataTable extends DataTable
             "total" => ['data' => 'total', 'name' => 'total', 'title' => 'Response', 'orderable' => false, "render" => function () use ($project, $filter) {
                 return "function ( data, type, full, meta ) {
                                     if(type == 'display') {
-                                      return '<a href=" . route('projects.surveys.index', [$project->id]) . "/?" . $filter . "='+ encodeURI(full." . $filter . ") +'&total=1>' + data + '<br> (' +parseFloat((parseInt(data, 10) * 100)/ parseInt(full.alltotal, 10)).toFixed(1) + '%) </a>';
+                                      return '<a href=" . route('projects.surveys.index', [$project->id]) . "/?nosample=1&" . $filter . "='+ encodeURI(full." . $filter . ") +'&total=1>' + data + '<br> (' +parseFloat((parseInt(data, 10) * 100)/ parseInt(full.alltotal, 10)).toFixed(1) + '%) </a>';
                                     } else {
                                       return data;
                                     }

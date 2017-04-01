@@ -300,6 +300,32 @@ class SurveyResultDataTable extends DataTable
 
         $status = Request::input('status');
 
+        $totalstatus = Request::input('totalstatus');
+
+        if ($totalstatus) {
+            $tsvar = explode('_', $totalstatus);
+            foreach ($tsvar as $var) {
+                switch ($var) {
+                    case 'missing':
+                        $status = 0;
+                        break;
+                    case 'complete':
+                        $status = 1;
+                        break;
+                    case 'incomplete':
+                        $status = 2;
+                        break;
+                    case 'error':
+                        $status = 3;
+                        break;
+
+                    default:
+                        $section = $var;
+                        break;
+                }
+            }
+        }
+
         if (!empty($section)) {
             // if (!isset($resultdbname)) {
             //     $resultdbname = $childTable;
@@ -311,6 +337,12 @@ class SurveyResultDataTable extends DataTable
             }
 
         }
+
+        $nosample = Request::input('nosample');
+        if ($nosample) {
+            $query->where('sample_datas.sample', '<>', '0');
+        }
+
         $query->orderBy('sample_datas.idcode', 'asc');
         return $this->applyScopes($query);
     }
