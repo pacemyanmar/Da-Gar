@@ -95,6 +95,7 @@ class ProjectResultsController extends AppBaseController
 
         if ($project->index_columns) {
             $sampleDataColumns = array_merge($samplesData, $project->index_columns);
+
             foreach ($sampleDataColumns as $column => $name) {
                 switch ($column) {
                     case 'user_id':
@@ -112,6 +113,36 @@ class ProjectResultsController extends AppBaseController
                             'name' => 'sample_datas.name',
                             'data' => 'name',
                             'title' => trans('messages.name'),
+                            'orderable' => false,
+                            'defaultContent' => 'N/A',
+                            //'width' => '80px',
+                        ];
+                        break;
+                    case 'spotchecker_code':
+                        $columns['spotchecker_code'] = [
+                            'name' => 'sample_datas.spotchecker_code',
+                            'data' => 'spotchecker_code',
+                            'title' => trans('messages.spotchecker_code'),
+                            'orderable' => false,
+                            'defaultContent' => 'N/A',
+                            //'width' => '80px',
+                        ];
+                        break;
+                    case 'code':
+                        $columns['code'] = [
+                            'name' => 'sample_datas.code',
+                            'data' => 'code',
+                            'title' => trans('messages.code'),
+                            'orderable' => false,
+                            'defaultContent' => 'N/A',
+                            //'width' => '80px',
+                        ];
+                        break;
+                    case 'code2':
+                        $columns['code2'] = [
+                            'name' => 'sample_datas.code2',
+                            'data' => 'code2',
+                            'title' => trans('messages.code2'),
                             'orderable' => false,
                             'defaultContent' => 'N/A',
                             //'width' => '80px',
