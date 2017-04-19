@@ -43,7 +43,7 @@ class SampleDataDataTable extends DataTable
     {
         $builder = $this->builder()
             ->columns($this->getColumns())
-            ->ajax('')
+            ->ajax(['type' => 'POST', 'data' => '{"_method":"GET"}'])
             ->parameters([
                 'dom' => 'Bfrtip',
                 'scrollX' => true,
