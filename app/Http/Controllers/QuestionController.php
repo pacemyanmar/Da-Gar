@@ -71,6 +71,7 @@ class QuestionController extends AppBaseController
         ];
 
         $render = $input['render'] = $this->to_render($args, $input);
+
         $input['raw_ans'] = str_replace("'", "&#39;", $input['raw_ans']);
         $inputs = $this->getInputs($render);
 

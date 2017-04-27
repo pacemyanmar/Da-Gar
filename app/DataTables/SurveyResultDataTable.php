@@ -165,23 +165,6 @@ class SurveyResultDataTable extends DataTable
 
         $unique_inputs = $inputs->toArray();
 
-        $parties = explode(',', $project->parties);
-        $parties = array_filter($parties);
-        if (!empty($parties)) {
-            $parties_arr = [];
-
-            foreach ($parties as $party) {
-                if ($project->type != 'tabulation') {
-                    $parties_arr[] = trim($party) . '_station';
-                }
-                $parties_arr[] = trim($party) . '_advanced';
-
-            }
-            $remarks = ['rem1', 'rem2', 'rem3', 'rem4', 'rem5'];
-
-            $unique_inputs = array_merge($unique_inputs, $parties_arr, $remarks);
-        }
-
         array_walk($unique_inputs, function (&$column, $index) use ($childTable) {
             $column = $childTable . '.' . $column . ', IF(' . $childTable . '_double.' . $column . ' = ' . $childTable . '.' . $column . ', 1, 0) AS ' . $column . '_status';
         });

@@ -3,8 +3,8 @@
 namespace App\Http\Middleware;
 
 use Closure;
-use Redirect;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken as BaseVerifier;
+use Redirect;
 
 class VerifyCsrfToken extends BaseVerifier
 {
@@ -17,7 +17,7 @@ class VerifyCsrfToken extends BaseVerifier
         //
     ];
 
-    public function handle( $request, Closure $next )
+    public function handle($request, Closure $next)
     {
         if (
             $this->isReading($request) ||
@@ -27,8 +27,8 @@ class VerifyCsrfToken extends BaseVerifier
         ) {
             return $this->addCookieToResponse($request, $next($request));
         }
-        
+
         // redirect the user back to the last page and show error
-        return Redirect::back()->withErrors( ['csrf_error' => 'Sorry, Your session has expired. Please try again!'] )->withInput();
+        return Redirect::back()->withErrors(['csrf_error' => 'Sorry, Where are you going too long?. Please try again!'])->withInput();
     }
 }

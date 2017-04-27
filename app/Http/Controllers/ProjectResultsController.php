@@ -349,6 +349,10 @@ class ProjectResultsController extends AppBaseController
                     break;
                 case 'checkbox':
                     $title = $input->question->qnum . ' ' . $input->value;
+                    break;
+                case 'template':
+                    $title = $input->label;
+                    break;
                 default:
                     $title = $input->question->qnum . ' ' . $input->value;
                     break;
@@ -363,21 +367,6 @@ class ProjectResultsController extends AppBaseController
                 $input_columns[$column]['visible'] = false;
             }
 
-        }
-        $parties = explode(',', $project->parties);
-        if (!empty($parties) && $project->type != 'sample2db') {
-            foreach ($parties as $party) {
-                if ($project->type != 'tabulation') {
-                    $input_columns[$party . '_station'] = ['name' => $party . '_station', 'data' => $party . '_station', 'title' => $party . ' Station', 'orderable' => false, 'class' => 'result', 'width' => '80px', 'visible' => false];
-                }
-                $input_columns[$party . '_advanced'] = ['name' => $party . '_advanced', 'data' => $party . '_advanced', 'title' => $party . ' Advanced', 'orderable' => false, 'class' => 'result', 'width' => '80px', 'visible' => false];
-
-            }
-            $input_columns['rem1'] = ['name' => 'rem1', 'data' => 'rem1', 'title' => 'Remark 1', 'orderable' => false, 'class' => 'result', 'width' => '80px', 'visible' => false];
-            $input_columns['rem2'] = ['name' => 'rem2', 'data' => 'rem2', 'title' => 'Remark 2', 'orderable' => false, 'class' => 'result', 'width' => '80px', 'visible' => false];
-            $input_columns['rem3'] = ['name' => 'rem3', 'data' => 'rem3', 'title' => 'Remark 3', 'orderable' => false, 'class' => 'result', 'width' => '80px', 'visible' => false];
-            $input_columns['rem4'] = ['name' => 'rem4', 'data' => 'rem4', 'title' => 'Remark 4', 'orderable' => false, 'class' => 'result', 'width' => '80px', 'visible' => false];
-            $input_columns['rem5'] = ['name' => 'rem5', 'data' => 'rem5', 'title' => 'Remark 5', 'orderable' => false, 'class' => 'result', 'width' => '80px', 'visible' => false];
         }
 
         if ($project->status != 'new') {

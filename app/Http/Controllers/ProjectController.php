@@ -451,31 +451,11 @@ class ProjectController extends AppBaseController
                 //$table->json('section' . $key)->nullable();
             }
 
-            //$table->unsignedInteger('registered_voters')->index()->default(0);
-            //$table->unsignedInteger('advanced_voters')->index()->default(0);
-            if (!empty($project->parties)) {
-                $parties = explode(',', $project->parties);
-                foreach ($parties as $party) {
-                    if ($project->type != 'tabulation') {
-                        $table->unsignedInteger($party . '_station')->index()->nullable();
-                    }
-                    $table->unsignedInteger($party . '_advanced')->index()->nullable();
-
-                }
-
-                $table->unsignedInteger('rem1')->index()->nullable();
-                $table->unsignedInteger('rem2')->index()->nullable();
-                $table->unsignedInteger('rem3')->index()->nullable();
-                $table->unsignedInteger('rem4')->index()->nullable();
-                $table->unsignedInteger('rem5')->index()->nullable();
-            }
             foreach ($fields as $input) {
                 $double_column = $input->inputid . '_d';
                 $double_status = $input->inputid . '_ds';
                 switch ($input->type) {
                     case 'radio':
-                        $inputType = 'string';
-                        break;
                     case 'checkbox':
                         if ($input->other) {
                             $inputType = 'string';
@@ -528,39 +508,7 @@ class ProjectController extends AppBaseController
                 });
             }
         }
-        if (!empty($project->parties)) {
-            $parties = explode(',', $project->parties);
-            Schema::table($dbname, function ($table) use ($project, $section_name, $parties, $dbname) {
-                foreach ($parties as $party) {
-                    if ($project->type != 'tabulation') {
-                        if (!Schema::hasColumn($dbname, $party . '_station')) {
-                            $table->unsignedInteger($party . '_station')->index()->nullable();
-                        }
-                    }
 
-                    if (!Schema::hasColumn($dbname, $party . '_advanced')) {
-                        $table->unsignedInteger($party . '_advanced')->index()->nullable();
-                    }
-
-                }
-                if (!Schema::hasColumn($dbname, 'rem1')) {
-                    $table->unsignedInteger('rem1')->index()->nullable();
-                }
-                if (!Schema::hasColumn($dbname, 'rem2')) {
-                    $table->unsignedInteger('rem2')->index()->nullable();
-                }
-                if (!Schema::hasColumn($dbname, 'rem3')) {
-                    $table->unsignedInteger('rem3')->index()->nullable();
-                }
-                if (!Schema::hasColumn($dbname, 'rem4')) {
-                    $table->unsignedInteger('rem4')->index()->nullable();
-                }
-                if (!Schema::hasColumn($dbname, 'rem5')) {
-                    $table->unsignedInteger('rem5')->index()->nullable();
-                }
-            });
-
-        }
         // if table exists, loop inputs
         foreach ($fields as $input) {
             /**
@@ -575,8 +523,6 @@ class ProjectController extends AppBaseController
 
                         switch ($input->type) {
                             case 'radio':
-                                $inputType = 'string';
-                                break;
                             case 'checkbox':
                                 if ($input->other) {
                                     $inputType = 'string';
@@ -623,8 +569,6 @@ class ProjectController extends AppBaseController
                     Schema::table($dbname, function ($table) use ($input, $project) {
                         switch ($input->type) {
                             case 'radio':
-                                $inputType = 'string';
-                                break;
                             case 'checkbox':
                                 if ($input->other) {
                                     $inputType = 'string';

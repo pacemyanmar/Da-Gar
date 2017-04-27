@@ -101,12 +101,15 @@ class Question extends Model
     public function getQnumAttribute($value)
     {
         $lang = \App::getLocale();
-        $qnum = json_decode($this->attributes['qnum_trans'], true);
-        if (!empty($qnum) && array_key_exists($lang, $qnum)) {
-            $translation = $qnum[$lang];
-        }
-        if (!empty($translation)) {
-            $value = $translation;
+        if (array_key_exists('qnum_trans', $this->attributes)) {
+
+            $qnum = json_decode($this->attributes['qnum_trans'], true);
+            if (!empty($qnum) && array_key_exists($lang, $qnum)) {
+                $translation = $qnum[$lang];
+            }
+            if (!empty($translation)) {
+                $value = $translation;
+            }
         }
         return $value;
     }
@@ -114,12 +117,14 @@ class Question extends Model
     public function getQuestionAttribute($value)
     {
         $lang = \App::getLocale();
-        $question = json_decode($this->attributes['question_trans'], true);
-        if (!empty($question) && array_key_exists($lang, $question)) {
-            $translation = $question[$lang];
-        }
-        if (!empty($translation)) {
-            $value = $translation;
+        if (array_key_exists('question_trans', $this->attributes)) {
+            $question = json_decode($this->attributes['question_trans'], true);
+            if (!empty($question) && array_key_exists($lang, $question)) {
+                $translation = $question[$lang];
+            }
+            if (!empty($translation)) {
+                $value = $translation;
+            }
         }
         return $value;
     }

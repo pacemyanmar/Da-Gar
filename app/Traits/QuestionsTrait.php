@@ -57,7 +57,8 @@ trait QuestionsTrait
 
             if (!array_key_exists('inputid', $a)) {
                 $input_index = (array_key_exists('value', $a) && is_numeric($a['value'])) ? $a['value'] : $k;
-                $a['inputid'] = strtolower('p' . $project_id . $qnum . 'i' . $input_index);
+                $input_index = $input_index + 1;
+                $a['inputid'] = strtolower($qnum . '_' . $input_index);
             }
 
             if (!array_key_exists('section', $a)) {
@@ -142,11 +143,26 @@ trait QuestionsTrait
                 }
 
             } elseif ($a['type'] == 'radio') {
-                $a['name'] = $a['inputid'] = str_slug('p' . $project_id . $qnum . 'ir');
+                $a['name'] = $a['inputid'] = str_slug($qnum);
             } elseif ($a['type'] == 'checkbox') {
                 $a['name'] = str_slug('p' . $project_id . $qnum . 'c');
             } elseif ($a['type'] == 'template') {
-                $a['type'] = $a['subtype'];
+                // if layout is form16 or form18
+                // set input type as layout
+                switch ($layout) {
+                    case 'form16':
+                        $a['type'] = $layout;
+                        $a['project'] = $project;
+                        break;
+                    case 'form18':
+                        $a['type'] = $layout;
+                        $a['project'] = $project;
+                        break;
+                    default:
+                        $a['type'] = $a['subtype'];
+                        break;
+                }
+
                 $a['inputid'] = str_replace('-', '_', $a['subtype']);
                 unset($a['subtype']);
             } else {
@@ -192,6 +208,85 @@ trait QuestionsTrait
                     //$input['label_trans'] = json_encode([$lang => $value['label']]);
                     $inputs[] = new SurveyInput($value);
                 }
+            } elseif ($input['type'] == 'form16') {
+                $i = 0;
+                $project = $input['project'];
+                $parties = explode(',', $project->parties);
+                $station = [];
+                $advanced = [];
+                foreach ($parties as $j => $party) {
+                    $station['id'] = $input['id'] . strtolower($party) . '_station';
+                    $station['name'] = $input['name'] . strtolower($party) . '_station';
+                    $station['sort'] = $input['sort'] . $k . $i . ($j + 1);
+                    $station['type'] = 'template';
+                    $station['section'] = $input['section'];
+                    $station['inputid'] = $station['className'] = strtolower($party) . '_station';
+                    $station['label'] = ucwords($party) . 'Station';
+                    $station['value'] = '';
+                    $inputs[] = new SurveyInput($station);
+
+                    $advanced['id'] = $input['id'] . strtolower($party) . '_advanced';
+                    $advanced['name'] = $input['name'] . strtolower($party) . '_advanced';
+                    $advanced['sort'] = $input['sort'] . $k . $i . ($j + 1);
+                    $advanced['type'] = 'template';
+                    $advanced['section'] = $input['section'];
+                    $advanced['inputid'] = $advanced['className'] = strtolower($party) . '_advanced';
+                    $advanced['label'] = ucwords($party) . 'Station';
+                    $advanced['value'] = '';
+                    $inputs[] = new SurveyInput($advanced);
+                    $i++;
+                }
+
+                $remark = [];
+
+                for ($j = 1; $j < 6; $j++) {
+                    $remark['id'] = $input['id'] . 'rem' . $j;
+                    $remark['name'] = $input['name'] . 'rem' . $j;
+                    $remark['sort'] = $input['sort'] . $k . $i . $j;
+                    $remark['type'] = 'template';
+                    $remark['section'] = $input['section'];
+                    $remark['inputid'] = $remark['className'] = 'rem' . $j;
+                    $remark['label'] = 'Remark ' . $j;
+                    $remark['value'] = '';
+                    $inputs[] = new SurveyInput($remark);
+                    $i++;
+                }
+
+            } elseif ($input['type'] == 'form18') {
+                $i = 0;
+                $project = $input['project'];
+                $parties = explode(',', $project->parties);
+
+                $advanced = [];
+                foreach ($parties as $j => $party) {
+
+                    $advanced['id'] = $input['id'] . strtolower($party) . '_advanced';
+                    $advanced['name'] = $input['name'] . strtolower($party) . '_advanced';
+                    $advanced['sort'] = $input['sort'] . $k . $i . ($j + 1);
+                    $advanced['type'] = 'template';
+                    $advanced['section'] = $input['section'];
+                    $advanced['inputid'] = $advanced['className'] = strtolower($party) . '_advanced';
+                    $advanced['label'] = ucwords($party) . 'Station';
+                    $advanced['value'] = '';
+                    $inputs[] = new SurveyInput($advanced);
+                    $i++;
+                }
+
+                $remark = [];
+
+                for ($j = 1; $j < 6; $j++) {
+                    $remark['id'] = $input['id'] . 'rem' . $j;
+                    $remark['name'] = $input['name'] . 'rem' . $j;
+                    $remark['sort'] = $input['sort'] . $k . $i . $j;
+                    $remark['type'] = 'template';
+                    $remark['section'] = $input['section'];
+                    $remark['inputid'] = $remark['className'] = 'rem' . $j;
+                    $remark['label'] = 'Remark ' . $j;
+                    $remark['value'] = '';
+                    $inputs[] = new SurveyInput($remark);
+                    $i++;
+                }
+
             } else {
                 if (!isset($input['value'])) {
                     $input['value'] = $k;
