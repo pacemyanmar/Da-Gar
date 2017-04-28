@@ -27,6 +27,8 @@ Route::group(['prefix' => 'projects/{project}'], function () {
     Route::get('/search/sample', ['as' => 'projects.sample.search', 'uses' => 'ProjectController@search']);
     Route::get('/sampledata/{sampledata}/dblink/{dblink}/form/{formid}', ['as' => 'projects.incident.create', 'uses' => 'ProjectController@addIncident']);
     Route::get('/analysis', ['as' => 'projects.analysis', 'uses' => 'ProjectResultsController@analysis']);
+    Route::get('/export', ['as' => 'projects.export', 'uses' => 'ProjectController@export']);
+    Route::post('/import', ['as' => 'projects.import', 'uses' => 'ProjectController@import']);
 });
 
 Route::group(['prefix' => 'projects/{project}/surveys'], function () {
