@@ -6,11 +6,13 @@ use App\Models\Project;
 use App\Models\Role;
 use App\Models\SampleData;
 use App\Models\Setting;
+use App\Models\SmsLog;
 use App\Models\User;
 use App\Policies\ProjectPolicy;
 use App\Policies\RolePolicy;
 use App\Policies\SampleDataPolicy;
 use App\Policies\SettingPolicy;
+use App\Policies\SmsPolicy;
 use App\Policies\UserPolicy;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 
@@ -27,6 +29,7 @@ class AuthServiceProvider extends ServiceProvider
         Setting::class => SettingPolicy::class,
         SampleData::class => SampleDataPolicy::class,
         Project::class => ProjectPolicy::class,
+        SmsLog::class => SmsPolicy::class,
     ];
 
     /**

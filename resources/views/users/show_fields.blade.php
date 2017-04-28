@@ -16,6 +16,13 @@
     <p>{!! $user->email !!}</p>
 </div>
 
+@if(!empty($user->api_token))
+<!-- Email Field -->
+<div class="form-group">
+    {!! Form::label('api_token', 'API Token:') !!}
+    <p>{!! $user->api_token !!}</p>
+</div>
+@endif
 <!-- Created At Field -->
 <div class="form-group">
     {!! Form::label('created_at', 'Registered since:') !!}

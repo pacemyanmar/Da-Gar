@@ -2,7 +2,6 @@
 
 namespace App\Providers;
 
-use App\Models\Voter;
 use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Route;
 
@@ -71,9 +70,8 @@ class RouteServiceProvider extends ServiceProvider
     {
         Route::group([
             'middleware' => 'api',
-            'namespace' => $this->namespace."\\API",
-            'prefix' => 'api',
-            'as' => 'api.',
+            'namespace' => $this->namespace . "\\API",
+            'prefix' => 'api/v1',
         ], function ($router) {
             require base_path('routes/api.php');
         });

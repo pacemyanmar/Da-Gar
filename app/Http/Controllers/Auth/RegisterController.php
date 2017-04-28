@@ -75,20 +75,24 @@ class RegisterController extends Controller
     {
         $all = User::all();
 
-        if (empty($all)) {
-            $role = $superAdmin = Role::where('role_name', 'super_admin')->first();
-        } else {
-            $role = $guest = Role::where('role_name', 'guest')->first();
-        }
         if (!array_key_exists('username', $data)) {
             $data['username'] = preg_replace('/[_\-]+/', '', snake_case($data['name']));
         }
-        $user = User::create([
+        $user_arr = [
             'name' => $data['name'],
             'email' => $data['email'],
             'username' => $data['username'],
             'password' => bcrypt($data['password']),
-        ]);
+        ];
+
+        $user = User::create($user_arr);
+
+        if ($all->isEmpty()) {
+            $role = $superAdmin = Role::where('role_name', 'super_admin')->first();
+            $user->api_token = str_random(60);
+        } else {
+            $role = $guest = Role::where('role_name', 'guest')->first();
+        }
         $user->role()->associate($role);
         $user->save();
         return $user;
