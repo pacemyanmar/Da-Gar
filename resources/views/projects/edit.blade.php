@@ -6,6 +6,7 @@
 <section class="content-header" style="margin-bottom:30px;">
   <h1 class="pull-left">{!! $project->project !!}</h1>
   <div class="pull-right">
+    <a href="{!! route('projects.export', [$project->id]) !!}" class="btn btn-info">{!! trans('messages.export_project') !!}</a>
     <a href="{!! route('projects.sort', [$project->id]) !!}" class="btn btn-info">{!! trans('messages.sort_project') !!}</a>
   @if($project->status != 'published')
     {!! Form::open(['route' => ['projects.dbcreate', $project->id], 'method' => 'post', 'class' => 'btn']) !!}

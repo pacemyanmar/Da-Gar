@@ -18,6 +18,7 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use Maatwebsite\Excel\Facades\Excel;
 use Response;
 
 class ProjectController extends AppBaseController
@@ -647,5 +648,77 @@ class ProjectController extends AppBaseController
     {
         $sampleInstance = Sample::firstOrCreate(['sample_data_id' => $sampleData_id, 'form_id' => $max_form_id, 'project_id' => $project_id, 'sample_data_type' => $project_dblink]);
         return redirect(route('projects.surveys.create', [$project_id, $sampleInstance->id, $max_form_id]));
+    }
+
+    public function export($project_id)
+    {
+        $project = $this->projectRepository->findWithoutFail($project_id);
+
+        if (empty($project)) {
+            Flash::error('Project not found');
+
+            return redirect()->back();
+        }
+        $filename = $project->project . ' Form';
+
+        $project_array[0] = [
+            "id" => $project->id,
+            "project" => $project->project,
+            "dbname" => $project->dbname,
+            "dblink" => $project->dblink,
+            "type" => $project->type,
+            "dbgroup" => $project->dbgroup,
+            "parties" => $project->parties,
+            "samples" => json_encode($project->samples),
+            "copies" => $project->copies,
+            "index_columns" => json_encode($project->index_columns),
+            "status" => $project->status,
+        ];
+        foreach ($project->project_trans as $lang => $trans) {
+            $project_array[0]['project::' . $lang] = $trans;
+        }
+        $sections = $project->sectionsDb->toArray();
+
+        $questions = $project->questions->toArray();
+        $inputs = $project->inputs->toArray();
+        Excel::create($filename, function ($excel) use ($project_array, $sections, $questions, $inputs) {
+            // Project sheet
+            $excel->sheet('Project', function ($sheet) use ($project_array) {
+                $sheet->setOrientation('landscape');
+                $sheet->fromArray($project_array, null, 'A1', true);
+            });
+
+            // Project sheet
+            $excel->sheet('Sections', function ($sheet) use ($sections) {
+                $sheet->setOrientation('landscape');
+                $sheet->fromArray($sections, null, 'A1', true);
+            });
+
+            // Questions sheet
+            $excel->sheet('Questions', function ($sheet) use ($questions) {
+                $sheet->setOrientation('landscape');
+                $sheet->fromArray($questions, null, 'A1', true);
+            });
+
+            // Options sheet
+            $excel->sheet('Options', function ($sheet) use ($inputs) {
+                $sheet->setOrientation('landscape');
+                $sheet->fromArray($inputs, null, 'A1', true);
+            });
+
+        })->export('xls');
+
+        return redirect()->back();
+    }
+
+    public function import($project_id)
+    {
+        $project = $this->projectRepository->findWithoutFail($project_id);
+
+        if (empty($project)) {
+            Flash::error('Project not found');
+
+            return redirect()->back();
+        }
     }
 }
