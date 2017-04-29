@@ -2,8 +2,9 @@
 
 namespace App\Http\Requests;
 
-use Illuminate\Foundation\Http\FormRequest;
 use App\Models\Project;
+use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class UpdateProjectRequest extends FormRequest
 {
@@ -25,6 +26,10 @@ class UpdateProjectRequest extends FormRequest
      */
     public function rules()
     {
-        return Project::$rules;
+        $project = Project::find($this->route('project'));
+        return [
+            'project' => 'required',
+            'unique_code' => Rule::unique('projects')->ignore($project->id),
+        ];
     }
 }

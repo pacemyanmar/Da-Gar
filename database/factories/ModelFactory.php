@@ -51,8 +51,11 @@ $myfaker = new MyFaker();
 $factory->define(App\User::class, function (Faker\Generator $faker) {
     static $password;
     $date = $faker->dateTimeThisMonth($max = 'now');
+    $name = $faker->name;
+    $username = preg_replace('/[_\-]+/', '', snake_case($name));
     return [
-        'name' => $faker->name,
+        'name' => $name,
+        'username' => $username,
         'email' => $faker->safeEmail,
         'password' => $password ?: $password = bcrypt('secret'),
         'remember_token' => str_random(10),
@@ -74,24 +77,30 @@ $factory->define(App\Models\Project::class, function (Faker\Generator $faker) {
     $dbname = snake_case($short_project_name . '_' . $short_unique);
     return [
         'project' => $project,
+        'unique_code' => $faker->unique()->numberBetween(1, 99),
         'dbname' => $dbname,
         'dblink' => $faker->randomElement(['voter', 'enumerator']),
         'type' => $faker->randomElement(['sample2db', 'db2sample']),
-        'sections' => [
-            [
-                "sectionname" => "Section One ",
-                "descriptions" => "Section One Test"],
-            [
-                "sectionname" => "Section Two",
-                "descriptions" => "Section Two Test",
-            ],
-        ],
         'samples' => [
             "Country" => "1",
             "Region" => "2",
         ],
         'created_at' => $date,
         'updated_at' => $date,
+    ];
+});
+
+/**
+ * Factory Model for Sections
+ */
+$factory->define(App\Models\Section::class, function (Faker\Generator $faker) {
+    return [
+        'sectionname' => $faker->text,
+        'descriptions' => $faker->text,
+        'sort' => $faker->unique()->numberBetween(1, 99),
+        'project_id' => function () {
+            return factory(App\Models\Project::class)->create()->id;
+        },
     ];
 });
 
@@ -108,10 +117,8 @@ $factory->define(App\Models\Question::class, function (Faker\Generator $faker) u
 
     $layout = '';
 
-    $unique_num = $faker->unique()->numberBetween($min = 1, $max = 30);
-
-    $section = ($unique_num > 16) ? 1 : 0;
-    $qnum = 'Q' . $unique_num;
+    $section = $faker->numberBetween($min = 1, $max = 5);
+    $qnum = $faker->unique()->regexify('[A-Z][A-Z]');
 
     $question = [
         'qnum' => $qnum,
@@ -119,7 +126,7 @@ $factory->define(App\Models\Question::class, function (Faker\Generator $faker) u
         'raw_ans' => $raw_ans,
         'layout' => $layout,
         'section' => $section,
-        'sort' => $unique_num,
+        'sort' => $faker->numberBetween(1, 99),
         'project_id' => function () {
             return factory(App\Models\Project::class)->create()->id;
         },

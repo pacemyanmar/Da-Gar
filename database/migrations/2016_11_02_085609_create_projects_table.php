@@ -16,6 +16,7 @@ class CreateProjectsTable extends Migration
         Schema::create('projects', function (Blueprint $table) {
             $table->increments('id');
             $table->string('project');
+            $table->string('unique_code')->unique();
             $table->string('dbname');
             $table->string('dblink')->default('enumerator'); // voter | location | enumerator
             $table->string('type')->default('db2sample'); // db2sample | sample2db

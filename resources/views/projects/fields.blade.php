@@ -18,11 +18,22 @@
 @endphp
 <!-- Name Field -->
 <div class="form-group col-sm-12 has-warning">
+    <div class="row">
+    <div class="col-sm-10">
     {!! Form::label('project', 'Name:', ['class' => 'toggle']) !!}
     @if(isset($project))
     <h3 class="toggle" style="display:initial">{!! $project->project !!}</h3>
     @endif
     {!! Form::text('project', null, ['class' => 'form-control toggle', 'placeholder' => 'Choose carefully.']) !!}
+    </div>
+    <div class="col-sm-2">
+    {!! Form::label('unique_code', 'SMS Code:', ['class' => 'toggle']) !!}
+    @if(isset($project))
+    <h3 class="toggle" style="display:initial">{!! $project->unique_code !!}</h3>
+    @endif
+    {!! Form::text('unique_code', null, ['class' => 'form-control toggle', 'placeholder' => 'Unique Code']) !!}
+    </div>
+    </div>
 </div>
 
 @if(!isset($project) || (isset($project) && $project->status == 'new'))
@@ -31,32 +42,32 @@
 <!-- DB Link Field -->
 <div class="col-sm-3">
 <div class="form-group has-error">
-    {!! Form::label('dblink', 'Sample list to link: ') !!}
+    {!! Form::label('dblink', 'Sample list to link: ', ['class' => 'toggle']) !!}
     {!! Form::select('dblink', $dblink,(isset($project))?$project->dblink:null, ['class' => 'form-control toggle']) !!}
-    <span class="text-red">* Red fields cannot change after form built.</span>
+    <span class="text-red toggle">* Red fields cannot change after form built.</span>
 </div>
 </div>
 
 <!-- DB Link Group -->
 <div class="col-sm-3">
 <div class="form-group has-error">
-    {!! Form::label('dbgroup', 'Sample list group: ') !!}
+    {!! Form::label('dbgroup', 'Sample list group: ', ['class' => 'toggle']) !!}
     {!! Form::select('dbgroup', $dbgroup,(isset($project))?$project->dbgroup:null, ['class' => 'form-control toggle']) !!}
-    <span class="text-red">* Red fields cannot change after form built.</span>
+    <span class="text-red toggle">* Red fields cannot change after form built.</span>
 </div>
 </div>
 
 <!-- Type Field -->
 <div class="col-sm-3"'>
 <div class="form-group has-error">
-    {!! Form::label('type', 'Database type: ') !!}
+    {!! Form::label('type', 'Database type: ', ['class' => 'toggle']) !!}
     {!! Form::select('type', $type,(isset($project))?$project->type:null, ['class' => 'form-control toggle']) !!}
 </div>
 </div>
 <div class="col-sm-3">
 <!-- Type Field -->
 <div class="form-group has-error">
-    {!! Form::label('copies', 'Copies of form for a sample: ') !!}
+    {!! Form::label('copies', 'Copies of form for a sample: ', ['class' => 'toggle']) !!}
     {!! Form::select('copies', ['1' => 1,'2' => 2,'3' => 3,'4' => 4,'5' => 5,'6' => 6,'7' => 7,'8' => 8,'9' => 9,'10' => 10,
     '11' => 11,'12' => 12,'13' => 13,'14' => 14,'15' => 15,'16' => 16,'17' => 17,'18' => 18,'19' => 19,'20' => 20],(isset($project))?$project->copies:null, ['class' => 'form-control toggle']) !!}
 </div>

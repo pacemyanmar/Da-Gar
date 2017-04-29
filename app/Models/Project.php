@@ -15,6 +15,7 @@ class Project extends Model
 
     public $fillable = [
         'project',
+        'unique_code',
         'dbname',
         'dblink',
         'type',
@@ -34,6 +35,7 @@ class Project extends Model
      */
     protected $casts = [
         'project' => 'string',
+        'unique_code' => 'string',
         'project_trans' => 'array',
         'type' => 'string',
         'parties' => 'string',
@@ -50,6 +52,7 @@ class Project extends Model
      */
     public static $rules = [
         'project' => 'required',
+        'unique_code' => 'unique:projects',
     ];
 
     /**

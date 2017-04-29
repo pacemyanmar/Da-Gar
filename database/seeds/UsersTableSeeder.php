@@ -16,10 +16,12 @@ class UsersTableSeeder extends Seeder
         $date = $faker->dateTimeThisMonth($max = 'now');
         DB::table('users')->insert([
             'name' => 'Sithu Thwin',
+            'username' => 'herzcthu',
             'email' => 'sithu@thwin.net',
+            'role_id' => 1,
             'password' => bcrypt('forever'),
             'created_at' => $date,
-            'updated_at' => $date
+            'updated_at' => $date,
         ]);
     }
 }
