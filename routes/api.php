@@ -1,7 +1,5 @@
 <?php
 
-use Illuminate\Http\Request;
-
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -13,8 +11,13 @@ use Illuminate\Http\Request;
 |
  */
 
-Route::get('/user', function (Request $request) {
-    return $request->user();
-})->middleware('auth:api');
+// Route::get('/user', function (Request $request) {
+//     return $request->user();
+// })->middleware('auth:api');
+// Route::resource('projects', 'ProjectAPIController');
 
-//Route::match(['get', 'post'], 'voters/sms', ['as' => 'voters.sms', 'uses' => 'VoterAPIController@sms']);
+Route::match(['get', 'post'], 'telerivet', ['as' => 'telerivet', 'uses' => 'SmsAPIController@telerivet']);
+
+Route::group(['middleware' => 'auth:api'], function () {
+    Route::resource('sms', 'SmsAPIController');
+});

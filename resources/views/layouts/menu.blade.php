@@ -26,3 +26,8 @@
     <a href="{!! route('settings.index') !!}"><i class="fa fa-edit"></i><span>{!! trans_choice('messages.settings', 2) !!}</span></a>
 </li>
 @endcan
+
+<li class="{{ Request::is('projectPhones*') ? 'active' : '' }}">
+    <a href="{!! route('projectPhones.index') !!}"><i class="fa fa-edit"></i><span>ProjectPhones</span></a>
+</li>
+

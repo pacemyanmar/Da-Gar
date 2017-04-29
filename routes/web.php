@@ -84,3 +84,8 @@ Route::resource('sampleDatas', 'SampleDataController');
 Route::resource('users', 'UserController');
 
 Route::resource('roles', 'RoleController');
+
+
+
+
+Route::resource('projectPhones', 'ProjectPhoneController');
