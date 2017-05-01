@@ -19,5 +19,5 @@
 Route::match(['get', 'post'], 'telerivet', ['as' => 'telerivet', 'uses' => 'SmsAPIController@telerivet']);
 
 Route::group(['middleware' => 'auth:api'], function () {
-    Route::resource('sms', 'SmsAPIController');
+    //Route::resource('sms', 'SmsAPIController');
 });

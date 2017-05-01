@@ -1,19 +1,19 @@
 <?php
 
 use Illuminate\Foundation\Testing\WithoutMiddleware;
-use Illuminate\Foundation\Testing\DatabaseTransactions;
 
 class SmsApiTest extends TestCase
 {
-    use MakeSmsTrait, ApiTestTrait, WithoutMiddleware, DatabaseTransactions;
+    use MakeSmsTrait, ApiTestTrait, WithoutMiddleware;
 
     /**
      * @test
      */
-    public function testCreateSms()
+    public function testSubmitSms()
     {
         $sms = $this->fakeSmsData();
-        $this->json('POST', '/api/v1/sms', $sms);
+        // json($method, $uri, array $data = [], array $headers = [])
+        $response = $this->json('POST', '/api/v1/telerivet', $sms);
 
         $this->assertApiResponse($sms);
     }
@@ -21,38 +21,38 @@ class SmsApiTest extends TestCase
     /**
      * @test
      */
-    public function testReadSms()
-    {
-        $sms = $this->makeSms();
-        $this->json('GET', '/api/v1/sms/'.$sms->id);
+    // public function testReadSms()
+    // {
+    //     $sms = $this->makeSms();
+    //     $this->json('GET', '/api/v1/sms/' . $sms->id);
 
-        $this->assertApiResponse($sms->toArray());
-    }
-
-    /**
-     * @test
-     */
-    public function testUpdateSms()
-    {
-        $sms = $this->makeSms();
-        $editedSms = $this->fakeSmsData();
-
-        $this->json('PUT', '/api/v1/sms/'.$sms->id, $editedSms);
-
-        $this->assertApiResponse($editedSms);
-    }
+    //     $this->assertApiResponse($sms->toArray());
+    // }
 
     /**
      * @test
      */
-    public function testDeleteSms()
-    {
-        $sms = $this->makeSms();
-        $this->json('DELETE', '/api/v1/sms/'.$sms->iidd);
+    // public function testUpdateSms()
+    // {
+    //     $sms = $this->makeSms();
+    //     $editedSms = $this->fakeSmsData();
 
-        $this->assertApiSuccess();
-        $this->json('GET', '/api/v1/sms/'.$sms->id);
+    //     $this->json('PUT', '/api/v1/sms/' . $sms->id, $editedSms);
 
-        $this->assertResponseStatus(404);
-    }
+    //     $this->assertApiResponse($editedSms);
+    // }
+
+    /**
+     * @test
+     */
+    // public function testDeleteSms()
+    // {
+    //     $sms = $this->makeSms();
+    //     $this->json('DELETE', '/api/v1/sms/' . $sms->iidd);
+
+    //     $this->assertApiSuccess();
+    //     $this->json('GET', '/api/v1/sms/' . $sms->id);
+
+    //     $this->assertResponseStatus(404);
+    // }
 }

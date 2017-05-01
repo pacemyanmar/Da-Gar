@@ -35,8 +35,18 @@ class SmsAPIController extends AppBaseController
     {
         $secret = $request->input('secret');
         $api_key = Settings::get('api_key');
+        $reply = [
+            //'content', // SMS message to send
+            'to_number' => $request->input('from_number'), // optional to number, default will use same incoming phone
+            // 'message_type', // optinal sms or ussd. default is sms.
+            // 'status_url', // optional send status notification url hook
+            // 'status_secret', // optional notification url secret
+            // 'route_id', // phone route to send message, default will use same
+        ];
         if ($secret != $api_key) {
-            return Response::json('Forbidden', 403);
+            $reply['content'] = 'Forbidden';
+            $reply['success'] = false;
+            return Response::json($reply, 403);
         }
 
         $messages = [
@@ -54,15 +64,6 @@ class SmsAPIController extends AppBaseController
             'service_id', // telerivet service ID
             'project_id', // telerivet project ID
 
-        ];
-
-        $reply = [
-            'content', // SMS message to send
-            'to_number', // optional to number, default will use same incoming phone
-            'message_type', // optinal sms or ussd. default is sms.
-            'status_url', // optional send status notification url hook
-            'status_secret', // optional notification url secret
-            'route_id', // phone route to send message, default will use same
         ];
 
         // To Do
@@ -102,7 +103,9 @@ class SmsAPIController extends AppBaseController
 
         $smsLog->remark = '';
         $smsLog->save();
-        return Response::json($smsLog->status_message);
+        $reply['content'] = $smsLog->status_message;
+        $reply['success'] = true;
+        return Response::json($reply, 200);
     }
 
     private function parseMessage($message, $to_number = '')
@@ -125,11 +128,11 @@ class SmsAPIController extends AppBaseController
             } else {
                 // look for project by unique_code, first letter of SMS message
                 $project = Project::where('unique_code', $pcode[1])->first();
-                if (empty($project)) {
-                    $reply['message'] = 'Please check SMS format. Project code not found!';
-                    $reply['status'] = 'error';
-                    return $reply;
-                }
+            }
+            if (empty($project)) {
+                $reply['message'] = 'Please check SMS format. Project code not found!';
+                $reply['status'] = 'error';
+                return $reply;
             }
             $reply['form_code'] = $pcode[1] . $pcode[2];
             $location_code = $pcode[2];

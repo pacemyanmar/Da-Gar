@@ -1,8 +1,9 @@
 <?php
 
+use App\Models\SmsLog;
+use App\Models\SurveyInput;
+use App\Repositories\SmsLogRepository;
 use Faker\Factory as Faker;
-use App\Models\Sms;
-use App\Repositories\SmsRepository;
 
 trait MakeSmsTrait
 {
@@ -15,7 +16,7 @@ trait MakeSmsTrait
     public function makeSms($smsFields = [])
     {
         /** @var SmsRepository $smsRepo */
-        $smsRepo = App::make(SmsRepository::class);
+        $smsRepo = App::make(SmsLogRepository::class);
         $theme = $this->fakeSmsData($smsFields);
         return $smsRepo->create($theme);
     }
@@ -28,7 +29,7 @@ trait MakeSmsTrait
      */
     public function fakeSms($smsFields = [])
     {
-        return new Sms($this->fakeSmsData($smsFields));
+        return new SmsLog($this->fakeSmsData($smsFields));
     }
 
     /**
@@ -40,19 +41,21 @@ trait MakeSmsTrait
     public function fakeSmsData($smsFields = [])
     {
         $fake = Faker::create();
-
+        $survey_inputs = SurveyInput::pluck('inputid')->unique();
+        $content = $fake->regexify('A1[0-9][0-4][0-9]');
+        $count = $fake->randomDigitNotNull;
+        for ($i = 0; $i < $count; $i++) {
+            $content .= str_replace('_', '', strtoupper($fake->randomElement($survey_inputs->toArray())));
+            $content .= $fake->regexify('[1-9]{0,1}');
+        }
         return array_merge([
-            'id' => $fake->word,
-            'service_id' => $fake->word,
-            'from_number' => $fake->word,
-            'to_number' => $fake->word,
-            'name' => $fake->word,
-            'content' => $fake->word,
-            'error_message' => $fake->text,
-            'search_result' => $fake->text,
-            'phone' => $fake->text,
-            'created_at' => $fake->date('Y-m-d H:i:s'),
-            'updated_at' => $fake->date('Y-m-d H:i:s')
+            'secret' => 'TO9gGcHl62ACCzlFd4wGM0FXAIBTk01O7PKnnhLwrV8vOMnloqY9acG6tPHR',
+            'event' => 'incoming_message',
+            'service_id' => $fake->uuid,
+            'from_number' => $fake->phoneNumber,
+            'from_number_e164' => $fake->e164PhoneNumber,
+            'to_number' => $fake->phoneNumber,
+            'content' => $content,
         ], $smsFields);
     }
 }
