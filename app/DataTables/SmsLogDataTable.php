@@ -102,15 +102,17 @@ class SmsLogDataTable extends DataTable
     private function getColumns()
     {
         return [
-            'id' => ['name' => 'id', 'data' => 'id'],
-            'service_id' => ['name' => 'service_id', 'data' => 'service_id'],
+            //'id' => ['name' => 'id', 'data' => 'id'],
+            //'service_id' => ['name' => 'service_id', 'data' => 'service_id'],
             'from_number' => ['name' => 'from_number', 'data' => 'from_number'],
             'to_number' => ['name' => 'to_number', 'data' => 'to_number'],
-            'name' => ['name' => 'name', 'data' => 'name'],
-            'content' => ['name' => 'content', 'data' => 'content'],
-            'error_message' => ['name' => 'error_message', 'data' => 'error_message'],
-            'search_result' => ['name' => 'search_result', 'data' => 'search_result'],
-            'phone' => ['name' => 'phone', 'data' => 'phone'],
+            'form_code' => ['name' => 'form_code', 'data' => 'form_code'],
+            'content' => ['name' => 'content', 'data' => 'content', "render" => function () {
+                return "function ( data, type, full, meta ) {
+                                    return data
+                                  }, createdCell: function (td, cellData, rowData, row, col) { if(rowData.status == 'error') { $(td).addClass('danger'); } }"; // this is really dirty hack to work createdCell
+            }],
+            'status_message' => ['name' => 'status_message', 'data' => 'status_message'],
         ];
     }
 

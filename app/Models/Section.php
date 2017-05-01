@@ -70,4 +70,14 @@ class Section extends Model
     {
         return $this->hasMany(Question::class, 'section');
     }
+
+    /**
+     * { Distance children inputs for project }
+     *
+     * @return     \Illuminate\Database\Eloquent\Relations\HasManyThrouth
+     */
+    public function inputs()
+    {
+        return $this->hasManyThrough(SurveyInput::class, Question::class, 'section');
+    }
 }

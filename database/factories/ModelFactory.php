@@ -20,9 +20,9 @@ class MyFaker
         $tab = "\t";
 
         $inputs = [];
-
+        $type = $faker->randomElement($array = array('checkbox', 'radio', 'text', 'number'));
         for ($i = 1; $i <= $count; $i++) {
-            $type = $faker->randomElement($array = array('checkbox', 'radio', 'text', 'number'));
+
             $n = $faker->words(3, true);
             $label = ucfirst($n);
             $name = str_slug($n) . '-' . $faker->randomNumber($nbDigits = 9);

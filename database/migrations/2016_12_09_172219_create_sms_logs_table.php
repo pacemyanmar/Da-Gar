@@ -14,15 +14,23 @@ class CreateSmsLogsTable extends Migration
     public function up()
     {
         Schema::create('sms_logs', function (Blueprint $table) {
-            $table->string('id')->index();
-            $table->string('service_id')->index();
+            $table->increments('id');
+            $table->string('service_id')->index()->nullable();
+            $table->string('form_code')->index();
             $table->string('from_number')->index();
+            $table->string('from_number_e164')->index()->nullable();
             $table->string('to_number')->index();
-            $table->string('name')->index();
+            $table->string('event')->index();
+            $table->string('message_type')->nullable();
             $table->string('content')->index();
-            $table->text('error_message');
-            $table->text('search_result');
-            $table->text('phone');
+            $table->string('status_url')->index()->nullable();
+            $table->string('status_secret')->unique()->nullable();
+            $table->text('status_message');
+            $table->string('status');
+            $table->text('remark');
+            $table->unsignedSmallInteger('section')->nullable()->index();
+            $table->unsignedInteger('result_id')->nullable()->index();
+            $table->unsignedInteger('project_id')->nullable()->index();
         });
     }
 

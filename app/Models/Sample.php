@@ -71,6 +71,12 @@ class Sample extends Model
         return $this;
     }
 
+    /**
+     * [resultWithTable description]
+     * @param  [type] $table [description]
+     * @return [type]        [description]
+     * To Do change method name to hasOneResult
+     */
     public function resultWithTable($table = null)
     {
         $foreignKey = $this->getForeignKey();

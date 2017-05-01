@@ -289,7 +289,17 @@ trait QuestionsTrait
 
             } else {
                 if (!isset($input['value'])) {
-                    $input['value'] = $k;
+                    switch ($input['type']) {
+                        case 'text':
+                        case 'textarea':
+                        case 'number':
+                            $input['value'] = '';
+                            break;
+
+                        default:
+                            $input['value'] = $k + 1;
+                            break;
+                    }
                 }
 
                 if (!isset($input['sort'])) {

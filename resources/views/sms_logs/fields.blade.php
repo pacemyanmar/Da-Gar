@@ -22,12 +22,6 @@
     {!! Form::text('to_number', null, ['class' => 'form-control']) !!}
 </div>
 
-<!-- Name Field -->
-<div class="form-group col-sm-6">
-    {!! Form::label('name', 'Name:') !!}
-    {!! Form::text('name', null, ['class' => 'form-control']) !!}
-</div>
-
 <!-- Content Field -->
 <div class="form-group col-sm-6">
     {!! Form::label('content', 'Content:') !!}
@@ -36,8 +30,8 @@
 
 <!-- Error Message Field -->
 <div class="form-group col-sm-6">
-    {!! Form::label('error_message', 'Error Message:') !!}
-    {!! Form::text('error_message', null, ['class' => 'form-control']) !!}
+    {!! Form::label('status_message', 'Error Message:') !!}
+    {!! Form::text('status_message', null, ['class' => 'form-control']) !!}
 </div>
 
 <!-- Search Result Field -->
