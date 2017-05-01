@@ -45,6 +45,7 @@ class SmsLogDataTable extends DataTable
             ->parameters([
                 'dom' => 'Bfrtip',
                 'scrollX' => false,
+                'processing' => false,
                 'language' => [
                     "decimal" => trans('messages.decimal'),
                     "emptyTable" => trans('messages.emptyTable'),
