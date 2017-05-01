@@ -156,7 +156,7 @@ class SmsAPIController extends AppBaseController
                 $sample = $sample_data->samples->where('sample_data_type', $project->dblink)->where('form_id', $form_number)->first();
                 $sample->setRelatedTable($dbname);
 
-                $result = $sample->resultWithTable()->first();
+                $result = $sample->resultWithTable($dbname)->first();
 
             }
 
@@ -267,6 +267,7 @@ class SmsAPIController extends AppBaseController
             $result->sample()->associate($sample);
             $result->sample = $sample->data->sample;
             $result->user_id = 1; // need to change this
+            $result->setTable($dbname); // need to set table name again for some reason
             $result->save();
             if (!empty($error_inputs)) {
                 $reply['message'] = implode(', ', $error_inputs) . ' have problem. Please check SMS format.';

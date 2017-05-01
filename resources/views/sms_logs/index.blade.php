@@ -20,3 +20,10 @@
         </div>
     </div>
 @endsection
+
+@push('document-ready')
+setInterval( function () {
+    window.LaravelDataTables["dataTableBuilder"].ajax.reload( null, false ); // user paging is not reset on reload
+}, 3000 );
+ajaxoverlay = false;
+@endpush

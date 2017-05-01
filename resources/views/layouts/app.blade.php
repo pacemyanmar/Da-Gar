@@ -185,16 +185,18 @@
     @stack('vue-scripts')
 
     <script type="text/javascript">
+    var ajaxoverlay = true;
     (function($) {
         @stack('document-ready');
     })(jQuery);
-
-    $(document).ajaxStart(function(){
-        $.LoadingOverlay("show");
-    });
-    $(document).ajaxStop(function(){
-        $.LoadingOverlay("hide");
-    });
+    if(ajaxoverlay) {
+        $(document).ajaxStart(function(){
+            $.LoadingOverlay("show");
+        });
+        $(document).ajaxStop(function(){
+            $.LoadingOverlay("hide");
+        });
+    }
 
 
      @stack('d3-js')
