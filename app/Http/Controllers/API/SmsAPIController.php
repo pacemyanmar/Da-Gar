@@ -15,6 +15,8 @@ use InfyOm\Generator\Criteria\LimitOffsetCriteria;
 use Krucas\Settings\Facades\Settings;
 use Prettus\Repository\Criteria\RequestCriteria;
 use Response;
+use Telerivet\Exceptions\TelerivetAPIException;
+use Telerivet\TelerivetAPI;
 
 /**
  * Class SmsController
@@ -106,7 +108,36 @@ class SmsAPIController extends AppBaseController
         $smsLog->save();
         $reply['content'] = $smsLog->status_message;
         $reply['success'] = true;
+
+        $this->sendToTelerivet($reply);
         return Response::json($reply, 200, $header);
+    }
+
+    private function sendToTelerivet($reply)
+    {
+        // if (Settings::has('api_key')) {
+        //     $API_KEY = Settings::get('api_key');
+        // } else {
+        //     return $this->sendError('API_KEY not found in your settings!');
+        // }
+        // if (Settings::has('project_id')) {
+        //     $PROJECT_ID = Settings::get('project_id');
+        // } else {
+        //     return $this->sendError('SMS PROJECT_ID not found in your settings!');
+        // }
+        $API_KEY = 'Vdb7rmfRA3B52lr4BRjTFAmEnrf8UH60'; // from https://telerivet.com/api/keys
+        $PROJECT_ID = 'PJf516b1b959d05547';
+        $telerivet = new TelerivetAPI($API_KEY);
+        $project = $telerivet->initProjectById($PROJECT_ID);
+        try {
+            // Send a SMS message
+            $project->sendMessage(array(
+                'to_number' => $reply['to_number'],
+                'content' => json_encode($reply['content'], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES),
+            ));
+        } catch (TelerivetAPIException $e) {
+            return $this->sendError($e->getMessage());
+        }
     }
 
     private function parseMessage($message, $to_number = '')
