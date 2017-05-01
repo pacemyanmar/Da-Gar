@@ -35,6 +35,7 @@ class SmsAPIController extends AppBaseController
     {
         $secret = $request->input('secret');
         $api_key = Settings::get('api_key');
+        $header = ['Content-Type' => 'application/json'];
         $reply = [
             //'content', // SMS message to send
             'to_number' => $request->input('from_number'), // optional to number, default will use same incoming phone
@@ -46,7 +47,7 @@ class SmsAPIController extends AppBaseController
         if ($secret != $api_key) {
             $reply['content'] = 'Forbidden';
             $reply['success'] = false;
-            return Response::json($reply, 403);
+            return Response::json($reply, 403, $header);
         }
 
         $messages = [
@@ -105,7 +106,7 @@ class SmsAPIController extends AppBaseController
         $smsLog->save();
         $reply['content'] = $smsLog->status_message;
         $reply['success'] = true;
-        return Response::json($reply, 200);
+        return Response::json($reply, 200, $header);
     }
 
     private function parseMessage($message, $to_number = '')
