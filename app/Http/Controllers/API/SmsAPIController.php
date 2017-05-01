@@ -80,7 +80,7 @@ class SmsAPIController extends AppBaseController
         // save result
         $event = $request->input('event');
         $response = [];
-        if ($event == 'incoming_message') {
+        if ($event == 'incoming_message' || $event == 'default') {
             $message = $request->input('content'); // P1000S1AA1AB2AC3
             //$message = preg_replace('/[^0-9a-zA-Z]/', '', $message);
             $to_number = $request->input('to_number');
