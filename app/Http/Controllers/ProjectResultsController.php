@@ -191,7 +191,7 @@ class ProjectResultsController extends AppBaseController
                                     if(type === 'display') {
                                         var state_trans = JSON.parse(full.state_trans);
 
-                                        if(state_trans.$locale) {
+                                        if(state_trans && state_trans.$locale) {
                                             html = state_trans.$locale;
                                         } else {
                                             html =data;
@@ -219,7 +219,7 @@ class ProjectResultsController extends AppBaseController
                                     if(type === 'display') {
                                         var township_trans = JSON.parse(full.township_trans);
 
-                                        if(township_trans.$locale) {
+                                        if(township_trans && township_trans.$locale) {
                                             html = township_trans.$locale;
                                         } else {
                                             html =data;
