@@ -27,7 +27,7 @@ class SmsLogDataTable extends DataTable
     public function query()
     {
         $smsLogs = SmsLog::query();
-
+        $smsLogs->orderBy('created_at', 'desc');
         return $this->applyScopes($smsLogs);
     }
 
