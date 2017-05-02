@@ -205,78 +205,101 @@ class SmsAPIController extends AppBaseController
             $skey = 1;
 
             foreach ($sections as $section) {
-                $valid_response = 0; // initial valid response in this section
+
                 $optional = 0; // initial count for optional inputs
-                // get all inputs in a section
-                $inputs = $section->inputs->groupBy('inputid');
-                $section_inputs = [];
-                $section_error_inputs = [];
-                foreach ($inputs as $inputid => $input) {
+                $questions = $section->questions;
+                $question_completed = 0;
+                foreach ($questions as $question) {
+                    $valid_response = []; //  valid response in this question
+                    $inputs = $question->surveyInputs;
 
-                    $inputkey = str_replace('_', '', $inputid);
-                    // check input is optional
-                    $is_input_optional = $input->contains(function ($input, $key) {
-                        return $input->optional;
-                    });
-                    if ($is_input_optional) {
-                        $optional++;
-                    }
-                    // look for numeric answers
-                    preg_match('/' . $inputkey . '(\d+)/', $message, $response_match);
-                    if (array_key_exists(1, $response_match)) {
-                        $response = $response_match[1];
-                    } else {
-                        // look for open text answers
-                        $test_response = preg_match('/' . $inputkey . '@(.*)/', $message, $response_match);
-
-                        if ($test_response) {
-                            $response = $response_match[1];
+                    foreach ($inputs as $input) {
+                        $inputid = $input->inputid;
+                        $inputkey = str_replace('_', '', $inputid);
+                        // check input is optional
+                        if ($input->optional) {
+                            $optional++;
                         }
-                    }
 
-                    // if there is response
-                    if (isset($response)) {
-                        // input value is equal to $response or
-                        // input value is zero or empty string
-
-                        $is_value_valid = $input->contains(function ($input, $key) use ($inputid, $response) {
-                            return ($input->inputid == $inputid && ($input->value == $response || empty($input->value)));
-                        });
-
-                        if ($is_value_valid) {
-                            $section_inputs[$inputid] = $response;
-
-                            $result->{$inputid} = $response;
-
-                            // check input complete and count incremental
-                            if (!$is_input_optional) {
-                                $valid_response++;
-                            }
+                        // look for numeric answers
+                        if ($input->type == 'checkbox') {
+                            preg_match('/(' . $inputkey . '\d*)/', $message, $response_match);
                         } else {
-                            $section_error_inputs[] = strtoupper($inputkey);
+                            preg_match('/' . $inputkey . '(\d+)/', $message, $response_match);
                         }
-                        // unset $response  to avoid loop overwrite empty elements with previous value
-                        unset($response);
-                    } else {
-                        if (!$is_input_optional) {
-                            $section_error_inputs[] = strtoupper($inputkey);
+                        if (array_key_exists(1, $response_match)) {
+                            $response = $response_match[1];
+                        } else {
+                            // look for open text answers
+                            $test_response = preg_match('/' . $inputkey . '@(.*)/', $message, $response_match);
+
+                            if ($test_response) {
+                                $response = $response_match[1];
+                            }
+                        }
+
+                        // if there is response
+                        if (isset($response)) {
+                            // input value is equal to $response or
+                            // input value is zero or empty string
+
+                            $is_value_valid = ($input->value == $response || empty($input->value) || ($input->type == 'checkbox' && $response == $inputkey));
+
+                            if ($is_value_valid) {
+                                $section_inputs[$inputid] = $response;
+                                if ($input->type == 'checkbox') {
+                                    $result->{$inputid} = $input->value;
+                                } else {
+                                    $result->{$inputid} = $response;
+                                }
+
+                                // required input complete and count incremental
+                                if (!$input->optional) {
+                                    $valid_response[] = $inputid;
+                                }
+                            } else {
+                                $section_error_inputs[] = strtoupper($inputkey);
+                            }
+                            // unset $response  to avoid loop overwrite empty elements with previous value
+                            unset($response);
+                        } else {
+                            if (!$input->optional) {
+                                $section_error_inputs[] = strtoupper($inputkey);
+                            }
                         }
                     }
-                } // after inputs loop
-                // To check section status here
-                // get all inputs with optional status
-                $unique_inputs = $section->inputs->mapWithKeys(function ($item) {
-                    return [$item->inputid => $item->optional];
+
+                    //dd($valid_response);
+                    $required_response_with_value = $question->surveyInputs->filter(function ($input, $key) {
+                        return (!$input->optional && $input->value);
+                    })->pluck('inputid')->toArray();
+                    //dd($required_response_with_value);
+                    $required_response_empty_value = $question->surveyInputs->filter(function ($input, $key) {
+                        return (!$input->optional && empty($input->value));
+                    })->pluck('inputid')->toArray();
+
+                    $intersect_with_value = array_intersect($required_response_with_value, $valid_response);
+
+                    if (count($intersect_with_value) > 0 || (!empty($required_response_empty_value) && $required_response_empty_value == $valid_response)) {
+
+                        $question_completed++;
+                    }
+                    unset($required_response_with_value);
+                    unset($required_response_empty_value);
+                    unset($valid_response);
+                    unset($intersect_with_value);
+                }
+                $required_questions = $section->questions->filter(function ($question, $key) {
+                    return !$question->optional;
                 });
 
-                $required_inputs = $unique_inputs->filter(function ($optional, $key) {
-                    // optional not false
-                    return !$optional;
-                });
+                $error_inputs = $section_error_inputs;
+
+                unset($optional); // unset optional to avoid unexpect outcomes when checking section status
 
                 if (!empty($section_inputs)) {
 
-                    if ($required_inputs->count() === $valid_response) {
+                    if ($required_questions->count() === $question_completed) {
                         $result->{'section' . $skey . 'status'} = 1;
                     } else {
                         $result->{'section' . $skey . 'status'} = 2;
@@ -284,15 +307,10 @@ class SmsAPIController extends AppBaseController
                     $reply['section'] = $skey;
 
                     $result_inputs = $section_inputs;
+                    break; // this break and stop the loop - this is required not to process cross section data submit in one SMS
                 } else {
-
                     $result->{'section' . $skey . 'status'} = 0;
-
                 }
-
-                $error_inputs = $section_error_inputs;
-
-                unset($optional); // unset optional to avoid unexpect outcomes when checking section status
                 $skey++;
             } // after section loop
 
