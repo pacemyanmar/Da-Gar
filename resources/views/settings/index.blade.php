@@ -21,7 +21,7 @@
                                 <div class="input-group">
                                     <!-- if string long to show in label show as tooltip -->
                                     <span class="input-group-addon">
-                                        {!! 'APP Name :' !!}
+                                        APP Name :
                                     </span>
                                     {!! Form::text("configs[app_name]", settings('app_name', null), ['class' => 'form-control']) !!}
                                 </div>
@@ -31,16 +31,26 @@
                                 <div class="input-group">
                                     <!-- if string long to show in label show as tooltip -->
                                     <span class="input-group-addon">
-                                        {!! 'APP Short Name :' !!}
+                                        APP Short Name :
                                     </span>
                                     {!! Form::text("configs[app_short]", settings('app_short', null), ['class' => 'form-control']) !!}
+                                </div>
+                            </div>
+                            <!-- APP Name Field -->
+                            <div class="form-group">
+                                <div class="input-group">
+                                    <!-- if string long to show in label show as tooltip -->
+                                    <span class="input-group-addon">
+                                        APP Secret :
+                                    </span>
+                                    {!! Form::text("configs[app_secret]", settings('app_secret', null), ['class' => 'form-control']) !!}
                                 </div>
                             </div>
                             <div class="form-group">
                                 <div class="input-group">
                                     <!-- if string long to show in label show as tooltip -->
                                     <span class="input-group-addon">
-                                        {!! 'API KEY :' !!}
+                                        Telerivet API KEY :
                                     </span>
                                     {!! Form::text("configs[api_key]", settings('api_key', null), ['class' => 'form-control']) !!}
                                 </div>
@@ -49,7 +59,7 @@
                                 <div class="input-group">
                                     <!-- if string long to show in label show as tooltip -->
                                     <span class="input-group-addon">
-                                        {!! 'Project ID :' !!}
+                                        Telerivet Project ID :
                                     </span>
                                     {!! Form::text("configs[project_id]", settings('project_id', null), ['class' => 'form-control']) !!}
                                 </div>

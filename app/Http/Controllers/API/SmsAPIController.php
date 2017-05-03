@@ -36,7 +36,7 @@ class SmsAPIController extends AppBaseController
     public function telerivet(Request $request)
     {
         $secret = $request->input('secret');
-        $api_key = Settings::get('api_key');
+        $app_secret = Settings::get('app_secret');
         $header = ['Content-Type' => 'application/json'];
         $reply = [
             //'content', // SMS message to send
@@ -46,10 +46,10 @@ class SmsAPIController extends AppBaseController
             // 'status_secret', // optional notification url secret
             // 'route_id', // phone route to send message, default will use same
         ];
-        if ($secret != $api_key) {
+        if ($secret != $app_secret) {
             $reply['content'] = 'Forbidden';
-            $reply['success'] = false;
-            return Response::json($reply, 403, $header);
+            $this->sendToTelerivet($reply); // need to make asycronous
+            return $this->sendError('Forbidden');
         }
 
         $messages = [
@@ -81,10 +81,11 @@ class SmsAPIController extends AppBaseController
         $event = $request->input('event');
         $response = [];
         if ($event == 'incoming_message' || $event == 'default') {
-            $message = $request->input('content'); // P1000S1AA1AB2AC3
+            $content = $request->input('content'); // P1000S1AA1AB2AC3
             //$message = preg_replace('/[^0-9a-zA-Z]/', '', $message);
             $to_number = $request->input('to_number');
-            $response = $this->parseMessage($message, $to_number);
+            $response = $this->parseMessage($content, $to_number);
+            $status = 'new';
         }
 
         $smsLog = new SmsLog;
@@ -93,8 +94,9 @@ class SmsAPIController extends AppBaseController
         $smsLog->service_id = $request->input('id');
         $smsLog->from_number = $request->input('from_number');
         $smsLog->from_number_e164 = $request->input('from_number_e164');
-        $smsLog->to_number = $request->input('to_number');
-        $smsLog->content = $request->input('content'); // incoming message
+        $smsLog->to_number = $to_number;
+        $smsLog->content = $content; // incoming message
+        $smsLog->sms_status = (isset($status)) ? $status : null;
 
         $smsLog->form_code = $response['form_code'];
         $smsLog->status_message = $response['message']; // reply message
@@ -107,26 +109,26 @@ class SmsAPIController extends AppBaseController
         $smsLog->remark = '';
         $smsLog->save();
         $reply['content'] = $smsLog->status_message;
-        $reply['success'] = true;
 
-        $this->sendToTelerivet($reply);
-        return Response::json($reply, 200, $header);
+        $this->sendToTelerivet($reply); // need to make asycronous
+
+        return $this->sendResponse($reply, 'Message processed successfully');
     }
 
     private function sendToTelerivet($reply)
     {
-        // if (Settings::has('api_key')) {
-        //     $API_KEY = Settings::get('api_key');
-        // } else {
-        //     return $this->sendError('API_KEY not found in your settings!');
-        // }
-        // if (Settings::has('project_id')) {
-        //     $PROJECT_ID = Settings::get('project_id');
-        // } else {
-        //     return $this->sendError('SMS PROJECT_ID not found in your settings!');
-        // }
-        $API_KEY = 'Vdb7rmfRA3B52lr4BRjTFAmEnrf8UH60'; // from https://telerivet.com/api/keys
-        $PROJECT_ID = 'PJf516b1b959d05547';
+        // from https://telerivet.com/api/keys
+        if (Settings::has('api_key')) {
+            $API_KEY = Settings::get('api_key');
+        } else {
+            return $this->sendError('API_KEY not found in your settings!');
+        }
+        if (Settings::has('project_id')) {
+            $PROJECT_ID = Settings::get('project_id');
+        } else {
+            return $this->sendError('SMS PROJECT_ID not found in your settings!');
+        }
+
         $telerivet = new TelerivetAPI($API_KEY);
         $project = $telerivet->initProjectById($PROJECT_ID);
         try {

@@ -23,7 +23,7 @@ return [
     | If it is enabled all values gets cached after accessing it.
     |
      */
-    'cache' => false,
+    'cache' => true,
 
     /*
     |--------------------------------------------------------------------------
