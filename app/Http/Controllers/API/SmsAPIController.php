@@ -168,6 +168,13 @@ class SmsAPIController extends AppBaseController
                 $reply['status'] = 'error';
                 return $reply;
             }
+
+            if ($project->status != 'published') {
+                $reply['message'] = 'Not ready! Please call to data center immediately.';
+                $reply['status'] = 'error';
+                return $reply;
+            }
+
             $reply['form_code'] = $pcode[1] . $pcode[2];
             $location_code = $pcode[2];
 

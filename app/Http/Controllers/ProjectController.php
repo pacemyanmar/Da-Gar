@@ -579,7 +579,7 @@ class ProjectController extends AppBaseController
                                 break;
 
                             case 'number':
-                                $inputType = 'unsignedInteger';
+                                $inputType = 'unsignedInteger'; // maxinum 10 digits exactly 4 billions
                                 break;
 
                             case 'textarea':
