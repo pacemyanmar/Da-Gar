@@ -15,7 +15,7 @@ class SmsLogDataTable extends DataTable
     {
         return $this->datatables
             ->eloquent($this->query())
-            ->addColumn('action', 'sms_logs.datatables_actions')
+        //->addColumn('action', 'sms_logs.datatables_actions')
             ->make(true);
     }
 
@@ -40,7 +40,7 @@ class SmsLogDataTable extends DataTable
     {
         return $this->builder()
             ->columns($this->getColumns())
-            ->addAction(['width' => '10%', 'title' => trans('messages.action')])
+        //->addAction(['width' => '10%', 'title' => trans('messages.action')])
             ->ajax('')
             ->parameters([
                 'dom' => 'Bfrtip',
@@ -105,9 +105,9 @@ class SmsLogDataTable extends DataTable
         return [
             //'id' => ['name' => 'id', 'data' => 'id'],
             //'service_id' => ['name' => 'service_id', 'data' => 'service_id'],
-            'from_number' => ['name' => 'from_number', 'data' => 'from_number'],
-            'to_number' => ['name' => 'to_number', 'data' => 'to_number'],
-            'form_code' => ['name' => 'form_code', 'data' => 'form_code'],
+            'from_number' => ['name' => 'from_number', 'data' => 'from_number', 'width' => 150],
+            'to_number' => ['name' => 'to_number', 'data' => 'to_number', 'width' => 150],
+            'form_code' => ['name' => 'form_code', 'data' => 'form_code', 'width' => 100],
             'content' => ['name' => 'content', 'data' => 'content', "render" => function () {
                 return "function ( data, type, full, meta ) {
                                     return data
