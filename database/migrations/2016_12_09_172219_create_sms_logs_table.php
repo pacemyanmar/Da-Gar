@@ -23,6 +23,7 @@ class CreateSmsLogsTable extends Migration
             $table->string('event')->index();
             $table->string('message_type')->nullable();
             $table->string('content')->index();
+            $table->string('sms_status')->index()->nullable();
             $table->string('status_url')->index()->nullable();
             $table->string('status_secret')->unique()->nullable();
             $table->text('status_message');
