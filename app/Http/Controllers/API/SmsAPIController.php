@@ -169,6 +169,7 @@ class SmsAPIController extends AppBaseController
                 $reply['status'] = 'error';
                 return $reply;
             }
+            $reply['project_id'] = $project->id;
 
             if ($project->status != 'published') {
                 $reply['message'] = 'Not ready! Please call to data center immediately.';
@@ -337,7 +338,7 @@ class SmsAPIController extends AppBaseController
                 $reply['status'] = 'success';
             }
             $reply['result_id'] = $result->id;
-            $reply['project_id'] = $project->id;
+
 
             return $reply;
         } else {
