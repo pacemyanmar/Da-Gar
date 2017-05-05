@@ -3,9 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\DataTables\SmsLogDataTable;
-use App\Http\Controllers\AppBaseController;
 use App\Http\Requests\CreateSmsLogRequest;
 use App\Http\Requests\UpdateSmsLogRequest;
+use App\Models\Project;
 use App\Repositories\SmsLogRepository;
 use Flash;
 use Response;
@@ -29,7 +29,8 @@ class SmsLogController extends AppBaseController
      */
     public function index(SmsLogDataTable $smsLogDataTable)
     {
-        return $smsLogDataTable->render('sms_logs.index');
+        $projects = Project::all();
+        return $smsLogDataTable->render('sms_logs.index', compact('projects'));
     }
 
     /**
@@ -103,7 +104,7 @@ class SmsLogController extends AppBaseController
     /**
      * Update the specified SmsLog in storage.
      *
-     * @param  int              $id
+     * @param  int $id
      * @param UpdateSmsLogRequest $request
      *
      * @return Response

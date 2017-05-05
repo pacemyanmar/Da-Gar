@@ -7,6 +7,13 @@ use Yajra\Datatables\Services\DataTable;
 
 class SmsLogDataTable extends DataTable
 {
+    public $project;
+
+    public function setProject($project)
+    {
+        $this->project = $project;
+        return $this;
+    }
 
     /**
      * @return \Illuminate\Http\JsonResponse
@@ -27,6 +34,9 @@ class SmsLogDataTable extends DataTable
     public function query()
     {
         $smsLogs = SmsLog::query();
+        if ($this->project) {
+            $smsLogs->where('project_id', $this->project->id);
+        }
         $smsLogs->orderBy('created_at', 'desc');
         return $this->applyScopes($smsLogs);
     }

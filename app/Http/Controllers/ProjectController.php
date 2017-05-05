@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\DataTables\ProjectDataTable;
-use App\Http\Controllers\AppBaseController;
+use App\DataTables\SmsLogDataTable;
 use App\Http\Requests\CreateProjectRequest;
 use App\Http\Requests\UpdateProjectRequest;
 use App\Models\Project;
@@ -221,7 +221,7 @@ class ProjectController extends AppBaseController
     /**
      * Update the specified Project in storage.
      *
-     * @param  int              $id
+     * @param  int $id
      * @param UpdateProjectRequest $request
      *
      * @return Response
@@ -360,6 +360,13 @@ class ProjectController extends AppBaseController
         return redirect(route('projects.index'));
     }
 
+    private function down($project)
+    {
+        Schema::dropIfExists($project->dbname);
+
+        Schema::dropIfExists($project->dbname . '_double');
+    }
+
     public function sort($id)
     {
         $project = $this->projectRepository->findWithoutFail($id);
@@ -426,76 +433,6 @@ class ProjectController extends AppBaseController
         Flash::success('Form built successfully.');
 
         return redirect()->back();
-    }
-
-    private function down($project)
-    {
-        Schema::dropIfExists($project->dbname);
-
-        Schema::dropIfExists($project->dbname . '_double');
-    }
-
-    private function createTable($dbname, $project, $fields)
-    {
-        // if table is not yet created, create table and inputs columns
-        Schema::create($dbname, function (Blueprint $table) use ($project, $fields) {
-
-            $table->increments('id');
-            $table->unsignedInteger('sample_id')->index(); // sample
-            $table->string('sample')->index(); // sample
-            $table->unsignedInteger('user_id')->index();
-            $table->unsignedInteger('update_user_id')->index()->nullable();
-            $table->timestamps();
-            foreach ($project->sectionsDb as $key => $section) {
-                $section_num = $key + 1;
-                $table->unsignedSmallInteger('section' . $section_num . 'status')->index()->default(0); // 0 => missing, 1 => complete, 2 => incomplete, 3 => error
-                //$table->json('section' . $key)->nullable();
-            }
-
-            foreach ($fields as $input) {
-                $double_column = $input->inputid . '_d';
-                $double_status = $input->inputid . '_ds';
-                switch ($input->type) {
-                    case 'radio':
-                    case 'checkbox':
-                        if ($input->other) {
-                            $inputType = 'string';
-                        } else {
-                            $inputType = 'unsignedSmallInteger';
-                        }
-                        break;
-
-                    case 'number':
-                        $inputType = 'unsignedInteger';
-                        break;
-
-                    case 'textarea':
-                        $inputType = 'text';
-                        break;
-
-                    default:
-                        $inputType = 'string';
-                        break;
-                }
-                if ($input->in_index) {
-                    $table->$inputType($input->inputid)
-                        ->index()
-                        ->nullable();
-                } else {
-                    if ($inputType == 'string') {
-                        $table->string($input->inputid, 100)
-                            ->nullable();
-                    } else {
-                        $table->$inputType($input->inputid)
-                            ->nullable();
-                    }
-                }
-            }
-        });
-
-        // change input status to published
-        $project->inputs()->withoutGlobalScope(OrderByScope::class)
-            ->update(['status' => 'published']);
     }
 
     private function updateTable($dbname, $project, $fields)
@@ -612,6 +549,69 @@ class ProjectController extends AppBaseController
             ->update(['status' => 'published']);
     }
 
+    private function createTable($dbname, $project, $fields)
+    {
+        // if table is not yet created, create table and inputs columns
+        Schema::create($dbname, function (Blueprint $table) use ($project, $fields) {
+
+            $table->increments('id');
+            $table->unsignedInteger('sample_id')->index(); // sample
+            $table->string('sample')->index(); // sample
+            $table->unsignedInteger('user_id')->index();
+            $table->unsignedInteger('update_user_id')->index()->nullable();
+            $table->timestamps();
+            foreach ($project->sectionsDb as $key => $section) {
+                $section_num = $key + 1;
+                $table->unsignedSmallInteger('section' . $section_num . 'status')->index()->default(0); // 0 => missing, 1 => complete, 2 => incomplete, 3 => error
+                //$table->json('section' . $key)->nullable();
+            }
+
+            foreach ($fields as $input) {
+                $double_column = $input->inputid . '_d';
+                $double_status = $input->inputid . '_ds';
+                switch ($input->type) {
+                    case 'radio':
+                    case 'checkbox':
+                        if ($input->other) {
+                            $inputType = 'string';
+                        } else {
+                            $inputType = 'unsignedSmallInteger';
+                        }
+                        break;
+
+                    case 'number':
+                        $inputType = 'unsignedInteger';
+                        break;
+
+                    case 'textarea':
+                        $inputType = 'text';
+                        break;
+
+                    default:
+                        $inputType = 'string';
+                        break;
+                }
+                if ($input->in_index) {
+                    $table->$inputType($input->inputid)
+                        ->index()
+                        ->nullable();
+                } else {
+                    if ($inputType == 'string') {
+                        $table->string($input->inputid, 100)
+                            ->nullable();
+                    } else {
+                        $table->$inputType($input->inputid)
+                            ->nullable();
+                    }
+                }
+            }
+        });
+
+        // change input status to published
+        $project->inputs()->withoutGlobalScope(OrderByScope::class)
+            ->update(['status' => 'published']);
+    }
+
     public function search($project_id, Request $request)
     {
         $sample_id = $request->input('sample');
@@ -720,5 +720,19 @@ class ProjectController extends AppBaseController
 
             return redirect()->back();
         }
+    }
+
+    public function smslog($project_id, SmsLogDataTable $smsLogDataTable)
+    {
+        $project = $this->projectRepository->findWithoutFail($project_id);
+
+        if (empty($project)) {
+            Flash::error('Project not found');
+
+            return redirect()->back();
+        }
+        $smsLogDataTable->setProject($project);
+        $projects = Project::all();
+        return $smsLogDataTable->render('sms_logs.index', compact('projects'), compact('project'));
     }
 }
