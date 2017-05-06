@@ -22,7 +22,6 @@ use Telerivet\TelerivetAPI;
  * Class SmsController
  * @package App\Http\Controllers\API
  */
-
 class SmsAPIController extends AppBaseController
 {
     /** @var  SmsRepository */
@@ -38,9 +37,15 @@ class SmsAPIController extends AppBaseController
         $secret = $request->input('secret');
         $app_secret = Settings::get('app_secret');
         $header = ['Content-Type' => 'application/json'];
+
+        $from_number = $request->input('from_number');
+        if(empty($from_number)) {
+            return $this->sendError('from_number required.');
+        }
+
         $reply = [
             //'content', // SMS message to send
-            'to_number' => $request->input('from_number'), // optional to number, default will use same incoming phone
+            'to_number' => $from_number, // optional to number, default will use same incoming phone
             // 'message_type', // optinal sms or ussd. default is sms.
             // 'status_url', // optional send status notification url hook
             // 'status_secret', // optional notification url secret
@@ -79,20 +84,40 @@ class SmsAPIController extends AppBaseController
         // check logical error
         // save result
         $event = $request->input('event');
+
+        if(empty($event)) {
+            return $this->sendError('Event type required.');
+        }
+        $content = $request->input('content'); // P1000S1AA1AB2AC3
+
+        if(empty($content)) {
+            return $this->sendError('Content is empty.');
+        }
+        //$message = preg_replace('/[^0-9a-zA-Z]/', '', $message);
+        $to_number = $request->input('to_number');
+        if(empty($to_number)) {
+            return $this->sendError('to_number required.');
+        }
+
+        $message_type = $request->input('message_type');
+//        if(empty($message_type)) {
+//            return $this->sendError('message type required.');
+//        }
+
+        $service_id = $request->input('id');
+
         $response = [];
         if ($event == 'incoming_message' || $event == 'default') {
-            $content = $request->input('content'); // P1000S1AA1AB2AC3
-            //$message = preg_replace('/[^0-9a-zA-Z]/', '', $message);
-            $to_number = $request->input('to_number');
+
             $response = $this->parseMessage($content, $to_number);
             $status = 'new';
         }
 
         $smsLog = new SmsLog;
         $smsLog->event = $event;
-        $smsLog->message_type = $request->input('message_type');
-        $smsLog->service_id = $request->input('id');
-        $smsLog->from_number = $request->input('from_number');
+        $smsLog->message_type = $message_type;
+        $smsLog->service_id = $service_id;
+        $smsLog->from_number = $from_number;
         $smsLog->from_number_e164 = $request->input('from_number_e164');
         $smsLog->to_number = $to_number;
         $smsLog->content = $content; // incoming message
@@ -101,7 +126,7 @@ class SmsAPIController extends AppBaseController
         $smsLog->status_message = $response['message']; // reply message
         $smsLog->status = $response['status'];
 
-        $smsLog->form_code = (array_key_exists('form_code', $response))?$response['form_code']:'Not Valid';
+        $smsLog->form_code = (array_key_exists('form_code', $response)) ? $response['form_code'] : 'Not Valid';
 
         $smsLog->section = (array_key_exists('section', $response)) ? $response['section'] : null; // not actual id from database, just ordering number from form
         $smsLog->result_id = (array_key_exists('result_id', $response)) ? $response['result_id'] : null;
@@ -234,6 +259,9 @@ class SmsAPIController extends AppBaseController
 
                         // look for numeric answers
                         if ($input->type == 'checkbox') {
+                            // if $message is AA11 and checkbox has only AA1, response will be invalid
+                            // if $message is AA11 and checkbox has both AA1 and AA11, this will assume as sending for AA11
+                            // if $message is AA12 and checkbox has both AA1 and AA11, response will be invalid
                             preg_match('/(' . $inputkey . '\d*)/', $message, $response_match);
                         } else {
                             preg_match('/' . $inputkey . '(\d+)/', $message, $response_match);
