@@ -33,11 +33,18 @@ class SmsLogDataTable extends DataTable
      */
     public function query()
     {
+        $select = ['form_code', 'from_number', 'to_number', 'event', 'content'];
         $smsLogs = SmsLog::query();
         if ($this->project) {
             $smsLogs->where('project_id', $this->project->id);
+            $smsLogs->join($this->project->dbname, 'sms_logs.sample_id', '=', $this->project->dbname.'.sample_id');
+            $inputs = $this->project->inputs->pluck('inputid')->unique();
+            foreach($inputs as $inputid) {
+                $select[] = $this->project->dbname.'.'.$inputid;
+            }
         }
-        $smsLogs->orderBy('created_at', 'desc');
+        $smsLogs->select($select);
+        $smsLogs->orderBy('sms_logs.created_at', 'desc');
         return $this->applyScopes($smsLogs);
     }
 
@@ -51,7 +58,13 @@ class SmsLogDataTable extends DataTable
         return $this->builder()
             ->columns($this->getColumns())
         //->addAction(['width' => '10%', 'title' => trans('messages.action')])
-            ->ajax('')
+            ->ajax([
+            'type' => 'POST',
+            'headers' => [
+                'X-CSRF-TOKEN' => csrf_token(),
+            ],
+
+            'data' => '{"_method":"GET"}',])
             ->parameters([
                 'dom' => 'Bfrtip',
                 'scrollX' => false,
@@ -112,7 +125,7 @@ class SmsLogDataTable extends DataTable
      */
     private function getColumns()
     {
-        return [
+        $columns =  [
             //'id' => ['name' => 'id', 'data' => 'id'],
             //'service_id' => ['name' => 'service_id', 'data' => 'service_id'],
             'from_number' => ['name' => 'from_number', 'data' => 'from_number', 'width' => 150],
@@ -125,6 +138,14 @@ class SmsLogDataTable extends DataTable
             }],
             'status_message' => ['name' => 'status_message', 'data' => 'status_message'],
         ];
+        if ($this->project) {
+            $inputs = $this->project->inputs->sortBy('sort')->pluck('sort','inputid')->unique();
+
+            foreach($inputs as $inputid => $sort) {
+                $columns[$inputid] = ['name' => $inputid, 'data' => $inputid, 'title' => strtoupper(studly_case($inputid)), 'visible' => false, 'width' => 30];
+            }
+        }
+        return $columns;
     }
 
     /**

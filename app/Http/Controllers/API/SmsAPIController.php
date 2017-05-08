@@ -38,10 +38,12 @@ class SmsAPIController extends AppBaseController
         $app_secret = Settings::get('app_secret');
         $header = ['Content-Type' => 'application/json'];
 
+
         $from_number = $request->input('from_number');
         if(empty($from_number)) {
             return $this->sendError('from_number required.');
         }
+
 
         $reply = [
             //'content', // SMS message to send
@@ -51,6 +53,7 @@ class SmsAPIController extends AppBaseController
             // 'status_secret', // optional notification url secret
             // 'route_id', // phone route to send message, default will use same
         ];
+
         if ($secret != $app_secret) {
             $reply['content'] = 'Forbidden';
             $this->sendToTelerivet($reply); // need to make asycronous
@@ -119,6 +122,7 @@ class SmsAPIController extends AppBaseController
         $smsLog->service_id = $service_id;
         $smsLog->from_number = $from_number;
         $smsLog->from_number_e164 = $request->input('from_number_e164');
+        $smsLog->project_id = $request->input('project_id');
         $smsLog->to_number = $to_number;
         $smsLog->content = $content; // incoming message
         $smsLog->sms_status = (isset($status)) ? $status : null;
@@ -130,7 +134,8 @@ class SmsAPIController extends AppBaseController
 
         $smsLog->section = (array_key_exists('section', $response)) ? $response['section'] : null; // not actual id from database, just ordering number from form
         $smsLog->result_id = (array_key_exists('result_id', $response)) ? $response['result_id'] : null;
-        $smsLog->project_id = (array_key_exists('project_id', $response)) ? $response['project_id'] : null;
+        $smsLog->sample_id = (array_key_exists('sample_id', $response)) ? $response['sample_id'] : null;
+
 
         $smsLog->remark = '';
         $smsLog->save();
@@ -194,7 +199,7 @@ class SmsAPIController extends AppBaseController
                 $reply['status'] = 'error';
                 return $reply;
             }
-            $reply['project_id'] = $project->id;
+
 
             if ($project->status != 'published') {
                 $reply['message'] = 'Not ready! Please call to data center immediately.';
@@ -222,6 +227,7 @@ class SmsAPIController extends AppBaseController
                     $form_number = 1;
                 }
                 $sample = $sample_data->samples->where('sample_data_type', $project->dblink)->where('form_id', $form_number)->first();
+                $reply['sample_id'] = $sample->id;
                 $sample->setRelatedTable($dbname);
 
                 $result = $sample->resultWithTable($dbname)->first();

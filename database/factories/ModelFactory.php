@@ -77,7 +77,7 @@ $factory->define(App\Models\Project::class, function (Faker\Generator $faker) {
     $dbname = snake_case($short_project_name . '_' . $short_unique);
     return [
         'project' => $project,
-        'unique_code' => $faker->unique()->numberBetween(1, 99),
+        'unique_code' => strtoupper($faker->unique()->randomLetter),
         'dbname' => $dbname,
         'dblink' => $faker->randomElement(['voter', 'enumerator']),
         'type' => $faker->randomElement(['sample2db', 'db2sample']),

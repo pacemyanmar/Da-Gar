@@ -31,7 +31,8 @@ class CreateSmsLogsTable extends Migration
             $table->text('remark');
             $table->unsignedSmallInteger('section')->nullable()->index();
             $table->unsignedInteger('result_id')->nullable()->index();
-            $table->unsignedInteger('project_id')->nullable()->index();
+            $table->string('project_id')->nullable()->index();
+            $table->unsignedInteger('sample_id')->nullable()->index();
         });
     }
 
