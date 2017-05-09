@@ -303,6 +303,9 @@ class SmsAPIController extends AppBaseController
                                     $valid_response[] = $inputid;
                                 }
                             } else {
+                                if ($input->type == 'checkbox') {
+                                    $result->{$inputid} = null;
+                                }
                                 $section_error_inputs[] = strtoupper($inputkey);
                             }
                             // unset $response  to avoid loop overwrite empty elements with previous value
@@ -315,10 +318,12 @@ class SmsAPIController extends AppBaseController
                     }
 
                     //dd($valid_response);
+                    // for checkbox and radio
                     $required_response_with_value = $question->surveyInputs->filter(function ($input, $key) {
                         return (!$input->optional && $input->value);
                     })->pluck('inputid')->toArray();
                     //dd($required_response_with_value);
+                    // for text based inputs
                     $required_response_empty_value = $question->surveyInputs->filter(function ($input, $key) {
                         return (!$input->optional && empty($input->value));
                     })->pluck('inputid')->toArray();
