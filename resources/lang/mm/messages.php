@@ -120,4 +120,6 @@ return [
     'saveall' => 'အားလုံးသိမ်း',
     'savesection' => 'ဒီအပိုင်းကို သိမ်းပါ',
     'back' => 'စာရင်း',
+    'smslog' => 'SMS Log',
+    'export_project' => 'Export Form',
 ];

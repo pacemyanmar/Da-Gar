@@ -130,4 +130,6 @@ return [
     'saveall' => 'Save All',
     'savesection' => 'Save this Section',
     'back' => 'Back to List',
+    'smslog' => 'SMS Log',
+    'export_project' => 'Export Form',
 ];

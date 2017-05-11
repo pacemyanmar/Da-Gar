@@ -61,5 +61,10 @@
             <i class="fa fa-pie-chart"></i> {!! trans('messages.analysis') !!}
         </a>
     </div>
+        <div class="btn-group">
+            <a href="{{ route('projects.smslog', $id) }}" class='btn btn-default btn-sm'>
+                <i class="fa fa-envelope"></i> {!! trans('messages.smslog') !!}
+            </a>
+        </div>
 @endif
 </div>
