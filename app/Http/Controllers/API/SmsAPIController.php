@@ -50,7 +50,9 @@ class SmsAPIController extends AppBaseController
             // 'message_type', // optinal sms or ussd. default is sms.
             // 'status_url', // optional send status notification url hook
             // 'status_secret', // optional notification url secret
-            // 'route_id', // phone route to send message, default will use same
+            'route_id' => $request->input('phone_id'), // phone route to send message, default will use same
+            'service_id' => $request->input('service_id'),
+            'project_id' => $request->input('project_id')
         ];
 
         if ($secret != $app_secret) {
@@ -109,11 +111,14 @@ class SmsAPIController extends AppBaseController
         $service_id = $request->input('id');
 
         $response = [];
+
         if ($event == 'incoming_message' || $event == 'default') {
 
             $response = $this->parseMessage($content, $to_number);
             $status = 'new';
         }
+
+
 
         $smsLog = new SmsLog;
         $smsLog->event = $event;
@@ -161,12 +166,11 @@ class SmsAPIController extends AppBaseController
 
         $telerivet = new TelerivetAPI($API_KEY);
         $project = $telerivet->initProjectById($PROJECT_ID);
+
         try {
             // Send a SMS message
-            $project->sendMessage(array(
-                'to_number' => $reply['to_number'],
-                'content' => json_encode($reply['content'], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES),
-            ));
+            $sent_sms = $project->sendMessage($reply);
+
         } catch (TelerivetAPIException $e) {
             return $this->sendError($e->getMessage());
         }
