@@ -594,10 +594,11 @@ class ProjectController extends AppBaseController
     private function createTable($dbname, $project, $fields)
     {
         // if table is not yet created, create table and inputs columns
-        Schema::create($dbname, function (Blueprint $table) use ($project, $fields) {
+        Schema::create($dbname, function (Blueprint $table) use ($project, $fields, $dbname) {
 
             $table->increments('id');
-            if ($project->training) {
+            $training_mode = preg_match('/_training$/', $dbname, $mode);
+            if ($training_mode) {
                 $table->string('sample_code')->index(); // sample
             } else {
                 $table->unsignedInteger('sample_id')->index(); // sample
