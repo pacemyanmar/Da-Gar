@@ -11,6 +11,7 @@ use App\Models\SmsLog;
 use App\Models\SurveyResult;
 use App\Repositories\SmsLogRepository;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use InfyOm\Generator\Criteria\LimitOffsetCriteria;
 use Krucas\Settings\Facades\Settings;
 use Prettus\Repository\Criteria\RequestCriteria;
@@ -170,7 +171,7 @@ class SmsAPIController extends AppBaseController
         try {
             // Send a SMS message
             $sent_sms = $project->sendMessage($reply);
-
+            Log::info(json_encode($sent_sms));
         } catch (TelerivetAPIException $e) {
             return $this->sendError($e->getMessage());
         }
