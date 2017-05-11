@@ -12,7 +12,17 @@
                 @endforeach
             </select>
         </span>
+        <div class="clearfix"></div>
+        @if(isset($project))
+        <ul class="nav nav-pills">
+            <li role="presentation" class="active"><a href="{!! route('projects.smslog', $project->id) !!}">All</a></li>
+            @foreach($project->sectionsDb as $key => $section)
+            <li role="presentation" class="active"><a href="{!! route('projects.smslog', $project->id) !!}/?section={!! $key + 1 !!}">SMS {!! $key + 1 !!}</a></li>
+            @endforeach
+        </ul>
+        @endif
     </section>
+
     <div class="content">
         <div class="clearfix"></div>
 

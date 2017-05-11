@@ -3,6 +3,7 @@
 namespace App\DataTables;
 
 use App\Models\SmsLog;
+use Illuminate\Support\Facades\Request;
 use Yajra\Datatables\Services\DataTable;
 
 class SmsLogDataTable extends DataTable
@@ -22,7 +23,7 @@ class SmsLogDataTable extends DataTable
     {
         return $this->datatables
             ->eloquent($this->query())
-        //->addColumn('action', 'sms_logs.datatables_actions')
+            //->addColumn('action', 'sms_logs.datatables_actions')
             ->make(true);
     }
 
@@ -33,14 +34,22 @@ class SmsLogDataTable extends DataTable
      */
     public function query()
     {
-        $select = ['form_code', 'from_number', 'to_number', 'event', 'content'];
+        $select = ['sms_logs.created_at','form_code', 'from_number', 'to_number', 'event', 'content', 'status_message', 'status', 'project_id'];
         $smsLogs = SmsLog::query();
         if ($this->project) {
             $smsLogs->where('project_id', $this->project->id);
-            $smsLogs->join($this->project->dbname, 'sms_logs.sample_id', '=', $this->project->dbname.'.sample_id');
+            if ($this->project->training) {
+                $smsLogs->join($this->project->dbname . '_training', 'sms_logs.result_id', '=', $this->project->dbname . '_training.id');
+            } else {
+                $smsLogs->join($this->project->dbname, 'sms_logs.sample_id', '=', $this->project->dbname . '.sample_id');
+            }
             $inputs = $this->project->inputs->pluck('inputid')->unique();
-            foreach($inputs as $inputid) {
-                $select[] = $this->project->dbname.'.'.$inputid;
+            foreach ($inputs as $inputid) {
+                if ($this->project->training) {
+                    $select[] = $this->project->dbname . '_training.' . $inputid;
+                } else {
+                    $select[] = $this->project->dbname . '.' . $inputid;
+                }
             }
         }
         $smsLogs->select($select);
@@ -55,19 +64,25 @@ class SmsLogDataTable extends DataTable
      */
     public function html()
     {
+        $tableAttributes = [
+            'class' => 'table table-striped table-bordered',
+        ];
         return $this->builder()
+            ->setTableAttributes($tableAttributes)
             ->columns($this->getColumns())
-        //->addAction(['width' => '10%', 'title' => trans('messages.action')])
+            //->addAction(['width' => '10%', 'title' => trans('messages.action')])
             ->ajax([
-            'type' => 'POST',
-            'headers' => [
-                'X-CSRF-TOKEN' => csrf_token(),
-            ],
+                'type' => 'POST',
+                'headers' => [
+                    'X-CSRF-TOKEN' => csrf_token(),
+                ],
 
-            'data' => '{"_method":"GET"}',])
+                'data' => '{"_method":"GET"}',])
             ->parameters([
-                'dom' => 'Bfrtip',
-                'scrollX' => false,
+                'dom' => 'Brtip',
+                'ordering' => false,
+                'scrollX' => true,
+                'fixedColumns' => true,
                 'processing' => false,
                 'language' => [
                     "decimal" => trans('messages.decimal'),
@@ -101,18 +116,18 @@ class SmsLogDataTable extends DataTable
                     ],
                 ],
                 'buttons' => [
-                    'print',
+                    //'print',
                     'reset',
                     'reload',
-                    [
-                        'extend' => 'collection',
-                        'text' => '<i class="fa fa-download"></i> ' . trans('messages.export'),
-                        'buttons' => [
-                            'csv',
-                            'excel',
-                            'pdf',
-                        ],
-                    ],
+//                    [
+//                        'extend' => 'collection',
+//                        'text' => '<i class="fa fa-download"></i> ' . trans('messages.export'),
+//                        'buttons' => [
+//                            'csv',
+//                            'excel',
+//                            'pdf',
+//                        ],
+//                    ],
                     'colvis',
                 ],
             ]);
@@ -125,26 +140,37 @@ class SmsLogDataTable extends DataTable
      */
     private function getColumns()
     {
-        $columns =  [
+        $columns = [
             //'id' => ['name' => 'id', 'data' => 'id'],
             //'service_id' => ['name' => 'service_id', 'data' => 'service_id'],
-            'from_number' => ['name' => 'from_number', 'data' => 'from_number', 'width' => 150],
-            'to_number' => ['name' => 'to_number', 'data' => 'to_number', 'width' => 150],
-            'form_code' => ['name' => 'form_code', 'data' => 'form_code', 'width' => 100],
-            'content' => ['name' => 'content', 'data' => 'content', "render" => function () {
-                return "function ( data, type, full, meta ) {
+            'timestamp' => ['name' => 'created_at', 'data' => 'created_at', 'orderable' => false, 'width' => 80],
+            'from_number' => ['name' => 'from_number', 'data' => 'from_number', 'width' => 100, 'orderable' => false],
+            'to_number' => ['name' => 'to_number', 'data' => 'to_number', 'width' => 100, 'orderable' => false],
+
+        ];
+        $columns['content'] = ['name' => 'content', 'data' => 'content', 'width' => 150, 'orderable' => false, "render" => function () {
+            return "function ( data, type, full, meta ) {
                                     return data
                                   }, createdCell: function (td, cellData, rowData, row, col) { if(rowData.status == 'error') { $(td).addClass('danger'); } }"; // this is really dirty hack to work createdCell
-            }],
-            'status_message' => ['name' => 'status_message', 'data' => 'status_message'],
-        ];
+        }];
         if ($this->project) {
-            $inputs = $this->project->inputs->sortBy('sort')->pluck('sort','inputid')->unique();
-
-            foreach($inputs as $inputid => $sort) {
-                $columns[$inputid] = ['name' => $inputid, 'data' => $inputid, 'title' => strtoupper(studly_case($inputid)), 'visible' => false, 'width' => 30];
+            $sections = $this->project->sectionsDb->sortBy('sort');
+            $filter_section = Request::input('section');
+            foreach ($sections as $key => $section) {
+                $visible = (($key + 1) == $filter_section);
+                $inputs = $section->inputs->sortBy('sort')->pluck('sort', 'inputid')->unique();
+                foreach ($inputs as $inputid => $sort) {
+                    $columns[$inputid] = ['name' => $inputid, 'data' => $inputid, 'title' => strtoupper(studly_case($inputid)), 'visible' => $visible, 'orderable' => false, 'width' => 30, "render" => function () {
+                        return "function ( data, type, full, meta ) {
+                                    return data
+                                  }, createdCell: function (td, cellData, rowData, row, col) { if(!cellData) { $(td).addClass('danger'); } }"; // this is really dirty hack to work createdCell
+                    }];
+                }
             }
         }
+
+        $columns['form_code'] = ['name' => 'form_code', 'data' => 'form_code', 'width' => 100, 'orderable' => false];
+        $columns['status_message'] = ['name' => 'status_message', 'data' => 'status_message', 'width' => '400', 'orderable' => false];
         return $columns;
     }
 

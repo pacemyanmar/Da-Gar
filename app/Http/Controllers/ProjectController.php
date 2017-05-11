@@ -367,6 +367,37 @@ class ProjectController extends AppBaseController
         Schema::dropIfExists($project->dbname . '_double');
     }
 
+
+    public function trainingmode($project_id, Request $request)
+    {
+        $project = $this->projectRepository->findWithoutFail($project_id);
+
+        try {
+            $this->authorize('update', $project);
+        } catch (AuthorizationException $e) {
+
+            return $this->sendError($e->getMessage());
+        }
+
+        if (empty($project)) {
+
+            return $this->sendError('Project not found');
+        }
+
+        $trainingmode = $request->input('trainingmode');
+        if ($trainingmode) {
+            $project->training = true;
+            $message = 'Project changed to training mode';
+        } else {
+            $project->training = false;
+            $message = 'Project changed to modified mode';
+        }
+
+        $project->save();
+
+        return $this->sendResponse($project->status, $message);
+    }
+
     public function sort($id)
     {
         $project = $this->projectRepository->findWithoutFail($id);
@@ -408,6 +439,16 @@ class ProjectController extends AppBaseController
         // get unique collection of inputs
         $fields = $project->inputs->unique('inputid');
 
+        //if ($project->training) {
+        // check if table has already created
+        if (Schema::hasTable($project->dbname . '_training')) {
+            $this->updateTable($project->dbname . '_training', $project, $fields);
+        } else {
+            $this->createTable($project->dbname . '_training', $project, $fields);
+        }
+
+        // }
+
         // check if table has already created
         if (Schema::hasTable($project->dbname)) {
             $this->updateTable($project->dbname, $project, $fields);
@@ -421,6 +462,7 @@ class ProjectController extends AppBaseController
         } else {
             $this->createTable($project->dbname . '_double', $project, $fields);
         }
+
 
         $project->questions()->update(['qstatus' => 'published']);
 
@@ -465,12 +507,12 @@ class ProjectController extends AppBaseController
                                 if ($input->other) {
                                     $inputType = 'string';
                                 } else {
-                                    $inputType = 'unsignedSmallInteger';
+                                    $inputType = 'unsignedTinyInteger';
                                 }
                                 break;
 
                             case 'number':
-                                $inputType = 'unsignedInteger';
+                                $inputType = 'unsignedBigInteger';
                                 break;
 
                             case 'textarea':
@@ -511,12 +553,12 @@ class ProjectController extends AppBaseController
                                 if ($input->other) {
                                     $inputType = 'string';
                                 } else {
-                                    $inputType = 'unsignedSmallInteger';
+                                    $inputType = 'unsignedTinyInteger';
                                 }
                                 break;
 
                             case 'number':
-                                $inputType = 'unsignedInteger'; // maxinum 10 digits exactly 4 billions
+                                $inputType = 'unsignedBigInteger'; // maxinum 10 digits exactly 4 billions
                                 break;
 
                             case 'textarea':
@@ -555,10 +597,14 @@ class ProjectController extends AppBaseController
         Schema::create($dbname, function (Blueprint $table) use ($project, $fields) {
 
             $table->increments('id');
-            $table->unsignedInteger('sample_id')->index(); // sample
-            $table->string('sample')->index(); // sample
-            $table->unsignedInteger('user_id')->index();
-            $table->unsignedInteger('update_user_id')->index()->nullable();
+            if ($project->training) {
+                $table->string('sample_code')->index(); // sample
+            } else {
+                $table->unsignedInteger('sample_id')->index(); // sample
+                $table->string('sample')->index(); // sample
+                $table->unsignedInteger('user_id')->index();
+                $table->unsignedInteger('update_user_id')->index()->nullable();
+            }
             $table->timestamps();
             foreach ($project->sectionsDb as $key => $section) {
                 $section_num = $key + 1;
@@ -567,20 +613,19 @@ class ProjectController extends AppBaseController
             }
 
             foreach ($fields as $input) {
-                $double_column = $input->inputid . '_d';
-                $double_status = $input->inputid . '_ds';
+
                 switch ($input->type) {
                     case 'radio':
                     case 'checkbox':
                         if ($input->other) {
                             $inputType = 'string';
                         } else {
-                            $inputType = 'unsignedSmallInteger';
+                            $inputType = 'unsignedTinyInteger';
                         }
                         break;
 
                     case 'number':
-                        $inputType = 'unsignedInteger';
+                        $inputType = 'unsignedBigInteger';
                         break;
 
                     case 'textarea':

@@ -24,6 +24,7 @@ class CreateProjectsTable extends Migration
             $table->text('parties')->nullable();
             $table->text('samples');
             $table->unsignedTinyInteger('copies')->default(1);
+            $table->boolean('training')->nullable();
             $table->text('index_columns')->nullable(); // array of columns to show in index tables and reporting and for export
             $table->enum('status', ['new', 'modified', 'published'])->default('new');
             $table->timestamps();

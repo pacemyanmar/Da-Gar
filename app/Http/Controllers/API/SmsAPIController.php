@@ -38,12 +38,11 @@ class SmsAPIController extends AppBaseController
         $app_secret = Settings::get('app_secret');
         $header = ['Content-Type' => 'application/json'];
 
-
         $from_number = $request->input('from_number');
-        if(empty($from_number)) {
+
+        if (empty($from_number)) {
             return $this->sendError('from_number required.');
         }
-
 
         $reply = [
             //'content', // SMS message to send
@@ -88,24 +87,24 @@ class SmsAPIController extends AppBaseController
         // save result
         $event = $request->input('event');
 
-        if(empty($event)) {
+        if (empty($event)) {
             return $this->sendError('Event type required.');
         }
         $content = $request->input('content'); // P1000S1AA1AB2AC3
 
-        if(empty($content)) {
+        if (empty($content)) {
             return $this->sendError('Content is empty.');
         }
         //$message = preg_replace('/[^0-9a-zA-Z]/', '', $message);
         $to_number = $request->input('to_number');
-        if(empty($to_number)) {
+        if (empty($to_number)) {
             return $this->sendError('to_number required.');
         }
 
         $message_type = $request->input('message_type');
 //        if(empty($message_type)) {
-//            return $this->sendError('message type required.');
-//        }
+        //            return $this->sendError('message type required.');
+        //        }
 
         $service_id = $request->input('id');
 
@@ -122,7 +121,7 @@ class SmsAPIController extends AppBaseController
         $smsLog->service_id = $service_id;
         $smsLog->from_number = $from_number;
         $smsLog->from_number_e164 = $request->input('from_number_e164');
-        $smsLog->project_id = $request->input('project_id');
+        //$smsLog->api_project_id = $request->input('project_id');
         $smsLog->to_number = $to_number;
         $smsLog->content = $content; // incoming message
         $smsLog->sms_status = (isset($status)) ? $status : null;
@@ -134,8 +133,8 @@ class SmsAPIController extends AppBaseController
 
         $smsLog->section = (array_key_exists('section', $response)) ? $response['section'] : null; // not actual id from database, just ordering number from form
         $smsLog->result_id = (array_key_exists('result_id', $response)) ? $response['result_id'] : null;
+        $smsLog->project_id = (array_key_exists('project_id', $response)) ? $response['project_id'] : null;
         $smsLog->sample_id = (array_key_exists('sample_id', $response)) ? $response['sample_id'] : null;
-
 
         $smsLog->remark = '';
         $smsLog->save();
@@ -176,78 +175,127 @@ class SmsAPIController extends AppBaseController
     private function parseMessage($message, $to_number = '')
     {
         // look for Form Code and PCODE/Location code
-        preg_match('/^([A-Z]+)(\d+)/', $message, $pcode);
+        $match_code = preg_match('/^([a-zA-Z]+)(\d+)/', $message, $pcode);
 
-        if (count($pcode) === 3) {
+        if ($match_code) {
 
             $projects = Project::all();
+
+            $training_mode = Settings::get('training');
+
+            $form_prefix = strtolower($pcode[1]);
+
+            switch ($form_prefix) {
+                case 'c':
+                    $form_type = 'incident';
+                    break;
+                default:
+                    $form_type = 'survey';
+                    break;
+            }
+
             if ($projects->count() === 1) {
                 // if project is only one project use this project
                 $project = Project::first();
-            } elseif (!empty($to_number)) {
-                // if to_number exists, look for project with phone number first
-                $projectPhone = ProjectPhone::where('phone', $to_number)->first();
-                if ($projectPhone) {
-                    $project = $projectPhone->project;
-                }
             } else {
-                // look for project by unique_code, first letter of SMS message
-                $project = Project::where('unique_code', $pcode[1])->first();
+
+                if ($training_mode) {
+                    // if it is training mode
+                    if ($form_type == 'incident') {
+                        $project = Project::where('training', true)->where('type', 'sample2db')->first();
+                    } else {
+                        $project = Project::where('training', true)->where('type', '<>', 'sample2db')->first();
+                    }
+
+                } else {
+                    // if not training mode
+                    if (!empty($to_number)) {
+                        // if to_number exists, look for project with phone number first
+                        $projectPhone = ProjectPhone::where('phone', $to_number)->first();
+
+                        if ($projectPhone) {
+                            $project = $projectPhone->project;
+                        } else {
+                            // look for project by unique_code, first letter of SMS message
+                            $project = Project::where('unique_code', $pcode[1])->first();
+                        }
+                    } else {
+                        // look for project by unique_code, first letter of SMS message
+                        $project = Project::where('unique_code', $pcode[1])->first();
+                    }
+                }
             }
+
+
             if (empty($project)) {
+                // if project is empty
                 $reply['message'] = 'Please check SMS format. Project code not found!';
                 $reply['status'] = 'error';
                 return $reply;
             }
 
-
-            if ($project->status != 'published') {
+            if ($project->status != 'published' && !$training_mode) {
+                // if project is not published and not training mode
                 $reply['message'] = 'Not ready! Please call to data center immediately.';
                 $reply['status'] = 'error';
                 return $reply;
             }
 
+            $dbname = $project->dbname;
+
             $reply['form_code'] = $pcode[1] . $pcode[2];
             $location_code = $pcode[2];
 
-            $sample_data = $project->samplesData->where('idcode', $location_code)->first();
-            if (empty($sample_data)) {
-                $reply['message'] = 'Please check location code in SMS. No such code found in database!';
-                $reply['status'] = 'error';
-                return $reply;
-            }
+            if (!$training_mode) {
 
-            $dbname = $project->dbname;
-            if ($project->type != 'sample2db') {
-                // look for Form ID
-                preg_match('/FNNN(\d+)/', $message, $form_id); // this is temporary form number code
-                if ($form_id) {
-                    $form_number = $form_id[1];
-                } else {
-                    $form_number = 1;
+
+                $sample_data = $project->samplesData->where('idcode', $location_code)->first();
+                if (empty($sample_data)) {
+                    $reply['message'] = 'Please check location code in SMS. No such code found in database!';
+                    $reply['status'] = 'error';
+                    return $reply;
                 }
-                $sample = $sample_data->samples->where('sample_data_type', $project->dblink)->where('form_id', $form_number)->first();
-                $reply['sample_id'] = $sample->id;
-                $sample->setRelatedTable($dbname);
 
-                $result = $sample->resultWithTable($dbname)->first();
 
+                if ($project->type != 'sample2db') { // if project type is not incident
+                    // look for Form ID
+                    preg_match('/FNNN(\d+)/', $message, $form_id); // this is temporary form number code
+                    if ($form_id) {
+                        $form_number = $form_id[1];
+                    } else {
+                        $form_number = 1;
+                    }
+                    $sample = $sample_data->samples->where('sample_data_type', $project->dblink)->where('form_id', $form_number)->first();
+                    $reply['sample_id'] = $sample->id;
+                    $sample->setRelatedTable($dbname);
+
+                    $result = $sample->resultWithTable($dbname)->first();
+
+                } else {
+
+                }
+
+                if (empty($result)) {
+                    $result = new SurveyResult();
+                    $result->setTable($dbname);
+                }
+            } else {
+                $result = new SurveyResult();
+                $result->setTable($dbname.'_training');
+
+                $result->sample_code = $location_code;
             }
 
-            if (empty($result)) {
-                $result = new SurveyResult;
-                $result->setTable($dbname);
-            }
 
             $message = strtolower($message);
+            $sms_content = preg_replace('([^a-zA-Z0-9]*)', '', $message);
             // get all sections in a project
             $sections = $project->sectionsDb->sortBy('sort');
             $error_inputs = [];
-            $result_inputs = [];
-            $skey = 1;
 
-            foreach ($sections as $section) {
 
+            foreach ($sections as $key => $section) {
+                $skey = $key + 1;
                 $optional = 0; // initial count for optional inputs
                 $questions = $section->questions;
                 $question_completed = 0;
@@ -257,21 +305,22 @@ class SmsAPIController extends AppBaseController
 
                     foreach ($inputs as $input) {
                         $inputid = $input->inputid;
+
                         $inputkey = str_replace('_', '', $inputid);
                         // check input is optional
                         if ($input->optional) {
                             $optional++;
                         }
 
+
                         // look for numeric answers
+
                         if ($input->type == 'checkbox') {
-                            // if $message is AA11 and checkbox has only AA1, response will be invalid
-                            // if $message is AA11 and checkbox has both AA1 and AA11, this will assume as sending for AA11
-                            // if $message is AA12 and checkbox has both AA1 and AA11, response will be invalid
-                            preg_match('/(' . $inputkey . '\d*)/', $message, $response_match);
+                            preg_match('/' . strtolower($question->qnum) . '(\d+)/', $sms_content, $response_match);
                         } else {
-                            preg_match('/' . $inputkey . '(\d+)/', $message, $response_match);
+                            preg_match('/' . $inputkey . '(\d+)/', $sms_content, $response_match);
                         }
+
                         if (array_key_exists(1, $response_match)) {
                             $response = $response_match[1];
                         } else {
@@ -285,36 +334,49 @@ class SmsAPIController extends AppBaseController
 
                         // if there is response
                         if (isset($response)) {
-                            // input value is equal to $response or
-                            // input value is zero or empty string
 
-                            $is_value_valid = ($input->value == $response || empty($input->value) || ($input->type == 'checkbox' && $response == $inputkey));
+                            $checkbox_values = str_split($response);
+
+                            $is_value_valid = (($input->type == 'checkbox' && in_array($input->value, $checkbox_values)) || ($input->type == 'radio' && $input->value == $response) || empty($input->value));
 
                             if ($is_value_valid) {
-                                $section_inputs[$inputid] = $response;
+
                                 if ($input->type == 'checkbox') {
-                                    $result->{$inputid} = $input->value;
+
+                                    // checkbox value is in sent message value
+                                    if (in_array($input->value, $checkbox_values)) {
+                                        $result->{$inputid} = $input->value;
+                                    } else {
+                                        $result->{$inputid} = null;
+                                    }
+
                                 } else {
                                     $result->{$inputid} = $response;
                                 }
 
-                                // required input complete and count incremental
-                                if (!$input->optional) {
-                                    $valid_response[] = $inputid;
-                                }
                             } else {
                                 if ($input->type == 'checkbox') {
                                     $result->{$inputid} = null;
                                 }
-                                $section_error_inputs[] = strtoupper($inputkey);
                             }
                             // unset $response  to avoid loop overwrite empty elements with previous value
                             unset($response);
-                        } else {
-                            if (!$input->optional) {
-                                $section_error_inputs[] = strtoupper($inputkey);
+                        }
+                        // required input complete and count incremental
+                        if (!$input->optional) {
+                            if (!empty($result->{$inputid})) {
+                                $section_inputs[$question->qnum] = $result->{$inputid};
+                                $valid_response[] = $inputid;
+                            } else {
+                                if (in_array($input->type, ['radio', 'checkbox'])) {
+                                    $section_error_inputs[$question->qnum] = $question->qnum;
+                                } else {
+                                    $error_key = strtoupper($inputkey);
+                                    $section_error_inputs[$error_key] = $error_key;
+                                }
                             }
                         }
+
                     }
 
                     //dd($valid_response);
@@ -331,7 +393,9 @@ class SmsAPIController extends AppBaseController
                     $intersect_with_value = array_intersect($required_response_with_value, $valid_response);
 
                     if (count($intersect_with_value) > 0 || (!empty($required_response_empty_value) && $required_response_empty_value == $valid_response)) {
-
+                        if (isset($section_error_inputs)) {
+                            unset($section_error_inputs[$question->qnum]);
+                        }
                         $question_completed++;
                     }
                     unset($required_response_with_value);
@@ -343,10 +407,10 @@ class SmsAPIController extends AppBaseController
                     return !$question->optional;
                 });
 
-                $error_inputs = $section_error_inputs;
+                $error_inputs = array_unique(array_filter($section_error_inputs));
 
                 unset($optional); // unset optional to avoid unexpect outcomes when checking section status
-
+                //dd($result);
                 if (!empty($section_inputs)) {
 
                     if ($required_questions->count() === $question_completed) {
@@ -356,7 +420,6 @@ class SmsAPIController extends AppBaseController
                     }
                     $reply['section'] = $skey;
 
-                    $result_inputs = $section_inputs;
                     break; // this break and stop the loop - this is required not to process cross section data submit in one SMS
                 } else {
                     $result->{'section' . $skey . 'status'} = 0;
@@ -364,10 +427,15 @@ class SmsAPIController extends AppBaseController
                 $skey++;
             } // after section loop
 
-            $result->sample()->associate($sample);
-            $result->sample = $sample->data->sample;
-            $result->user_id = 1; // need to change this
-            $result->setTable($dbname); // need to set table name again for some reason
+            if (!$training_mode) {
+                $result->sample()->associate($sample);
+                $result->sample = $sample->data->sample;
+                $result->user_id = 1; // need to change this
+                $result->setTable($dbname); // need to set table name again for some reason
+            } else {
+                $result->setTable($dbname.'_training'); // need to set table name again for some reason
+            }
+
             $result->save();
             if (!empty($error_inputs)) {
                 $reply['message'] = implode(', ', $error_inputs) . ' have problem. Please check SMS format.';
@@ -377,7 +445,7 @@ class SmsAPIController extends AppBaseController
                 $reply['status'] = 'success';
             }
             $reply['result_id'] = $result->id;
-
+            $reply['project_id'] = $project->id;
 
             return $reply;
         } else {

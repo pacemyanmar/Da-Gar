@@ -64,6 +64,11 @@
                                     {!! Form::text("configs[project_id]", settings('project_id', null), ['class' => 'form-control']) !!}
                                 </div>
                             </div>
+                            <div class="form-group">
+                                {!! Form::checkbox("configs[training]", true,settings('training', null), ['class' => 'magic-checkbox', 'id' => 'training', 'autocomplete' => 'off']) !!}
+                                <label class="normal-text" for="training">Training Mode
+                                </label>
+                            </div>
                         <!-- Submit Field -->
                         <div class="form-group col-sm-12">
                             {!! Form::submit('Save', ['class' => 'btn btn-primary']) !!}

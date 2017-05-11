@@ -40,10 +40,12 @@ class SettingController extends AppBaseController
      */
     public function save(SaveSettingRequest $request)
     {
-        $settings = $request->only('configs');
-        foreach ($settings['configs'] as $key => $value) {
+        $settings = $request->input('configs');
+        $settings['training'] = array_key_exists('training', $settings);
+        foreach ($settings as $key => $value) {
             Settings::set($key, $value);
         }
+
         Flash::info('Settings updated successfully.');
         return redirect()->back();
     }

@@ -30,6 +30,7 @@ Route::group(['prefix' => 'projects/{project}'], function () {
     Route::get('/smslog', ['as' => 'projects.smslog', 'uses' => 'ProjectController@smslog']);
     Route::get('/export', ['as' => 'projects.export', 'uses' => 'ProjectController@export']);
     Route::post('/import', ['as' => 'projects.import', 'uses' => 'ProjectController@import']);
+    Route::post('/trainingmode', ['as' => 'projects.trainingmode', 'uses' => 'ProjectController@trainingmode']);
 });
 
 Route::group(['prefix' => 'projects/{project}/surveys'], function () {
