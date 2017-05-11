@@ -14,12 +14,11 @@
         </span>
         <div class="clearfix"></div>
         @if(isset($project))
-        <ul class="nav nav-pills">
-            <li role="presentation" class="active"><a href="{!! route('projects.smslog', $project->id) !!}">All</a></li>
+            <a href="{!! route('projects.smslog', $project->id) !!}" class="btn btn-primary navbar-btn @if(empty(request('section', $default = null))) active @endif">All</a>
             @foreach($project->sectionsDb as $key => $section)
-            <li role="presentation" class="active"><a href="{!! route('projects.smslog', $project->id) !!}/?section={!! $key + 1 !!}">SMS {!! $key + 1 !!}</a></li>
+                <a href="{!! route('projects.smslog', $project->id) !!}/?section={!! $key + 1 !!}" class="btn btn-primary navbar-btn @if(request('section', $default = null) == ($key + 1)) active @endif">SMS {!! $key + 1 !!}</a>
             @endforeach
-        </ul>
+            <a href="{!! route('projects.smslog', $project->id) !!}/?section=unknown" class="btn btn-primary navbar-btn @if(request('section', $default = null) == 'unknown') active @endif">Unknown</a>
         @endif
     </section>
 

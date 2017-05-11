@@ -39,9 +39,14 @@ class SmsLogDataTable extends DataTable
         if ($this->project) {
             $smsLogs->where('project_id', $this->project->id);
             $filter_section = Request::input('section');
-            
+
             if($filter_section) {
-                $smsLogs->where('section', $filter_section);
+                if($filter_section == 'unknown') {
+                    $smsLogs->whereNull('section');
+                } else {
+                    $smsLogs->where('section', $filter_section);
+                }
+
             }
 
             if ($this->project->training) {
