@@ -38,6 +38,12 @@ class SmsLogDataTable extends DataTable
         $smsLogs = SmsLog::query();
         if ($this->project) {
             $smsLogs->where('project_id', $this->project->id);
+            $filter_section = Request::input('section');
+            
+            if($filter_section) {
+                $smsLogs->where('section', $filter_section);
+            }
+
             if ($this->project->training) {
                 $smsLogs->join($this->project->dbname . '_training', 'sms_logs.result_id', '=', $this->project->dbname . '_training.id');
             } else {
