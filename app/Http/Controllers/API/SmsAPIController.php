@@ -438,7 +438,12 @@ class SmsAPIController extends AppBaseController
 
             $result->save();
             if (!empty($error_inputs)) {
-                $reply['message'] = implode(', ', $error_inputs) . ' have problem. Please check SMS format.';
+                if(empty($section_inputs)) {
+                    $reply['message'] = 'You did not sumbit valid response. Please check SMS format.';
+                } else {
+                    $reply['message'] = implode(', ', $error_inputs) . ' have problem. Please check SMS format.';
+                }
+
                 $reply['status'] = 'error';
             } else {
                 $reply['message'] = 'Success!';
