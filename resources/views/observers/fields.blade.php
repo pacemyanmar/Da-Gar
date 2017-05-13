@@ -10,6 +10,12 @@
     {!! Form::text('code', null, ['class' => 'form-control']) !!}
 </div>
 
+<!-- Sample Id Field -->
+<div class="form-group col-sm-6">
+    {!! Form::label('sample_id', 'Sample Id:') !!}
+    {!! Form::text('sample_id', null, ['class' => 'form-control']) !!}
+</div>
+
 <!-- National Id Field -->
 <div class="form-group col-sm-6">
     {!! Form::label('national_id', 'National Id:') !!}
@@ -61,7 +67,7 @@
 <!-- Dob Field -->
 <div class="form-group col-sm-6">
     {!! Form::label('dob', 'Dob:') !!}
-    {!! Form::text('dob', null, ['class' => 'form-control']) !!}
+    {!! Form::date('dob', null, ['class' => 'form-control']) !!}
 </div>
 
 <!-- Education Field -->
@@ -70,8 +76,20 @@
     {!! Form::text('education', null, ['class' => 'form-control']) !!}
 </div>
 
+<!-- Created At Field -->
+<div class="form-group col-sm-6">
+    {!! Form::label('created_at', 'Created At:') !!}
+    {!! Form::date('created_at', null, ['class' => 'form-control']) !!}
+</div>
+
+<!-- Updated At Field -->
+<div class="form-group col-sm-6">
+    {!! Form::label('updated_at', 'Updated At:') !!}
+    {!! Form::date('updated_at', null, ['class' => 'form-control']) !!}
+</div>
+
 <!-- Submit Field -->
 <div class="form-group col-sm-12">
     {!! Form::submit('Save', ['class' => 'btn btn-primary']) !!}
-    <a href="{!! route('obeservers.index') !!}" class="btn btn-default">Cancel</a>
+    <a href="{!! route('observers.index') !!}" class="btn btn-default">Cancel</a>
 </div>

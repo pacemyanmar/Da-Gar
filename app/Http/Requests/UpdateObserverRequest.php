@@ -3,9 +3,9 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
-use App\Models\Obeserver;
+use App\Models\Observer;
 
-class UpdateObeserverRequest extends FormRequest
+class UpdateObserverRequest extends FormRequest
 {
 
     /**
@@ -25,6 +25,6 @@ class UpdateObeserverRequest extends FormRequest
      */
     public function rules()
     {
-        return Obeserver::$rules;
+        return Observer::$rules;
     }
 }

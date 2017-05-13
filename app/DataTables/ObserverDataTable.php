@@ -2,11 +2,11 @@
 
 namespace App\DataTables;
 
-use App\Models\Obeserver;
+use App\Models\Observer;
 use Form;
 use Yajra\Datatables\Services\DataTable;
 
-class ObeserverDataTable extends DataTable
+class ObserverDataTable extends DataTable
 {
 
     /**
@@ -16,7 +16,7 @@ class ObeserverDataTable extends DataTable
     {
         return $this->datatables
             ->eloquent($this->query())
-            ->addColumn('action', 'obeservers.datatables_actions')
+            ->addColumn('action', 'observers.datatables_actions')
             ->make(true);
     }
 
@@ -27,9 +27,9 @@ class ObeserverDataTable extends DataTable
      */
     public function query()
     {
-        $obeservers = Obeserver::query();
+        $observers = Observer::query();
 
-        return $this->applyScopes($obeservers);
+        return $this->applyScopes($observers);
     }
 
     /**
@@ -84,7 +84,9 @@ class ObeserverDataTable extends DataTable
             'occupation' => ['name' => 'occupation', 'data' => 'occupation'],
             'gender' => ['name' => 'gender', 'data' => 'gender'],
             'dob' => ['name' => 'dob', 'data' => 'dob'],
-            'education' => ['name' => 'education', 'data' => 'education']
+            'education' => ['name' => 'education', 'data' => 'education'],
+            'created_at' => ['name' => 'created_at', 'data' => 'created_at'],
+            'updated_at' => ['name' => 'updated_at', 'data' => 'updated_at']
         ];
     }
 
@@ -95,6 +97,6 @@ class ObeserverDataTable extends DataTable
      */
     protected function filename()
     {
-        return 'obeservers';
+        return 'observers';
     }
 }

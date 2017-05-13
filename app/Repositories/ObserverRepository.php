@@ -2,10 +2,10 @@
 
 namespace App\Repositories;
 
-use App\Models\Obeserver;
+use App\Models\Observer;
 use InfyOm\Generator\Common\BaseRepository;
 
-class ObeserverRepository extends BaseRepository
+class ObserverRepository extends BaseRepository
 {
     /**
      * @var array
@@ -23,7 +23,9 @@ class ObeserverRepository extends BaseRepository
         'occupation',
         'gender',
         'dob',
-        'education'
+        'education',
+        'created_at',
+        'updated_at'
     ];
 
     /**
@@ -31,6 +33,6 @@ class ObeserverRepository extends BaseRepository
      **/
     public function model()
     {
-        return Obeserver::class;
+        return Observer::class;
     }
 }

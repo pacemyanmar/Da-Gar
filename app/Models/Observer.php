@@ -5,14 +5,14 @@ namespace App\Models;
 use Eloquent as Model;
 
 /**
- * Class Obeserver
+ * Class Observer
  * @package App\Models
- * @version May 12, 2017, 4:14 am UTC
+ * @version May 13, 2017, 7:07 am UTC
  */
-class Obeserver extends Model
+class Observer extends Model
 {
 
-    public $table = 'obeservers';
+    public $table = 'observers';
     
 
 
@@ -29,7 +29,9 @@ class Obeserver extends Model
         'occupation',
         'gender',
         'dob',
-        'education'
+        'education',
+        'created_at',
+        'updated_at'
     ];
 
     /**
@@ -38,6 +40,7 @@ class Obeserver extends Model
      * @var array
      */
     protected $casts = [
+        'id' => 'integer',
         'name' => 'string',
         'code' => 'string',
         'sample_id' => 'integer',

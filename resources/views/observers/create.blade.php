@@ -3,15 +3,20 @@
 @section('content')
     <section class="content-header">
         <h1>
-            Obeserver
+            Observer
         </h1>
     </section>
     <div class="content">
+        @include('adminlte-templates::common.errors')
         <div class="box box-primary">
+
             <div class="box-body">
-                <div class="row" style="padding-left: 20px">
-                    @include('obeservers.show_fields')
-                    <a href="{!! route('obeservers.index') !!}" class="btn btn-default">Back</a>
+                <div class="row">
+                    {!! Form::open(['route' => 'observers.store']) !!}
+
+                        @include('observers.fields')
+
+                    {!! Form::close() !!}
                 </div>
             </div>
         </div>

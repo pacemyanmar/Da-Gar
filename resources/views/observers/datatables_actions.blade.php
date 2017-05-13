@@ -1,9 +1,9 @@
-{!! Form::open(['route' => ['obeservers.destroy', $id], 'method' => 'delete']) !!}
+{!! Form::open(['route' => ['observers.destroy', $id], 'method' => 'delete']) !!}
 <div class='btn-group'>
-    <a href="{{ route('obeservers.show', $id) }}" class='btn btn-default btn-xs'>
+    <a href="{{ route('observers.show', $id) }}" class='btn btn-default btn-xs'>
         <i class="glyphicon glyphicon-eye-open"></i>
     </a>
-    <a href="{{ route('obeservers.edit', $id) }}" class='btn btn-default btn-xs'>
+    <a href="{{ route('observers.edit', $id) }}" class='btn btn-default btn-xs'>
         <i class="glyphicon glyphicon-edit"></i>
     </a>
     {!! Form::button('<i class="glyphicon glyphicon-trash"></i>', [

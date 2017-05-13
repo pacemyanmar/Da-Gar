@@ -3,7 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 
-class CreateObeserversTable extends Migration
+class CreateObserversTable extends Migration
 {
 
     /**
@@ -13,11 +13,11 @@ class CreateObeserversTable extends Migration
      */
     public function up()
     {
-        Schema::create('obeservers', function (Blueprint $table) {
-            $table->increments('id');
+        Schema::create('observers', function (Blueprint $table) {
+            $table->integer('id', true, true);
             $table->string('name');
             $table->string('code');
-            $table->integer('sample_id');
+            $table->integer('sample_id', false);
             $table->string('national_id');
             $table->string('phone_1');
             $table->string('phone_2');
@@ -39,6 +39,6 @@ class CreateObeserversTable extends Migration
      */
     public function down()
     {
-        Schema::drop('obeservers');
+        Schema::drop('observers');
     }
 }

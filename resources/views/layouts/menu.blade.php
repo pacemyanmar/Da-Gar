@@ -31,7 +31,9 @@
     <a href="{!! route('projectPhones.index') !!}"><i class="fa fa-edit"></i><span>ProjectPhones</span></a>
 </li>
 
-<li class="{{ Request::is('obeservers*') ? 'active' : '' }}">
-    <a href="{!! route('obeservers.index') !!}"><i class="fa fa-edit"></i><span>Obeservers</span></a>
+
+
+<li class="{{ Request::is('observers*') ? 'active' : '' }}">
+    <a href="{!! route('observers.index') !!}"><i class="fa fa-edit"></i><span>Observers</span></a>
 </li>
 

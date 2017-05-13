@@ -92,4 +92,8 @@ Route::resource('roles', 'RoleController');
 
 Route::resource('projectPhones', 'ProjectPhoneController');
 
-Route::resource('obeservers', 'ObeserverController');
+
+
+
+
+Route::resource('observers', 'ObserverController');

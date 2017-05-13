@@ -1,96 +1,96 @@
 <!-- Id Field -->
 <div class="form-group">
     {!! Form::label('id', 'Id:') !!}
-    <p>{!! $obeserver->id !!}</p>
+    <p>{!! $observer->id !!}</p>
 </div>
 
 <!-- Name Field -->
 <div class="form-group">
     {!! Form::label('name', 'Name:') !!}
-    <p>{!! $obeserver->name !!}</p>
+    <p>{!! $observer->name !!}</p>
 </div>
 
 <!-- Code Field -->
 <div class="form-group">
     {!! Form::label('code', 'Code:') !!}
-    <p>{!! $obeserver->code !!}</p>
+    <p>{!! $observer->code !!}</p>
 </div>
 
 <!-- Sample Id Field -->
 <div class="form-group">
     {!! Form::label('sample_id', 'Sample Id:') !!}
-    <p>{!! $obeserver->sample_id !!}</p>
+    <p>{!! $observer->sample_id !!}</p>
 </div>
 
 <!-- National Id Field -->
 <div class="form-group">
     {!! Form::label('national_id', 'National Id:') !!}
-    <p>{!! $obeserver->national_id !!}</p>
+    <p>{!! $observer->national_id !!}</p>
 </div>
 
 <!-- Phone 1 Field -->
 <div class="form-group">
     {!! Form::label('phone_1', 'Phone 1:') !!}
-    <p>{!! $obeserver->phone_1 !!}</p>
+    <p>{!! $observer->phone_1 !!}</p>
 </div>
 
 <!-- Phone 2 Field -->
 <div class="form-group">
     {!! Form::label('phone_2', 'Phone 2:') !!}
-    <p>{!! $obeserver->phone_2 !!}</p>
+    <p>{!! $observer->phone_2 !!}</p>
 </div>
 
 <!-- Address Field -->
 <div class="form-group">
     {!! Form::label('address', 'Address:') !!}
-    <p>{!! $obeserver->address !!}</p>
+    <p>{!! $observer->address !!}</p>
 </div>
 
 <!-- Language Field -->
 <div class="form-group">
     {!! Form::label('language', 'Language:') !!}
-    <p>{!! $obeserver->language !!}</p>
+    <p>{!! $observer->language !!}</p>
 </div>
 
 <!-- Ethnicity Field -->
 <div class="form-group">
     {!! Form::label('ethnicity', 'Ethnicity:') !!}
-    <p>{!! $obeserver->ethnicity !!}</p>
+    <p>{!! $observer->ethnicity !!}</p>
 </div>
 
 <!-- Occupation Field -->
 <div class="form-group">
     {!! Form::label('occupation', 'Occupation:') !!}
-    <p>{!! $obeserver->occupation !!}</p>
+    <p>{!! $observer->occupation !!}</p>
 </div>
 
 <!-- Gender Field -->
 <div class="form-group">
     {!! Form::label('gender', 'Gender:') !!}
-    <p>{!! $obeserver->gender !!}</p>
+    <p>{!! $observer->gender !!}</p>
 </div>
 
 <!-- Dob Field -->
 <div class="form-group">
     {!! Form::label('dob', 'Dob:') !!}
-    <p>{!! $obeserver->dob !!}</p>
+    <p>{!! $observer->dob !!}</p>
 </div>
 
 <!-- Education Field -->
 <div class="form-group">
     {!! Form::label('education', 'Education:') !!}
-    <p>{!! $obeserver->education !!}</p>
+    <p>{!! $observer->education !!}</p>
 </div>
 
 <!-- Created At Field -->
 <div class="form-group">
     {!! Form::label('created_at', 'Created At:') !!}
-    <p>{!! $obeserver->created_at !!}</p>
+    <p>{!! $observer->created_at !!}</p>
 </div>
 
 <!-- Updated At Field -->
 <div class="form-group">
     {!! Form::label('updated_at', 'Updated At:') !!}
-    <p>{!! $obeserver->updated_at !!}</p>
+    <p>{!! $observer->updated_at !!}</p>
 </div>
 

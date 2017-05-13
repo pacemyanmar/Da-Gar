@@ -3,7 +3,7 @@
 @section('content')
     <section class="content-header">
         <h1>
-            Obeserver
+            Observer
         </h1>
    </section>
    <div class="content">
@@ -11,9 +11,9 @@
        <div class="box box-primary">
            <div class="box-body">
                <div class="row">
-                   {!! Form::model($obeserver, ['route' => ['obeservers.update', $obeserver->id], 'method' => 'patch']) !!}
+                   {!! Form::model($observer, ['route' => ['observers.update', $observer->id], 'method' => 'patch']) !!}
 
-                        @include('obeservers.fields')
+                        @include('observers.fields')
 
                    {!! Form::close() !!}
                </div>
