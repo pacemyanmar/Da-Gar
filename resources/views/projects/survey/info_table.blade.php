@@ -21,9 +21,9 @@
                             @endforeach
                         @endif
                         @else
-                            <th>{!! trans('messages.idcode') !!}</th>
-                            <th>{!! trans('messages.state') !!}</th>
-                            <th>{!! trans('messages.township') !!}</th>
+                            <th>{!! trans('sample.location_code') !!}</th>
+                            <th>{!! trans('sample.level1') !!}</th>
+                            <th>{!! trans('sample.level2') !!}</th>
                             <th>{!! trans('messages.polling_station') !!}</th>
                         @endif
                         @if(count($project->samples) > 1)
@@ -57,10 +57,10 @@
                                 @endforeach
                             @endif
                         @else
-                            <td>{!! ucwords($sample->data->idcode) !!}</td>
-                            <td>{!! ucwords($sample->data->state) !!}</td>
-                            <td>{!! ucwords($sample->data->township) !!}</td>
-                            <td>{!! ucwords($sample->data->village) !!}</td>
+                            <td>{!! ucwords($sample->data->location_code) !!}</td>
+                            <td>{!! ucwords($sample->data->level1) !!}</td>
+                            <td>{!! ucwords($sample->data->level2) !!}</td>
+                            <td>{!! ucwords($sample->data->level6) !!}</td>
                         @endif
                         @if(count($project->samples) > 1)
                         <td>
@@ -108,18 +108,14 @@
                 </tr>
             </thead>
             <tbody>
+                @foreach($sample->data->observers as $observer)
                 <tr>
-                    <td>{!! ucwords($sample->data->code) !!}</td>
-                    <td>{!! ucwords($sample->data->name) !!}</td>
-                    <td>{!! ucwords($sample->data->mobile) !!}</td>
-                    <td>{!! ucwords($sample->data->line_phone) !!}</td>
+                    <td>{!! ucwords($observer->code) !!}</td>
+                    <td>{!! ucwords($observer->full_name) !!}</td>
+                    <td>{!! ucwords($observer->phone_1) !!}</td>
+                    <td>{!! ucwords($observer->phone_2) !!}</td>
                 </tr>
-                <tr>
-                    <td>{!! ucwords($sample->data->code2) !!}</td>
-                    <td>{!! ucwords($sample->data->name2) !!}</td>
-                    <td>{!! ucwords($sample->data->mobile2) !!}</td>
-                    <td>{!! ucwords($sample->data->line_phone2) !!}</td>
-                </tr>
+                @endforeach
             </tbody>
 
             </table>

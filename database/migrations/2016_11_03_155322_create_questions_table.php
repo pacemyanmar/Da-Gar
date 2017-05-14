@@ -20,6 +20,7 @@ class CreateQuestionsTable extends Migration
             $table->string('css_id');
             $table->text('raw_ans');
             $table->string('layout');
+            $table->string('observation_type')->nullable();
             $table->integer('section')->unsigned();
             $table->integer('sort')->unsigned();
             $table->boolean('double_entry')->default(false); // should do double entry?

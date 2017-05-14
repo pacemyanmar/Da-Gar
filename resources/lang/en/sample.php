@@ -14,5 +14,5 @@ return [
     'level3' => 'Township',
     'level4' => 'Ward',
     'level5' => 'Village',
-    'level6' => 'Level 6',
+    'level6' => 'Polling Station Address',
 ];

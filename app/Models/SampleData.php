@@ -41,6 +41,16 @@ class SampleData extends Model
         'level6_trans',
 
         'parties',
+        'observer_field',
+        'supervisor_field',
+        'supervisor_name',
+        'supervisor_name_trans',
+        'supervisor_mobile',
+        'supervisor_dob',
+        'supervisor_gender',
+        'supervisor_mail1',
+        'supervisor_mail2',
+        'supervisor_address',
     ];
 
     public static $export = [
@@ -70,12 +80,12 @@ class SampleData extends Model
         'level6' => 'string',
         'parent_id' => 'integer',
 
-        'level1_trans' => 'array', // state
-        'level2_trans' => 'array',
-        'level3_trans' => 'array',
-        'level4_trans' => 'array',
-        'level5_trans' => 'array',
-        'level6_trans' => 'array',
+        'level1_trans' => 'string', // state
+        'level2_trans' => 'string',
+        'level3_trans' => 'string',
+        'level4_trans' => 'string',
+        'level5_trans' => 'string',
+        'level6_trans' => 'string',
 
         'parties' => 'string',
     ];
@@ -92,6 +102,11 @@ class SampleData extends Model
     public function samples()
     {
         return $this->hasMany(Sample::class, 'sample_data_id');
+    }
+
+    public function observers()
+    {
+        return $this->hasMany(Observer::class, 'sample_id');
     }
 
     public function projects()

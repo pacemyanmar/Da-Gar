@@ -186,6 +186,18 @@ class SampleDataController extends AppBaseController
                     "level6_trans" => ($row->level6_trans) ? $row->level6_trans : null,
 
                     "parties" => ($row->parties) ? $row->parties : null,
+
+                    "observer_field" => ($row->observer_field) ? $row->observer_field : null,
+
+                    "supervisor_field" => ($row->supervisor_field) ? $row->supervisor_field : null,
+                    "supervisor_name" => ($row->supervisor_name) ? $row->supervisor_title.' '.$row->supervisor_name : null,
+                    "supervisor_name_trans" => ($row->supervisor_name_trans) ? $row->supervisor_name_trans : null,
+                    "supervisor_gender" => ($row->supervisor_gender) ? $row->supervisor_gender : null,
+                    "supervisor_dob" => ($row->supervisor_dob) ? date("Y-m-d", strtotime($row->supervisor_dob)) : null,
+                    "supervisor_mobile" => ($row->supervisor_mobile) ? $row->supervisor_mobile : null,
+                    "supervisor_email1" => ($row->supervisor_email1) ? $row->supervisor_email1 : null,
+                    "supervisor_email2" => ($row->supervisor_email2) ? $row->supervisor_email2 : null,
+                    "supervisor_address" => ($row->supervisor_address) ? $row->supervisor_address : null,
                 ];
                 $attr = [
                     "location_code" => ($row->location_code) ? $row->location_code : null,
@@ -203,7 +215,8 @@ class SampleDataController extends AppBaseController
 
                     $observer_arr = [
                         "code" => ($row->observer_code) ? $row->observer_code : null,
-                        "observer_type" => ($row->observer_type) ? $row->observer_type : null,
+                        "observer_field" => ($row->observer_field) ? $row->observer_field : null,
+
                         'given_name' => $given_name,
                         'family_name' => $family_name,
                         "full_name" => (!empty($full_name)) ? $full_name : 'No Name',

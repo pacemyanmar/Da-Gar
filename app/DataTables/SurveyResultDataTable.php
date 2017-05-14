@@ -403,7 +403,7 @@ class SurveyResultDataTable extends DataTable
                      GROUP_CONCAT(CONCAT('\n', ob.code ,' : \"', ob.given_name ,'\"')) AS given_name,
                      GROUP_CONCAT(CONCAT('\n', ob.code ,' : \"', ob.family_name ,'\"')) AS family_name,
                      GROUP_CONCAT(CONCAT('\n', ob.code ,' : \"', ob.full_name ,'\"')) AS full_name,
-                     GROUP_CONCAT(CONCAT('\n', ob.code ,' : \"', ob.observer_type ,'\"')) AS observer_type,
+                     GROUP_CONCAT(CONCAT('\n', ob.code ,' : \"', ob.observer_field ,'\"')) AS observer_field,
                      GROUP_CONCAT(CONCAT('\n', ob.code ,' : \"', ob.code ,'\"')) AS code,
                      GROUP_CONCAT(CONCAT('\n', ob.code ,' : \"', ob.sample_id ,'\"')) AS sample_id,
                      GROUP_CONCAT(CONCAT('\n', ob.code ,' : \"', ob.email1 ,'\"')) AS email1,

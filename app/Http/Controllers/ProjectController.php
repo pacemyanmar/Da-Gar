@@ -16,6 +16,7 @@ use Flash;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Maatwebsite\Excel\Facades\Excel;
@@ -777,6 +778,17 @@ class ProjectController extends AppBaseController
 
             return redirect()->back();
         }
+        $auth = Auth::user();
+
+        if (!Schema::hasTable($project->dbname)) {
+            Flash::error('Project need to build form.');
+            if ($auth->role->level > 5) {
+                return redirect(route('projects.edit', [$project->id]));
+            } else {
+                return redirect(route('projects.index'));
+            }
+        }
+
         $smsLogDataTable->setProject($project);
         $projects = Project::all();
         return $smsLogDataTable->render('sms_logs.index', compact('projects'), compact('project'));

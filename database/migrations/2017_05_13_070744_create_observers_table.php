@@ -18,7 +18,7 @@ class CreateObserversTable extends Migration
             $table->string('given_name')->nullable();
             $table->string('family_name')->nullable();
             $table->string('full_name');
-            $table->string('observer_type')->default('observer');
+            $table->string('observer_field')->nullable();
             $table->string('code');
             $table->unsignedInteger('sample_id');
 

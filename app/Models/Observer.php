@@ -20,6 +20,7 @@ class Observer extends Model
         'given_name',
         'family_name',
         'full_name',
+        'observer_field',
         'code',
         'email',
         'sample_id',
@@ -71,7 +72,8 @@ class Observer extends Model
         'occupation' => 'string',
         'gender' => 'string',
         'dob' => 'date',
-        'education' => 'string'
+        'education' => 'string',
+        'observer_field' => 'string',
     ];
 
     /**
