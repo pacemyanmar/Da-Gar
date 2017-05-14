@@ -60,7 +60,7 @@ class Observer extends Model
     protected $casts = [
         'id' => 'integer',
         'name' => 'string',
-        'code' => 'string',
+        'code' => 'string', // code must be unique across database
         'sample_id' => 'integer',
         'national_id' => 'string',
         'phone_1' => 'string',
@@ -82,6 +82,11 @@ class Observer extends Model
     public static $rules = [
         
     ];
+
+    public function location()
+    {
+        return $this->belongsTo(SampleData::class, 'sample_id');
+    }
 
     
 }

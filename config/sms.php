@@ -7,5 +7,5 @@
  */
 
 return [
-    'type' => 'location', // location or observer
+    'type' => 'observer', // location or observer
 ];

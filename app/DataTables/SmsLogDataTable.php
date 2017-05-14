@@ -4,6 +4,7 @@ namespace App\DataTables;
 
 use App\Models\SmsLog;
 use Illuminate\Support\Facades\Request;
+use Krucas\Settings\Facades\Settings;
 use Yajra\Datatables\Services\DataTable;
 
 class SmsLogDataTable extends DataTable
@@ -49,14 +50,14 @@ class SmsLogDataTable extends DataTable
 
             }
 
-            if ($this->project->training) {
+            if ($this->project->training || Settings::get('training')) {
                 $smsLogs->join($this->project->dbname . '_training', 'sms_logs.result_id', '=', $this->project->dbname . '_training.id');
             } else {
                 $smsLogs->join($this->project->dbname, 'sms_logs.sample_id', '=', $this->project->dbname . '.sample_id');
             }
             $inputs = $this->project->inputs->pluck('inputid')->unique();
             foreach ($inputs as $inputid) {
-                if ($this->project->training) {
+                if ($this->project->training || Settings::get('training')) {
                     $select[] = $this->project->dbname . '_training.' . $inputid;
                 } else {
                     $select[] = $this->project->dbname . '.' . $inputid;

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\AppBaseController;
 use App\Http\Requests\API\CreateSmsAPIRequest;
 use App\Http\Requests\API\UpdateSmsAPIRequest;
+use App\Models\Observer;
 use App\Models\Project;
 use App\Models\ProjectPhone;
 use App\Models\SmsLog;
@@ -120,7 +121,6 @@ class SmsAPIController extends AppBaseController
         }
 
 
-
         $smsLog = new SmsLog;
         $smsLog->event = $event;
         $smsLog->message_type = $message_type;
@@ -202,33 +202,21 @@ class SmsAPIController extends AppBaseController
             if ($projects->count() === 1) {
                 // if project is only one project use this project
                 $project = Project::first();
+
             } else {
 
-                if ($training_mode) {
-                    // if it is training mode
-                    if ($form_type == 'incident') {
-                        $project = Project::where('training', true)->where('type', 'sample2db')->first();
-                    } else {
-                        $project = Project::where('training', true)->where('type', '<>', 'sample2db')->first();
-                    }
+                // if not training mode
+                $project = Project::whereRaw('LOWER(unique_code) ='. $form_prefix)->first();
 
-                } else {
-                    // if not training mode
-                    if (!empty($to_number)) {
-                        // if to_number exists, look for project with phone number first
-                        $projectPhone = ProjectPhone::where('phone', $to_number)->first();
+                if (!empty($to_number) && empty($project)) {
+                    // if to_number exists, look for project with phone number first
+                    $projectPhone = ProjectPhone::where('phone', $to_number)->first();
 
-                        if ($projectPhone) {
-                            $project = $projectPhone->project;
-                        } else {
-                            // look for project by unique_code, first letter of SMS message
-                            $project = Project::where('unique_code', $pcode[1])->first();
-                        }
-                    } else {
-                        // look for project by unique_code, first letter of SMS message
-                        $project = Project::where('unique_code', $pcode[1])->first();
+                    if ($projectPhone) {
+                        $project = $projectPhone->project;
                     }
                 }
+
             }
 
 
@@ -249,18 +237,30 @@ class SmsAPIController extends AppBaseController
             $dbname = $project->dbname;
 
             $reply['form_code'] = $pcode[1] . $pcode[2];
-            $location_code = $pcode[2];
+            $sms_code = $pcode[2];
 
             if (!$training_mode) {
 
+                $sms_type = config('sms.type');
 
-                $sample_data = $project->samplesData->where('idcode', $location_code)->first();
-                if (empty($sample_data)) {
+                if ($sms_type == 'observer') {
+                    $observer = Observer::where('code', $sms_code)->first();
+
+                    $location_code = $observer->location->location_code;
+
+                } else {
+                    $location_code = $sms_code;
+                }
+
+
+                if (empty($location_code)) {
                     $reply['message'] = 'Please check location code in SMS. No such code found in database!';
                     $reply['status'] = 'error';
                     return $reply;
                 }
 
+
+                $sample_data = $project->samplesData->where('location_code', $location_code)->first();
 
                 if ($project->type != 'sample2db') { // if project type is not incident
                     // look for Form ID
@@ -277,6 +277,7 @@ class SmsAPIController extends AppBaseController
                     $result = $sample->resultWithTable($dbname)->first();
 
                 } else {
+                    // if project is incident
 
                 }
 
@@ -286,9 +287,18 @@ class SmsAPIController extends AppBaseController
                 }
             } else {
                 $result = new SurveyResult();
-                $result->setTable($dbname.'_training');
+                $result->setTable($dbname . '_training');
 
-                $result->sample_code = $location_code;
+                $result->sample_code = $sms_code;
+
+                // if it is training mode
+                if ($form_type == 'incident') {
+                    $project = Project::where('training', true)->where('type', 'sample2db')->first();
+                } elseif ($form_type != 'incident') {
+                    $project = Project::where('training', true)->where('type', '<>', 'sample2db')->first();
+                } else {
+                    $project = Project::where('type', '<>', 'sample2db')->first();
+                }
             }
 
 
@@ -438,12 +448,12 @@ class SmsAPIController extends AppBaseController
                 $result->user_id = 1; // need to change this
                 $result->setTable($dbname); // need to set table name again for some reason
             } else {
-                $result->setTable($dbname.'_training'); // need to set table name again for some reason
+                $result->setTable($dbname . '_training'); // need to set table name again for some reason
             }
 
             $result->save();
             if (!empty($error_inputs)) {
-                if(empty($section_inputs)) {
+                if (empty($section_inputs)) {
                     $reply['message'] = 'You did not sumbit valid response. Please check SMS format.';
                 } else {
                     $reply['message'] = implode(', ', $error_inputs) . ' have problem. Please check SMS format.';
