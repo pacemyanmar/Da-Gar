@@ -102,94 +102,64 @@ class ProjectResultsController extends AppBaseController
                         $columns['user_id'] = [
                             'name' => 'user.name',
                             'data' => 'username',
-                            'title' => trans('messages.userid'),
+                            'title' => trans('messages.user'),
                             'orderable' => false,
                             'defaultContent' => 'N/A',
                             //'width' => '80px',
                         ];
                         break;
-                    case 'name':
-                        $columns['name'] = [
-                            'name' => 'sample_datas.name',
-                            'data' => 'name',
+                    case 'observer_name':
+                        $columns['full_name'] = [
+                            'name' => 'sample_datas_view.full_name',
+                            'data' => 'full_name',
                             'title' => trans('messages.name'),
                             'orderable' => false,
                             'defaultContent' => 'N/A',
                             //'width' => '80px',
                         ];
                         break;
-                    case 'spotchecker_code':
-                        $columns['spotchecker_code'] = [
-                            'name' => 'sample_datas.spotchecker_code',
-                            'data' => 'spotchecker_code',
-                            'title' => trans('messages.spotchecker_code'),
-                            'orderable' => false,
-                            'defaultContent' => 'N/A',
-                            //'width' => '80px',
-                        ];
-                        break;
-                    case 'code':
-                        $columns['code'] = [
-                            'name' => 'sample_datas.code',
-                            'data' => 'code',
-                            'title' => trans('messages.code'),
-                            'orderable' => false,
-                            'defaultContent' => 'N/A',
-                            //'width' => '80px',
-                        ];
-                        break;
-                    case 'code2':
-                        $columns['code2'] = [
-                            'name' => 'sample_datas.code2',
-                            'data' => 'code2',
-                            'title' => trans('messages.code2'),
-                            'orderable' => false,
-                            'defaultContent' => 'N/A',
-                            //'width' => '80px',
-                        ];
-                        break;
-                    case 'idcode':
-                        $columns['idcode'] = [
-                            'name' => 'sample_datas.idcode',
-                            'data' => 'idcode',
-                            'title' => trans('messages.idcode'),
+                    case 'location_code':
+                        $columns['location_code'] = [
+                            'name' => 'sample_datas_view.location_code',
+                            'data' => 'location_code',
+                            'title' => trans('sample.location_code'),
                             'orderable' => false,
                             'defaultContent' => 'N/A',
                             'width' => '60px',
                         ];
                         break;
-                    case 'form_id':
-                        $columns['form_id'] = [
-                            'name' => 'form_id',
-                            'data' => 'form_id',
-                            'title' => trans('messages.form_id'),
+                    case 'national_id':
+                        $columns['national_id'] = [
+                            'name' => 'sample_datas_view.national_id',
+                            'data' => 'national_id',
+                            'title' => trans('sample.national_id'),
                             'orderable' => false,
                             'defaultContent' => 'N/A',
-                            //'width' => '80px',
+                            'width' => '60px',
                         ];
                         break;
                     case 'mobile':
-                        $columns['mobile'] = [
-                            'name' => 'sample_datas.mobile',
-                            'data' => 'mobile',
+                        $columns['phone_1'] = [
+                            'name' => 'sample_datas_view.phone_1',
+                            'data' => 'phone_1',
                             'title' => trans('messages.mobile'),
                             'orderable' => false,
                             'defaultContent' => 'N/A',
                             //'width' => '120px',
                         ];
                         break;
-                    case 'state':
-                        $columns['state'] = [
-                            'name' => 'sample_datas.state',
-                            'data' => 'state',
-                            'title' => trans('messages.state'),
+                    case 'level1':
+                        $columns['level1'] = [
+                            'name' => 'sample_datas.level1',
+                            'data' => 'level1',
+                            'title' => trans('sample.level1'),
                             'orderable' => false,
                             'defaultContent' => 'N/A',
                             'render' => function () use ($locale) {
                                 return "function(data,type,full,meta){
                                     var html;
                                     if(type === 'display') {
-                                        var state_trans = JSON.parse(full.state_trans);
+                                        var state_trans = JSON.parse(full.level1_trans);
 
                                         if(state_trans && state_trans.$locale) {
                                             html = state_trans.$locale;
@@ -206,18 +176,18 @@ class ProjectResultsController extends AppBaseController
                             //'width' => '120px',
                         ];
                         break;
-                    case 'township':
-                        $columns['township'] = [
-                            'name' => 'sample_datas.township',
-                            'data' => 'township',
-                            'title' => trans('messages.township'),
+                    case 'level3':
+                        $columns['level3'] = [
+                            'name' => 'sample_datas.level3',
+                            'data' => 'level3',
+                            'title' => trans('sample.level3'),
                             'orderable' => false,
                             'defaultContent' => 'N/A',
                             'render' => function () use ($locale) {
                                 return "function(data,type,full,meta){
                                     var html;
                                     if(type === 'display') {
-                                        var township_trans = JSON.parse(full.township_trans);
+                                        var township_trans = JSON.parse(full.level3_trans);
 
                                         if(township_trans && township_trans.$locale) {
                                             html = township_trans.$locale;
@@ -251,7 +221,7 @@ class ProjectResultsController extends AppBaseController
             switch ($project->dblink) {
                 case 'voter':
                     $columns = [
-                        'idcode' => ['name' => 'idcode', 'data' => 'idcode', 'title' => 'Voter ID'],
+                        'location_code' => ['name' => 'location_code', 'data' => 'location_code', 'title' => 'Voter ID'],
                         'name' => ['name' => 'name', 'data' => 'name', 'title' => 'Name'],
                         'nrc_id' => ['name' => 'nrc_id', 'data' => 'nrc_id', 'title' => 'NRC ID'],
                     ];
@@ -259,7 +229,7 @@ class ProjectResultsController extends AppBaseController
 
                 case 'enumerator':
                     $columns = [
-                        'idcode' => ['name' => 'idcode', 'data' => 'idcode', 'title' => 'Code'],
+                        'location_code' => ['name' => 'location_code', 'data' => 'location_code', 'title' => 'Code'],
                         'form_id' => ['name' => 'form_id', 'data' => 'form_id', 'title' => 'Form No.'],
                         'name' => ['name' => 'name', 'data' => 'name', 'title' => 'Name'],
                         'nrc_id' => ['name' => 'nrc_id', 'data' => 'nrc_id', 'title' => 'NRC ID'],
@@ -267,12 +237,12 @@ class ProjectResultsController extends AppBaseController
 
                 default:
                     $columns = [
-                        'idcode' => ['name' => 'idcode', 'data' => 'idcode', 'title' => 'Code'],
+                        'location_code' => ['name' => 'location_code', 'data' => 'location_code', 'title' => 'Code'],
                         'form_id' => ['name' => 'form_id', 'data' => 'form_id', 'title' => 'Form No.'],
                     ];
                     break;
             }
-            $exportColumns['idcode'] = 'ID Code';
+            $exportColumns['location_code'] = 'ID Code';
             $exportColumns['form_id'] = 'Form No.';
             $exportColumns['name'] = 'Name';
             $exportColumns['nrc_id'] = 'NRC ID';
@@ -376,12 +346,12 @@ class ProjectResultsController extends AppBaseController
 
         $table->setColumns($all_columns);
 
-        $statesCollections = $project->samplesData->groupBy('state');
-        $locations['allStates'] = $project->samplesData->pluck('state')->unique();
-        $locations['allDistricts'] = $project->samplesData->pluck('district')->unique();
-        $locations['allTownships'] = $project->samplesData->pluck('township')->unique();
-        $locations['allVillageTracts'] = $project->samplesData->pluck('village_tract')->unique();
-        $locations['allVillages'] = $project->samplesData->pluck('village')->unique();
+        $statesCollections = $project->samplesData->groupBy('level1');
+        $locations['allStates'] = $project->samplesData->pluck('level1')->unique();
+        $locations['allDistricts'] = $project->samplesData->pluck('level2')->unique();
+        $locations['allTownships'] = $project->samplesData->pluck('level3')->unique();
+        $locations['allVillageTracts'] = $project->samplesData->pluck('level4')->unique();
+        $locations['allVillages'] = $project->samplesData->pluck('level5')->unique();
 
         $districtsByState = [];
         $townshipByState = [];
@@ -389,40 +359,40 @@ class ProjectResultsController extends AppBaseController
         $villageByState = [];
 
         foreach ($statesCollections as $state => $samplesData) {
-            $locations['state'][$state]['district'] = $districtsByState[$state] = $samplesData->pluck('district', 'district')->toArray();
-            $locations['state'][$state]['township'] = $townshipByState[$state] = $samplesData->pluck('township', 'township')->toArray();
-            $locations['state'][$state]['village_tract'] = $vtractByState[$state] = $samplesData->pluck('village_tract', 'village_tract')->toArray();
-            $locations['state'][$state]['village'] = $villageByState[$state] = $samplesData->pluck('village', 'village')->toArray();
+            $locations['state'][$state]['district'] = $districtsByState[$state] = $samplesData->pluck('level2', 'level2')->toArray();
+            $locations['state'][$state]['township'] = $townshipByState[$state] = $samplesData->pluck('level3', 'level3')->toArray();
+            $locations['state'][$state]['village_tract'] = $vtractByState[$state] = $samplesData->pluck('level4', 'level4')->toArray();
+            $locations['state'][$state]['village'] = $villageByState[$state] = $samplesData->pluck('level5', 'level5')->toArray();
         }
 
-        $districtsCollections = $project->samplesData->groupBy('district');
+        $districtsCollections = $project->samplesData->groupBy('level2');
 
         $townshipByDistrict = [];
         $vtractByDistrict = [];
         $villageByDistrict = [];
 
         foreach ($districtsCollections as $district => $samplesData) {
-            $locations['district'][$district]['township'] = $townshipByDistrict[$district] = $samplesData->pluck('township', 'township')->toArray();
-            $locations['district'][$district]['village_tract'] = $vtractByDistrict[$district] = $samplesData->pluck('village_tract', 'village_tract')->toArray();
-            $locations['district'][$district]['village'] = $villageByDistrict[$district] = $samplesData->pluck('village', 'village')->toArray();
+            $locations['district'][$district]['township'] = $townshipByDistrict[$district] = $samplesData->pluck('level3', 'level3')->toArray();
+            $locations['district'][$district]['village_tract'] = $vtractByDistrict[$district] = $samplesData->pluck('level4', 'level4')->toArray();
+            $locations['district'][$district]['village'] = $villageByDistrict[$district] = $samplesData->pluck('level5', 'level5')->toArray();
         }
 
-        $townshipsCollections = $project->samplesData->groupBy('township');
+        $townshipsCollections = $project->samplesData->groupBy('level3');
 
         $vtractBytownship = [];
         $villageBytownship = [];
 
         foreach ($townshipsCollections as $township => $samplesData) {
-            $locations['township'][$township]['village_tract'] = $vtractBytownship[$township] = $samplesData->pluck('village_tract', 'village_tract')->toArray();
-            $locations['township'][$township]['village'] = $villageBytownship[$township] = $samplesData->pluck('village', 'village')->toArray();
+            $locations['township'][$township]['village_tract'] = $vtractBytownship[$township] = $samplesData->pluck('level4', 'level4')->toArray();
+            $locations['township'][$township]['village'] = $villageBytownship[$township] = $samplesData->pluck('level5', 'level5')->toArray();
         }
 
-        $village_tractsCollections = $project->samplesData->groupBy('village_tract');
+        $village_tractsCollections = $project->samplesData->groupBy('level4');
 
         $villageByvillage_tract = [];
 
         foreach ($village_tractsCollections as $village_tract => $samplesData) {
-            $locations['village_tract'][$village_tract]['village'] = $villageByvillage_tract[$village_tract] = $samplesData->pluck('village', 'village')->toArray();
+            $locations['village_tract'][$village_tract]['village'] = $villageByvillage_tract[$village_tract] = $samplesData->pluck('level4', 'level4')->toArray();
         }
 
         switch ($project->type) {

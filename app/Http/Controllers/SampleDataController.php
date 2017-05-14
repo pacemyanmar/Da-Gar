@@ -3,9 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\DataTables\SampleDataDataTable;
-use App\Http\Controllers\AppBaseController;
 use App\Http\Requests\CreateSampleDataRequest;
 use App\Http\Requests\UpdateSampleDataRequest;
+use App\Models\Observer;
 use App\Models\SampleData;
 use App\Repositories\SampleDataRepository;
 use Flash;
@@ -106,7 +106,7 @@ class SampleDataController extends AppBaseController
     /**
      * Update the specified SampleData in storage.
      *
-     * @param  int              $id
+     * @param  int $id
      * @param UpdateSampleDataRequest $request
      *
      * @return Response
@@ -160,93 +160,83 @@ class SampleDataController extends AppBaseController
         Excel::load($file, function ($reader) use ($type, $group) {
             $reader->each(function ($row) use ($type, $group) {
 
-                /**
-                "pace_id" => "02202"
-                "state_region" => "Bago (East)"
-                "district" => "Bago"
-                "township" => "Kyauktaga"
-                "ward" => null
-                "village_tract" => "Inn Pat Lel"
-                "village" => "Bon Taw"
-                "m" => "U Soe Win"
-                "nrc_no" => "7/NyaLaPa(N)102212"
-                "gender" => "M"
-                "date_of_birth" => "27.7.62"
-                "edu_background" => "B.Sc (Botany)"
-                "ethinicity" => "Bamar"
-                "language" => null
-                "current_occupation" => null
-                "phone_no_1" => "09-428010716"
-                "phone_no_2" => "09-794143708"
-                "address" => "No (30) MyoMa(4) Ward, Zayyarminlwin Ward, Kyauktaga"
-                "bank_information" => null
-                "mobile_singal_info" => "MPT-OOREDOO"
-                 */
-                $sampleData = new SampleData();
 
-                $area_type = ($row->area_type) ? $row->area_type : null;
-
-                if (empty($area_type)) {
-                    $area_type = ($row->ward) ? 1 : 2;
-                }
 
                 $row_array = [
-                    "idcode" => ($row->id_code) ? (string) $row->id_code : null,
-                    "ps_number" => ($row->ps_number) ? (string) $row->ps_number : null,
-                    "spotchecker_code" => ($row->spotchecker_code) ? (string) $row->spotchecker_code : null,
+                    "location_code" => ($row->location_code) ? (string)$row->location_code : null,
+                    "ps_code" => ($row->ps_code) ? (string)$row->ps_code : null, // official polling station number
+
                     "sample" => ($row->sample) ? $row->sample : 1,
-                    "area_type" => $area_type,
-                    "state" => ($row->state) ? $row->state : null,
-                    "district" => ($row->district) ? $row->district : null,
-                    "township" => ($row->township) ? $row->township : null,
-                    "village_tract" => ($row->village_tract) ? $row->village_tract : null,
-                    "ward" => ($row->ward) ? $row->ward : null,
-                    "village" => ($row->village) ? $row->village : null,
-                    "code" => ($row->observer_id) ? $row->observer_id : ($row->observer_1) ? $row->observer_1 : null,
-                    "name" => ($row->name) ? $row->name : ($row->name_1) ? $row->name_1 : null,
-                    "father" => ($row->father) ? $row->father : ($row->father_1) ? $row->father_1 : null,
-                    "mother" => ($row->mother) ? $row->mother : ($row->mother_1) ? $row->mother_1 : null,
-                    "current_org" => ($row->current_occupation) ? $row->current_occupation : ($row->current_occupation_1) ? $row->current_occupation_1 : null,
-                    "mobile" => ($row->phone_no_1) ? $row->phone_no_1 : ($row->phone_no_1_1) ? $row->phone_no_1_1 : null,
-                    "line_phone" => ($row->phone_no_2) ? $row->phone_no_2 : ($row->phone_no_2_1) ? $row->phone_no_2_1 : null,
-                    "nrc_id" => ($row->nrc_no) ? $row->nrc_no : ($row->nrc_no_1) ? $row->nrc_no_1 : null,
-                    "gender" => ($row->gender) ? $row->gender : ($row->gender_1) ? $row->gender_1 : null,
-                    "ethnicity" => ($row->ethnicity) ? $row->ethnicity : ($row->ethnicity_1) ? $row->ethnicity_1 : null,
-                    "dob" => ($row->date_of_birth) ? date("Y-m-d", strtotime($row->date_of_birth)) : ($row->date_of_birth_1) ? date("Y-m-d", strtotime($row->date_of_birth_1)) : null,
-                    "education" => ($row->edu_background) ? $row->edu_background : ($row->edu_background_1) ? $row->edu_background_1 : null,
-                    "email" => ($row->email) ? $row->email : ($row->email_1) ? $row->email_1 : null,
-                    "address" => ($row->mailing_address) ? $row->mailing_address : ($row->address_1) ? $row->address_1 : null,
-                    "language" => ($row->language) ? $row->language : ($row->language_1) ? $row->language_1 : null,
-                    "bank_information" => ($row->bank_information) ? $row->bank_information : ($row->bank_information_1) ? $row->bank_information_1 : null,
+                    "area_type" => strtolower($row->area_type), // rural or urban
 
-                    "code2" => ($row->observer_2) ? $row->observer_2 : null,
-                    "name2" => ($row->name_2) ? $row->name_2 : null,
-                    "father2" => ($row->father_2) ? $row->father_2 : null,
-                    "mother2" => ($row->mother_2) ? $row->mother_2 : null,
-                    "current_org2" => ($row->current_occupation_2) ? $row->current_occupation_2 : null,
-                    "mobile2" => ($row->phone_no_1_2) ? $row->phone_no_1_2 : null,
-                    "line_phone2" => ($row->phone_no_2_2) ? $row->phone_no_2_2 : null,
-                    "nrc_id2" => ($row->nrc_no_2) ? $row->nrc_no_2 : null,
-                    "gender2" => ($row->gender_2) ? $row->gender_2 : null,
-                    "ethnicity2" => ($row->ethnicity_2) ? $row->ethnicity_2 : null,
-                    "dob2" => ($row->date_of_birth_2) ? date("Y-m-d", strtotime($row->date_of_birth_2)) : null,
-                    "education2" => ($row->edu_background_2) ? $row->edu_background_2 : null,
-                    "email2" => ($row->email_2) ? $row->email_2 : null,
-                    "address2" => ($row->mailing_address_2) ? $row->mailing_address_2 : null,
-                    "language2" => ($row->language_2) ? $row->language_2 : null,
-                    "bank_information2" => ($row->bank_information_2) ? $row->bank_information_2 : null,
+                    "level1" => ($row->level1) ? $row->level1 : null, // state or province
+                    "level2" => ($row->level2) ? $row->level2 : null, // district
+                    "level3" => ($row->level3) ? $row->level3 : null, // township
+                    "level4" => ($row->level4) ? $row->level4 : null, // village tract, ward, or commune
 
-                    "mobile_provider" => ($row->mobile_provider) ? $row->mobile_provider : null,
+                    "level5" => ($row->level5) ? $row->level5 : null, // village
+                    "level6" => ($row->level6) ? $row->level6 : null,
+
+                    "level1_trans" => ($row->level1_trans) ? $row->level1_trans : null, // state or province
+                    "level2_trans" => ($row->level2_trans) ? $row->level2_trans : null, // district
+                    "level3_trans" => ($row->level3_trans) ? $row->level3_trans : null, // township
+                    "level4_trans" => ($row->level4_trans) ? $row->level4_trans : null, // village tract, ward, or commune
+
+                    "level5_trans" => ($row->level5_trans) ? $row->level5_trans : null, // village
+                    "level6_trans" => ($row->level6_trans) ? $row->level6_trans : null,
+
                     "parties" => ($row->parties) ? $row->parties : null,
                 ];
                 $attr = [
-                    "idcode" => ($row->id_code) ? $row->id_code : null,
+                    "location_code" => ($row->location_code) ? $row->location_code : null,
                     "sample" => ($row->sample) ? $row->sample : 1,
                 ];
                 $row_array = array_merge($type, $group, $row_array);
                 $row_attr = array_merge($type, $group, $attr);
 
-                $data = $sampleData->updateOrCreate($row_attr, $row_array);
+                if ($row->location_code) {
+                    $location_data = SampleData::updateOrCreate($row_attr, $row_array);
+
+                    $given_name = ($row->given_name) ? $row->given_name : null;
+                    $family_name = ($row->family_name) ? $row->family_name : null;
+                    $full_name = ($row->full_name) ? $row->full_name : $given_name . ' ' . $family_name;
+
+                    $observer_arr = [
+                        "code" => ($row->observer_code) ? $row->observer_code : null,
+                        "observer_type" => ($row->observer_type) ? $row->observer_type : null,
+                        'given_name' => $given_name,
+                        'family_name' => $family_name,
+                        "full_name" => (!empty($full_name)) ? $full_name : 'No Name',
+                        "full_name_trans" => ($row->full_name_trans) ? $row->full_name_trans : null,
+                        "father" => ($row->father) ? $row->father : null,
+                        "mother" => ($row->mother) ? $row->mother : null,
+                        "occupation" => ($row->current_occupation) ? $row->current_occupation : null,
+                        "phone_1" => ($row->phone_1) ? $row->phone_1 : null,
+                        "phone_2" => ($row->phone_2) ? $row->phone_2 : null,
+                        "national_id" => ($row->national_id) ? $row->national_id : null,
+                        "gender" => ($row->gender_) ? $row->gender_ : null,
+                        "ethnicity" => ($row->ethnicity) ? $row->ethnicity : null,
+                        "dob" => ($row->date_of_birth) ? date("Y-m-d", strtotime($row->date_of_birth)) : null,
+                        "education" => ($row->edu_background_) ? $row->edu_background_ : null,
+                        "email1" => ($row->email1) ? $row->email1 : null,
+                        "email2" => ($row->email2) ? $row->email2 : null,
+                        "address" => ($row->mailing_address) ? $row->mailing_address : null,
+                        "language" => ($row->language) ? $row->language : null,
+                        "bank_information" => ($row->bank_information) ? $row->bank_information : null,
+                        "mobile_provider" => ($row->mobile_provider) ? $row->mobile_provider : null,
+                        "sms_primary" => ($row->sms_primary) ? $row->sms_primary : null,
+                        "sms_backup" => ($row->sms_backup) ? $row->sms_backup : null,
+                        "call_primary" => ($row->call_primary) ? $row->call_primary : null,
+                        "call_backup" => ($row->call_backup) ? $row->call_backup : null,
+                        "hotline1" => ($row->hotline_1) ? $row->hotline_1 : null,
+                        "hotline2" => ($row->hotline_2) ? $row->hotline_2 : null,
+                    ];
+                    $observer_attr = [
+                        'sample_id' => $location_data->id,
+                        'code' => ($row->observer_code) ? $row->observer_code : null,
+                    ];
+                    $observer = Observer::updateOrCreate($observer_attr, $observer_arr);
+                }
             });
         });
         Flash::success($file . ' Data imported successfully.');
@@ -272,8 +262,8 @@ class SampleDataController extends AppBaseController
                     ->where('dbgroup', $row_attr['dbgroup'])
                     ->where('type', $row_attr['type'])->first();
 
-                $sampleData->idcode = ($row->id_code) ? (string) $row->id_code : null;
-                $sampleData->spotchecker_code = ($row->spotchecker_code) ? (string) $row->spotchecker_code : null;
+                $sampleData->idcode = ($row->id_code) ? (string)$row->id_code : null;
+                $sampleData->spotchecker_code = ($row->spotchecker_code) ? (string)$row->spotchecker_code : null;
                 $sampleData->sample = ($row->sample) ? $row->sample : 1;
                 $sampleData->state_trans = [$lang => ($row->state) ? $row->state : null];
                 $sampleData->district_trans = [$lang => ($row->district) ? $row->district : null];

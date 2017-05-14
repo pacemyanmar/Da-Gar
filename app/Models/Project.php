@@ -95,15 +95,11 @@ class Project extends Model
 
     public function getProjectAttribute($value)
     {
-        $lang = \App::getLocale();
-        $project = json_decode($this->attributes['project_trans'], true);
-        if (!empty($project) && array_key_exists($lang, $project)) {
-            $translation = $project[$lang];
+        if (\App::isLocale('en')) {
+            return $value;
+        } else {
+            return ($this->attributes['project_trans'])? $this->attributes['project_trans']:$value;
         }
-        if (!empty($translation)) {
-            $value = $translation;
-        }
-        return $value;
     }
 
     public function getProjectEnAttribute($value)

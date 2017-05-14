@@ -88,8 +88,8 @@
     <table class="table toggle">
     <tr>
             <td>
-                {!! Form::checkbox("index_columns[idcode]", 'ID Code', null, ['class' => 'magic-checkbox ', 'id' => 'idcode']) !!}
-                <label class="normal-text" for="idcode">ID Code
+                {!! Form::checkbox("index_columns[location_code]", trans('sample.location_code'), null, ['class' => 'magic-checkbox ', 'id' => 'idcode']) !!}
+                <label class="normal-text" for="idcode">{!! trans('sample.location_code') !!}
                 </label>
             </td>
             <td>
@@ -103,18 +103,13 @@
                 </label>
             </td>
             <td>
-                {!! Form::checkbox("index_columns[name]", 'Observer', null, ['class' => 'magic-checkbox ', 'id' => 'observer']) !!}
+                {!! Form::checkbox("index_columns[observer_name]", 'Observer', null, ['class' => 'magic-checkbox ', 'id' => 'observer']) !!}
                 <label class="normal-text" for="observer">Observer
                 </label>
             </td>
             <td>
-                {!! Form::checkbox("index_columns[spotchecker_code]", 'Spotchecker', null, ['class' => 'magic-checkbox ', 'id' => 'spotchecker_code']) !!}
-                <label class="normal-text" for="spotchecker_code">Spotchecker
-                </label>
-            </td>
-            <td>
-                {!! Form::checkbox("index_columns[nrc_id]", 'NRC ID', null, ['class' => 'magic-checkbox ', 'id' => 'nrc_id']) !!}
-                <label class="normal-text" for="nrc_id">NRC ID
+                {!! Form::checkbox("index_columns[national_id]", trans('sample.national_id'), null, ['class' => 'magic-checkbox ', 'id' => 'nrc_id']) !!}
+                <label class="normal-text" for="nrc_id">{!! trans('sample.national_id') !!}
                 </label>
             </td>
             <td>
@@ -125,28 +120,28 @@
         </tr>
         <tr>
             <td>
-                {!! Form::checkbox("index_columns[state]", 'State', null, ['class' => 'magic-checkbox ', 'id' => 'state']) !!}
-                <label class="normal-text" for="state">State
+                {!! Form::checkbox("index_columns[level1]", trans('sample.level1'), null, ['class' => 'magic-checkbox ', 'id' => 'level1']) !!}
+                <label class="normal-text" for="level1">{!! trans('sample.level1') !!}
                 </label>
             </td>
             <td>
-                {!! Form::checkbox("index_columns[district]", 'District', null, ['class' => 'magic-checkbox ', 'id' => 'district']) !!}
-                <label class="normal-text" for="district">District
+                {!! Form::checkbox("index_columns[level2]", trans('sample.level2'), null, ['class' => 'magic-checkbox ', 'id' => 'level2']) !!}
+                <label class="normal-text" for="level2">{!! trans('sample.level2') !!}
                 </label>
             </td>
             <td>
-                {!! Form::checkbox("index_columns[township]", 'Township', null, ['class' => 'magic-checkbox ', 'id' => 'township']) !!}
-                <label class="normal-text" for="township">Township
+                {!! Form::checkbox("index_columns[level3]", trans('sample.level3'), null, ['class' => 'magic-checkbox ', 'id' => 'level3']) !!}
+                <label class="normal-text" for="level3">{!! trans('sample.level3') !!}
                 </label>
             </td>
             <td>
-                {!! Form::checkbox("index_columns[village_tract]", 'Village Tract', null, ['class' => 'magic-checkbox ', 'id' => 'village_tract']) !!}
-                <label class="normal-text" for="village_tract">Village Tract
+                {!! Form::checkbox("index_columns[level4]", trans('sample.level4'), null, ['class' => 'magic-checkbox ', 'id' => 'level4']) !!}
+                <label class="normal-text" for="level4">{!! trans('sample.level4') !!}
                 </label>
             </td>
             <td>
-                {!! Form::checkbox("index_columns[village]", 'Village', null, ['class' => 'magic-checkbox ', 'id' => 'village']) !!}
-                <label class="normal-text" for="village">Village
+                {!! Form::checkbox("index_columns[level5]", trans('sample.level5'), null, ['class' => 'magic-checkbox ', 'id' => 'level5']) !!}
+                <label class="normal-text" for="level5">{!! trans('sample.level5') !!}
                 </label>
             </td>
         </tr>

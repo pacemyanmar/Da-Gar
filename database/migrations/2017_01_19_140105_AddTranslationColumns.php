@@ -13,27 +13,15 @@ class AddTranslationColumns extends Migration
      */
     public function up()
     {
-        Schema::table('sample_datas', function (Blueprint $table) {
-            $table->text('name_trans')->nullable();
-            $table->text('gender_trans')->nullable();
-            $table->text('father_trans')->nullable();
-            $table->text('mother_trans')->nullable();
-            $table->text('ethnicity_trans')->nullable();
-            $table->text('village_trans')->nullable();
-            $table->text('village_tract_trans')->nullable();
-            $table->text('township_trans')->nullable();
-            $table->text('district_trans')->nullable();
-            $table->text('state_trans')->nullable();
-        });
         Schema::table('questions', function (Blueprint $table) {
-            $table->text('qnum_trans')->nullable();
-            $table->text('question_trans')->nullable();
+            $table->string('qnum_trans')->index()->nullable();
+            $table->string('question_trans')->index()->nullable();
         });
         Schema::table('survey_inputs', function (Blueprint $table) {
-            $table->text('label_trans')->nullable();
+            $table->string('label_trans')->index()->nullable();
         });
         Schema::table('projects', function (Blueprint $table) {
-            $table->text('project_trans')->nullable();
+            $table->string('project_trans')->index()->nullable();
         });
     }
 

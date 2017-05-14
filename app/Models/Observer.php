@@ -17,8 +17,11 @@ class Observer extends Model
 
 
     public $fillable = [
-        'name',
+        'given_name',
+        'family_name',
+        'full_name',
         'code',
+        'email',
         'sample_id',
         'national_id',
         'phone_1',
@@ -30,6 +33,21 @@ class Observer extends Model
         'gender',
         'dob',
         'education',
+        'mobile_provider',
+        'sms_primary',
+        'sms_backup',
+        'call_primary',
+        'call_backup',
+        'hotline1',
+        'hotline2',
+        'form_type',
+        'full_name_trans',
+        'phone_1_trans',
+        'phone_2_trans',
+        'language_trans',
+        'ethincity_trans',
+        'occupation_trans',
+
         'created_at',
         'updated_at'
     ];

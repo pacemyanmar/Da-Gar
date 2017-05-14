@@ -101,14 +101,14 @@ class SurveyInput extends Model
 
     public function getLabelAttribute($value)
     {
-        $lang = \App::getLocale();
-        $label = json_decode($this->attributes['label_trans'], true);
-        if (!empty($label) && array_key_exists($lang, $label)) {
-            $translation = $label[$lang];
+        return $this->getTranslation('label', $value);
+    }
+    private function getTranslation($column, $value)
+    {
+        if (\App::isLocale('en')) {
+            return $value;
+        } else {
+            return ($this->attributes[$column.'_trans'])? $this->attributes[$column.'_trans']:$value;
         }
-        if (!empty($translation)) {
-            $value = $translation;
-        }
-        return $value;
     }
 }

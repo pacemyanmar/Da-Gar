@@ -4,10 +4,10 @@ namespace App\DataTables;
 
 use App\Models\Project;
 use App\Models\Sample;
-use App\Models\SurveyResult;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Request;
+use Illuminate\Support\Facades\Schema;
 use Yajra\Datatables\Services\DataTable;
 
 class SurveyResultDataTable extends DataTable
@@ -93,7 +93,7 @@ class SurveyResultDataTable extends DataTable
     public function ajax()
     {
         $orderTable = str_plural($this->project->dblink);
-        $orderBy = (isset($this->orderBy)) ? $orderTable . '.' . $this->orderBy : 'sample_datas.idcode';
+        $orderBy = (isset($this->orderBy)) ? $orderTable . '.' . $this->orderBy : 'sample_datas_view.location_code';
         $order = (isset($this->order)) ? $this->order : 'asc';
 
         $table = $this->datatables
@@ -117,7 +117,7 @@ class SurveyResultDataTable extends DataTable
         $auth = Auth::user();
         // create table name
         $table = str_plural($this->project->dblink);
-        $orderBy = (isset($this->orderBy)) ? $table . '.' . $this->orderBy : 'sample_datas.idcode';
+        $orderBy = (isset($this->orderBy)) ? $table . '.' . $this->orderBy : 'sample_datas_view.location_code';
         $order = (isset($this->order)) ? $this->order : 'asc';
 
         // dblink
@@ -137,14 +137,8 @@ class SurveyResultDataTable extends DataTable
                 case 'user_id':
                     $column = 'user.name as username';
                     break;
-                case 'name':
-                    $column = 'IF(sample_datas.name2 IS NOT NULL,CONCAT(sample_datas.name,"(1) <br>",sample_datas.name2,"(2)"),sample_datas.name) as name';
-                    break;
-                case 'mobile':
-                    $column = 'IF(sample_datas.mobile2 IS NOT NULL,CONCAT(sample_datas.mobile,"(1) <br>",sample_datas.mobile2,"(2)"),sample_datas.mobile) as mobile';
-                    break;
                 default:
-                    $column = 'sample_datas.' . $column . ' AS s' . $column;
+                    $column = 'sample_datas_view.' . $column;
                     break;
             }
 
@@ -177,7 +171,16 @@ class SurveyResultDataTable extends DataTable
 
         $input_columns = implode(',', $columnsFromResults);
 
-        $defaultColumns = "samples.id as samples_id, samples.form_id, sample_datas.idcode,sample_datas.ps_number,sample_datas.spotchecker_code,sample_datas.type,sample_datas.dbgroup,sample_datas.sample,sample_datas.area_type,sample_datas.code,sample_datas.gender,sample_datas.nrc_id,sample_datas.dob,sample_datas.father,sample_datas.mother,sample_datas.ethnicity,sample_datas.current_org,sample_datas.line_phone,sample_datas.education,sample_datas.email,sample_datas.address,sample_datas.language,sample_datas.code2,sample_datas.name2,sample_datas.gender2,sample_datas.nrc_id2,sample_datas.dob2,sample_datas.father2,sample_datas.mother2,sample_datas.ethnicity2,sample_datas.current_org2,sample_datas.mobile2,sample_datas.line_phone2,sample_datas.education2,sample_datas.email2,sample_datas.address2,sample_datas.language2,sample_datas.village,sample_datas.ward,sample_datas.village_tract,sample_datas.township,sample_datas.district,sample_datas.state,sample_datas.parent_id,sample_datas.created_at,sample_datas.updated_at,sample_datas.name_trans,sample_datas.gender_trans,sample_datas.nrc_id_trans,sample_datas.father_trans,sample_datas.mother_trans,sample_datas.address_trans,sample_datas.village_trans,sample_datas.ward_trans,sample_datas.village_tract_trans,sample_datas.township_trans,sample_datas.district_trans,sample_datas.state_trans,sample_datas.education_trans,sample_datas.ethnicity_trans,sample_datas.language_trans,sample_datas.bank_information_trans,sample_datas.mobile_provider_trans,sample_datas.parties";
+        $defaultColumns = "samples.id as samples_id, samples.form_id, sample_datas_view.location_code,sample_datas_view.ps_code,sample_datas_view.type,sample_datas_view.dbgroup,sample_datas_view.sample,sample_datas_view.area_type,sample_datas_view.level1,sample_datas_view.level1_trans,sample_datas_view.level2,sample_datas_view.level2_trans,sample_datas_view.level3,sample_datas_view.level3_trans,sample_datas_view.level4,sample_datas_view.level4_trans,sample_datas_view.level5,sample_datas_view.level5_trans,sample_datas_view.parties";
+
+        $defaultColumnsArr = explode(',', $defaultColumns);
+        $selectColumns = array_merge($defaultColumnsArr, $tableColumnsArray);
+        $trimmedSelectColumns=array_map('trim',$selectColumns);
+
+        $selectColumnsUnique = array_unique($trimmedSelectColumns);
+
+
+        $selectColumns = implode(',', $selectColumnsUnique);
         if ($table == 'enumerators') {
 
         }
@@ -201,11 +204,12 @@ class SurveyResultDataTable extends DataTable
             $join->on('qc_user.id', 'samples.qc_user_id');
         });
         if ($this->project->status != 'new') {
-            $query->select(DB::raw($defaultColumns), DB::raw($dbLinkTableColumns), DB::raw($input_columns));
+            $query->select(DB::raw($selectColumns), DB::raw($input_columns));
             // join with samplable database (voters, enumerators)
-            $query->leftjoin('sample_datas', function ($join) {
-                $join->on('samples.sample_data_id', 'sample_datas.id');
+            $query->leftjoin('sample_datas_view', function ($join) use ($project) {
+                $join->on('samples.sample_data_id', 'sample_datas_view.id')->where('samples.project_id', $project->id);
             });
+
             // join with result database
             if ($auth->role->role_name == 'doublechecker') {
                 $query->join($childTable, function ($join) use ($childTable) {
@@ -318,14 +322,16 @@ class SurveyResultDataTable extends DataTable
             if ($status) {
                 $query->where($childTable . '.' . $section, $status);
             } else {
-                $query->where(function ($q) use ($childTable, $section, $status) {$q->whereNull($childTable . '.' . $section)->orWhere($childTable . '.' . $section, $status);});
+                $query->where(function ($q) use ($childTable, $section, $status) {
+                    $q->whereNull($childTable . '.' . $section)->orWhere($childTable . '.' . $section, $status);
+                });
             }
 
         }
 
         $nosample = Request::input('nosample');
         if ($nosample) {
-            $query->where('sample_datas.sample', '<>', '0');
+            $query->where('sample_datas_view.sample', '<>', '0');
         }
 
         $inputcolumn = Request::input('column');
@@ -339,7 +345,7 @@ class SurveyResultDataTable extends DataTable
 
         }
 
-        $query->orderBy('sample_datas.idcode', 'asc');
+        $query->orderBy('sample_datas_view.location_code', 'asc');
         return $this->applyScopes($query);
     }
 
@@ -383,16 +389,6 @@ class SurveyResultDataTable extends DataTable
     }
 
     /**
-     * Get filename for export.
-     *
-     * @return string
-     */
-    protected function filename()
-    {
-        return $this->project->project_en . '-' . date("Y-m-d-H-i-s");
-    }
-
-    /**
      * Get default builder parameters.
      *
      * @return array
@@ -402,7 +398,53 @@ class SurveyResultDataTable extends DataTable
         $auth = Auth::user();
         $locale = \App::getLocale();
         $project = $this->project;
-        $sampleData = DB::table('sample_datas')->where('type', $project->dblink)->where('dbgroup', $project->dbgroup);
+        
+        $observer = "GROUP_CONCAT(CONCAT('\n', ob.code ,' : \"', ob.id ,'\"')) AS obid, 
+                     GROUP_CONCAT(CONCAT('\n', ob.code ,' : \"', ob.given_name ,'\"')) AS given_name,
+                     GROUP_CONCAT(CONCAT('\n', ob.code ,' : \"', ob.family_name ,'\"')) AS family_name,
+                     GROUP_CONCAT(CONCAT('\n', ob.code ,' : \"', ob.full_name ,'\"')) AS full_name,
+                     GROUP_CONCAT(CONCAT('\n', ob.code ,' : \"', ob.observer_type ,'\"')) AS observer_type,
+                     GROUP_CONCAT(CONCAT('\n', ob.code ,' : \"', ob.code ,'\"')) AS code,
+                     GROUP_CONCAT(CONCAT('\n', ob.code ,' : \"', ob.sample_id ,'\"')) AS sample_id,
+                     GROUP_CONCAT(CONCAT('\n', ob.code ,' : \"', ob.email1 ,'\"')) AS email1,
+                     GROUP_CONCAT(CONCAT('\n', ob.code ,' : \"', ob.email2 ,'\"')) AS email2,
+                     GROUP_CONCAT(CONCAT('\n', ob.code ,' : \"', ob.national_id ,'\"')) AS national_id,
+                     GROUP_CONCAT(CONCAT('\n', ob.code ,' : \"', ob.phone_1 ,'\"')) AS phone_1,
+                     GROUP_CONCAT(CONCAT('\n', ob.code ,' : \"', ob.phone_2 ,'\"')) AS phone_2,
+                     GROUP_CONCAT(CONCAT('\n', ob.code ,' : \"', ob.address ,'\"')) AS address,
+                     GROUP_CONCAT(CONCAT('\n', ob.code ,' : \"', ob.language ,'\"')) AS language,
+                     GROUP_CONCAT(CONCAT('\n', ob.code ,' : \"', ob.ethnicity ,'\"')) AS ethnicity,
+                     GROUP_CONCAT(CONCAT('\n', ob.code ,' : \"', ob.occupation ,'\"')) AS occupation,
+                     GROUP_CONCAT(CONCAT('\n', ob.code ,' : \"', ob.gender ,'\"')) AS gender,
+                     GROUP_CONCAT(CONCAT('\n', ob.code ,' : \"', ob.dob ,'\"')) AS dob,
+                     GROUP_CONCAT(CONCAT('\n', ob.code ,' : \"', ob.education ,'\"')) AS education,
+                     GROUP_CONCAT(CONCAT('\n', ob.code ,' : \"', ob.sms_primary ,'\"')) AS sms_primary,
+                     GROUP_CONCAT(CONCAT('\n', ob.code ,' : \"', ob.sms_backup ,'\"')) AS sms_backup,
+                     GROUP_CONCAT(CONCAT('\n', ob.code ,' : \"', ob.call_primary ,'\"')) AS call_primary,
+                     GROUP_CONCAT(CONCAT('\n', ob.code ,' : \"', ob.call_backup ,'\"')) AS call_backup,
+                     GROUP_CONCAT(CONCAT('\n', ob.code ,' : \"', ob.hotline1 ,'\"')) AS hotline1,
+                     GROUP_CONCAT(CONCAT('\n', ob.code ,' : \"', ob.hotline2 ,'\"')) AS hotline2,
+                     GROUP_CONCAT(CONCAT('\n', ob.code ,' : \"', ob.form_type ,'\"')) AS form_type,
+                     GROUP_CONCAT(CONCAT('\n', ob.code ,' : \"', ob.full_name_trans ,'\"')) AS full_name_trans,
+                     GROUP_CONCAT(CONCAT('\n', ob.code ,' : \"', ob.created_at ,'\"')) AS obcreated,
+                     GROUP_CONCAT(CONCAT('\n', ob.code ,' : \"', ob.updated_at ,'\"')) AS obupdated";
+
+
+
+        if (!Schema::hasTable('sample_datas_view')) {
+            DB::statement("CREATE VIEW sample_datas_view AS
+                           (
+                           SELECT sd.id, sd.location_code, sd.type, sd.dbgroup, sd.sample, sd.ps_code, sd.area_type,
+                           sd.level6, sd.level5, sd.level4, sd.level3, sd.level2, sd.level1, sd.level6_trans,
+                           sd.level5_trans, sd.level4_trans, sd.level3_trans, sd.level2_trans, sd.level1_trans,
+                           sd.parties, sd.parent_id, sd.created_at, sd.updated_at, $observer  
+                           FROM sample_datas AS sd LEFT JOIN observers AS ob ON ob.sample_id = sd.id  GROUP BY sd.id, sd.location_code, sd.type, sd.dbgroup, sd.sample, sd.ps_code, sd.area_type,
+                           sd.level6, sd.level5, sd.level4, sd.level3, sd.level2, sd.level1, sd.level6_trans,
+                           sd.level5_trans, sd.level4_trans, sd.level3_trans, sd.level2_trans, sd.level1_trans,
+                           sd.parties, sd.parent_id, sd.created_at, sd.updated_at  
+                           )");
+        }
+        $sampleData = DB::table('sample_datas_view')->where('type', $project->dblink)->where('dbgroup', $project->dbgroup);
 
         if ($auth->role->level > 7) {
             $button = [
@@ -418,54 +460,54 @@ class SurveyResultDataTable extends DataTable
             $button = [];
         }
 
-        $township_query = "township, township_trans";
+        $township_query = "level3, level3_trans";
 
         $townships = $sampleData->select(DB::raw($township_query))->get()->unique();
 
         $township_option = "";
         foreach ($townships as $key => $township) {
             if ($locale == config('app.fallback_locale')) {
-                $township_option .= "<option value=\"$township->township\">$township->township</option>";
+                $township_option .= "<option value=\"$township->level3\">$township->level3</option>";
             } else {
-                $township_trans = json_decode($township->township_trans, true);
+                $township_trans = json_decode($township->level3_trans, true);
 
-                $township_option .= "<option value=\"$township->township\">$township_trans[$locale]</option>";
+                $township_option .= "<option value=\"$township->level3\">$township_trans[$locale]</option>";
             }
 
         }
 
-        $district_query = "district, district_trans";
+        $district_query = "level2, level2_trans";
 
         $districts = $sampleData->select(DB::raw($district_query))->get()->unique();
 
         $district_option = "";
         foreach ($districts as $key => $district) {
             if ($locale == config('app.fallback_locale')) {
-                $district_option .= "<option value=\"$district->district\">$district->district</option>";
+                $district_option .= "<option value=\"$district->level2\">$district->level2</option>";
             } else {
-                $district_trans = json_decode($district->district_trans, true);
-                $district_option .= "<option value=\"$district->district\">$district_trans[$locale]</option>";
+                $district_trans = json_decode($district->level2_trans, true);
+                $district_option .= "<option value=\"$district->level2\">$district_trans[$locale]</option>";
             }
 
         }
 
-        $state_query = "state, state_trans";
+        $state_query = "level1, level1_trans";
         $states = $sampleData->select(DB::raw($state_query))->get()->unique();
 
         $state_option = "";
         foreach ($states as $key => $state) {
             if ($locale == config('app.fallback_locale')) {
-                $state_option .= "<option value=\"$state->state\">$state->state</option>";
+                $state_option .= "<option value=\"$state->level1\">$state->level1</option>";
             } else {
-                $state_trans = json_decode($state->state_trans, true);
-                $state_option .= "<option value=\"$state->state\">$state_trans[$locale]</option>";
+                $state_trans = json_decode($state->level1_trans, true);
+                $state_option .= "<option value=\"$state->level1\">$state_trans[$locale]</option>";
             }
 
         }
 
         $columnName = array_keys($this->tableColumns);
-        $textColumns = ['idcode', 'spotchecker', 'spotchecker_code', 'name', 'nrc_id', 'form_id', 'mobile'];
-
+        //$textColumns = ['location_code', 'spotchecker', 'spotchecker_code', 'name', 'nrc_id', 'form_id', 'mobile'];
+        $textColumns = ['location_code'];
         $textColumns = array_intersect_key($this->tableColumns, array_flip($textColumns));
 
         $columnName = array_flip($columnName);
@@ -474,7 +516,7 @@ class SurveyResultDataTable extends DataTable
             $textColsArr[] = $columnName[$key] + 1;
         }
 
-        $selectColumns = ['village', 'village_tract', 'township', 'district', 'state'];
+        $selectColumns = ['level5', 'level4', 'level3', 'level2', 'level1'];
 
         $selectColumns = array_intersect_key($this->tableColumns, array_flip($selectColumns));
         $locationColumns = [];
@@ -589,5 +631,15 @@ class SurveyResultDataTable extends DataTable
                               $select_js
                         }",
         ];
+    }
+
+    /**
+     * Get filename for export.
+     *
+     * @return string
+     */
+    protected function filename()
+    {
+        return $this->project->project_en . '-' . date("Y-m-d-H-i-s");
     }
 }

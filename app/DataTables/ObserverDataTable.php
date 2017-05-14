@@ -16,7 +16,7 @@ class ObserverDataTable extends DataTable
     {
         return $this->datatables
             ->eloquent($this->query())
-            ->addColumn('action', 'observers.datatables_actions')
+            //->addColumn('action', 'observers.datatables_actions')
             ->make(true);
     }
 
@@ -41,7 +41,7 @@ class ObserverDataTable extends DataTable
     {
         return $this->builder()
             ->columns($this->getColumns())
-            ->addAction(['width' => '10%'])
+            //->addAction(['width' => '10%'])
             ->ajax('')
             ->parameters([
                 'dom' => 'Bfrtip',
@@ -72,9 +72,9 @@ class ObserverDataTable extends DataTable
     private function getColumns()
     {
         return [
-            'name' => ['name' => 'name', 'data' => 'name'],
+            'full_name' => ['name' => 'full_name', 'data' => 'full_name'],
             'code' => ['name' => 'code', 'data' => 'code'],
-            'sample_id' => ['name' => 'sample_id', 'data' => 'sample_id'],
+            //'sample_id' => ['name' => 'sample_id', 'data' => 'sample_id'],
             'national_id' => ['name' => 'national_id', 'data' => 'national_id'],
             'phone_1' => ['name' => 'phone_1', 'data' => 'phone_1'],
             'phone_2' => ['name' => 'phone_2', 'data' => 'phone_2'],
@@ -85,8 +85,8 @@ class ObserverDataTable extends DataTable
             'gender' => ['name' => 'gender', 'data' => 'gender'],
             'dob' => ['name' => 'dob', 'data' => 'dob'],
             'education' => ['name' => 'education', 'data' => 'education'],
-            'created_at' => ['name' => 'created_at', 'data' => 'created_at'],
-            'updated_at' => ['name' => 'updated_at', 'data' => 'updated_at']
+            //'created_at' => ['name' => 'created_at', 'data' => 'created_at'],
+            //'updated_at' => ['name' => 'updated_at', 'data' => 'updated_at']
         ];
     }
 

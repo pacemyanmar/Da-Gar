@@ -14,28 +14,27 @@ class SampleDatasTable extends Migration
     {
         Schema::create('sample_datas', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('idcode')->index();
+            $table->string('location_code')->index();
             $table->string('type')->default('enumerator');
-            $table->unsignedSmallInteger('dbgroup')->default(1)->nullable();
-            $table->unsignedSmallInteger('sample')->default(1)->nullable();
-            $table->string('name')->index()->nullable();
-            $table->string('gender')->index()->nullable();
-            $table->string('nrc_id')->index()->nullable();
-            $table->datetime('dob')->index()->nullable();
-            $table->string('father')->index()->nullable();
-            $table->string('mother')->index()->nullable();
-            $table->string('ethnicity')->index()->nullable();
-            $table->string('current_org')->index()->nullable();
-            $table->string('mobile')->index()->nullable();
-            $table->string('line_phone')->index()->nullable();
-            $table->string('education')->index()->nullable();
-            $table->string('email')->index()->nullable();
-            $table->text('address')->nullable();
-            $table->string('village')->index()->nullable(); // village or ward
-            $table->string('village_tract')->index()->nullable(); // village tract or town
-            $table->string('township')->index()->nullable();
-            $table->string('district')->index()->nullable();
-            $table->string('state')->index()->nullable();
+            $table->unsignedSmallInteger('dbgroup')->default(1);
+            $table->unsignedSmallInteger('sample')->default(1);
+            $table->string('ps_code')->nullable(); // polling station
+            $table->string('area_type')->default('rural');
+            $table->string('level6')->index()->nullable();
+            $table->string('level5')->index()->nullable();
+            $table->string('level4')->index()->nullable();
+            $table->string('level3')->index()->nullable();
+            $table->string('level2')->index()->nullable();
+            $table->string('level1')->index()->nullable();
+
+            $table->string('level6_trans')->index()->nullable();
+            $table->string('level5_trans')->index()->nullable();
+            $table->string('level4_trans')->index()->nullable();
+            $table->string('level3_trans')->index()->nullable();
+            $table->string('level2_trans')->index()->nullable();
+            $table->string('level1_trans')->index()->nullable();
+
+            $table->text('parties')->nullable();
             $table->unsignedInteger('parent_id')->index()->nullable();
 
             $table->timestamps();
