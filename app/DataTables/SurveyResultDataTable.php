@@ -398,7 +398,7 @@ class SurveyResultDataTable extends DataTable
         $auth = Auth::user();
         $locale = \App::getLocale();
         $project = $this->project;
-        
+
         $observer = "GROUP_CONCAT(CONCAT('\n', ob.code ,' : \"', ob.id ,'\"')) AS obid, 
                      GROUP_CONCAT(CONCAT('\n', ob.code ,' : \"', ob.given_name ,'\"')) AS given_name,
                      GROUP_CONCAT(CONCAT('\n', ob.code ,' : \"', ob.family_name ,'\"')) AS family_name,
