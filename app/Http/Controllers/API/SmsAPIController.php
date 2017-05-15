@@ -423,9 +423,16 @@ class SmsAPIController extends AppBaseController
                 // get required questions in a section
                 // question must not optional and observation type should be empty
                 // or location observer field value should be in question observation type
-                $required_questions = $section->questions->filter(function ($question, $key) use ($sample_data) {
-                    return !$question->optional && (empty($question->observation_type) || in_array($sample_data->observer_field,$question->observation_type));
-                });
+
+                if (!$training_mode) {
+                    $required_questions = $section->questions->filter(function ($question, $key) use ($sample_data) {
+                        return !$question->optional && (empty($question->observation_type) || in_array($sample_data->observer_field, $question->observation_type));
+                    });
+                } else {
+                    $required_questions = $section->questions->filter(function ($question, $key) {
+                        return !$question->optional;
+                    });
+                }
 
                 $error_inputs = array_unique(array_filter($section_error_inputs));
 
