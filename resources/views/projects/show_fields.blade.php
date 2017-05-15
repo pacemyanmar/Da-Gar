@@ -5,6 +5,7 @@
     </thead>
     <tbody>
         @foreach($section->questions as $question)
+            @if(empty($question->observation_type) || in_array($sample->data->observer_field,$question->observation_type))
             <tr id="{!! $question->css_id !!}">
                 <td class="col-xs-1">
                 <label>{!! $question->qnum !!}</label>
@@ -24,6 +25,7 @@
                     </div>
                 </td>
             </tr>
+            @endif
         @endforeach
     </tbody>
 </table>

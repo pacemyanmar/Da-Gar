@@ -213,10 +213,15 @@ class ProjectController extends AppBaseController
 
             return redirect(route('projects.index'));
         }
+
+        $observation_type = SampleData::pluck('observer_field','observer_field')->unique();
+
+
         $project->load(['inputs']);
         return view('projects.edit')
             ->with('project', $project)
-            ->with('questions', $project->questions);
+            ->with('questions', $project->questions)
+            ->with('observation_type', $observation_type);
     }
 
     /**

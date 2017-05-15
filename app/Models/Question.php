@@ -30,6 +30,7 @@ class Question extends Model
         'double_entry',
         'optional',
         'report',
+        'observation_type',
         'project_id',
     ];
 
@@ -53,6 +54,7 @@ class Question extends Model
         'optional' => 'boolean',
         'report' => 'boolean',
         'layout' => 'string',
+        'observation_type' => 'array'
     ];
 
     /**

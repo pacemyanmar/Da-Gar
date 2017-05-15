@@ -330,7 +330,7 @@ class SmsAPIController extends AppBaseController
 
                         // look for numeric answers
 
-                        if ($input->type == 'checkbox') {
+                        if ($input->type == 'checkbox' || $question->surveyInputs->count() === 1) {
                             preg_match('/' . strtolower($question->qnum) . '(\d+)/', $sms_content, $response_match);
                         } else {
                             preg_match('/' . $inputkey . '(\d+)/', $sms_content, $response_match);
@@ -383,23 +383,25 @@ class SmsAPIController extends AppBaseController
                                 $section_inputs[$question->qnum] = $result->{$inputid};
                                 $valid_response[] = $inputid;
                             } else {
-                                if (in_array($input->type, ['radio', 'checkbox'])) {
-                                    $section_error_inputs[$question->qnum] = $question->qnum;
-                                } else {
-                                    $error_key = strtoupper($inputkey);
-                                    $section_error_inputs[$error_key] = $error_key;
+                                if(empty($question->observation_type) || in_array($sample_data->observer_field,$question->observation_type)) {
+                                    if (in_array($input->type, ['radio', 'checkbox'])) {
+                                        $section_error_inputs[$question->qnum] = $question->qnum;
+                                    } else {
+                                        $error_key = strtoupper($inputkey);
+                                        $section_error_inputs[$error_key] = $error_key;
+                                    }
                                 }
                             }
                         }
 
                     }
 
-                    //dd($valid_response);
+
                     // for checkbox and radio
                     $required_response_with_value = $question->surveyInputs->filter(function ($input, $key) {
                         return (!$input->optional && $input->value);
                     })->pluck('inputid')->toArray();
-                    //dd($required_response_with_value);
+
                     // for text based inputs
                     $required_response_empty_value = $question->surveyInputs->filter(function ($input, $key) {
                         return (!$input->optional && empty($input->value));
@@ -418,14 +420,18 @@ class SmsAPIController extends AppBaseController
                     unset($valid_response);
                     unset($intersect_with_value);
                 }
-                $required_questions = $section->questions->filter(function ($question, $key) {
-                    return !$question->optional;
+                // get required questions in a section
+                // question must not optional and observation type should be empty
+                // or location observer field value should be in question observation type
+                $required_questions = $section->questions->filter(function ($question, $key) use ($sample_data) {
+                    return !$question->optional && (empty($question->observation_type) || in_array($sample_data->observer_field,$question->observation_type));
                 });
 
                 $error_inputs = array_unique(array_filter($section_error_inputs));
 
                 unset($optional); // unset optional to avoid unexpect outcomes when checking section status
-                //dd($result);
+
+
                 if (!empty($section_inputs)) {
 
                     if ($required_questions->count() === $question_completed) {
@@ -451,6 +457,8 @@ class SmsAPIController extends AppBaseController
                 $result->setTable($dbname . '_training'); // need to set table name again for some reason
             }
 
+            //$result = $this->logicalCheck($project, $result);
+
             $result->save();
             if (!empty($error_inputs)) {
                 if (empty($section_inputs)) {
@@ -474,6 +482,11 @@ class SmsAPIController extends AppBaseController
             $reply['form_code'] = 'unknown';
             return $reply;
         }
+    }
+
+    private function logicalCheck($project, $result) {
+
+        return $result;
     }
 
     /**

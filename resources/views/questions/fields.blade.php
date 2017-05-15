@@ -42,7 +42,19 @@
     </tr>
     </table>
 </div>
-
+<div class="form-group col-sm-12">
+    <table class="table">
+        <tr>
+            @foreach($observation_type as $label => $type)
+                <td>
+                {!! Form::checkbox("observation_type[$type]", $type, null, ['class' => 'magic-checkbox ', 'id' => str_slug($type)]) !!}
+                <label class="normal-text" for="{!! str_slug($type) !!}">{!! $label !!}
+                </label>
+                </td>
+            @endforeach
+        </tr>
+    </table>
+</div>
 <!-- Project Id Field -->
 <!--div class="form-group col-sm-6"-->
     {{-- Form::label('answers', 'Answers:') --}}
