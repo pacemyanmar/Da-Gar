@@ -146,10 +146,11 @@ class SmsAPIController extends AppBaseController
 
         }
 
+        if(!empty($smsLog)) {
+            $smsLog->sms_status = (isset($status)) ? $status : null;
 
-        $smsLog->sms_status = (isset($status)) ? $status : null;
-
-        $smsLog->save();
+            $smsLog->save();
+        }
 
         $reply['content'] = $response['message']; // reply message
 
