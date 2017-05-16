@@ -144,7 +144,7 @@ class SmsLogDataTable extends DataTable
                     'colvis',
                 ],
                 'initComplete' => "function () {
-                            this.api().columns([1,2]).every(function () {
+                            this.api().columns([1,2,3]).every(function () {
                                 var column = this;
                                 var br = document.createElement(\"br\");
                                 var input = document.createElement(\"input\");
