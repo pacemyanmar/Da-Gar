@@ -146,7 +146,7 @@ class SmsAPIController extends AppBaseController
 
         }
 
-        if(!empty($smsLog)) {
+        if($smsLog) {
             $smsLog->sms_status = (isset($status)) ? $status : null;
 
             $smsLog->save();
