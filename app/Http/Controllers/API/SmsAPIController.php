@@ -38,6 +38,8 @@ class SmsAPIController extends AppBaseController
 
     public function telerivet(Request $request)
     {
+        Log::info($request->all());
+
         $secret = $request->input('secret');
         $app_secret = Settings::get('app_secret');
         $header = ['Content-Type' => 'application/json'];
@@ -127,6 +129,9 @@ class SmsAPIController extends AppBaseController
                 $smsLog->sample_id = (array_key_exists('sample_id', $response)) ? $response['sample_id'] : null;
 
                 $smsLog->remark = '';
+
+                $reply['status_url'] = route('telerivet');
+                $reply['status_secret'] = $smsLog->status_secret;
                 break;
             case 'send_status':
                 $status_secret = $request->input('secret');
