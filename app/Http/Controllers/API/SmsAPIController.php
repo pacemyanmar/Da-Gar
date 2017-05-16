@@ -331,7 +331,7 @@ class SmsAPIController extends AppBaseController
                 $optional = 0; // initial count for optional inputs
                 $questions = $section->questions;
                 $question_completed = 0;
-                $section_error_inputs = []
+                $section_error_inputs = [];
                 foreach ($questions as $question) {
                     $valid_response = []; //  valid response in this question
                     $inputs = $question->surveyInputs;
