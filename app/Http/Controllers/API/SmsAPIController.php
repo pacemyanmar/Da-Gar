@@ -11,11 +11,13 @@ use App\Models\ProjectPhone;
 use App\Models\SmsLog;
 use App\Models\SurveyResult;
 use App\Repositories\SmsLogRepository;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use InfyOm\Generator\Criteria\LimitOffsetCriteria;
 use Krucas\Settings\Facades\Settings;
 use Prettus\Repository\Criteria\RequestCriteria;
+use Ramsey\Uuid\Uuid;
 use Response;
 use Telerivet\Exceptions\TelerivetAPIException;
 use Telerivet\TelerivetAPI;
@@ -57,28 +59,6 @@ class SmsAPIController extends AppBaseController
             'project_id' => $request->input('project_id')
         ];
 
-        if ($secret != $app_secret) {
-            $reply['content'] = 'Forbidden';
-            $this->sendToTelerivet($reply); // need to make asycronous
-            return $this->sendError('Forbidden');
-        }
-
-        $messages = [
-            'event', // incoming_message or send_status
-            'id', //telerivet's unique ID for message max 34 characters
-            'message_type', // sms, mms, ussd or call
-            'content', // SMS message or MMS content
-            'from_number', // phone number sent from
-            'from_number_e164', // E.164 format phone number
-            'to_number', // telerivet reciver phone number
-            'time_created', // time telerivet recived message
-            'time_sent', // time set from mobile provider
-            'contact_id', // unique id of contact
-            'phone_id', // id of recieved phone
-            'service_id', // telerivet service ID
-            'project_id', // telerivet project ID
-
-        ];
 
         // To Do
         // get location code and project id from message
@@ -114,37 +94,59 @@ class SmsAPIController extends AppBaseController
 
         $response = [];
 
-        if ($event == 'incoming_message' || $event == 'default') {
+        switch ($event) {
+            case 'incoming_message':
+            case 'default':
+                if ($secret != $app_secret) {
+                    $reply['content'] = 'Forbidden';
+                    $this->sendToTelerivet($reply); // need to make asycronous
+                    return $this->sendError('Forbidden');
+                }
 
-            $response = $this->parseMessage($content, $to_number);
-            $status = 'new';
+                $response = $this->parseMessage($content, $to_number);
+                $status = 'new';
+                $smsLog = new SmsLog;
+                $smsLog->event = $event;
+                $smsLog->message_type = $message_type;
+                $smsLog->service_id = $service_id;
+                $smsLog->from_number = $from_number;
+                $smsLog->from_number_e164 = $request->input('from_number_e164');
+                //$smsLog->api_project_id = $request->input('project_id');
+                $smsLog->to_number = $to_number;
+                $smsLog->content = $content; // incoming message
+                $uuid = Uuid::uuid5(Uuid::NAMESPACE_DNS, $content. Carbon::now());
+                $smsLog->status_secret = $uuid->toString();
+                $smsLog->status_message = $response['message']; // reply message
+                $smsLog->status = $response['status'];
+
+                $smsLog->form_code = (array_key_exists('form_code', $response)) ? $response['form_code'] : 'Not Valid';
+
+                $smsLog->section = (array_key_exists('section', $response)) ? $response['section'] : null; // not actual id from database, just ordering number from form
+                $smsLog->result_id = (array_key_exists('result_id', $response)) ? $response['result_id'] : null;
+                $smsLog->project_id = (array_key_exists('project_id', $response)) ? $response['project_id'] : null;
+                $smsLog->sample_id = (array_key_exists('sample_id', $response)) ? $response['sample_id'] : null;
+
+                $smsLog->remark = '';
+                break;
+            case 'send_status':
+                $status_secret = $request->input('secret');
+                $smsLog = SmsLog::where('status_secret', $status_secret)->first();
+                $status = $request->input('status');
+
+                break;
+            default:
+
+                return $this->sendError('No valid Event.');
+                break;
+
         }
 
 
-        $smsLog = new SmsLog;
-        $smsLog->event = $event;
-        $smsLog->message_type = $message_type;
-        $smsLog->service_id = $service_id;
-        $smsLog->from_number = $from_number;
-        $smsLog->from_number_e164 = $request->input('from_number_e164');
-        //$smsLog->api_project_id = $request->input('project_id');
-        $smsLog->to_number = $to_number;
-        $smsLog->content = $content; // incoming message
         $smsLog->sms_status = (isset($status)) ? $status : null;
 
-        $smsLog->status_message = $response['message']; // reply message
-        $smsLog->status = $response['status'];
-
-        $smsLog->form_code = (array_key_exists('form_code', $response)) ? $response['form_code'] : 'Not Valid';
-
-        $smsLog->section = (array_key_exists('section', $response)) ? $response['section'] : null; // not actual id from database, just ordering number from form
-        $smsLog->result_id = (array_key_exists('result_id', $response)) ? $response['result_id'] : null;
-        $smsLog->project_id = (array_key_exists('project_id', $response)) ? $response['project_id'] : null;
-        $smsLog->sample_id = (array_key_exists('sample_id', $response)) ? $response['sample_id'] : null;
-
-        $smsLog->remark = '';
         $smsLog->save();
-        $reply['content'] = $smsLog->status_message;
+
+        $reply['content'] = $response['message']; // reply message
 
         $this->sendToTelerivet($reply); // need to make asycronous
 
@@ -206,7 +208,7 @@ class SmsAPIController extends AppBaseController
             } else {
 
                 // if not training mode
-                $project = Project::whereRaw('LOWER(unique_code) ='. $form_prefix)->first();
+                $project = Project::whereRaw('LOWER(unique_code) =' . $form_prefix)->first();
 
                 if (!empty($to_number) && empty($project)) {
                     // if to_number exists, look for project with phone number first
@@ -383,7 +385,7 @@ class SmsAPIController extends AppBaseController
                                 $section_inputs[$question->qnum] = $result->{$inputid};
                                 $valid_response[] = $inputid;
                             } else {
-                                if(empty($question->observation_type) || in_array($sample_data->observer_field,$question->observation_type)) {
+                                if (empty($question->observation_type) || in_array($sample_data->observer_field, $question->observation_type)) {
                                     if (in_array($input->type, ['radio', 'checkbox'])) {
                                         $section_error_inputs[$question->qnum] = $question->qnum;
                                     } else {
@@ -491,11 +493,6 @@ class SmsAPIController extends AppBaseController
         }
     }
 
-    private function logicalCheck($project, $result) {
-
-        return $result;
-    }
-
     /**
      * Display a listing of the Sms.
      * GET|HEAD /sms
@@ -594,5 +591,11 @@ class SmsAPIController extends AppBaseController
         $sms->delete();
 
         return $this->sendResponse($id, 'Sms deleted successfully');
+    }
+
+    private function logicalCheck($project, $result)
+    {
+
+        return $result;
     }
 }

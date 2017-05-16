@@ -3,6 +3,7 @@
 namespace App\DataTables;
 
 use App\Models\SmsLog;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Request;
 use Krucas\Settings\Facades\Settings;
 use Yajra\Datatables\Services\DataTable;
@@ -35,7 +36,7 @@ class SmsLogDataTable extends DataTable
      */
     public function query()
     {
-        $select = ['sms_logs.created_at','form_code', 'from_number', 'to_number', 'event', 'content', 'status_message', 'status', 'project_id'];
+        $select = ['sms_logs.created_at','form_code', 'from_number', 'to_number', 'event', 'content', 'status_message', 'status', 'project_id', 'sms_status'];
         $smsLogs = SmsLog::query();
         if ($this->project) {
             $smsLogs->where('project_id', $this->project->id);
@@ -166,6 +167,7 @@ class SmsLogDataTable extends DataTable
      */
     private function getColumns()
     {
+        $auth = Auth::user();
         $columns = [
             //'id' => ['name' => 'id', 'data' => 'id'],
             //'service_id' => ['name' => 'service_id', 'data' => 'service_id'],
@@ -197,6 +199,9 @@ class SmsLogDataTable extends DataTable
 
         $columns['form_code'] = ['name' => 'form_code', 'data' => 'form_code', 'width' => 100, 'orderable' => false];
         $columns['status_message'] = ['name' => 'status_message', 'data' => 'status_message', 'width' => '400', 'orderable' => false];
+        if($auth->role->level === 9) {
+            $columns['sms_status'] = ['name' => 'sms_status', 'data' => 'sms_status',  'orderable' => false];
+        }
         return $columns;
     }
 
