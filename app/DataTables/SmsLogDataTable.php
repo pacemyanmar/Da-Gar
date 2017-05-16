@@ -36,7 +36,7 @@ class SmsLogDataTable extends DataTable
      */
     public function query()
     {
-        $select = ['sms_logs.created_at','form_code', 'from_number', 'to_number', 'event', 'content', 'status_message', 'status', 'project_id', 'sms_status'];
+        $select = ['sms_logs.created_at','sms_logs.updated_at','form_code', 'from_number', 'to_number', 'event', 'content', 'status_message', 'status', 'project_id', 'sms_status'];
         $smsLogs = SmsLog::query();
         if ($this->project) {
             $smsLogs->where('project_id', $this->project->id);
@@ -201,6 +201,7 @@ class SmsLogDataTable extends DataTable
         $columns['status_message'] = ['name' => 'status_message', 'data' => 'status_message', 'width' => '400', 'orderable' => false];
         if($auth->role->level === 9) {
             $columns['sms_status'] = ['name' => 'sms_status', 'data' => 'sms_status',  'orderable' => false];
+            $columns['updated_at'] = ['name' => 'updated_at', 'data' => 'updated_at', 'orderable' => false, 'width' => 80, 'title' => 'Updated Time'];
         }
         return $columns;
     }
