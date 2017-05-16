@@ -150,12 +150,13 @@ class SmsAPIController extends AppBaseController
             $smsLog->sms_status = (isset($status)) ? $status : null;
 
             $smsLog->save();
+
+            if($event != 'send_status') {
+                $reply['content'] = $response['message']; // reply message
+
+                $this->sendToTelerivet($reply); // need to make asycronous
+            }
         }
-
-        $reply['content'] = $response['message']; // reply message
-
-        $this->sendToTelerivet($reply); // need to make asycronous
-
         return $this->sendResponse($reply, 'Message processed successfully');
     }
 
