@@ -12,7 +12,7 @@ class ProjectPolicy
 
     public function index(User $auth)
     {
-        return $auth->role->level > 0;
+        return $auth->role->level > 3;
     }
     /**
      * Determine whether the auth can view the project.

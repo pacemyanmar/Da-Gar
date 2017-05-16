@@ -12,7 +12,7 @@ class SmsPolicy
 
     public function index(User $auth)
     {
-        return $auth->role->level == 9;
+        return $auth->role->level >= 3;
     }
 
     /**
@@ -22,7 +22,7 @@ class SmsPolicy
      * @param  \App\SmsLog  $smsLog
      * @return mixed
      */
-    public function view(User $user, SmsLog $smsLog)
+    public function view(User $auth, SmsLog $smsLog)
     {
         //
     }
@@ -33,7 +33,7 @@ class SmsPolicy
      * @param  \App\User  $user
      * @return mixed
      */
-    public function create(User $user)
+    public function create(User $auth)
     {
         //
     }
@@ -45,7 +45,7 @@ class SmsPolicy
      * @param  \App\SmsLog  $smsLog
      * @return mixed
      */
-    public function update(User $user, SmsLog $smsLog)
+    public function update(User $auth, SmsLog $smsLog)
     {
         //
     }
@@ -57,7 +57,7 @@ class SmsPolicy
      * @param  \App\SmsLog  $smsLog
      * @return mixed
      */
-    public function delete(User $user, SmsLog $smsLog)
+    public function delete(User $auth, SmsLog $smsLog)
     {
         //
     }

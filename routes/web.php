@@ -12,7 +12,16 @@
  */
 
 Route::get('/', function () {
-    return redirect('projects');
+    if (Auth::check()) {
+        if (Auth::user()->role->role_name == 'trainer') {
+            return redirect('smsLogs');
+        } else {
+            return redirect('projects');
+        }
+    } else {
+        return redirect('projects');
+    }
+
 });
 
 Auth::routes();

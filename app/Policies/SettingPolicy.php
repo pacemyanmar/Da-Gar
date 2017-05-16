@@ -12,7 +12,7 @@ class SettingPolicy
 
     public function index(User $auth)
     {
-        return $auth->role->level > 6;
+        return $auth->role->level > 8;
     }
 
     /**
@@ -24,7 +24,7 @@ class SettingPolicy
      */
     public function view(User $auth, Setting $setting)
     {
-        return $auth->role->level > 6;
+        return $auth->role->level > 8;
     }
 
     /**
@@ -35,7 +35,7 @@ class SettingPolicy
      */
     public function create(User $auth)
     {
-        return $auth->role->level > 6;
+        return $auth->role->level > 8;
     }
 
     /**
@@ -47,7 +47,7 @@ class SettingPolicy
      */
     public function update(User $auth, Setting $setting)
     {
-        return $auth->role->level > 6;
+        return $auth->role->level > 8;
     }
 
     /**
@@ -59,6 +59,6 @@ class SettingPolicy
      */
     public function delete(User $auth, Setting $setting)
     {
-        return $auth->role->level > 6;
+        return $auth->role->level > 8;
     }
 }

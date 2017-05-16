@@ -54,6 +54,14 @@ class RoleTableSeeder extends Seeder
                 'updated_at' => Carbon::now('Asia/Rangoon'),
             ],
             [
+                'level' => '3',
+                'group' => 'trainers',
+                'role_name' => 'trainer',
+                'description' => 'Trainer',
+                'created_at' => Carbon::now('Asia/Rangoon'),
+                'updated_at' => Carbon::now('Asia/Rangoon'),
+            ],
+            [
                 'level' => '0',
                 'group' => 'guest',
                 'role_name' => 'guest',

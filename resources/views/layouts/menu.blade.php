@@ -1,9 +1,18 @@
+@can('index', \App\Models\Project::class)
 <li class="{{ Request::is('projects*') ? 'active' : '' }}">
     <a href="{!! route('projects.index') !!}"><i class="fa fa-edit"></i><span>{!! trans_choice('messages.projects', 2) !!}</span></a>
 </li>
+<li class="{{ Request::is('projectPhones*') ? 'active' : '' }}">
+    <a href="{!! route('projectPhones.index') !!}"><i class="fa fa-edit"></i><span>ProjectPhones</span></a>
+</li>
+@endcan
 @can('index', \App\Models\SampleData::class)
 <li class="{{ Request::is('sampleDatas*') ? 'active' : '' }}">
     <a href="{!! route('sampleDatas.index') !!}"><i class="fa fa-edit"></i><span>{!! trans_choice('messages.sample_datas', 2) !!}</span></a>
+</li>
+
+<li class="{{ Request::is('observers*') ? 'active' : '' }}">
+    <a href="{!! route('observers.index') !!}"><i class="fa fa-edit"></i><span>Observers</span></a>
 </li>
 @endcan
 @can('index', \App\Models\SmsLog::class)
@@ -27,13 +36,6 @@
 </li>
 @endcan
 
-<li class="{{ Request::is('projectPhones*') ? 'active' : '' }}">
-    <a href="{!! route('projectPhones.index') !!}"><i class="fa fa-edit"></i><span>ProjectPhones</span></a>
-</li>
 
 
-
-<li class="{{ Request::is('observers*') ? 'active' : '' }}">
-    <a href="{!! route('observers.index') !!}"><i class="fa fa-edit"></i><span>Observers</span></a>
-</li>
 

@@ -6,6 +6,7 @@ use App\DataTables\SmsLogDataTable;
 use App\Http\Requests\CreateSmsLogRequest;
 use App\Http\Requests\UpdateSmsLogRequest;
 use App\Models\Project;
+use App\Models\SmsLog;
 use App\Repositories\SmsLogRepository;
 use Flash;
 use Response;
@@ -29,6 +30,13 @@ class SmsLogController extends AppBaseController
      */
     public function index(SmsLogDataTable $smsLogDataTable)
     {
+        try {
+            $this->authorize('index', SmsLog::class);
+        } catch (AuthorizationException $e) {
+            Flash::error($e->getMessage());
+            return redirect()->back();
+        }
+
         $projects = Project::all();
         return $smsLogDataTable->render('sms_logs.index', compact('projects'));
     }
