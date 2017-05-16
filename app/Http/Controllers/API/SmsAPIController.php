@@ -38,7 +38,9 @@ class SmsAPIController extends AppBaseController
 
     public function telerivet(Request $request)
     {
-        Log::info($request->all());
+        if( env('APP_DEBUG', false)) {
+            Log::info($request->all());
+        }
 
         $secret = $request->input('secret');
         $app_secret = Settings::get('app_secret');
@@ -180,8 +182,14 @@ class SmsAPIController extends AppBaseController
         try {
             // Send a SMS message
             $sent_sms = $project->sendMessage($reply);
-            Log::info(json_encode($sent_sms));
+            if( env('APP_DEBUG', false)) {
+                Log::info(json_encode($sent_sms));
+            }
+
         } catch (TelerivetAPIException $e) {
+            if( env('APP_DEBUG', false)) {
+                Log::info($e->getMessage());
+            }
             return $this->sendError($e->getMessage());
         }
     }
@@ -323,6 +331,7 @@ class SmsAPIController extends AppBaseController
                 $optional = 0; // initial count for optional inputs
                 $questions = $section->questions;
                 $question_completed = 0;
+                
                 foreach ($questions as $question) {
                     $valid_response = []; //  valid response in this question
                     $inputs = $question->surveyInputs;
