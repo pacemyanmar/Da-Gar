@@ -786,11 +786,11 @@ class ProjectController extends AppBaseController
         $auth = Auth::user();
 
         if (!Schema::hasTable($project->dbname)) {
-            Flash::error('Project need to build form.');
-            if ($auth->role->level > 5) {
+            Flash::error('Project need to build form. Contact Administrator.');
+            if ($auth->role->level > 7) {
                 return redirect(route('projects.edit', [$project->id]));
             } else {
-                return redirect(route('projects.index'));
+                return redirect()->back();
             }
         }
 
