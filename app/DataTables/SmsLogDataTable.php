@@ -142,6 +142,20 @@ class SmsLogDataTable extends DataTable
 //                    ],
                     'colvis',
                 ],
+                'initComplete' => "function () {
+                            this.api().columns([1,2]).every(function () {
+                                var column = this;
+                                var br = document.createElement(\"br\");
+                                var input = document.createElement(\"input\");
+                                input.className = 'form-control input-sm';
+                                input.style.width = '80%';
+                                $(br).appendTo($(column.header()));
+                                $(input).appendTo($(column.header()))
+                                .on('change', function () {
+                                    column.search($(this).val(), false, false, true).draw();
+                                });
+                            });
+                        }",
             ]);
     }
 
