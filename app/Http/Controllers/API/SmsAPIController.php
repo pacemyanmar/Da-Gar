@@ -223,7 +223,7 @@ class SmsAPIController extends AppBaseController
             } else {
 
                 // if not training mode
-                $project = Project::whereRaw('LOWER(unique_code) =' . $form_prefix)->first();
+                $project = Project::whereRaw('LOWER(unique_code) ="' . $form_prefix. '"')->first();
 
                 if (!empty($to_number) && empty($project)) {
                     // if to_number exists, look for project with phone number first
@@ -301,7 +301,14 @@ class SmsAPIController extends AppBaseController
 
                 } else {
                     // if project is incident
+                    $last_incident = Sample::where('sample_data_id', $sample_data->id)
+                        ->where('project_id', $project->id)
+                        ->where('sample_data_type', $project->dblink)->orderBy('form_id','asc')->last();
 
+                    $sample = Sample::firstOrCreate(['sample_data_id' => $sample_data->id, 'form_id' => $last_incident->form_id, 'project_id' => $project->id, 'sample_data_type' => $project->dblink]);
+                    $sample->setRelatedTable($dbname);
+
+                    $result = $sample->resultWithTable($dbname)->first();
                 }
 
                 if (empty($result)) {
