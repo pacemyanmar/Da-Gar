@@ -279,6 +279,12 @@ class SmsAPIController extends AppBaseController
 
                 $sample_data = $project->samplesData->where('location_code', $location_code)->first();
 
+                if(empty($sample_data)) {
+                    $reply['message'] = 'Please check location code in SMS. No such code found in database!';
+                    $reply['status'] = 'error';
+                    return $reply;
+                }
+
                 if ($project->type != 'sample2db') { // if project type is not incident
                     // look for Form ID
                     preg_match('/FNNN(\d+)/', $message, $form_id); // this is temporary form number code
