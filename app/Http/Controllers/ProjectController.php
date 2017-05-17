@@ -676,7 +676,7 @@ class ProjectController extends AppBaseController
         }
 
         $sampleDb = $project->samplesDb()->first();
-        $sampleData = SampleData::where('idcode', $sample_id)->first();
+        $sampleData = SampleData::where('location_code', $sample_id)->where('type', $project->dblink)->where('dbgroup', $project->dbgroup)->first();
 
         if (empty($sampleData)) {
             Flash::error('Sample Data not found');

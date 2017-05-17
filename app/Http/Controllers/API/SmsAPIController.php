@@ -8,6 +8,8 @@ use App\Http\Requests\API\UpdateSmsAPIRequest;
 use App\Models\Observer;
 use App\Models\Project;
 use App\Models\ProjectPhone;
+use App\Models\Sample;
+use App\Models\SampleData;
 use App\Models\SmsLog;
 use App\Models\SurveyResult;
 use App\Repositories\SmsLogRepository;
@@ -277,7 +279,12 @@ class SmsAPIController extends AppBaseController
                 }
 
 
-                $sample_data = $project->samplesData->where('location_code', $location_code)->first();
+                if ($project->type != 'sample2db') { // if project type is not incident
+                    $sample_data = $project->samplesData->where('location_code', $location_code)->first();
+                } else {
+                    $sample_data = SampleData::where('location_code', $location_code)->where('type', $project->dblink)->where('dbgroup', $project->dbgroup)->first();
+                }
+
 
                 if(empty($sample_data)) {
                     $reply['message'] = 'Please check location code in SMS. No such code found in database!';
@@ -304,8 +311,9 @@ class SmsAPIController extends AppBaseController
                     $last_incident = Sample::where('sample_data_id', $sample_data->id)
                         ->where('project_id', $project->id)
                         ->where('sample_data_type', $project->dblink)->orderBy('form_id','asc')->last();
+                    $last_id = $last_incident->form_id + 1;
 
-                    $sample = Sample::firstOrCreate(['sample_data_id' => $sample_data->id, 'form_id' => $last_incident->form_id, 'project_id' => $project->id, 'sample_data_type' => $project->dblink]);
+                    $sample = Sample::firstOrCreate(['sample_data_id' => $sample_data->id, 'form_id' => $last_id, 'project_id' => $project->id, 'sample_data_type' => $project->dblink]);
                     $sample->setRelatedTable($dbname);
 
                     $result = $sample->resultWithTable($dbname)->first();
