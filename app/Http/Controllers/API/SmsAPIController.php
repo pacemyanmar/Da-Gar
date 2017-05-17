@@ -401,7 +401,16 @@ class SmsAPIController extends AppBaseController
                                 $section_inputs[$question->qnum] = $result->{$inputid};
                                 $valid_response[] = $inputid;
                             } else {
-                                if (empty($question->observation_type) || in_array($sample_data->observer_field, $question->observation_type)) {
+                                if (!$training_mode) {
+                                    if (empty($question->observation_type) || in_array($sample_data->observer_field, $question->observation_type)) {
+                                        if (in_array($input->type, ['radio', 'checkbox'])) {
+                                            $section_error_inputs[$question->qnum] = $question->qnum;
+                                        } else {
+                                            $error_key = strtoupper($inputkey);
+                                            $section_error_inputs[$error_key] = $error_key;
+                                        }
+                                    }
+                                } else {
                                     if (in_array($input->type, ['radio', 'checkbox'])) {
                                         $section_error_inputs[$question->qnum] = $question->qnum;
                                     } else {
