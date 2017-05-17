@@ -68,12 +68,16 @@
                                                             @if($element->value)
                                                                 <li class="list-group-item"><span class="badge" style="background-color: {{ $colors[$k] }};  min-height:10px;">&nbsp</span> {{ $element->label }}
                                                                     <a href="{{ route('projects.surveys.index', $project->id) }}/?column={{ $element->inputid }}&value={{ $element->value }}">
+                                                                        @if($results->reported)
                                                                         ( {{ $results->{$element->inputid.'_'.$element->value} }} - {{ number_format(($results->{$element->inputid.'_'.$element->value} * 100)/ $results->reported, 2, '.', '') }} % ) </a></li>
 
-                                                                @push('d3-js')
-                                                                var data{!! $element->inputid.'_'.$element->value !!} = {label:"{!! $element->label !!}", color:"{!! $colors[$k] !!}",value: {{ number_format(($results->{$element->inputid.'_'.$element->value} * 100)/ $results->reported, 2, '.', '') }} }
-                                                                d3{!! $question->id !!}Data.push(data{!! $element->inputid.'_'.$element->value !!});
-                                                                @endpush
+                                                                            @push('d3-js')
+                                                                            var data{!! $element->inputid.'_'.$element->value !!} = {label:"{!! $element->label !!}", color:"{!! $colors[$k] !!}",value: {{ number_format(($results->{$element->inputid.'_'.$element->value} * 100)/ $results->reported, 2, '.', '') }} }
+                                                                            d3{!! $question->id !!}Data.push(data{!! $element->inputid.'_'.$element->value !!});
+                                                                            @endpush
+                                                                        @else
+                                                                            0 %
+                                                                        @endif
                                                                 @if( $element->type == 'radio')
                                                                     @php
                                                                         ${$question->qnum.'hasradio'} = $question->qnum;
