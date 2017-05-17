@@ -310,8 +310,13 @@ class SmsAPIController extends AppBaseController
                     // if project is incident
                     $last_incident = Sample::where('sample_data_id', $sample_data->id)
                         ->where('project_id', $project->id)
-                        ->where('sample_data_type', $project->dblink)->orderBy('form_id','asc')->last();
-                    $last_id = $last_incident->form_id + 1;
+                        ->where('sample_data_type', $project->dblink)->orderBy('form_id','desc')->first();
+                    if($last_incident) {
+                        $last_id = $last_incident->form_id + 1;
+                    } else {
+                        $last_id = 1;
+                    }
+
 
                     $sample = Sample::firstOrCreate(['sample_data_id' => $sample_data->id, 'form_id' => $last_id, 'project_id' => $project->id, 'sample_data_type' => $project->dblink]);
                     $sample->setRelatedTable($dbname);
