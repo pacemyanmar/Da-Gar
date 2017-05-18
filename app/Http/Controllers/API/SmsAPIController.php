@@ -15,6 +15,7 @@ use App\Models\SurveyResult;
 use App\Repositories\SmsLogRepository;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Log;
 use InfyOm\Generator\Criteria\LimitOffsetCriteria;
 use Krucas\Settings\Facades\Settings;
@@ -36,6 +37,8 @@ class SmsAPIController extends AppBaseController
     public function __construct(SmsLogRepository $smsRepo)
     {
         $this->smsRepository = $smsRepo;
+        App::setLocale(config('sms.second_locale.locale'));
+
     }
 
     public function telerivet(Request $request)
@@ -104,9 +107,9 @@ class SmsAPIController extends AppBaseController
             case 'incoming_message':
             case 'default':
                 if ($secret != $app_secret) {
-                    $reply['content'] = 'Forbidden';
+                    $reply['content'] = trans('sms.forbidden');
                     $this->sendToTelerivet($reply); // need to make asycronous
-                    return $this->sendError('Forbidden');
+                    return $this->sendError(trans('sms.forbidden'));
                 }
 
                 $response = $this->parseMessage($content, $to_number);
@@ -145,7 +148,7 @@ class SmsAPIController extends AppBaseController
                 break;
             default:
 
-                return $this->sendError('No valid Event.');
+                return $this->sendError(trans('sms.no_valid_event'));
                 break;
 
         }
@@ -241,14 +244,14 @@ class SmsAPIController extends AppBaseController
 
             if (empty($project)) {
                 // if project is empty
-                $reply['message'] = 'Please check SMS format. Project code not found!';
+                $reply['message'] = trans('sms.no_project_code');
                 $reply['status'] = 'error';
                 return $reply;
             }
 
             if ($project->status != 'published' && !$training_mode) {
                 // if project is not published and not training mode
-                $reply['message'] = 'Not ready! Please call to data center immediately.';
+                $reply['message'] = trans('sms.not_ready');
                 $reply['status'] = 'error';
                 return $reply;
             }
@@ -273,7 +276,7 @@ class SmsAPIController extends AppBaseController
 
 
                 if (empty($location_code)) {
-                    $reply['message'] = 'Please check location code in SMS. No such code found in database!';
+                    $reply['message'] = trans('sms.no_location_code');
                     $reply['status'] = 'error';
                     return $reply;
                 }
@@ -287,7 +290,7 @@ class SmsAPIController extends AppBaseController
 
 
                 if(empty($sample_data)) {
-                    $reply['message'] = 'Please check location code in SMS. No such code found in database!';
+                    $reply['message'] = trans('sms.no_location_code');
                     $reply['status'] = 'error';
                     return $reply;
                 }
@@ -522,14 +525,14 @@ class SmsAPIController extends AppBaseController
             $result->save();
             if (!empty($error_inputs)) {
                 if (empty($section_inputs)) {
-                    $reply['message'] = 'You did not sumbit valid response. Please check SMS format.';
+                    $reply['message'] = trans('sms.not_valid_response');
                 } else {
-                    $reply['message'] = implode(', ', $error_inputs) . ' have problem. Please check SMS format.';
+                    $reply['message'] = trans('sms.error_inputs', ['INPUTS' => implode(', ', $error_inputs)]);
                 }
 
                 $reply['status'] = 'error';
             } else {
-                $reply['message'] = 'Success!';
+                $reply['message'] = trans('sms.success');
                 $reply['status'] = 'success';
             }
             $reply['result_id'] = $result->id;
@@ -537,7 +540,7 @@ class SmsAPIController extends AppBaseController
 
             return $reply;
         } else {
-            $reply['message'] = 'Please check SMS format. Location code not found!';
+            $reply['message'] = trans('sms.no_location_code');
             $reply['status'] = 'error';
             $reply['form_code'] = 'unknown';
             return $reply;
