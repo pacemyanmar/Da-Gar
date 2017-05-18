@@ -56,8 +56,8 @@ trait QuestionsTrait
             }
 
             if (!array_key_exists('inputid', $a)) {
-                $input_index = (array_key_exists('value', $a) && is_numeric($a['value'])) ? $a['value'] : $k;
-                $input_index = $input_index + 1;
+                $input_index = (array_key_exists('value', $a) && is_numeric($a['value'])) ? $a['value'] : $k + 1;
+                //$input_index = $input_index + 1;
                 $a['inputid'] = strtolower($qnum . '_' . $input_index);
             }
 
