@@ -54,7 +54,7 @@ class SurveyInput extends Model
         'type' => 'string',
         'name' => 'string',
         'label' => 'string',
-        'label_trans' => 'array',
+        'label_trans' => 'string',
         'value' => 'string',
         'sort' => 'integer',
         'question_id' => 'integer',

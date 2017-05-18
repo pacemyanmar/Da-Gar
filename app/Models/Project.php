@@ -36,7 +36,7 @@ class Project extends Model
     protected $casts = [
         'project' => 'string',
         'unique_code' => 'string',
-        'project_trans' => 'array',
+        'project_trans' => 'string',
         'type' => 'string',
         'parties' => 'string',
         'samples' => 'array',

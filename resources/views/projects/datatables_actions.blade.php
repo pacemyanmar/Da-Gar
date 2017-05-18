@@ -46,8 +46,8 @@
             <div class="input-group">
                 <input type="text" name="columns[project]" class="form-control"
                        placeholder="{!! trans('messages.add_translation') !!}"
-                       @if(!empty($project_trans) && array_key_exists(config('app.locale'), $project_trans ))
-                       value="{!! $project_trans[config('app.locale')] !!}"
+                       @if(!empty($project_trans))
+                       value="{!! $project_trans !!}"
                         @endif>
                 <input type="hidden" name="model" value="project">
                 <span class="input-group-btn">

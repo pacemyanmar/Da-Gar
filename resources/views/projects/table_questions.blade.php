@@ -26,14 +26,14 @@
                         {!! Form::open(['route' => ['translate', $question->id], 'method' => 'post', 'class' => 'translation']) !!}
                               <div class="input-group">
                               <span class="input-group-addon">{!! trans('messages.qnum') !!}</span>
-                              <input type="text" name="columns[qnum]" class="form-control" placeholder="{!! trans('messages.add_translation') !!}" @if(!empty($question->qnum_trans) && array_key_exists(config('app.locale'), $question->qnum_trans ))
-                                value="{!! $question->qnum_trans[config('app.locale')] !!}"
+                              <input type="text" name="columns[qnum]" class="form-control" placeholder="{!! trans('messages.add_translation') !!}" @if(!empty($question->qnum_trans))
+                                value="{!! $question->qnum_trans !!}"
                               @endif>
                               </div>
                               <div class="input-group">
                               <span class="input-group-addon">{!! trans('messages.question') !!}</span>
-                              <input type="text" name="columns[question]" class="form-control" placeholder="{!! trans('messages.add_translation') !!}" @if(!empty($question->question_trans) && array_key_exists(config('app.locale'), $question->question_trans ))
-                                value="{!! $question->question_trans[config('app.locale')] !!}"
+                              <input type="text" name="columns[question]" class="form-control" placeholder="{!! trans('messages.add_translation') !!}" @if(!empty($question->question_trans) )
+                                value="{!! $question->question_trans !!}"
                               @endif>
                               <input type="hidden" name="model" value="question">
                               <span class="input-group-btn">
