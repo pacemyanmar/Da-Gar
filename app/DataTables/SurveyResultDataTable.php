@@ -255,22 +255,22 @@ class SurveyResultDataTable extends DataTable
 
         }
 
-        $township = Request::input('township');
+        $township = Request::input('level3');
 
         if (!empty($township)) {
-            $query->where('township', $township);
+            $query->where('level3', $township);
         }
 
-        $district = Request::input('district');
+        $district = Request::input('level2');
 
         if (!empty($district)) {
-            $query->where('district', $district);
+            $query->where('level2', $district);
         }
 
-        $state = Request::input('state');
+        $state = Request::input('level1');
 
         if (!empty($state)) {
-            $query->where('state', $state);
+            $query->where('level1', $state);
         }
 
         $total = Request::input('total');
