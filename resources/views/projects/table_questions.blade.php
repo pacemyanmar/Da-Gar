@@ -54,7 +54,21 @@
                         <i class="glyphicon glyphicon-collapse"></i>
                         {!! trans('messages.click_to_expend') !!}
                         </button>
-                        <a href="#" class='btn btn-default btn-xs' data-toggle="modal" data-target="#qModal" data-qid="{!! $question->id !!}" data-double="{!! $question->double_entry !!}" data-optional="{!! $question->optional !!}" data-report="{!! $question->report !!}" data-qurl="{!! route('questions.update', [$question->id]) !!}" data-qnum="{!! $question->qnum !!}" data-question="{!! $question->question !!}" data-section="{!! $section->id !!}" data-sort="{!! $question->sort !!}" data-answers='{!! str_replace("'","&#39;",$question->raw_ans) !!}' data-layout='{!! $question->layout !!}' data-method='PATCH'><i class="glyphicon glyphicon-edit"></i> {!! trans('messages.edit') !!}</a>
+                        <a href="#" class='btn btn-default btn-xs'
+                           data-toggle="modal" data-target="#qModal"
+                           data-qid="{!! $question->id !!}"
+                           data-double="{!! $question->double_entry !!}"
+                           data-optional="{!! $question->optional !!}"
+                           data-report="{!! $question->report !!}"
+                           data-qurl="{!! route('questions.update', [$question->id]) !!}"
+                           data-qnum="{!! $question->qnum !!}"
+                           data-question="{!! $question->question !!}"
+                           data-section="{!! $section->id !!}"
+                           data-observation='{!! str_replace("'","&#39;",json_encode($question->observation_type, JSON_HEX_QUOT)) !!}'
+                           data-sort="{!! $question->sort !!}"
+                           data-answers='{!! str_replace("'","&#39;",$question->raw_ans) !!}'
+                           data-layout='{!! $question->layout !!}'
+                           data-method='PATCH'><i class="glyphicon glyphicon-edit"></i> {!! trans('messages.edit') !!}</a>
 
                         {!! Form::button('<i class="glyphicon glyphicon-trash"></i>', ['type' => 'submit', 'class' => 'btn btn-danger btn-xs', 'onclick' => "return confirm('".trans('messages.are_you_sure')."')"]) !!}
                     </div>
