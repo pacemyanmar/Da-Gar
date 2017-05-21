@@ -8,8 +8,10 @@ use App\Http\Requests\API\UpdateSmsAPIRequest;
 use App\Models\Observer;
 use App\Models\Project;
 use App\Models\ProjectPhone;
+use App\Models\Question;
 use App\Models\Sample;
 use App\Models\SampleData;
+use App\Models\Section;
 use App\Models\SmsLog;
 use App\Models\SurveyResult;
 use App\Repositories\SmsLogRepository;
@@ -354,6 +356,8 @@ class SmsAPIController extends AppBaseController
             $sections = $project->sectionsDb->sortBy('sort');
             $error_inputs = [];
 
+            $result_arr = [];
+
 
             foreach ($sections as $key => $section) {
                 $skey = $key + 1;
@@ -407,18 +411,22 @@ class SmsAPIController extends AppBaseController
 
                                     // checkbox value is in sent message value
                                     if (in_array($input->value, $checkbox_values)) {
-                                        $result->{$inputid} = $input->value;
+                                        //$result->{$inputid} = $input->value;
+                                        $result_arr[$section->id][$question->id][$inputid] = $input->value;
                                     } else {
-                                        $result->{$inputid} = null;
+                                        //$result->{$inputid} = null;
+                                        $result_arr[$section->id][$question->id][$inputid] = null;
                                     }
 
                                 } else {
-                                    $result->{$inputid} = $response;
+                                    //$result->{$inputid} = $response;
+                                    $result_arr[$section->id][$question->id][$inputid] = $response;
                                 }
 
                             } else {
                                 if ($input->type == 'checkbox') {
-                                    $result->{$inputid} = null;
+                                    //$result->{$inputid} = null;
+                                    $result_arr[$section->id][$question->id][$inputid] = null;
                                 }
                             }
                             // unset $response  to avoid loop overwrite empty elements with previous value
@@ -426,8 +434,10 @@ class SmsAPIController extends AppBaseController
                         }
                         // required input complete and count incremental
                         if (!$input->optional) {
-                            if (!empty($result->{$inputid})) {
-                                $section_inputs[$question->qnum] = $result->{$inputid};
+                            //if (!empty($result->{$inputid})) {
+                            if(!empty($result_arr[$section->id][$question->id][$inputid])) {
+                                //$section_inputs[$question->qnum] = $result->{$inputid};
+                                $section_inputs[$question->qnum] = $result_arr[$section->id][$question->id][$inputid];
                                 $valid_response[] = $inputid;
                             } else {
                                 if (!$training_mode) {
@@ -450,7 +460,7 @@ class SmsAPIController extends AppBaseController
                             }
                         }
 
-                    }
+                    } // after input loop
 
 
                     // for checkbox and radio
@@ -475,7 +485,8 @@ class SmsAPIController extends AppBaseController
                     unset($required_response_empty_value);
                     unset($valid_response);
                     unset($intersect_with_value);
-                }
+                } // after question loop
+
                 // get required questions in a section
                 // question must not optional and observation type should be empty
                 // or location observer field value should be in question observation type
@@ -520,7 +531,7 @@ class SmsAPIController extends AppBaseController
                 $result->setTable($dbname . '_training'); // need to set table name again for some reason
             }
 
-            //$result = $this->logicalCheck($project, $result);
+            $result = $this->logicalCheck($result_arr, $result, $project);
 
             $result->save();
             if (!empty($error_inputs)) {
@@ -547,108 +558,48 @@ class SmsAPIController extends AppBaseController
         }
     }
 
-    /**
-     * Display a listing of the Sms.
-     * GET|HEAD /sms
-     *
-     * @param Request $request
-     * @return Response
-     */
-    public function index(Request $request)
+
+    private function logicalCheck($result_arr, $result, $project)
     {
-        $this->smsRepository->pushCriteria(new RequestCriteria($request));
-        $this->smsRepository->pushCriteria(new LimitOffsetCriteria($request));
-        $sms = $this->smsRepository->all();
+//        $logic = $project->logic;
+//        $left = $logic->left;
+//        $operator = $logic->operator; // equal or greater than, less than, mutual include, mutual exclude ( = , > , < , muic, muex)
+//        $right = $logic->right;
+//        $scope = $logic->scope; // in a question or cross questions or cross sections ( q , xq, xs )
 
-        return $this->sendResponse($sms->toArray(), 'Sms retrieved successfully');
-    }
+        $left = 'db_6';
+        $operator = 'muex';
+        $right = 'db_1,db_2,db_3,db_4,db_5';
+        $scope = 'q';
 
-    /**
-     * Store a newly created Sms in storage.
-     * POST /sms
-     *
-     * @param CreateSmsAPIRequest $request
-     *
-     * @return Response
-     */
-    public function store(CreateSmsAPIRequest $request)
-    {
-        $input = $request->all();
 
-        $sms = $this->smsRepository->create($input);
+        $error = [];
+        while (list ($section_id, $questions) = each ($result_arr) ) {
+            $section = Section::find($section_id);
 
-        return $this->sendResponse($sms->toArray(), 'Sms saved successfully');
-    }
+            foreach($questions as $question_id => $input) {
+                $question = Question::find($question_id);
+                switch ($operator) {
+                    case 'muex':
+                        if($scope == 'q') {
+                            $right_ids = explode(',', $right);
+                            $left_response = (array_key_exists($left, $input)) ? $input[$left] : null;
+                            $right_arr = array_fill_keys($right_ids, '');
+                            $right_values = array_merge($right_arr, $input);
 
-    /**
-     * Display the specified Sms.
-     * GET|HEAD /sms/{id}
-     *
-     * @param  int $id
-     *
-     * @return Response
-     */
-    public function show($id)
-    {
-        /** @var Sms $sms */
-        $sms = $this->smsRepository->findWithoutFail($id);
-
-        if (empty($sms)) {
-            return $this->sendError('Sms not found');
+                            if (!empty($left_response) && !empty($right_values)) {
+                                $error[] = $question->qnum;
+                            }
+                        }
+                        break;
+                    default:
+                        break;
+                }
+            }
         }
 
-        return $this->sendResponse($sms->toArray(), 'Sms retrieved successfully');
-    }
+        dd($error);
 
-    /**
-     * Update the specified Sms in storage.
-     * PUT/PATCH /sms/{id}
-     *
-     * @param  int $id
-     * @param UpdateSmsAPIRequest $request
-     *
-     * @return Response
-     */
-    public function update($id, UpdateSmsAPIRequest $request)
-    {
-        $input = $request->all();
-
-        /** @var Sms $sms */
-        $sms = $this->smsRepository->findWithoutFail($id);
-
-        if (empty($sms)) {
-            return $this->sendError('Sms not found');
-        }
-
-        $sms = $this->smsRepository->update($input, $id);
-
-        return $this->sendResponse($sms->toArray(), 'Sms updated successfully');
-    }
-
-    /**
-     * Remove the specified Sms from storage.
-     * DELETE /sms/{id}
-     *
-     * @param  int $id
-     *
-     * @return Response
-     */
-    public function destroy($id)
-    {
-        /** @var Sms $sms */
-        $sms = $this->smsRepository->findWithoutFail($id);
-
-        if (empty($sms)) {
-            return $this->sendError('Sms not found');
-        }
-
-        $sms->delete();
-
-        return $this->sendResponse($id, 'Sms deleted successfully');
-    }
-
-    private function logicalCheck($project, $result)
-    {
 
         return $result;
     }
