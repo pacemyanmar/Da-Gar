@@ -45,7 +45,7 @@ class SmsAPIController extends AppBaseController
 
     public function telerivet(Request $request)
     {
-        if( env('APP_DEBUG', false)) {
+        if (env('APP_DEBUG', false)) {
             Log::info($request->all());
         }
 
@@ -125,7 +125,7 @@ class SmsAPIController extends AppBaseController
                 //$smsLog->api_project_id = $request->input('project_id');
                 $smsLog->to_number = $to_number;
                 $smsLog->content = $content; // incoming message
-                $uuid = Uuid::uuid5(Uuid::NAMESPACE_DNS, $content. Carbon::now());
+                $uuid = Uuid::uuid5(Uuid::NAMESPACE_DNS, $content . Carbon::now());
                 $smsLog->status_secret = $uuid->toString();
                 $smsLog->status_message = $response['message']; // reply message
                 $smsLog->status = $response['status'];
@@ -155,12 +155,12 @@ class SmsAPIController extends AppBaseController
 
         }
 
-        if($smsLog) {
+        if ($smsLog) {
             $smsLog->sms_status = (isset($status)) ? $status : null;
 
             $smsLog->save();
 
-            if($event != 'send_status') {
+            if ($event != 'send_status') {
                 $reply['content'] = $response['message']; // reply message
 
                 $this->sendToTelerivet($reply); // need to make asycronous
@@ -189,12 +189,12 @@ class SmsAPIController extends AppBaseController
         try {
             // Send a SMS message
             $sent_sms = $project->sendMessage($reply);
-            if( env('APP_DEBUG', false)) {
+            if (env('APP_DEBUG', false)) {
                 Log::info(json_encode($sent_sms));
             }
 
         } catch (TelerivetAPIException $e) {
-            if( env('APP_DEBUG', false)) {
+            if (env('APP_DEBUG', false)) {
                 Log::info($e->getMessage());
             }
             return $this->sendError($e->getMessage());
@@ -230,7 +230,7 @@ class SmsAPIController extends AppBaseController
             } else {
 
                 // if not training mode
-                $project = Project::whereRaw('LOWER(unique_code) ="' . $form_prefix. '"')->first();
+                $project = Project::whereRaw('LOWER(unique_code) ="' . $form_prefix . '"')->first();
 
                 if (!empty($to_number) && empty($project)) {
                     // if to_number exists, look for project with phone number first
@@ -291,7 +291,7 @@ class SmsAPIController extends AppBaseController
                 }
 
 
-                if(empty($sample_data)) {
+                if (empty($sample_data)) {
                     $reply['message'] = trans('sms.no_location_code');
                     $reply['status'] = 'error';
                     return $reply;
@@ -315,8 +315,8 @@ class SmsAPIController extends AppBaseController
                     // if project is incident
                     $last_incident = Sample::where('sample_data_id', $sample_data->id)
                         ->where('project_id', $project->id)
-                        ->where('sample_data_type', $project->dblink)->orderBy('form_id','desc')->first();
-                    if($last_incident) {
+                        ->where('sample_data_type', $project->dblink)->orderBy('form_id', 'desc')->first();
+                    if ($last_incident) {
                         $last_id = $last_incident->form_id + 1;
                     } else {
                         $last_id = 1;
@@ -435,7 +435,7 @@ class SmsAPIController extends AppBaseController
                         // required input complete and count incremental
                         if (!$input->optional) {
                             //if (!empty($result->{$inputid})) {
-                            if(!empty($result_arr[$section->id][$question->id][$inputid])) {
+                            if (!empty($result_arr[$section->id][$question->id][$inputid])) {
                                 //$section_inputs[$question->qnum] = $result->{$inputid};
                                 $section_inputs[$question->qnum] = $result_arr[$section->id][$question->id][$inputid];
                                 $valid_response[] = $inputid;
@@ -561,44 +561,47 @@ class SmsAPIController extends AppBaseController
 
     private function logicalCheck($result_arr, $result, $project)
     {
-        // To Do:: check logical error only after each question complete
-        $logics = $project->logics;
-        foreach ($logics as $logic) {
-            $left = $logic->leftval;
-            $operator = $logic->operator; // equal or greater than, less than, mutual include, mutual exclude ( = , > , < , muic, muex)
-            $right = $logic->rightval;
-            $scope = $logic->scope; // in a question or cross questions or cross sections ( q , xq, xs )
 
 
-            $error = [];
-            while (list ($section_id, $questions) = each($result_arr)) {
-                $section = Section::find($section_id);
+        $error = [];
+        while (list ($section_id, $questions) = each($result_arr)) {
+            $section = Section::find($section_id);
 
-                foreach ($questions as $question_id => $input) {
-                    $question = Question::find($question_id);
-                    switch ($operator) {
-                        case 'muex':
-                            if ($scope == 'q') {
+            foreach ($questions as $question_id => $input) {
+                $question = Question::find($question_id);
+                $question_complete = true;
+                // To Do:: check logical error only after each question complete
+                $logics = $project->logics;
+                if(!empty($logics) && $question_complete) {
+                    foreach ($logics as $logic) {
+                        $left = $logic->leftval;
+                        $operator = $logic->operator; // equal or greater than, less than, mutual include, mutual exclude ( = , > , < , muic, muex)
+                        $right = $logic->rightval;
+                        $scope = $logic->scope; // in a question or cross questions or cross sections ( q , xq, xs )
+                        switch ($operator) {
+                            case 'muex':
+                                if ($scope == 'q') {
 
-                                $right_ids = explode(',', $right);
-                                $right_ids_trimmed = array_map('trim',$right_ids);
-                                $left_response = (array_key_exists($left, $input)) ? $input[$left] : null;
-                                $right_arr = array_fill_keys($right_ids_trimmed, '');
-                                $right_values = array_merge($right_arr, $input);
+                                    $right_ids = explode(',', $right);
+                                    $right_ids_trimmed = array_map('trim', $right_ids);
+                                    $left_response = (array_key_exists($left, $input)) ? $input[$left] : null;
+                                    $right_arr = array_fill_keys($right_ids_trimmed, '');
+                                    $right_values = array_merge($right_arr, $input);
 
-                                if (!empty($left_response) && !empty($right_values)) {
-                                    $error[] = $question->qnum;
+                                    if (!empty($left_response) && !empty($right_values)) {
+                                        $error[] = $question->qnum;
+                                    }
+
+                                    unset($right_ids);
+                                    unset($right_ids_trimmed);
+                                    unset($left_response);
+                                    unset($right_arr);
+                                    unset($right_values);
                                 }
-
-                                unset($right_ids);
-                                unset($right_ids_trimmed);
-                                unset($left_response);
-                                unset($right_arr);
-                                unset($right_values);
-                            }
-                            break;
-                        default:
-                            break;
+                                break;
+                            default:
+                                break;
+                        }
                     }
                 }
             }
