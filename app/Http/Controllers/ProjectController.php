@@ -6,6 +6,7 @@ use App\DataTables\ProjectDataTable;
 use App\DataTables\SmsLogDataTable;
 use App\Http\Requests\CreateProjectRequest;
 use App\Http\Requests\UpdateProjectRequest;
+use App\Models\LogicalCheck;
 use App\Models\Project;
 use App\Models\Sample;
 use App\Models\SampleData;
@@ -20,6 +21,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Maatwebsite\Excel\Facades\Excel;
+use Ramsey\Uuid\Uuid;
 use Response;
 
 class ProjectController extends AppBaseController
@@ -797,5 +799,36 @@ class ProjectController extends AppBaseController
         $smsLogDataTable->setProject($project);
         $projects = Project::all();
         return $smsLogDataTable->render('sms_logs.index', compact('projects'), compact('project'));
+    }
+
+
+    public function addLogic($project_id, Request $request) {
+        $project = $this->projectRepository->findWithoutFail($project_id);
+        if (empty($project)) {
+            Flash::error('Project not found');
+
+            return redirect()->back();
+        }
+        $logics = $request->input('logic');
+
+        $project->logics()->delete();
+
+        if(!empty($logics)) {
+
+            foreach ($logics as $logic) {
+                $uuid_str = $logic['leftval'] . $logic['operator'] . $logic['rightval'] . $logic['scope'] . $project->id;
+                $uuid = Uuid::uuid5(Uuid::NAMESPACE_DNS, $uuid_str);
+                $logic['id'] = $uuid->toString();
+
+                $logic_instance = new LogicalCheck($logic);
+                $project->logics()->save($logic_instance);
+            }
+            Flash::success('Logics added successfully.');
+        } else {
+            Flash::success('Logics cleared successfully.');
+        }
+
+        return redirect()->back();
+
     }
 }

@@ -13,10 +13,12 @@ class LogicalCheck extends Model
 {
 
     public $table = 'logical_checks';
-    
+
+    public  $incrementing = false;
 
 
     public $fillable = [
+        'id',
         'leftval',
         'rightval',
         'operator',
@@ -29,6 +31,7 @@ class LogicalCheck extends Model
      * @var array
      */
     protected $casts = [
+        'id' => 'string',
         'leftval' => 'string',
         'rightval' => 'string',
         'operator' => 'string',

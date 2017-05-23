@@ -14,11 +14,12 @@ class CreateLogicalChecksTable extends Migration
     public function up()
     {
         Schema::create('logical_checks', function (Blueprint $table) {
-            $table->increments('id');
+            $table->string('id');
             $table->string('leftval');
             $table->string('rightval');
             $table->string('operator');
             $table->string('scope');
+            $table->unsignedInteger('project_id');
             $table->timestamps();
         });
     }

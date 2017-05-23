@@ -561,39 +561,45 @@ class SmsAPIController extends AppBaseController
 
     private function logicalCheck($result_arr, $result, $project)
     {
-//        $logic = $project->logic;
-//        $left = $logic->left;
-//        $operator = $logic->operator; // equal or greater than, less than, mutual include, mutual exclude ( = , > , < , muic, muex)
-//        $right = $logic->right;
-//        $scope = $logic->scope; // in a question or cross questions or cross sections ( q , xq, xs )
-
-        $left = 'db_6';
-        $operator = 'muex';
-        $right = 'db_1,db_2,db_3,db_4,db_5';
-        $scope = 'q';
+        // To Do:: check logical error only after each question complete
+        $logics = $project->logics;
+        foreach ($logics as $logic) {
+            $left = $logic->leftval;
+            $operator = $logic->operator; // equal or greater than, less than, mutual include, mutual exclude ( = , > , < , muic, muex)
+            $right = $logic->rightval;
+            $scope = $logic->scope; // in a question or cross questions or cross sections ( q , xq, xs )
 
 
-        $error = [];
-        while (list ($section_id, $questions) = each ($result_arr) ) {
-            $section = Section::find($section_id);
+            $error = [];
+            while (list ($section_id, $questions) = each($result_arr)) {
+                $section = Section::find($section_id);
 
-            foreach($questions as $question_id => $input) {
-                $question = Question::find($question_id);
-                switch ($operator) {
-                    case 'muex':
-                        if($scope == 'q') {
-                            $right_ids = explode(',', $right);
-                            $left_response = (array_key_exists($left, $input)) ? $input[$left] : null;
-                            $right_arr = array_fill_keys($right_ids, '');
-                            $right_values = array_merge($right_arr, $input);
+                foreach ($questions as $question_id => $input) {
+                    $question = Question::find($question_id);
+                    switch ($operator) {
+                        case 'muex':
+                            if ($scope == 'q') {
 
-                            if (!empty($left_response) && !empty($right_values)) {
-                                $error[] = $question->qnum;
+                                $right_ids = explode(',', $right);
+                                $right_ids_trimmed = array_map('trim',$right_ids);
+                                $left_response = (array_key_exists($left, $input)) ? $input[$left] : null;
+                                $right_arr = array_fill_keys($right_ids_trimmed, '');
+                                $right_values = array_merge($right_arr, $input);
+
+                                if (!empty($left_response) && !empty($right_values)) {
+                                    $error[] = $question->qnum;
+                                }
+
+                                unset($right_ids);
+                                unset($right_ids_trimmed);
+                                unset($left_response);
+                                unset($right_arr);
+                                unset($right_values);
                             }
-                        }
-                        break;
-                    default:
-                        break;
+                            break;
+                        default:
+                            break;
+                    }
                 }
             }
         }

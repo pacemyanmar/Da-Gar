@@ -83,6 +83,11 @@ class Project extends Model
         return $this->hasMany(Section::class);
     }
 
+    public function logics()
+    {
+        return $this->hasMany(LogicalCheck::class);
+    }
+
     /**
      * Projects and sample_datas has pivot relation.
      * samples is pivot table
