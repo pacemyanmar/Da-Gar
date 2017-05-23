@@ -99,3 +99,5 @@ Route::resource('roles', 'RoleController');
 Route::resource('projectPhones', 'ProjectPhoneController');
 
 Route::resource('observers', 'ObserverController');
+
+Route::resource('logicalChecks', 'LogicalCheckController');
