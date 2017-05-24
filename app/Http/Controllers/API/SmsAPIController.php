@@ -415,21 +415,17 @@ class SmsAPIController extends AppBaseController
 
                                     // checkbox value is in sent message value
                                     if (in_array($input->value, $checkbox_values)) {
-                                        //$result->{$inputid} = $input->value;
                                         $result_arr[$section->id][$question->id][$inputid] = $input->value;
                                     } else {
-                                        //$result->{$inputid} = null;
                                         $result_arr[$section->id][$question->id][$inputid] = null;
                                     }
 
                                 } else {
-                                    //$result->{$inputid} = $response;
                                     $result_arr[$section->id][$question->id][$inputid] = $response;
                                 }
 
                             } else {
                                 if ($input->type == 'checkbox') {
-                                    //$result->{$inputid} = null;
                                     $result_arr[$section->id][$question->id][$inputid] = null;
                                 }
                             }
@@ -438,62 +434,58 @@ class SmsAPIController extends AppBaseController
                         }
                         // required input complete and count incremental
                         if (!$input->optional) {
-                            //if (!empty($result->{$inputid})) {
                             if (!empty($result_arr[$section->id][$question->id][$inputid])) {
-                                //$section_inputs[$question->qnum] = $result->{$inputid};
+
                                 $section_inputs[$question->qnum] = $result_arr[$section->id][$question->id][$inputid];
                                 $valid_response[] = $inputid;
+
                             } else {
                                 if (!empty($result->{$inputid}) && $input->type != 'checkbox') {
+
                                     $result_arr[$section->id][$question->id][$inputid] = $section_inputs[$question->qnum] = $result->{$inputid};
+
                                 } else {
+
                                     $result_arr[$section->id][$question->id][$inputid] = $section_inputs[$question->qnum] = null;
+
                                 }
+
                                 if (!$training_mode) {
+
                                     if (empty($question->observation_type) || in_array($sample_data->observer_field, $question->observation_type)) {
+
                                         if (in_array($input->type, ['radio', 'checkbox'])) {
+
                                             $section_error_inputs[$question->qnum] = $question->qnum;
+
                                         } else {
+
                                             $error_key = strtoupper($inputkey);
                                             $section_error_inputs[$error_key] = $error_key;
+
                                         }
+
                                     }
+
                                 } else {
+
                                     if (in_array($input->type, ['radio', 'checkbox'])) {
+
                                         $section_error_inputs[$question->qnum] = $question->qnum;
+
                                     } else {
+
                                         $error_key = strtoupper($inputkey);
                                         $section_error_inputs[$error_key] = $error_key;
+
                                     }
+
                                 }
                             }
                         }
 
                     } // after input loop
 
-
-//                    // for checkbox and radio
-//                    $required_response_with_value = $question->surveyInputs->filter(function ($input, $key) {
-//                        return (!$input->optional && $input->value);
-//                    })->pluck('inputid')->toArray();
-//
-//                    // for text based inputs
-//                    $required_response_empty_value = $question->surveyInputs->filter(function ($input, $key) {
-//                        return (!$input->optional && empty($input->value));
-//                    })->pluck('inputid')->toArray();
-//
-//                    $intersect_with_value = array_intersect($required_response_with_value, $valid_response);
-//
-//                    if (count($intersect_with_value) > 0 || (!empty($required_response_empty_value) && $required_response_empty_value == $valid_response)) {
-//                        if (isset($section_error_inputs)) {
-//                            unset($section_error_inputs[$question->qnum]);
-//                        }
-//                        $question_completed++;
-//                    }
-//                    unset($required_response_with_value);
-//                    unset($required_response_empty_value);
-//                    unset($valid_response);
-//                    unset($intersect_with_value);
                 } // after question loop
 
 
