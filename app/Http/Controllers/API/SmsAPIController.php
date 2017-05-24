@@ -440,6 +440,11 @@ class SmsAPIController extends AppBaseController
                                 $section_inputs[$question->qnum] = $result_arr[$section->id][$question->id][$inputid];
                                 $valid_response[] = $inputid;
                             } else {
+                                if (!empty($result->{$inputid})) {
+                                    $result_arr[$section->id][$question->id][$inputid] = $section_inputs[$question->qnum] = $result->{$inputid};
+                                } else {
+                                    $result_arr[$section->id][$question->id][$inputid] = $section_inputs[$question->qnum] = null;
+                                }
                                 if (!$training_mode) {
                                     if (empty($question->observation_type) || in_array($sample_data->observer_field, $question->observation_type)) {
                                         if (in_array($input->type, ['radio', 'checkbox'])) {
@@ -463,62 +468,62 @@ class SmsAPIController extends AppBaseController
                     } // after input loop
 
 
-                    // for checkbox and radio
-                    $required_response_with_value = $question->surveyInputs->filter(function ($input, $key) {
-                        return (!$input->optional && $input->value);
-                    })->pluck('inputid')->toArray();
-
-                    // for text based inputs
-                    $required_response_empty_value = $question->surveyInputs->filter(function ($input, $key) {
-                        return (!$input->optional && empty($input->value));
-                    })->pluck('inputid')->toArray();
-
-                    $intersect_with_value = array_intersect($required_response_with_value, $valid_response);
-
-                    if (count($intersect_with_value) > 0 || (!empty($required_response_empty_value) && $required_response_empty_value == $valid_response)) {
-                        if (isset($section_error_inputs)) {
-                            unset($section_error_inputs[$question->qnum]);
-                        }
-                        $question_completed++;
-                    }
-                    unset($required_response_with_value);
-                    unset($required_response_empty_value);
-                    unset($valid_response);
-                    unset($intersect_with_value);
+//                    // for checkbox and radio
+//                    $required_response_with_value = $question->surveyInputs->filter(function ($input, $key) {
+//                        return (!$input->optional && $input->value);
+//                    })->pluck('inputid')->toArray();
+//
+//                    // for text based inputs
+//                    $required_response_empty_value = $question->surveyInputs->filter(function ($input, $key) {
+//                        return (!$input->optional && empty($input->value));
+//                    })->pluck('inputid')->toArray();
+//
+//                    $intersect_with_value = array_intersect($required_response_with_value, $valid_response);
+//
+//                    if (count($intersect_with_value) > 0 || (!empty($required_response_empty_value) && $required_response_empty_value == $valid_response)) {
+//                        if (isset($section_error_inputs)) {
+//                            unset($section_error_inputs[$question->qnum]);
+//                        }
+//                        $question_completed++;
+//                    }
+//                    unset($required_response_with_value);
+//                    unset($required_response_empty_value);
+//                    unset($valid_response);
+//                    unset($intersect_with_value);
                 } // after question loop
 
                 // get required questions in a section
                 // question must not optional and observation type should be empty
                 // or location observer field value should be in question observation type
 
-                if (!$training_mode) {
-                    $required_questions = $section->questions->filter(function ($question, $key) use ($sample_data) {
-                        return !$question->optional && (empty($question->observation_type) || in_array($sample_data->observer_field, $question->observation_type));
-                    });
-                } else {
-                    $required_questions = $section->questions->filter(function ($question, $key) {
-                        return !$question->optional;
-                    });
-                }
+//                if (!$training_mode) {
+//                    $required_questions = $section->questions->filter(function ($question, $key) use ($sample_data) {
+//                        return !$question->optional && (empty($question->observation_type) || in_array($sample_data->observer_field, $question->observation_type));
+//                    });
+//                } else {
+//                    $required_questions = $section->questions->filter(function ($question, $key) {
+//                        return !$question->optional;
+//                    });
+//                }
 
                 $error_inputs = array_unique(array_filter($section_error_inputs));
 
                 unset($optional); // unset optional to avoid unexpect outcomes when checking section status
 
 
-                if (!empty($section_inputs)) {
-
-                    if ($required_questions->count() === $question_completed) {
-                        $result->{'section' . $skey . 'status'} = 1;
-                    } else {
-                        $result->{'section' . $skey . 'status'} = 2;
-                    }
-                    $reply['section'] = $skey;
-
-                    break; // this break and stop the loop - this is required not to process cross section data submit in one SMS
-                } else {
-                    $result->{'section' . $skey . 'status'} = 0;
-                }
+//                if (!empty($section_inputs)) {
+//
+//                    if ($required_questions->count() === $question_completed) {
+//                        $result->{'section' . $skey . 'status'} = 1;
+//                    } else {
+//                        $result->{'section' . $skey . 'status'} = 2;
+//                    }
+//                    $reply['section'] = $skey;
+//
+//                    break; // this break and stop the loop - this is required not to process cross section data submit in one SMS
+//                } else {
+//                    $result->{'section' . $skey . 'status'} = 0;
+//                }
                 $skey++;
             } // after section loop
 
@@ -531,8 +536,8 @@ class SmsAPIController extends AppBaseController
                 $result->setTable($dbname . '_training'); // need to set table name again for some reason
             }
 
-            $result = $this->logicalCheck($result_arr, $result, $project);
-
+            $checked = $this->logicalCheck($result_arr, $result, $project, $sample);
+            $result = $checked['results'];
             $result->save();
             if (!empty($error_inputs)) {
                 if (empty($section_inputs)) {
@@ -559,20 +564,53 @@ class SmsAPIController extends AppBaseController
     }
 
 
-    private function logicalCheck($result_arr, $result, $project)
+    private function logicalCheck($result_arr, $result, $project, $sample)
     {
-
 
         $error = [];
         while (list ($section_id, $questions) = each($result_arr)) {
             $section = Section::find($section_id);
-
-            foreach ($questions as $question_id => $input) {
+            $question_status = [];
+            foreach ($questions as $question_id => $inputs) {
                 $question = Question::find($question_id);
-                $question_complete = true;
+
+                // for checkbox and radio
+                $required_response_with_value = $question->surveyInputs->filter(function ($input, $key) {
+                    return (!$input->optional && $input->value);
+                })->pluck('inputid')->toArray();
+
+                // for text based inputs
+                $required_response_empty_value = $question->surveyInputs->filter(function ($input, $key) {
+                    return (!$input->optional && empty($input->value));
+                })->pluck('inputid')->toArray();
+
+
+                $intersect_with_value = array_intersect($required_response_with_value, array_keys(array_filter($inputs))); // if this is greater than zero question is complete
+                $intersect_no_value = array_intersect($required_response_empty_value, array_keys(array_filter($inputs)));
+
+                if(empty($intersect_with_value) && empty($intersect_no_value) ) {
+                    $question_status[$question->qnum] = 'missing';
+                    $question_complete = false;
+                    $error[] = $question->qnum;
+                } elseif (count($intersect_with_value) > 0 || (!empty($required_response_empty_value) && $required_response_empty_value == array_keys(array_filter($inputs)))) {
+                    $question_complete = true;
+                    $question_status[$question->qnum] = 'complete';
+                } else {
+                    $question_complete = false;
+                    $question_status[$question->qnum] = 'incomplete';
+                    $error[] = $question->qnum;
+                }
+
+                unset($required_response_with_value);
+                unset($required_response_empty_value);
+
+                unset($intersect_with_value);
+
                 // To Do:: check logical error only after each question complete
                 $logics = $project->logics;
+                $discard = false;
                 if(!empty($logics) && $question_complete) {
+
                     foreach ($logics as $logic) {
                         $left = $logic->leftval;
                         $operator = $logic->operator; // equal or greater than, less than, mutual include, mutual exclude ( = , > , < , muic, muex)
@@ -584,12 +622,14 @@ class SmsAPIController extends AppBaseController
 
                                     $right_ids = explode(',', $right);
                                     $right_ids_trimmed = array_map('trim', $right_ids);
-                                    $left_response = (array_key_exists($left, $input)) ? $input[$left] : null;
+                                    $left_response = (array_key_exists($left, $inputs)) ? $inputs[$left] : null;
                                     $right_arr = array_fill_keys($right_ids_trimmed, '');
-                                    $right_values = array_merge($right_arr, $input);
+                                    $right_values = array_filter(array_intersect_key($inputs,$right_arr));
 
                                     if (!empty($left_response) && !empty($right_values)) {
+                                        $question_status[$question->qnum] = 'error';
                                         $error[] = $question->qnum;
+                                        $discard = true;
                                     }
 
                                     unset($right_ids);
@@ -604,12 +644,38 @@ class SmsAPIController extends AppBaseController
                         }
                     }
                 }
+                if(!$discard) {
+                    foreach($inputs as $inputid => $response) {
+                        $result->{$inputid} = $response;
+                    }
+                }
+            } // question loop
+
+            $questions_status = array_unique(array_values($question_status));
+
+            if(in_array('incomplete', $questions_status)) {
+                $section_status = 2; // incomplete
+            } elseif(count($question_status) == 1 && $questions_status[0] == 'missing') {
+                $section_status = 0; // missing
+            } elseif(count($question_status) == 1 && $questions_status[0] == 'complete') {
+                $section_status = 1; // complete
+            } elseif(!in_array('incomplete', $questions_status) && in_array('error', $questions_status)) {
+                $section_status = 3; // error
+            } else {
+                $section_status = 0
+                ;
             }
+
+
+            $skey = $section->sort + 1;
+            $result->{'section' . $skey . 'status'} = $section_status;
+
         }
 
-        dd($error);
+        $checked['results'] = $result;
+        $checked['error'] = $error;
 
-
-        return $result;
+dd($checked['results']);
+        return $checked;
     }
 }
