@@ -163,7 +163,7 @@ class SmsAPIController extends AppBaseController
             if ($event != 'send_status') {
                 $reply['content'] = $response['message']; // reply message
 
-                $this->sendToTelerivet($reply); // need to make asycronous
+               // $this->sendToTelerivet($reply); // need to make asycronous
             }
         }
         return $this->sendResponse($reply, 'Message processed successfully');
@@ -358,7 +358,7 @@ class SmsAPIController extends AppBaseController
 
             $result_arr = [];
 
-
+            $section_with_result = '';
             foreach ($sections as $key => $section) {
                 $skey = $key + 1;
                 $optional = 0; // initial count for optional inputs
@@ -407,6 +407,10 @@ class SmsAPIController extends AppBaseController
 
                             if ($is_value_valid) {
 
+                                if(empty($section_with_result)) {
+                                    $section_with_result = $section->id;
+                                }
+
                                 if ($input->type == 'checkbox') {
 
                                     // checkbox value is in sent message value
@@ -440,7 +444,7 @@ class SmsAPIController extends AppBaseController
                                 $section_inputs[$question->qnum] = $result_arr[$section->id][$question->id][$inputid];
                                 $valid_response[] = $inputid;
                             } else {
-                                if (!empty($result->{$inputid})) {
+                                if (!empty($result->{$inputid}) && $input->type != 'checkbox') {
                                     $result_arr[$section->id][$question->id][$inputid] = $section_inputs[$question->qnum] = $result->{$inputid};
                                 } else {
                                     $result_arr[$section->id][$question->id][$inputid] = $section_inputs[$question->qnum] = null;
@@ -492,39 +496,10 @@ class SmsAPIController extends AppBaseController
 //                    unset($intersect_with_value);
                 } // after question loop
 
-                // get required questions in a section
-                // question must not optional and observation type should be empty
-                // or location observer field value should be in question observation type
-
-//                if (!$training_mode) {
-//                    $required_questions = $section->questions->filter(function ($question, $key) use ($sample_data) {
-//                        return !$question->optional && (empty($question->observation_type) || in_array($sample_data->observer_field, $question->observation_type));
-//                    });
-//                } else {
-//                    $required_questions = $section->questions->filter(function ($question, $key) {
-//                        return !$question->optional;
-//                    });
-//                }
-
-                $error_inputs = array_unique(array_filter($section_error_inputs));
 
                 unset($optional); // unset optional to avoid unexpect outcomes when checking section status
 
 
-//                if (!empty($section_inputs)) {
-//
-//                    if ($required_questions->count() === $question_completed) {
-//                        $result->{'section' . $skey . 'status'} = 1;
-//                    } else {
-//                        $result->{'section' . $skey . 'status'} = 2;
-//                    }
-//                    $reply['section'] = $skey;
-//
-//                    break; // this break and stop the loop - this is required not to process cross section data submit in one SMS
-//                } else {
-//                    $result->{'section' . $skey . 'status'} = 0;
-//                }
-                $skey++;
             } // after section loop
 
             if (!$training_mode) {
@@ -539,11 +514,11 @@ class SmsAPIController extends AppBaseController
             $checked = $this->logicalCheck($result_arr, $result, $project, $sample);
             $result = $checked['results'];
             $result->save();
-            if (!empty($error_inputs)) {
+            if (!empty($checked['error'][$section_with_result])) {
                 if (empty($section_inputs)) {
                     $reply['message'] = trans('sms.not_valid_response');
                 } else {
-                    $reply['message'] = trans('sms.error_inputs', ['INPUTS' => implode(', ', $error_inputs)]);
+                    $reply['message'] = trans('sms.error_inputs', ['INPUTS' => implode(', ', $checked['error'][$section_with_result])]);
                 }
 
                 $reply['status'] = 'error';
@@ -588,23 +563,12 @@ class SmsAPIController extends AppBaseController
                 $intersect_with_value = array_intersect($required_response_with_value, array_keys(array_filter($inputs))); // if this is greater than zero question is complete
                 $intersect_no_value = array_intersect($required_response_empty_value, array_keys(array_filter($inputs)));
 
-                if(empty($intersect_with_value) && empty($intersect_no_value) ) {
-                    $question_status[$question->qnum] = 'missing';
-                    $question_complete = false;
-                    $error[] = $question->qnum;
-                } elseif (count($intersect_with_value) > 0 || (!empty($required_response_empty_value) && $required_response_empty_value == array_keys(array_filter($inputs)))) {
+                if (count($intersect_with_value) > 0 || (!empty($required_response_empty_value) && $required_response_empty_value == $intersect_no_value)) {
                     $question_complete = true;
-                    $question_status[$question->qnum] = 'complete';
                 } else {
                     $question_complete = false;
-                    $question_status[$question->qnum] = 'incomplete';
-                    $error[] = $question->qnum;
                 }
 
-                unset($required_response_with_value);
-                unset($required_response_empty_value);
-
-                unset($intersect_with_value);
 
                 // To Do:: check logical error only after each question complete
                 $logics = $project->logics;
@@ -627,8 +591,7 @@ class SmsAPIController extends AppBaseController
                                     $right_values = array_filter(array_intersect_key($inputs,$right_arr));
 
                                     if (!empty($left_response) && !empty($right_values)) {
-                                        $question_status[$question->qnum] = 'error';
-                                        $error[] = $question->qnum;
+                                        $error[$section_id][] = $question->qnum;
                                         $discard = true;
                                     }
 
@@ -649,15 +612,32 @@ class SmsAPIController extends AppBaseController
                         $result->{$inputid} = $response;
                     }
                 }
+
+                if(empty($intersect_with_value) && empty($intersect_no_value) ) {
+                    $question_status[$section_id][$question->qnum] = 'missing';
+
+                    $error[$section_id][] = $question->qnum;
+                } elseif (count($intersect_with_value) > 0 || (!empty($required_response_empty_value) && $required_response_empty_value == array_keys(array_filter($inputs)))) {
+
+                    $question_status[$section_id][$question->qnum] = 'complete';
+                } else {
+                    $question_status[$section_id][$question->qnum] = 'incomplete';
+                    $error[$section_id][] = $question->qnum;
+                }
+
+                unset($required_response_with_value);
+                unset($required_response_empty_value);
+
+                unset($intersect_with_value);
             } // question loop
 
-            $questions_status = array_unique(array_values($question_status));
+            $questions_status = array_unique(array_values($question_status[$section_id]));
 
-            if(in_array('incomplete', $questions_status)) {
+            if(in_array('incomplete', $questions_status) || (count($questions_status) > 1 && count(array_intersect(['missing','complete'], $questions_status)) > 0) ) {
                 $section_status = 2; // incomplete
-            } elseif(count($question_status) == 1 && $questions_status[0] == 'missing') {
+            } elseif(count($questions_status) == 1 && $questions_status[0] == 'missing') {
                 $section_status = 0; // missing
-            } elseif(count($question_status) == 1 && $questions_status[0] == 'complete') {
+            } elseif(count($questions_status) == 1 && $questions_status[0] == 'complete') {
                 $section_status = 1; // complete
             } elseif(!in_array('incomplete', $questions_status) && in_array('error', $questions_status)) {
                 $section_status = 3; // error
@@ -675,7 +655,6 @@ class SmsAPIController extends AppBaseController
         $checked['results'] = $result;
         $checked['error'] = $error;
 
-dd($checked['results']);
         return $checked;
     }
 }

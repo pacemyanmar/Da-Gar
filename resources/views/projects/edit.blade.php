@@ -191,12 +191,15 @@
                 // Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.
                 var modal = $(this)
 
-
-                $.each(observation,function(key,value){
-                    modal.find("input[name='observation_type["+key+"]']").prop('checked', true)
-                    console.log(key);
-                    console.log(value);
-                });
+                if(observation) {
+                    console.log(observation);
+                    $.each(observation, function (key, value) {
+                        console.log(key)
+                        modal.find("input[name='observation_type[" + value + "]']").prop('checked', true)
+                    });
+                } else {
+                        modal.find("input.observation_type").prop('checked', false)
+                }
 
                 modal.find("input[name='qnum']").val(qnum)
                 modal.find("input[name='question']").val(question)
