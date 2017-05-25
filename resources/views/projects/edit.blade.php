@@ -194,8 +194,7 @@
                 if(observation) {
                     console.log(observation);
                     $.each(observation, function (key, value) {
-                        console.log(key)
-                        modal.find("input[name='observation_type[" + value + "]']").prop('checked', true)
+                        modal.find("input[name='observation_type[" + key + "]']").prop('checked', true)
                     });
                 } else {
                         modal.find("input.observation_type").prop('checked', false)

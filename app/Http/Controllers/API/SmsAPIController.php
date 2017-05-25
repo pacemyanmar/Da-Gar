@@ -15,6 +15,7 @@ use App\Models\Section;
 use App\Models\SmsLog;
 use App\Models\SurveyResult;
 use App\Repositories\SmsLogRepository;
+use App\Traits\LogicalCheckTrait;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
@@ -33,6 +34,7 @@ use Telerivet\TelerivetAPI;
  */
 class SmsAPIController extends AppBaseController
 {
+    use LogicalCheckTrait;
     /** @var  SmsRepository */
     private $smsRepository;
 
@@ -163,7 +165,7 @@ class SmsAPIController extends AppBaseController
             if ($event != 'send_status') {
                 $reply['content'] = $response['message']; // reply message
 
-               // $this->sendToTelerivet($reply); // need to make asycronous
+                //$this->sendToTelerivet($reply); // need to make asycronous
             }
         }
         return $this->sendResponse($reply, 'Message processed successfully');
@@ -530,123 +532,4 @@ class SmsAPIController extends AppBaseController
         }
     }
 
-
-    private function logicalCheck($result_arr, $result, $project, $sample)
-    {
-
-        $error = [];
-        while (list ($section_id, $questions) = each($result_arr)) {
-            $section = Section::find($section_id);
-            $question_status = [];
-            foreach ($questions as $question_id => $inputs) {
-                $question = Question::find($question_id);
-
-                // for checkbox and radio
-                $required_response_with_value = $question->surveyInputs->filter(function ($input, $key) {
-                    return (!$input->optional && $input->value);
-                })->pluck('inputid')->toArray();
-
-                // for text based inputs
-                $required_response_empty_value = $question->surveyInputs->filter(function ($input, $key) {
-                    return (!$input->optional && empty($input->value));
-                })->pluck('inputid')->toArray();
-
-
-                $intersect_with_value = array_intersect($required_response_with_value, array_keys(array_filter($inputs))); // if this is greater than zero question is complete
-                $intersect_no_value = array_intersect($required_response_empty_value, array_keys(array_filter($inputs)));
-
-                if (count($intersect_with_value) > 0 || (!empty($required_response_empty_value) && $required_response_empty_value == $intersect_no_value)) {
-                    $question_complete = true;
-                } else {
-                    $question_complete = false;
-                }
-
-
-                // To Do:: check logical error only after each question complete
-                $logics = $project->logics;
-                $discard = false;
-                if(!empty($logics) && $question_complete) {
-
-                    foreach ($logics as $logic) {
-                        $left = $logic->leftval;
-                        $operator = $logic->operator; // equal or greater than, less than, mutual include, mutual exclude ( = , > , < , muic, muex)
-                        $right = $logic->rightval;
-                        $scope = $logic->scope; // in a question or cross questions or cross sections ( q , xq, xs )
-                        switch ($operator) {
-                            case 'muex':
-                                if ($scope == 'q') {
-
-                                    $right_ids = explode(',', $right);
-                                    $right_ids_trimmed = array_map('trim', $right_ids);
-                                    $left_response = (array_key_exists($left, $inputs)) ? $inputs[$left] : null;
-                                    $right_arr = array_fill_keys($right_ids_trimmed, '');
-                                    $right_values = array_filter(array_intersect_key($inputs,$right_arr));
-
-                                    if (!empty($left_response) && !empty($right_values)) {
-                                        $error[$section_id][] = $question->qnum;
-                                        $discard = true;
-                                    }
-
-                                    unset($right_ids);
-                                    unset($right_ids_trimmed);
-                                    unset($left_response);
-                                    unset($right_arr);
-                                    unset($right_values);
-                                }
-                                break;
-                            default:
-                                break;
-                        }
-                    }
-                }
-                if(!$discard) {
-                    foreach($inputs as $inputid => $response) {
-                        $result->{$inputid} = $response;
-                    }
-                }
-
-                if(empty($intersect_with_value) && empty($intersect_no_value) ) {
-                    $question_status[$section_id][$question->qnum] = 'missing';
-
-                    $error[$section_id][] = $question->qnum;
-                } elseif (count($intersect_with_value) > 0 || (!empty($required_response_empty_value) && $required_response_empty_value == array_keys(array_filter($inputs)))) {
-
-                    $question_status[$section_id][$question->qnum] = 'complete';
-                } else {
-                    $question_status[$section_id][$question->qnum] = 'incomplete';
-                    $error[$section_id][] = $question->qnum;
-                }
-
-                unset($required_response_with_value);
-                unset($required_response_empty_value);
-
-                unset($intersect_with_value);
-            } // question loop
-
-            $questions_status = array_unique(array_values($question_status[$section_id]));
-
-            if(in_array('incomplete', $questions_status) || (count($questions_status) > 1 && count(array_intersect(['missing','complete'], $questions_status)) > 0) ) {
-                $section_status = 2; // incomplete
-            } elseif(count($questions_status) == 1 && $questions_status[0] == 'missing') {
-                $section_status = 0; // missing
-            } elseif(count($questions_status) == 1 && $questions_status[0] == 'complete') {
-                $section_status = 1; // complete
-            } elseif(!in_array('incomplete', $questions_status) && in_array('error', $questions_status)) {
-                $section_status = 3; // error
-            } else {
-                $section_status = 0
-                ;
-            }
-
-
-            $skey = $section->sort + 1;
-            $result->{'section' . $skey . 'status'} = $section_status;
-
-        }
-
-        $checked['results'] = $result;
-        $checked['error'] = $error;
-
-        return $checked;
-    }
 }
