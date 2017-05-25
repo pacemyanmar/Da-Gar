@@ -745,7 +745,7 @@ class ProjectResultsController extends AppBaseController
 
         foreach ($sections as $key => $section) {
             $section_inputs = $section->inputs->pluck('value', 'inputid');
-            g
+            
             $section_has_result_submitted = array_intersect_key($results, $section_inputs->toArray());
             if(count($section_has_result_submitted) > 0) {
                 if(!array_key_exists($section->id, $section_result)) {
