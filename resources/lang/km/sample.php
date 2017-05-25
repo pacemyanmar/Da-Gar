@@ -7,12 +7,12 @@
  */
 
 return [
-    'location_code' => 'Polling Station Code',
-    'national_id' => 'National ID',
-    'level1' => 'Province',
-    'level2' => 'District',
-    'level3' => 'Township',
-    'level4' => 'Ward',
-    'level5' => 'Village',
-    'level6' => 'Polling Station Address',
+    'location_code' => 'លេខសំគាល់ការិយាល័យបោះឆ្នោត',
+    'national_id' => 'លេខអត្តសញ្ញាណបណ្ណ',
+    'level1' => 'ខេត្ត',
+    'level2' => 'ស្រុក',
+    'level3' => 'ទីក្រុង',
+    'level4' => 'ឃុំ',
+    'level5' => 'ភូមិ',
+    'level6' => 'អាសយដ្នានការិយាល័យបោះឆ្នោត',
 ];
