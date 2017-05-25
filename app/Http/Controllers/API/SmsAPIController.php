@@ -165,7 +165,7 @@ class SmsAPIController extends AppBaseController
             if ($event != 'send_status') {
                 $reply['content'] = $response['message']; // reply message
 
-                //$this->sendToTelerivet($reply); // need to make asycronous
+                $this->sendToTelerivet($reply); // need to make asycronous
             }
         }
         return $this->sendResponse($reply, 'Message processed successfully');
@@ -503,6 +503,7 @@ class SmsAPIController extends AppBaseController
                 $result->setTable($dbname); // need to set table name again for some reason
             } else {
                 $result->setTable($dbname . '_training'); // need to set table name again for some reason
+                $sample = Sample::where('sample_data_type', $project->dblink)->where('project_id', $project->id)->where('form_id', 1)->first();
             }
 
             $checked = $this->logicalCheck($result_arr, $result, $project, $sample);
