@@ -12,4 +12,5 @@ return [
         'country' => 'mm',
         'locale' => 'my'
     ],
+    'double_entry' => false,
 ];

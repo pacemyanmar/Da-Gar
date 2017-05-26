@@ -155,19 +155,31 @@ class SurveyResultDataTable extends DataTable
 
         $input_columns = '';
         // get all inputs for a project form by name key index
-        $inputs = $this->project->inputs->pluck('inputid')->unique();
+        $inputs = $this->project->inputs->pluck('type', 'inputid');
 
         $unique_inputs = $inputs->toArray();
 
+
         array_walk($unique_inputs, function (&$column, $index) use ($childTable) {
-            $column = $childTable . '.' . $column . ', IF(' . $childTable . '_double.' . $column . ' = ' . $childTable . '.' . $column . ', 1, 0) AS ' . $column . '_status';
+            switch ($column) {
+                case 'checkbox':
+                    $column = 'IF('. $childTable. '.'.$index.',1,0) AS '.$index;
+                    break;
+                default:
+                    $column = $childTable . '.' . $index;
+                    break;
+            }
+            if(config('sms.double_entry')) {
+                $column .= ', IF(' . $childTable . '_double.' . $index . ' = ' . $childTable . '.' . $index . ', 1, 0) AS ' . $index . '_status';
+            }
         });
+
         // modify column name to use in sql query TABLE.COLUMN format
         array_walk($sectionColumns, function (&$column, $index) use ($childTable) {
             $column = $childTable . '.' . $column;
         });
 
-        $columnsFromResults = array_merge($sectionColumns, $unique_inputs);
+        $columnsFromResults = array_merge($sectionColumns, array_values($unique_inputs));
 
         $input_columns = implode(',', $columnsFromResults);
 

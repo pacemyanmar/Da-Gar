@@ -307,10 +307,11 @@ class ProjectResultsController extends AppBaseController
         $project->load('samplesDb.data');
 
         $project->load(['inputs' => function ($query) {
-            $query->where('status', 'published')->orderBy('sort', 'asc');
+            $query->where('status', 'published');
         }]);
 
-        foreach ($project->inputs as $input) {
+        $project_inputs = $project->inputs->sortBy('sort');
+        foreach ($project_inputs as $input) {
             $column = $input->inputid;
             //$title = preg_replace('/s[0-9]+|ir/', '', $column);
             //$title = strtoupper(preg_replace('/i/', '_', $title));
@@ -330,7 +331,7 @@ class ProjectResultsController extends AppBaseController
             }
 
             $input_columns[$column] = ['name' => $dbname . '.' . $column, 'data' => $column, 'title' => $title, 'class' => 'result', 'orderable' => false, 'width' => '80px'];
-            if (empty($project->parties)) {
+            if(config('sms.double_entry')) {
                 $input_columns[$column . '_status'] = ['name' => $dbname . '.' . $column . '_status', 'data' => $column . '_status', 'title' => $title . '_status', 'orderable' => false, 'visible' => false];
             }
 
