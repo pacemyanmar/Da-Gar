@@ -144,6 +144,31 @@ class SampleData extends Model
         return $this->getTranslation('level5', $value);
     }
 
+    public function getLevel1Attribute($value)
+    {
+        return $this->getTranslation('level1', $value);
+    }
+
+    public function getLevel2Attribute($value)
+    {
+        return $this->getTranslation('level2', $value);
+    }
+
+    public function getLevel3Attribute($value)
+    {
+        return $this->getTranslation('level3', $value);
+    }
+
+    public function getLevel4Attribute($value)
+    {
+        return $this->getTranslation('level4', $value);
+    }
+
+    public function getLevel5Attribute($value)
+    {
+        return $this->getTranslation('level5', $value);
+    }
+
 
 
     private function getTranslation($column, $value)

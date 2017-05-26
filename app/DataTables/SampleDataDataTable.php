@@ -184,7 +184,7 @@ class SampleDataDataTable extends DataTable
 
             'level5' => ['name' => 'level5', 'data' => 'level5', 'title' => trans('sample.level5'), 'orderable' => false],
             'level4' => ['name' => 'level4', 'data' => 'level4', 'title' => trans('sample.level4'), 'orderable' => false],
-            //'level3' => ['name' => 'level3', 'data' => 'level3', 'title' => trans('sample.level3'), 'orderable' => false],
+            'level3' => ['name' => 'level3', 'data' => 'level3', 'title' => trans('sample.level3'), 'orderable' => false],
             'level2' => ['name' => 'level2', 'data' => 'level2', 'title' => trans('sample.level2'), 'orderable' => false],
             'level1' => ['name' => 'level1', 'data' => 'level1', 'title' => trans('sample.level1'), 'orderable' => false],
 
