@@ -515,7 +515,7 @@ class ProjectController extends AppBaseController
                                 if ($input->other) {
                                     $inputType = 'string';
                                 } else {
-                                    $inputType = 'boolean';
+                                    $inputType = 'unsignedTinyInteger';
                                 }
                                 break;
 
@@ -561,7 +561,7 @@ class ProjectController extends AppBaseController
                                 if ($input->other) {
                                     $inputType = 'string';
                                 } else {
-                                    $inputType = 'boolean';
+                                    $inputType = 'unsignedTinyInteger';
                                 }
                                 break;
 
