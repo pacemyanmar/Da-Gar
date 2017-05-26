@@ -129,7 +129,7 @@ class ProjectResultsController extends AppBaseController
                             'title' => trans('sample.'.$column),
                             'orderable' => false,
                             'defaultContent' => 'N/A',
-                            'width' => '60px',
+                            'width' => '90px',
                         ];
                         break;
                     case 'mobile':

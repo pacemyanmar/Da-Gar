@@ -528,7 +528,7 @@ class SurveyResultDataTable extends DataTable
         $columnName = array_keys($this->tableColumns);
 
         //$textColumns = ['location_code', 'spotchecker', 'spotchecker_code', 'name', 'nrc_id', 'form_id', 'mobile'];
-        $textColumns = ['location_code'];
+        $textColumns = ['location_code', 'user_id', 'full_name'];
         $textColumns = array_intersect_key($this->tableColumns, array_flip($textColumns));
 
         $columnName = array_flip($columnName);
