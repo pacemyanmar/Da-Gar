@@ -476,14 +476,16 @@ class SurveyResultDataTable extends DataTable
 
         $townships = $sampleData->select(DB::raw($township_query))->get()->unique();
 
-        $township_option = "";
+        $level3_option = "";
         foreach ($townships as $key => $township) {
-            if ($locale == config('app.fallback_locale')) {
-                $township_option .= "<option value=\"$township->level3\">$township->level3</option>";
-            } else {
-                $township_trans = json_decode($township->level3_trans, true);
-
-                $township_option .= "<option value=\"$township->level3\">$township_trans[$locale]</option>";
+            if($township->level3) {
+                $townshipkey = str_replace("'", "\\'", $township->level3);
+                if (!$township->level3_trans || $locale == config('app.fallback_locale')) {
+                    $level3_option .= "<option value=\"$townshipkey\">$townshipkey</option>";
+                } else {
+                    $tsptrans = str_replace("'", "\\'", $township->level3_trans);
+                    $level3_option .= "<option value=\"$townshipkey\">$tsptrans</option>";
+                }
             }
 
         }
@@ -492,13 +494,16 @@ class SurveyResultDataTable extends DataTable
 
         $districts = $sampleData->select(DB::raw($district_query))->get()->unique();
 
-        $district_option = "";
+        $level2_option = "";
         foreach ($districts as $key => $district) {
-            if ($locale == config('app.fallback_locale')) {
-                $district_option .= "<option value=\"$district->level2\">$district->level2</option>";
-            } else {
-                $district_trans = json_decode($district->level2_trans, true);
-                $district_option .= "<option value=\"$district->level2\">$district_trans[$locale]</option>";
+            if($district->level2) {
+                $districtkey = str_replace("'", "\\'", $district->level2);
+                if (!$district->level2_trans || $locale == config('app.fallback_locale')) {
+                    $level2_option .= "<option value=\"$districtkey\">$districtkey</option>";
+                } else {
+                    $dsttrans = str_replace("'", "\\'", $district->level2_trans);
+                    $level2_option .= "<option value=\"$districtkey\">$dsttrans</option>";
+                }
             }
 
         }
@@ -506,18 +511,22 @@ class SurveyResultDataTable extends DataTable
         $state_query = "level1, level1_trans";
         $states = $sampleData->select(DB::raw($state_query))->get()->unique();
 
-        $state_option = "";
+        $level1_option = "";
         foreach ($states as $key => $state) {
-            if ($locale == config('app.fallback_locale')) {
-                $state_option .= "<option value=\"$state->level1\">$state->level1</option>";
-            } else {
-                $state_trans = json_decode($state->level1_trans, true);
-                $state_option .= "<option value=\"$state->level1\">$state_trans[$locale]</option>";
+            if($state->level1) {
+                $statekey = str_replace("'", "\\'", $state->level1);
+                if (!$state->level1_trans || $locale == config('app.fallback_locale')) {
+                    $level1_option .= "<option value=\"$statekey\">$statekey</option>";
+                } else {
+                    $statrans = str_replace("'", "\\'", $state->level1_trans);
+                    $level1_option .= "<option value=\"$statekey\">$statrans</option>";
+                }
             }
 
         }
 
         $columnName = array_keys($this->tableColumns);
+
         //$textColumns = ['location_code', 'spotchecker', 'spotchecker_code', 'name', 'nrc_id', 'form_id', 'mobile'];
         $textColumns = ['location_code'];
         $textColumns = array_intersect_key($this->tableColumns, array_flip($textColumns));
@@ -531,18 +540,22 @@ class SurveyResultDataTable extends DataTable
         $selectColumns = ['level5', 'level4', 'level3', 'level2', 'level1'];
 
         $selectColumns = array_intersect_key($this->tableColumns, array_flip($selectColumns));
+
         $locationColumns = [];
         $selectColsArr = [];
         foreach ($selectColumns as $key => $value) {
             $selectColsArr[] = $columnName[$key] + 1;
             $locationColumns[$key] = $columnName[$key] + 1;
         }
+
         $select_js = "";
         foreach ($locationColumns as $location => $column_key) {
             $location_option = isset(${$location . '_option'}) ? ${$location . '_option'} : '';
-            $select_js .= "this.api().columns('$column_key').every( function () {
+
+            if($location_option) {
+                $select_js .= "this.api().columns('$column_key').every( function () {
                               var column = this;
-                              var select = $('<select style=\"width:80% !important\"><option value=\"\">-</option>$location_option</select>')
+                              var location = $('<select style=\"width:80% !important\"><option value=\"\">-</option>$location_option</select>')
                               .appendTo( $(column.header()) )
                               .on( 'change', function () {
                               var val = $.fn.dataTable.util.escapeRegex(
@@ -553,8 +566,9 @@ class SurveyResultDataTable extends DataTable
                                   .search( val ? val : '', false, false )
                                   .draw();
                               } );
-                              select.addClass('form-control input-sm');
+                              location.addClass('form-control input-sm');
                               } );\n";
+            }
         }
 
         $statusColumns = array_intersect_key($this->tableColumns, $this->tableSectionColumns);

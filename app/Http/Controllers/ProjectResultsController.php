@@ -153,7 +153,7 @@ class ProjectResultsController extends AppBaseController
                         break;
                     case 'level1':
                         $columns['level1'] = [
-                            'name' => 'sample_datas.level1',
+                            'name' => 'sample_datas_view.level1',
                             'data' => 'level1',
                             'title' => trans('sample.level1'),
                             'orderable' => false,
@@ -180,7 +180,7 @@ class ProjectResultsController extends AppBaseController
                         break;
                     case 'level3':
                         $columns['level3'] = [
-                            'name' => 'sample_datas.level3',
+                            'name' => 'sample_datas_view.level3',
                             'data' => 'level3',
                             'title' => trans('sample.level3'),
                             'orderable' => false,
