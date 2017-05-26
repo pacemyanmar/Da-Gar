@@ -4,7 +4,7 @@
     <section class="content-header">
         <h1 class="pull-left">Sample Datas</h1>
         <h1 class="pull-right">
-            <button data-toggle="modal" data-target="#translateModal" class="btn btn-primary" style="margin-top: -10px;margin-bottom: 5px; margin-right:5px;">{!! trans('messages.importTranslation') !!}</button>
+            <!--button data-toggle="modal" data-target="#translateModal" class="btn btn-primary" style="margin-top: -10px;margin-bottom: 5px; margin-right:5px;">{!! trans('messages.importTranslation') !!}</button-->
 
             <button data-toggle="modal" data-target="#importModal" class="btn btn-primary" style="margin-top: -10px;margin-bottom: 5px; margin-right:5px;">{!! trans('messages.import') !!}</button>
 
