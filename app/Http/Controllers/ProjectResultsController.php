@@ -162,10 +162,9 @@ class ProjectResultsController extends AppBaseController
                                 return "function(data,type,full,meta){
                                     var html;
                                     if(type === 'display') {
-                                        var state_trans = JSON.parse(full.level1_trans);
 
-                                        if(state_trans && state_trans.$locale) {
-                                            html = state_trans.$locale;
+                                        if(full.level1_trans) {
+                                            html = full.level1_trans;
                                         } else {
                                             html =data;
                                         }
@@ -190,10 +189,9 @@ class ProjectResultsController extends AppBaseController
                                 return "function(data,type,full,meta){
                                     var html;
                                     if(type === 'display') {
-                                        var township_trans = JSON.parse(full.level3_trans);
 
-                                        if(township_trans && township_trans.$locale) {
-                                            html = township_trans.$locale;
+                                        if(full.level3_trans) {
+                                            html = full.level3_trans;
                                         } else {
                                             html =data;
                                         }
@@ -745,7 +743,7 @@ class ProjectResultsController extends AppBaseController
 
         foreach ($sections as $key => $section) {
             $section_inputs = $section->inputs->pluck('value', 'inputid');
-            
+
             $section_has_result_submitted = array_intersect_key($results, $section_inputs->toArray());
             if(count($section_has_result_submitted) > 0) {
                 if(!array_key_exists($section->id, $section_result)) {
