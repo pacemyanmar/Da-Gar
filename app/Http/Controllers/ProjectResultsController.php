@@ -122,20 +122,11 @@ class ProjectResultsController extends AppBaseController
                         ];
                         break;
                     case 'location_code':
-                        $columns['location_code'] = [
-                            'name' => 'sample_datas_view.location_code',
-                            'data' => 'location_code',
-                            'title' => trans('sample.location_code'),
-                            'orderable' => false,
-                            'defaultContent' => 'N/A',
-                            'width' => '60px',
-                        ];
-                        break;
                     case 'national_id':
-                        $columns['national_id'] = [
-                            'name' => 'sample_datas_view.national_id',
-                            'data' => 'national_id',
-                            'title' => trans('sample.national_id'),
+                        $columns[$column] = [
+                            'name' => 'sample_datas_view.'.$column,
+                            'data' => $column,
+                            'title' => trans('sample.'.$column),
                             'orderable' => false,
                             'defaultContent' => 'N/A',
                             'width' => '60px',
@@ -152,47 +143,21 @@ class ProjectResultsController extends AppBaseController
                         ];
                         break;
                     case 'level1':
-                        $columns['level1'] = [
-                            'name' => 'sample_datas_view.level1',
-                            'data' => 'level1',
-                            'title' => trans('sample.level1'),
-                            'orderable' => false,
-                            'defaultContent' => 'N/A',
-                            'render' => function () use ($locale) {
-                                $data = ($locale == config('app.fallback_locale'))? 'data':'full.level1_trans';
-                                return "function(data,type,full,meta){
-                                    var html;
-                                    if(type === 'display') {
-
-                                        if(full.level1_trans) {
-                                            html = $data;
-                                        } else {
-                                            html =data;
-                                        }
-                                    } else {
-                                        html = data;
-                                    }
-
-                                    return html;
-                                }";
-                            },
-                            //'width' => '120px',
-                        ];
-                        break;
+                    case 'level2':
                     case 'level3':
-                        $columns['level3'] = [
-                            'name' => 'sample_datas_view.level3',
-                            'data' => 'level3',
-                            'title' => trans('sample.level3'),
+                        $columns[$column] = [
+                            'name' => 'sample_datas_view.'.$column,
+                            'data' => $column,
+                            'title' => trans('sample.'.$column),
                             'orderable' => false,
                             'defaultContent' => 'N/A',
-                            'render' => function () use ($locale) {
-                                $data = ($locale == config('app.fallback_locale'))? 'data':'full.level3_trans';
+                            'render' => function () use ($locale, $column) {
+                                $data = ($locale == config('app.fallback_locale'))? 'data':'full.'.$column.'_trans';
                                 return "function(data,type,full,meta){
                                     var html;
                                     if(type === 'display') {
 
-                                        if(full.level3_trans) {
+                                        if(full.".$column."_trans) {
                                             html = $data;
                                         } else {
                                             html =data;
