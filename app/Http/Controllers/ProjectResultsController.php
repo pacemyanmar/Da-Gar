@@ -159,12 +159,13 @@ class ProjectResultsController extends AppBaseController
                             'orderable' => false,
                             'defaultContent' => 'N/A',
                             'render' => function () use ($locale) {
+                                $data = ($locale == config('app.fallback_locale'))? 'data':'full.level1_trans';
                                 return "function(data,type,full,meta){
                                     var html;
                                     if(type === 'display') {
 
                                         if(full.level1_trans) {
-                                            html = full.level1_trans;
+                                            html = $data;
                                         } else {
                                             html =data;
                                         }
@@ -186,12 +187,13 @@ class ProjectResultsController extends AppBaseController
                             'orderable' => false,
                             'defaultContent' => 'N/A',
                             'render' => function () use ($locale) {
+                                $data = ($locale == config('app.fallback_locale'))? 'data':'full.level3_trans';
                                 return "function(data,type,full,meta){
                                     var html;
                                     if(type === 'display') {
 
                                         if(full.level3_trans) {
-                                            html = full.level3_trans;
+                                            html = $data;
                                         } else {
                                             html =data;
                                         }
