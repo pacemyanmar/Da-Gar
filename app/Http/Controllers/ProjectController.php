@@ -534,6 +534,8 @@ class ProjectController extends AppBaseController
                         if ($inputType == 'string') {
                             $table->string($input->inputid, 100)
                                 ->change();
+                        } elseif ($inputType == 'unsignedTinyInteger') {
+                            DB::statement("ALTER TABLE $dbname CHANGE $input->inputid $input->inputid TINYINT(3) UNSIGNED NULL DEFAULT NULL;");
                         } else {
                             $table->$inputType($input->inputid)
                                 ->change();
