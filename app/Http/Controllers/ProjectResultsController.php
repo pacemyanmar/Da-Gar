@@ -277,36 +277,46 @@ class ProjectResultsController extends AppBaseController
             $query->where('status', 'published');
         }]);
 
-        $project_inputs = $project->inputs->sortBy('sort');
-        foreach ($project_inputs as $input) {
-            $column = $input->inputid;
-            //$title = preg_replace('/s[0-9]+|ir/', '', $column);
-            //$title = strtoupper(preg_replace('/i/', '_', $title));
-            switch ($input->type) {
-                case 'radio':
-                    $title = $input->question->qnum;
-                    break;
-                case 'checkbox':
-                    $title = $input->question->qnum . ' ' . $input->value;
-                    break;
-                case 'template':
-                    $title = $input->label;
-                    break;
-                default:
-                    $title = $input->question->qnum . ' ' . $input->value;
-                    break;
-            }
+        $project_questions = $project->questions->sortBy('sort');
 
-            $input_columns[$column] = ['name' => $dbname . '.' . $column, 'data' => $column, 'title' => $title, 'class' => 'result', 'orderable' => false, 'width' => '80px'];
-            if(config('sms.double_entry')) {
-                $input_columns[$column . '_status'] = ['name' => $dbname . '.' . $column . '_status', 'data' => $column . '_status', 'title' => $title . '_status', 'orderable' => false, 'visible' => false];
-            }
+        foreach($project_questions as $question) {
+            $inputs = $question->surveyInputs->sortBy('sort');
+            foreach($inputs as $input) {
+                $column = $input->inputid;
+                //$title = preg_replace('/s[0-9]+|ir/', '', $column);
+                //$title = strtoupper(preg_replace('/i/', '_', $title));
+                switch ($input->type) {
+                    case 'radio':
+                        $title = $question->qnum;
+                        break;
+                    case 'checkbox':
+                        $title = $question->qnum . ' ' . $input->value;
+                        break;
+                    case 'template':
+                        $title = $input->label;
+                        break;
+                    default:
+                        if($inputs->count() > 1) {
+                            $title = $question->qnum . ' ' . $input->value;
+                        } else {
+                            $title = $question->qnum;
+                        }
+                        break;
+                }
 
-            if (!$input->in_index) {
-                $input_columns[$column]['visible'] = false;
+                $input_columns[$column] = ['name' => $dbname . '.' . $column, 'data' => $column, 'title' => $title, 'class' => 'result', 'orderable' => false, 'width' => '80px'];
+                if(config('sms.double_entry')) {
+                    $input_columns[$column . '_status'] = ['name' => $dbname . '.' . $column . '_status', 'data' => $column . '_status', 'title' => $title . '_status', 'orderable' => false, 'visible' => false];
+                }
+
+                if (!$input->in_index) {
+                    $input_columns[$column]['visible'] = false;
+                }
             }
 
         }
+
+
 
         if ($project->status != 'new') {
             //ksort($input_columns, SORT_NATURAL);

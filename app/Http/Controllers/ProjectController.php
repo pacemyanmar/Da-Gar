@@ -417,18 +417,22 @@ class ProjectController extends AppBaseController
             return redirect()->back();
         }
 
-        $questions = $project->questions;
+        $sections = $project->sectionsDb;
 
-        foreach ($questions as $question) {
-            $inputs = $question->surveyInputs;
-            $tosort = $question->sort;
-
-            foreach ($inputs as $k => $input) {
-                $sk = $k + 1;
-                $input->sort = $tosort . sprintf('%02d', $sk);
-                $input->save();
+        foreach($sections as $section) {
+            $questions = $section->questions;
+            foreach ($questions as $qk => $question) {
+                $question->sort = $section->sort. sprintf('%02d', $qk);
+                $question->save();
+                $inputs = $question->surveyInputs;
+                foreach ($inputs as $k => $input) {
+                    $input->sort = $section->sort . $question->sort . $k;
+                    $input->save();
+                }
             }
         }
+
+
         return redirect()->back();
     }
 
