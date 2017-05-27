@@ -313,6 +313,7 @@ class ProjectResultsController extends AppBaseController
                     $input_columns[$column]['visible'] = false;
                 }
             }
+            unset($inputs);
 
         }
 

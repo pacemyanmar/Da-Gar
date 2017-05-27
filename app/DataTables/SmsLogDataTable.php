@@ -181,23 +181,55 @@ class SmsLogDataTable extends DataTable
                                     return data
                                   }, createdCell: function (td, cellData, rowData, row, col) { if(rowData.status == 'error') { $(td).addClass('danger'); } }"; // this is really dirty hack to work createdCell
         }];
+
+        $columns['form_code'] = ['name' => 'form_code', 'data' => 'form_code', 'width' => 100, 'orderable' => false];
+
         if ($this->project) {
             $sections = $this->project->sectionsDb->sortBy('sort');
             $filter_section = Request::input('section');
-            foreach ($sections as $key => $section) {
+
+            foreach($sections as $key => $section) {
                 $visible = (($key + 1) == $filter_section);
-                $inputs = $section->inputs->sortBy('sort')->pluck('sort', 'inputid')->unique();
-                foreach ($inputs as $inputid => $sort) {
-                    $columns[$inputid] = ['name' => $inputid, 'data' => $inputid, 'title' => strtoupper(studly_case($inputid)), 'visible' => $visible, 'orderable' => false, 'width' => 30, "render" => function () {
-                        return "function ( data, type, full, meta ) {
+                if($visible) {
+                    $questions = $section->questions;
+                    foreach ($questions as $qk => $question) {
+                        $inputs = $question->surveyInputs;
+                        foreach ($inputs as $k => $input) {
+
+                            switch ($input->type) {
+                                case 'radio':
+                                    $title = $question->qnum;
+                                    break;
+                                case 'checkbox':
+                                    $title = $question->qnum . ' ' . $input->value;
+                                    break;
+                                case 'template':
+                                    $title = $input->label;
+                                    break;
+                                default:
+                                    if ($inputs->count() > 1) {
+                                        $title = $question->qnum . ' ' . $input->value;
+                                    } else {
+                                        $title = $question->qnum;
+                                    }
+                                    break;
+                            }
+
+                            $columns[$input->inputid] = ['name' => $input->inputid, 'data' => $input->inputid, 'title' => $title, 'visible' => $visible, 'orderable' => false, 'width' => 30, "render" => function () {
+                                return "function ( data, type, full, meta ) {
                                     return data
                                   }, createdCell: function (td, cellData, rowData, row, col) { if(!cellData) { $(td).addClass('danger'); } }"; // this is really dirty hack to work createdCell
-                    }];
+                            }];
+
+                        }
+                    }
+                    unset($inputs);
                 }
             }
+
         }
 
-        $columns['form_code'] = ['name' => 'form_code', 'data' => 'form_code', 'width' => 100, 'orderable' => false];
+
         $columns['status_message'] = ['name' => 'status_message', 'data' => 'status_message', 'width' => '400', 'orderable' => false];
         if($auth->role->level === 9) {
             $columns['sms_status'] = ['name' => 'sms_status', 'data' => 'sms_status',  'orderable' => false];
