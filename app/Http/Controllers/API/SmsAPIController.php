@@ -532,6 +532,7 @@ class SmsAPIController extends AppBaseController
 
                 $reply['status'] = 'success';
             }
+            $reply['section'] = (isset($section_key))?$section_key:null;
             $reply['result_id'] = $result->id;
             $reply['project_id'] = $project->id;
 
