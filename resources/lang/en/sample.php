@@ -25,4 +25,6 @@ return [
     'phone' => 'Phone',
     'phone2' => 'Phone 2',
     'observer_code' => 'Observer ID',
+    'call_primary' => 'Primary Call Phone',
+    'sms_time' => 'SMS Time',
 ];

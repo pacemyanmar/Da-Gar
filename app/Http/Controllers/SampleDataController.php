@@ -198,6 +198,13 @@ class SampleDataController extends AppBaseController
                     "supervisor_email1" => ($row->supervisor_email1) ? $row->supervisor_email1 : null,
                     "supervisor_email2" => ($row->supervisor_email2) ? $row->supervisor_email2 : null,
                     "supervisor_address" => ($row->supervisor_address) ? $row->supervisor_address : null,
+                    "sms_primary" => ($row->sms_primary) ? $row->sms_primary : null,
+                    "sms_backup" => ($row->sms_backup) ? $row->sms_backup : null,
+                    "call_primary" => ($row->call_primary) ? $row->call_primary : null,
+                    "call_backup" => ($row->call_backup) ? $row->call_backup : null,
+                    "hotline1" => ($row->hotline_1) ? $row->hotline_1 : null,
+                    "hotline2" => ($row->hotline_2) ? $row->hotline_2 : null,
+                    "sms_time" => ($row->sms_time) ? $row->sms_time : null,
                 ];
                 $attr = [
                     "location_code" => ($row->location_code) ? $row->location_code : null,
@@ -237,12 +244,7 @@ class SampleDataController extends AppBaseController
                         "language" => ($row->language) ? $row->language : null,
                         "bank_information" => ($row->bank_information) ? $row->bank_information : null,
                         "mobile_provider" => ($row->mobile_provider) ? $row->mobile_provider : null,
-                        "sms_primary" => ($row->sms_primary) ? $row->sms_primary : null,
-                        "sms_backup" => ($row->sms_backup) ? $row->sms_backup : null,
-                        "call_primary" => ($row->call_primary) ? $row->call_primary : null,
-                        "call_backup" => ($row->call_backup) ? $row->call_backup : null,
-                        "hotline1" => ($row->hotline_1) ? $row->hotline_1 : null,
-                        "hotline2" => ($row->hotline_2) ? $row->hotline_2 : null,
+
                     ];
                     $observer_attr = [
                         'sample_id' => $location_data->id,

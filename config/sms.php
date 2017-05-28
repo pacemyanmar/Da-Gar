@@ -13,4 +13,12 @@ return [
         'locale' => 'my'
     ],
     'double_entry' => false,
+
+
+    // export columns
+    'export_columns' => [
+        'location_code' => 'location_code',
+        'call_primary' => 'call_primary',
+        'sms_time' => 'sms_time',
+    ]
 ];

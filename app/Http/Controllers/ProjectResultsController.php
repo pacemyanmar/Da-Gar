@@ -94,7 +94,7 @@ class ProjectResultsController extends AppBaseController
         $columns = [
         ];
 
-        $samplesData = SampleData::$export;
+        $samplesData = config('sms.export_columns');
 
         if ($project->index_columns) {
             $sampleDataColumns = array_merge($samplesData, $project->index_columns);
@@ -122,7 +122,9 @@ class ProjectResultsController extends AppBaseController
                         ];
                         break;
                     case 'location_code':
-                    case 'national_id':
+                    case 'call_primary':
+                    case 'sms_time':
+                    //case 'national_id':
                         $columns[$column] = [
                             'name' => 'sample_datas_view.'.$column,
                             'data' => $column,

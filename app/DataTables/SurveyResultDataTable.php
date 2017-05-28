@@ -430,12 +430,12 @@ class SurveyResultDataTable extends DataTable
                      GROUP_CONCAT(CONCAT('\n', ob.code ,' : \"', ob.gender ,'\"')) AS gender,
                      GROUP_CONCAT(CONCAT('\n', ob.code ,' : \"', ob.dob ,'\"')) AS dob,
                      GROUP_CONCAT(CONCAT('\n', ob.code ,' : \"', ob.education ,'\"')) AS education,
-                     GROUP_CONCAT(CONCAT('\n', ob.code ,' : \"', ob.sms_primary ,'\"')) AS sms_primary,
-                     GROUP_CONCAT(CONCAT('\n', ob.code ,' : \"', ob.sms_backup ,'\"')) AS sms_backup,
-                     GROUP_CONCAT(CONCAT('\n', ob.code ,' : \"', ob.call_primary ,'\"')) AS call_primary,
-                     GROUP_CONCAT(CONCAT('\n', ob.code ,' : \"', ob.call_backup ,'\"')) AS call_backup,
-                     GROUP_CONCAT(CONCAT('\n', ob.code ,' : \"', ob.hotline1 ,'\"')) AS hotline1,
-                     GROUP_CONCAT(CONCAT('\n', ob.code ,' : \"', ob.hotline2 ,'\"')) AS hotline2,
+                     GROUP_CONCAT(CONCAT('\n', ob.code ,' : \"', ob.sms_primary ,'\"')) AS obsms_primary,
+                     GROUP_CONCAT(CONCAT('\n', ob.code ,' : \"', ob.sms_backup ,'\"')) AS obsms_backup,
+                     GROUP_CONCAT(CONCAT('\n', ob.code ,' : \"', ob.call_primary ,'\"')) AS obcall_primary,
+                     GROUP_CONCAT(CONCAT('\n', ob.code ,' : \"', ob.call_backup ,'\"')) AS obcall_backup,
+                     GROUP_CONCAT(CONCAT('\n', ob.code ,' : \"', ob.hotline1 ,'\"')) AS obhotline1,
+                     GROUP_CONCAT(CONCAT('\n', ob.code ,' : \"', ob.hotline2 ,'\"')) AS obhotline2,
                      GROUP_CONCAT(CONCAT('\n', ob.code ,' : \"', ob.form_type ,'\"')) AS form_type,
                      GROUP_CONCAT(CONCAT('\n', ob.code ,' : \"', ob.full_name_trans ,'\"')) AS full_name_trans,
                      GROUP_CONCAT(CONCAT('\n', ob.code ,' : \"', ob.created_at ,'\"')) AS obcreated,
@@ -449,11 +449,13 @@ class SurveyResultDataTable extends DataTable
                            SELECT sd.id, sd.location_code, sd.type, sd.dbgroup, sd.sample, sd.ps_code, sd.area_type,
                            sd.level6, sd.level5, sd.level4, sd.level3, sd.level2, sd.level1, sd.level6_trans,
                            sd.level5_trans, sd.level4_trans, sd.level3_trans, sd.level2_trans, sd.level1_trans,
-                           sd.parties, sd.parent_id, sd.created_at, sd.updated_at, $observer  
+                           sd.parties, sd.parent_id, sd.created_at, sd.updated_at, sd.sms_primary, sd.sms_backup, sd.call_primary, 
+                           sd.call_backup, sd.hotline1, sd.hotline2, sd.sms_time, $observer  
                            FROM sample_datas AS sd LEFT JOIN observers AS ob ON ob.sample_id = sd.id  GROUP BY sd.id, sd.location_code, sd.type, sd.dbgroup, sd.sample, sd.ps_code, sd.area_type,
                            sd.level6, sd.level5, sd.level4, sd.level3, sd.level2, sd.level1, sd.level6_trans,
                            sd.level5_trans, sd.level4_trans, sd.level3_trans, sd.level2_trans, sd.level1_trans,
-                           sd.parties, sd.parent_id, sd.created_at, sd.updated_at  
+                           sd.parties, sd.parent_id, sd.created_at, sd.updated_at, sd.sms_primary, sd.sms_backup, sd.call_primary, 
+                           sd.call_backup, sd.hotline1, sd.hotline2, sd.sms_time
                            )");
         }
         $sampleData = DB::table('sample_datas_view')->where('type', $project->dblink)->where('dbgroup', $project->dbgroup);
@@ -525,6 +527,26 @@ class SurveyResultDataTable extends DataTable
 
         }
 
+        $call_primary_option = "";
+
+        $call_primary = $project->samplesData->pluck('call_primary','call_primary');
+
+        foreach ($call_primary as $phone) {
+            if($phone) {
+                $call_primary_option .= "<option value=\"$phone\">$phone</option>";
+            }
+        }
+
+        $sms_time_option = "";
+
+        $sms_time = $project->samplesData->pluck('sms_time','sms_time');
+
+        foreach ($sms_time as $time) {
+            if($time) {
+                $sms_time_option .= "<option value=\"$time\">$time</option>";
+            }
+        }
+
         $columnName = array_keys($this->tableColumns);
 
         //$textColumns = ['location_code', 'spotchecker', 'spotchecker_code', 'name', 'nrc_id', 'form_id', 'mobile'];
@@ -537,7 +559,7 @@ class SurveyResultDataTable extends DataTable
             $textColsArr[] = $columnName[$key] + 1;
         }
 
-        $selectColumns = ['level5', 'level4', 'level3', 'level2', 'level1'];
+        $selectColumns = ['level5', 'level4', 'level3', 'level2', 'level1', 'call_primary', 'sms_time'];
 
         $selectColumns = array_intersect_key($this->tableColumns, array_flip($selectColumns));
 

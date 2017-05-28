@@ -51,11 +51,18 @@ class SampleData extends Model
         'supervisor_mail1',
         'supervisor_mail2',
         'supervisor_address',
+
+        'sms_primary',
+        'sms_backup',
+        'call_primary',
+        'call_backup',
+        'hotline1',
+        'hotline2',
+        'sms_time',
     ];
 
     public static $export = [
         'location_code' => 'location_code',
-
     ];
 
     /**
