@@ -26,6 +26,7 @@ class Project extends Model
         'index_columns',
         'status',
         'project_trans',
+        'training',
     ];
 
     /**
@@ -43,6 +44,7 @@ class Project extends Model
         'copies' => 'integer',
         'dblink' => 'string',
         'index_columns' => 'array',
+        'training' => 'boolean',
     ];
 
     /**

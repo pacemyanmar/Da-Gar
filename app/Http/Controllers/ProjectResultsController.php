@@ -108,6 +108,7 @@ class ProjectResultsController extends AppBaseController
                             'title' => trans('messages.user'),
                             'orderable' => false,
                             'defaultContent' => 'N/A',
+                            'visible' => false,
                             //'width' => '80px',
                         ];
                         break;
@@ -115,17 +116,44 @@ class ProjectResultsController extends AppBaseController
                         $columns['full_name'] = [
                             'name' => 'sample_datas_view.full_name',
                             'data' => 'full_name',
-                            'title' => trans('messages.name'),
+                            'title' => trans('sample.observer_id'),
                             'orderable' => false,
                             'defaultContent' => 'N/A',
+                            'render' => function () use ($locale) {
+                                $data = ($locale == config('app.fallback_locale'))? 'data':'full.full_name_trans';
+                                return "function(data,type,full,meta){
+                                    var html;
+                                    if(type === 'display') {
+
+                                        if(full.full_name_trans) {
+                                            html = $data;
+                                        } else {
+                                            html =data;
+                                        }
+                                    } else {
+                                        html = data;
+                                    }
+
+                                    return html;
+                                }";
+                            },
                             //'width' => '80px',
                         ];
                         break;
                     case 'location_code':
+                        $columns[$column] = [
+                            'name' => 'sample_datas_view.'.$column,
+                            'data' => $column,
+                            'title' => trans('sample.'.$column),
+                            'orderable' => false,
+                            'defaultContent' => 'N/A',
+                            'visible' => false,
+                            'width' => '90px',
+                        ];
+                        break;
                     case 'call_primary':
                     case 'sms_time':
                     case 'observer_field':
-                    //case 'national_id':
                         $columns[$column] = [
                             'name' => 'sample_datas_view.'.$column,
                             'data' => $column,

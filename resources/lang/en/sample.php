@@ -19,6 +19,7 @@ return [
     'user_id' => 'Data Clerk',
     'form_id' => 'Report No.',
     'observer_name' => 'Observer Name',
+    'observer_id' => 'Observer ID',
     'supervisor_name' => 'Supervisor Name',
     'supervisor_phone' => 'Supervisor Phone',
     'supervisor_address' => 'Supervisor Address',

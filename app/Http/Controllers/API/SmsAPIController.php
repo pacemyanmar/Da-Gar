@@ -519,7 +519,7 @@ class SmsAPIController extends AppBaseController
                 if (empty($section_inputs)) {
                     $reply['message'] = 'ERROR';
                 } else {
-                    $reply['message'] = 'ERROR: SMS'.$section_key.' '. implode(', ', $checked['error'][$section_with_result]);
+                    $reply['message'] = 'ERROR SMS : '.$section_key.' '. implode(', ', $checked['error'][$section_with_result]);
                 }
 
                 $reply['status'] = 'error';

@@ -393,6 +393,7 @@ class ProjectController extends AppBaseController
         }
 
         $trainingmode = $request->input('trainingmode');
+
         if ($trainingmode) {
             $project->training = true;
             $message = 'Project changed to training mode';

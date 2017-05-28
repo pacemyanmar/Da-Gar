@@ -119,9 +119,9 @@
 
             $('#training').change(function () {
                 if($(this).is(':checked')) {
-                    var trainingmode = true;
+                    var trainingmode = 1;
                 } else {
-                    var trainingmode = false;
+                    var trainingmode = 0;
                 }
 
                 //send ajax request
