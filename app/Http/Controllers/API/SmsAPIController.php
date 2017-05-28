@@ -248,7 +248,7 @@ class SmsAPIController extends AppBaseController
 
             if (empty($project)) {
                 // if project is empty
-                $reply['message'] = trans('sms.no_project_code');
+                $reply['message'] = 'ERROR: '.strtoupper($form_prefix);
                 $reply['status'] = 'error';
                 return $reply;
             }
@@ -277,14 +277,14 @@ class SmsAPIController extends AppBaseController
                     }
 
                 }
-                
+
                 if(!isset($location_code)) {
                     $location_code = $sms_code;
                 }
 
 
                 if (empty($location_code)) {
-                    $reply['message'] = trans('sms.no_location_code');
+                    $reply['message'] = 'ERROR: '.strtoupper($form_prefix);
                     $reply['status'] = 'error';
                     return $reply;
                 }
@@ -298,7 +298,7 @@ class SmsAPIController extends AppBaseController
 
 
                 if (empty($sample_data)) {
-                    $reply['message'] = trans('sms.no_location_code');
+                    $reply['message'] = 'ERROR: '.strtoupper($form_prefix);
                     $reply['status'] = 'error';
                     return $reply;
                 }
@@ -365,6 +365,7 @@ class SmsAPIController extends AppBaseController
             $result_arr = [];
 
             $section_with_result = '';
+            $section_key = '';
             foreach ($sections as $key => $section) {
                 $skey = $key + 1;
                 $optional = 0; // initial count for optional inputs
@@ -415,6 +416,7 @@ class SmsAPIController extends AppBaseController
 
                                 if(empty($section_with_result)) {
                                     $section_with_result = $section->id;
+                                    $section_key = $section->sort + 1;
                                 }
 
                                 if ($input->type == 'checkbox') {
@@ -515,14 +517,19 @@ class SmsAPIController extends AppBaseController
             $result->save();
             if (!empty($checked['error'][$section_with_result])) {
                 if (empty($section_inputs)) {
-                    $reply['message'] = trans('sms.not_valid_response');
+                    $reply['message'] = 'ERROR';
                 } else {
-                    $reply['message'] = trans('sms.error_inputs', ['INPUTS' => implode(', ', $checked['error'][$section_with_result])]);
+                    $reply['message'] = 'ERROR: SMS'.$section_key.' '. implode(', ', $checked['error'][$section_with_result]);
                 }
 
                 $reply['status'] = 'error';
             } else {
-                $reply['message'] = trans('sms.success');
+                if($form_type == 'incident') {
+                    $reply['message'] = 'OK: INCIDENT';
+                } else {
+                    $reply['message'] = (isset($section_key))?'OK: SMS '.$section_key:'OK: SMS';
+                }
+
                 $reply['status'] = 'success';
             }
             $reply['result_id'] = $result->id;
@@ -530,7 +537,7 @@ class SmsAPIController extends AppBaseController
 
             return $reply;
         } else {
-            $reply['message'] = trans('sms.no_location_code');
+            $reply['message'] = 'ERROR: No Code!';
             $reply['status'] = 'error';
             $reply['form_code'] = 'unknown';
             return $reply;
