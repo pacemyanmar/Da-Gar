@@ -124,6 +124,7 @@ class ProjectResultsController extends AppBaseController
                     case 'location_code':
                     case 'call_primary':
                     case 'sms_time':
+                    case 'observer_field':
                     //case 'national_id':
                         $columns[$column] = [
                             'name' => 'sample_datas_view.'.$column,

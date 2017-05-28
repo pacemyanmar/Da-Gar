@@ -20,5 +20,6 @@ return [
         'location_code' => 'location_code',
         'call_primary' => 'call_primary',
         'sms_time' => 'sms_time',
+        'observer_field' => 'observer_field',
     ]
 ];
