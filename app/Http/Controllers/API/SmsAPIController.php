@@ -537,7 +537,7 @@ class SmsAPIController extends AppBaseController
 
             return $reply;
         } else {
-            $reply['message'] = 'ERROR: No Code!';
+            $reply['message'] = 'ERROR';
             $reply['status'] = 'error';
             $reply['form_code'] = 'unknown';
             return $reply;
