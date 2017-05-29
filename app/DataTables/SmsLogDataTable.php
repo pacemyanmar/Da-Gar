@@ -95,6 +95,8 @@ class SmsLogDataTable extends DataTable
                 'dom' => 'Brtip',
                 'ordering' => false,
                 'scrollX' => true,
+                'scrollCollapse' => true,
+                'autoWidth' => true,
                 'fixedColumns' => true,
                 'processing' => false,
                 'language' => [
@@ -171,18 +173,18 @@ class SmsLogDataTable extends DataTable
         $columns = [
             //'id' => ['name' => 'id', 'data' => 'id'],
             //'service_id' => ['name' => 'service_id', 'data' => 'service_id'],
-            'timestamp' => ['name' => 'created_at', 'data' => 'created_at', 'orderable' => false, 'width' => 80],
-            'from_number' => ['name' => 'from_number', 'data' => 'from_number', 'width' => 100, 'orderable' => false],
-            'to_number' => ['name' => 'to_number', 'data' => 'to_number', 'width' => 100, 'orderable' => false],
+            'timestamp' => ['name' => 'created_at', 'data' => 'created_at', 'orderable' => false, 'width' => '80'],
+            'from_number' => ['name' => 'from_number', 'data' => 'from_number', 'width' => '100', 'orderable' => false],
+            'to_number' => ['name' => 'to_number', 'data' => 'to_number', 'width' => '100', 'orderable' => false],
 
         ];
-        $columns['content'] = ['name' => 'content', 'data' => 'content', 'width' => 150, 'orderable' => false, "render" => function () {
+        $columns['content'] = ['name' => 'content', 'data' => 'content', 'width' => '150', 'orderable' => false, "render" => function () {
             return "function ( data, type, full, meta ) {
                                     return data
-                                  }, createdCell: function (td, cellData, rowData, row, col) { if(rowData.status == 'error') { $(td).addClass('danger'); } }"; // this is really dirty hack to work createdCell
+                                  }, createdCell: function (td, cellData, rowData, row, col) { if(rowData.status == 'error') { $(td).addClass('danger');} $(td).css('word-wrap','break-word');}"; // this is really dirty hack to work createdCell
         }];
 
-        $columns['form_code'] = ['name' => 'form_code', 'data' => 'form_code', 'width' => 100, 'orderable' => false];
+        $columns['form_code'] = ['name' => 'form_code', 'data' => 'form_code', 'width' => '100', 'orderable' => false];
 
         if ($this->project) {
             $sections = $this->project->sectionsDb->sortBy('sort');
@@ -215,10 +217,10 @@ class SmsLogDataTable extends DataTable
                                     break;
                             }
 
-                            $columns[$input->inputid] = ['name' => $input->inputid, 'data' => $input->inputid, 'title' => $title, 'visible' => $visible, 'orderable' => false, 'width' => 30, "render" => function () {
+                            $columns[$input->inputid] = ['name' => $input->inputid, 'data' => $input->inputid, 'title' => $title, 'visible' => $visible, 'orderable' => false, 'width' => '30', "render" => function () {
                                 return "function ( data, type, full, meta ) {
                                     return data
-                                  }, createdCell: function (td, cellData, rowData, row, col) { if(!cellData) { $(td).addClass('danger'); } }"; // this is really dirty hack to work createdCell
+                                  }, createdCell: function (td, cellData, rowData, row, col) { if(!cellData && rowData.status != 'success') { $(td).addClass('danger'); } }"; // this is really dirty hack to work createdCell
                             }];
 
                         }
@@ -230,10 +232,10 @@ class SmsLogDataTable extends DataTable
         }
 
 
-        $columns['status_message'] = ['name' => 'status_message', 'data' => 'status_message', 'width' => '400', 'orderable' => false];
+        $columns['status_message'] = ['name' => 'status_message', 'data' => 'status_message', 'width' => '100', 'orderable' => false];
         if($auth->role->level === 9) {
-            $columns['sms_status'] = ['name' => 'sms_status', 'data' => 'sms_status',  'orderable' => false];
-            $columns['updated_at'] = ['name' => 'updated_at', 'data' => 'updated_at', 'orderable' => false, 'width' => 80, 'title' => 'Updated Time'];
+            $columns['sms_status'] = ['name' => 'sms_status', 'data' => 'sms_status', 'width' => '80',  'orderable' => false];
+            $columns['updated_at'] = ['name' => 'updated_at', 'data' => 'updated_at', 'orderable' => false, 'width' => '80', 'title' => 'Updated Time'];
         }
         return $columns;
     }

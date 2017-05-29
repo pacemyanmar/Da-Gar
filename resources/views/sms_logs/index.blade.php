@@ -37,6 +37,7 @@
 @endsection
 
 @push('document-ready')
+window.LaravelDataTables["dataTableBuilder"].columns.adjust().draw();
 setInterval( function () {
 window.LaravelDataTables["dataTableBuilder"].ajax.reload( null, false ); // user paging is not reset on reload
 }, 3000 );

@@ -615,7 +615,7 @@ class SurveyResultDataTable extends DataTable
                 "emptyTable" => trans('messages.emptyTable'),
                 "info" => trans('messages.info'),
                 "infoEmpty" => trans('messages.infoEmpty'),
-                "infoFiltered" => trans('messages.infoFiltered'),
+                "infoFiltered" => '',
                 "infoPostFix" => trans('messages.infoPostFix'),
                 "thousands" => trans('messages.thousands'),
                 "lengthMenu" => trans('messages.lengthMenu'),
