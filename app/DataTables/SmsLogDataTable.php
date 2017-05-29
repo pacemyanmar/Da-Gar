@@ -134,15 +134,15 @@ class SmsLogDataTable extends DataTable
                     //'print',
                     'reset',
                     'reload',
-//                    [
-//                        'extend' => 'collection',
-//                        'text' => '<i class="fa fa-download"></i> ' . trans('messages.export'),
-//                        'buttons' => [
+                    [
+                        'extend' => 'collection',
+                        'text' => '<i class="fa fa-download"></i> ' . trans('messages.export'),
+                        'buttons' => [
 //                            'csv',
-//                            'excel',
+                            'excel',
 //                            'pdf',
-//                        ],
-//                    ],
+                        ],
+                    ],
                     'colvis',
                 ],
                 'initComplete' => "function () {
