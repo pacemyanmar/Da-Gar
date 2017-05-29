@@ -152,6 +152,7 @@ class ProjectResultsController extends AppBaseController
                         ];
                         break;
                     case 'call_primary':
+                    case 'sms_primary':
                     case 'sms_time':
                     case 'observer_field':
                         $columns[$column] = [

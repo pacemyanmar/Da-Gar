@@ -35,10 +35,19 @@ trait LogicalCheckTrait {
                 $required_response_empty_value = $question->surveyInputs->filter(function ($input, $key) {
                     return (!$input->optional && empty($input->value));
                 })->pluck('inputid')->toArray();
+                //dd($inputs);
+                $old_new_inputs = $inputs;
+//                array_walk($old_new_inputs, function(&$value, $key, $result){
+//                    if(empty($value)) {
+//                        $value = $result->{$key};
+//                    }
+//                }, $result);
+//
+//                dd($old_new_inputs);
 
 
-                $intersect_with_value = array_intersect($required_response_with_value, array_keys(array_filter($inputs))); // if this is greater than zero question is complete
-                $intersect_no_value = array_intersect($required_response_empty_value, array_keys(array_filter($inputs)));
+                $intersect_with_value = array_intersect($required_response_with_value, array_keys(array_filter($old_new_inputs))); // if this is greater than zero question is complete
+                $intersect_no_value = array_intersect($required_response_empty_value, array_keys(array_filter($old_new_inputs)));
 
                 if (count($intersect_with_value) > 0 || (!empty($required_response_empty_value) && $required_response_empty_value == $intersect_no_value)) {
                     $question_complete = true;
@@ -86,7 +95,6 @@ trait LogicalCheckTrait {
                                     if (!empty($left_values) && !empty($right_values)) {
                                         $error[$section_id][] = $question->qnum;
                                         $discard = true;
-                                        $question_complete = false;
                                     }
 
                                     unset($left_ids);
