@@ -262,7 +262,7 @@ class SmsAPIController extends AppBaseController
 
             $dbname = $project->dbname;
 
-            $reply['form_code'] = $pcode[1] . $pcode[2];
+            $reply['form_code'] = $pcode[2];
             $sms_code = $pcode[2];
 
             if (!$training_mode) {
