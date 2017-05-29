@@ -146,7 +146,7 @@ class SmsLogDataTable extends DataTable
                     'colvis',
                 ],
                 'initComplete' => "function () {
-                            this.api().columns([1,2,3]).every(function () {
+                            this.api().columns([1,2,3,4]).every(function () {
                                 var column = this;
                                 var br = document.createElement(\"br\");
                                 var input = document.createElement(\"input\");
@@ -174,8 +174,8 @@ class SmsLogDataTable extends DataTable
             //'id' => ['name' => 'id', 'data' => 'id'],
             //'service_id' => ['name' => 'service_id', 'data' => 'service_id'],
             'timestamp' => ['name' => 'created_at', 'data' => 'created_at', 'orderable' => false, 'width' => '80'],
-            'from_number' => ['name' => 'from_number', 'data' => 'from_number', 'width' => '100', 'orderable' => false],
-            'to_number' => ['name' => 'to_number', 'data' => 'to_number', 'width' => '100', 'orderable' => false],
+            'from_number' => ['name' => 'from_number', 'data' => 'from_number', 'title' => 'From', 'width' => '100', 'orderable' => false],
+            'to_number' => ['name' => 'to_number', 'data' => 'to_number', 'title' => 'To', 'width' => '100', 'orderable' => false],
 
         ];
         $columns['content'] = ['name' => 'content', 'data' => 'content', 'width' => '150', 'orderable' => false, "render" => function () {
@@ -184,7 +184,7 @@ class SmsLogDataTable extends DataTable
                                   }, createdCell: function (td, cellData, rowData, row, col) { if(rowData.status == 'error') { $(td).addClass('danger');} $(td).css('word-wrap','break-word');}"; // this is really dirty hack to work createdCell
         }];
 
-        $columns['form_code'] = ['name' => 'form_code', 'data' => 'form_code', 'width' => '100', 'orderable' => false];
+        $columns['form_code'] = ['name' => 'form_code', 'data' => 'form_code', 'title' => 'Observer Code', 'width' => '100', 'orderable' => false];
 
         if ($this->project) {
             $sections = $this->project->sectionsDb->sortBy('sort');
@@ -216,11 +216,27 @@ class SmsLogDataTable extends DataTable
                                     }
                                     break;
                             }
+                            $qnum = $question->qnum;
 
-                            $columns[$input->inputid] = ['name' => $input->inputid, 'data' => $input->inputid, 'title' => $title, 'visible' => $visible, 'orderable' => false, 'width' => '30', "render" => function () {
+                            $columns[$input->inputid] = ['name' => $input->inputid, 'data' => $input->inputid, 'title' => $title,
+                                'visible' => $visible, 'orderable' => false,
+                                'width' => '30', "render" => function () use ($qnum) {
                                 return "function ( data, type, full, meta ) {
                                     return data
-                                  }, createdCell: function (td, cellData, rowData, row, col) { if(!cellData && rowData.status != 'success') { $(td).addClass('danger'); } }"; // this is really dirty hack to work createdCell
+                                  }, createdCell: function (td, cellData, rowData, row, col) {
+                                     if(cellData && rowData.status == 'success') {
+                                        $(td).addClass('success');
+                                     }
+                                     if(rowData.status != 'success') { 
+                                        
+                                        var msg = rowData.status_message.split(':').pop();
+                                        
+                                        if( /\\s*$qnum\\s*/i.test(msg) ) {
+                                           $(td).addClass('danger');
+                                        }
+                                      
+                                     }
+                                     }"; // this is really dirty hack to work createdCell
                             }];
 
                         }
