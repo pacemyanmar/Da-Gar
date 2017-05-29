@@ -54,14 +54,14 @@ class SmsLogDataTable extends DataTable
             if ($this->project->training || Settings::get('training')) {
                 $smsLogs->join($this->project->dbname . '_training', 'sms_logs.result_id', '=', $this->project->dbname . '_training.id');
             } else {
-                $smsLogs->join($this->project->dbname, 'sms_logs.sample_id', '=', $this->project->dbname . '.id');
+                $smsLogs->join($this->project->dbname. '_rawlog', 'sms_logs.sample_id', '=', $this->project->dbname . '_rawlog.id');
             }
             $inputs = $this->project->inputs->pluck('inputid')->unique();
             foreach ($inputs as $inputid) {
                 if ($this->project->training || Settings::get('training')) {
                     $select[] = $this->project->dbname . '_training.' . $inputid;
                 } else {
-                    $select[] = $this->project->dbname . '.' . $inputid;
+                    $select[] = $this->project->dbname . '_rawlog.' . $inputid;
                 }
             }
         }

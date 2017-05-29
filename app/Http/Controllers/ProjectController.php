@@ -476,6 +476,13 @@ class ProjectController extends AppBaseController
             $this->createTable($project->dbname . '_double', $project, $fields);
         }
 
+        // check if table has already created
+        if (Schema::hasTable($project->dbname . '_rawlog')) {
+            $this->updateTable($project->dbname . '_rawlog', $project, $fields);
+        } else {
+            $this->createTable($project->dbname . '_rawlog', $project, $fields);
+        }
+
 
         $project->questions()->update(['qstatus' => 'published']);
 

@@ -312,7 +312,7 @@ class SmsAPIController extends AppBaseController
                         $form_number = 1;
                     }
                     $sample = $sample_data->samples->where('sample_data_type', $project->dblink)->where('form_id', $form_number)->first();
-                    $reply['sample_id'] = $sample->id;
+
                     $sample->setRelatedTable($dbname);
 
                     $result = $sample->resultWithTable($dbname)->first();
@@ -355,6 +355,8 @@ class SmsAPIController extends AppBaseController
                 }
             }
 
+            $rawlog = new SurveyResult();
+            $rawlog->setTable($dbname.'_rawlog');
 
             $message = strtolower($message);
             $sms_content = preg_replace('([^a-zA-Z0-9]*)', '', $message);
@@ -423,18 +425,18 @@ class SmsAPIController extends AppBaseController
 
                                     // checkbox value is in sent message value
                                     if (in_array($input->value, $checkbox_values)) {
-                                        $result_arr[$section->id][$question->id][$inputid] = $input->value;
+                                        $rawlog->{$inputid} = $result_arr[$section->id][$question->id][$inputid] = $input->value;
                                     } else {
-                                        $result_arr[$section->id][$question->id][$inputid] = null;
+                                        $rawlog->{$inputid} = $result_arr[$section->id][$question->id][$inputid] = null;
                                     }
 
                                 } else {
-                                    $result_arr[$section->id][$question->id][$inputid] = $response;
+                                    $rawlog->{$inputid} = $result_arr[$section->id][$question->id][$inputid] = $response;
                                 }
 
                             } else {
-                                if ($input->type == 'checkbox') {
-                                    $result_arr[$section->id][$question->id][$inputid] = null;
+                                if ($input->type == 'checkbox' && empty($result->{$inputid})) {
+                                    $rawlog->{$inputid} = $result_arr[$section->id][$question->id][$inputid] = null;
                                 }
                             }
                             // unset $response  to avoid loop overwrite empty elements with previous value
@@ -444,19 +446,16 @@ class SmsAPIController extends AppBaseController
                         if (!$input->optional) {
                             if (!empty($result_arr[$section->id][$question->id][$inputid])) {
 
-                                $section_inputs[$question->qnum] = $result_arr[$section->id][$question->id][$inputid];
+                                $rawlog->{$inputid} = $section_inputs[$question->qnum] = $result_arr[$section->id][$question->id][$inputid];
                                 $valid_response[] = $inputid;
 
                             } else {
                                 if (!empty($result->{$inputid}) && $input->type != 'checkbox') {
 
-                                    $result_arr[$section->id][$question->id][$inputid] = $section_inputs[$question->qnum] = $result->{$inputid};
-
-                                } else {
-
-                                    $result_arr[$section->id][$question->id][$inputid] = $section_inputs[$question->qnum] = null;
+                                    $rawlog->{$inputid} = $section_inputs[$question->qnum] = $result->{$inputid};
 
                                 }
+
 
                                 if (!$training_mode) {
 
@@ -504,9 +503,12 @@ class SmsAPIController extends AppBaseController
 
             if (!$training_mode) {
                 $result->sample()->associate($sample);
-                $result->sample = $sample->data->sample;
-                $result->user_id = 1; // need to change this
+                $rawlog->sample = $result->sample = $sample->data->sample;
+                $rawlog->user_id = $result->user_id = 1; // need to change this
                 $result->setTable($dbname); // need to set table name again for some reason
+                $rawlog->sample_id = $result->sample_id;
+                $rawlog->save();
+                $reply['sample_id'] = $rawlog->id;
             } else {
                 $result->setTable($dbname . '_training'); // need to set table name again for some reason
                 $sample = Sample::where('sample_data_type', $project->dblink)->where('project_id', $project->id)->where('form_id', 1)->first();
@@ -515,6 +517,9 @@ class SmsAPIController extends AppBaseController
             $checked = $this->logicalCheck($result_arr, $result, $project, $sample);
             $result = $checked['results'];
             $result->save();
+
+
+
             if (!empty($checked['error'][$section_with_result])) {
                 if (empty($section_inputs)) {
                     $reply['message'] = 'ERROR';

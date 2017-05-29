@@ -64,6 +64,7 @@ trait LogicalCheckTrait {
 
                                     $left_ids = explode(',', $left);
                                     $left_ids_trimmed = array_map('trim', $left_ids);
+
                                     $left_arr = array_fill_keys($left_ids_trimmed, '');
                                     $left_values = array_filter(array_intersect_key($inputs,$left_arr));
 
