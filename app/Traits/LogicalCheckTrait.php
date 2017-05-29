@@ -65,17 +65,28 @@ trait LogicalCheckTrait {
                                     $left_ids = explode(',', $left);
                                     $left_ids_trimmed = array_map('trim', $left_ids);
 
+
                                     $left_arr = array_fill_keys($left_ids_trimmed, '');
+
+                                    array_walk($left_arr, function(&$value, $key, $result){
+                                        $value = $result->{$key};
+                                    }, $result);
+
+
                                     $left_values = array_filter(array_intersect_key($inputs,$left_arr));
 
                                     $right_ids = explode(',', $right);
                                     $right_ids_trimmed = array_map('trim', $right_ids);
                                     $right_arr = array_fill_keys($right_ids_trimmed, '');
+                                    array_walk($right_arr, function(&$value, $key, $result){
+                                        $value = $result->{$key};
+                                    }, $result);
                                     $right_values = array_filter(array_intersect_key($inputs,$right_arr));
 
                                     if (!empty($left_values) && !empty($right_values)) {
                                         $error[$section_id][] = $question->qnum;
                                         $discard = true;
+                                        $question_complete = false;
                                     }
 
                                     unset($left_ids);

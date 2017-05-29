@@ -140,6 +140,7 @@ class SampleResponseDataTable extends DataTable
             'dom' => 'Brtip',
             'scrollX' => true,
             'ordering' => false,
+            'pageLength' => 50,
             'language' => [
                 "decimal" => trans('messages.decimal'),
                 "emptyTable" => trans('messages.emptyTable'),
