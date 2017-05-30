@@ -444,6 +444,21 @@ class SmsAPIController extends AppBaseController
                                     $section_with_result = $section->id;
                                     $section_key = $section->sort + 1;
                                 }
+                            if(!empty($section_with_result) && $section->id != $section_with_result) {
+                                // if sending cross section
+
+                                $rawlog->sample = $sample->data->sample;
+                                $rawlog->user_id = 1; // need to change this
+
+                                $rawlog->sample_id = $result->sample_id;
+                                $rawlog->save();
+                                $reply['sample_id'] = $rawlog->id;
+                                $reply['project_id'] = $project->id;
+                                $reply['result_id'] = $result->id;
+                                $reply['message'] = 'ERROR';
+                                $reply['status'] = 'error';
+                                return $reply;
+                            }
 //
                             // unset $response  to avoid loop overwrite empty elements with previous value
                             unset($response);
