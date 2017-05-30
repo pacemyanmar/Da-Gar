@@ -133,7 +133,7 @@ class SmsLogDataTable extends DataTable
                 'buttons' => [
                     //'print',
                     'reset',
-                    'reload',
+                   // 'reload',
                     [
                         'extend' => 'collection',
                         'text' => '<i class="fa fa-download"></i> ' . trans('messages.export'),
