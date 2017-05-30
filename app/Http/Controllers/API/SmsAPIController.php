@@ -205,7 +205,10 @@ class SmsAPIController extends AppBaseController
 
     private function parseMessage($message, $to_number = '')
     {
-        // look for Form Code and PCODE/Location code
+        // Clean up code, look for Form Code and PCODE/Location code
+        $message = strtolower($message);
+        $message = preg_replace('([^a-zA-Z0-9]*)', '', $message);
+        
         $match_code = preg_match('/^([a-zA-Z]+)(\d+)/', trim($message), $pcode);
 
         if ($match_code) {
@@ -305,7 +308,7 @@ class SmsAPIController extends AppBaseController
 
                 if ($project->type != 'sample2db') { // if project type is not incident
                     // look for Form ID
-                    preg_match('/FNNN(\d+)/', $message, $form_id); // this is temporary form number code
+                    preg_match('/fnnnnnn(\d+)/', $message, $form_id); // this is temporary form number code
                     if ($form_id) {
                         $form_number = $form_id[1];
                     } else {
@@ -358,8 +361,6 @@ class SmsAPIController extends AppBaseController
             $rawlog = new SurveyResult();
             $rawlog->setTable($dbname.'_rawlog');
 
-            $message = strtolower($message);
-            $sms_content = preg_replace('([^a-zA-Z0-9]*)', '', $message);
             // get all sections in a project
             $sections = $project->sectionsDb->sortBy('sort');
             $error_inputs = [];
@@ -391,9 +392,9 @@ class SmsAPIController extends AppBaseController
                         // look for numeric answers
 
                         if ($input->type == 'checkbox' || $question->surveyInputs->count() === 1) {
-                            preg_match('/' . strtolower($question->qnum) . '(\d+)/', $sms_content, $response_match);
+                            preg_match('/' . strtolower($question->qnum) . '(\d+)/', $message, $response_match);
                         } else {
-                            preg_match('/' . $inputkey . '(\d+)/', $sms_content, $response_match);
+                            preg_match('/' . $inputkey . '(\d+)/', $message, $response_match);
                         }
 
                         if (array_key_exists(1, $response_match)) {
