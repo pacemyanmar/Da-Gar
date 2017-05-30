@@ -206,7 +206,7 @@ class SmsAPIController extends AppBaseController
     private function parseMessage($message, $to_number = '')
     {
         // look for Form Code and PCODE/Location code
-        $match_code = preg_match('/^([a-zA-Z]+)(\d+)/', $message, $pcode);
+        $match_code = preg_match('/^([a-zA-Z]+)(\d+)/', trim($message), $pcode);
 
         if ($match_code) {
 
