@@ -9,13 +9,13 @@
                 <i class="glyphicon glyphicon-eye-open"></i> {!! trans('messages.list_samples') !!}
             </a>
         @endif
-        @if(Auth::user()->role->level > 7)
+        @if(Auth::user()->role->level > 8)
             <a href="{{ route('projects.edit', $id) }}" class='btn btn-default btn-sm'>
                 <i class="glyphicon glyphicon-edit"></i> {!! trans('messages.edit') !!}
             </a>
         @endif
     </div>
-    @if(Auth::user()->role->level > 5)
+    @if(Auth::user()->role->level > 7)
         <div class="btn-group">
             <a href="{{ route('projects.response.filter', [$id, 'level1']) }}" class='btn btn-default btn-sm'>
                 <i class="glyphicon glyphicon-equalizer"></i> {!! trans('messages.response') !!}
@@ -25,10 +25,15 @@
                 <i class="glyphicon glyphicon-transfer"></i> {!! trans('messages.double_entry') !!}
             </a>
             @endif
+            <div class="btn-group">
+                <a href="{{ route('projects.smslog', $id) }}" class='btn btn-default btn-sm'>
+                    <i class="fa fa-envelope"></i> {!! trans('messages.smslog') !!}
+                </a>
+            </div>
         </div>
     @endif
 
-    @if(Auth::user()->role->level > 7)
+    @if(Auth::user()->role->level > 8)
         <div class="btn-group">
             {!! Form::open(['route' => ['projects.destroy', $id], 'method' => 'delete']) !!}
 
@@ -62,7 +67,7 @@
     @endif
 </div>
 <div class="row">
-    @if(Auth::user()->role->level >= 8)
+    @if(Auth::user()->role->level > 8)
         <div class="btn-group">
             <a href="{{ route('projects.analysis', $id) }}" class='btn btn-default btn-sm'>
                 <i class="fa fa-pie-chart"></i> {!! trans('messages.analysis') !!}
@@ -71,11 +76,7 @@
     @endif
     @if(Auth::user()->role->level > 5)
 
-        <div class="btn-group">
-            <a href="{{ route('projects.smslog', $id) }}" class='btn btn-default btn-sm'>
-                <i class="fa fa-envelope"></i> {!! trans('messages.smslog') !!}
-            </a>
-        </div>
+
     @endif
 
 </div>
