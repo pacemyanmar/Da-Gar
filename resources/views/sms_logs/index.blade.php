@@ -40,7 +40,7 @@
 window.LaravelDataTables["dataTableBuilder"].columns.adjust().draw();
 setInterval( function () {
 window.LaravelDataTables["dataTableBuilder"].ajax.reload( null, false ); // user paging is not reset on reload
-}, 3000 );
+}, 10000 );
 ajaxoverlay = false;
 $('#project').on('change', function(e){
 var filterurl = $(this).val();
