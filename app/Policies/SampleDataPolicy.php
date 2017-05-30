@@ -12,7 +12,7 @@ class SampleDataPolicy
 
     public function index(User $auth)
     {
-        return $auth->role->level > 5;
+        return $auth->role->level > 8;
     }
     /**
      * Determine whether the auth can view the sampleData.
@@ -23,7 +23,7 @@ class SampleDataPolicy
      */
     public function view(User $auth, SampleData $sampleData)
     {
-        return $auth->role->level > 5;
+        return $auth->role->level > 8;
     }
 
     /**
@@ -34,7 +34,7 @@ class SampleDataPolicy
      */
     public function create(User $auth)
     {
-        return $auth->role->level > 5;
+        return $auth->role->level > 8;
     }
 
     /**
@@ -46,7 +46,7 @@ class SampleDataPolicy
      */
     public function update(User $auth, SampleData $sampleData)
     {
-        return $auth->role->level > 5;
+        return $auth->role->level > 8;
     }
 
     /**
@@ -58,6 +58,6 @@ class SampleDataPolicy
      */
     public function delete(User $auth, SampleData $sampleData)
     {
-        return $auth->role->level > 5;
+        return $auth->role->level > 8;
     }
 }

@@ -18,7 +18,7 @@ class UserPolicy
      */
     public function index(User $auth)
     {
-        return $auth->role->level > 5;
+        return $auth->role->level > 8;
     }
 
     /**
@@ -41,7 +41,7 @@ class UserPolicy
      */
     public function create(User $auth)
     {
-        return $auth->role->level > 7;
+        return $auth->role->level > 8;
     }
 
     /**

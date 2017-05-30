@@ -2,9 +2,6 @@
 <li class="{{ Request::is('projects*') ? 'active' : '' }}">
     <a href="{!! route('projects.index') !!}"><i class="fa fa-edit"></i><span>{!! trans_choice('messages.projects', 2) !!}</span></a>
 </li>
-<li class="{{ Request::is('projectPhones*') ? 'active' : '' }}">
-    <a href="{!! route('projectPhones.index') !!}"><i class="fa fa-edit"></i><span>ProjectPhones</span></a>
-</li>
 @endcan
 @can('index', \App\Models\SampleData::class)
 <li class="{{ Request::is('sampleDatas*') ? 'active' : '' }}">
@@ -31,9 +28,12 @@
 </li>
 @endcan
 @can('index', \App\Models\Setting::class)
-<li class="{{ Request::is('settings*') ? 'active' : '' }}">
-    <a href="{!! route('settings.index') !!}"><i class="fa fa-edit"></i><span>{!! trans_choice('messages.settings', 2) !!}</span></a>
-</li>
+    <li class="{{ Request::is('projectPhones*') ? 'active' : '' }}">
+        <a href="{!! route('projectPhones.index') !!}"><i class="fa fa-edit"></i><span>ProjectPhones</span></a>
+    </li>
+    <li class="{{ Request::is('settings*') ? 'active' : '' }}">
+        <a href="{!! route('settings.index') !!}"><i class="fa fa-edit"></i><span>{!! trans_choice('messages.settings', 2) !!}</span></a>
+    </li>
 @endcan
 
 
