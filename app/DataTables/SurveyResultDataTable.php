@@ -609,6 +609,7 @@ class SurveyResultDataTable extends DataTable
             'autoWidth' => false,
             //'sServerMethod' => 'POST',
             'scrollX' => true,
+            'pageLength' => 20,
             'fixedColumns' => true,
             'language' => [
                 "decimal" => trans('messages.decimal'),
