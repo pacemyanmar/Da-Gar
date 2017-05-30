@@ -109,7 +109,7 @@ class ProjectResultsController extends AppBaseController
                             'orderable' => false,
                             'defaultContent' => 'N/A',
                             'visible' => false,
-                            //'width' => '80px',
+                            'width' => '80px',
                         ];
                         break;
                     case 'observer_name':
@@ -119,6 +119,7 @@ class ProjectResultsController extends AppBaseController
                             'title' => trans('sample.observer_id'),
                             'orderable' => false,
                             'defaultContent' => 'N/A',
+                            'width' => '90px',
                             'render' => function () use ($locale) {
                                 $data = ($locale == config('app.fallback_locale'))? 'data':'full.full_name_trans';
                                 return "function(data,type,full,meta){
@@ -137,7 +138,6 @@ class ProjectResultsController extends AppBaseController
                                     return html;
                                 }";
                             },
-                            //'width' => '80px',
                         ];
                         break;
                     case 'location_code':
@@ -171,7 +171,7 @@ class ProjectResultsController extends AppBaseController
                             'title' => trans('messages.mobile'),
                             'orderable' => false,
                             'defaultContent' => 'N/A',
-                            //'width' => '120px',
+                            'width' => '90px',
                         ];
                         break;
                     case 'level1':
@@ -183,6 +183,7 @@ class ProjectResultsController extends AppBaseController
                             'title' => trans('sample.'.$column),
                             'orderable' => false,
                             'defaultContent' => 'N/A',
+                            'width' => '90px',
                             'render' => function () use ($locale, $column) {
                                 $data = ($locale == config('app.fallback_locale'))? 'data':'full.'.$column.'_trans';
                                 return "function(data,type,full,meta){
