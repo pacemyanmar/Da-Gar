@@ -36,13 +36,11 @@ trait LogicalCheckTrait {
                     return (!$input->optional && empty($input->value));
                 })->pluck('inputid')->toArray();
 
-                $old_new_inputs = $inputs;
 
+                $intersect_with_value = array_intersect($required_response_with_value, array_keys(array_filter($inputs))); // if this is greater than zero question is complete
+                $intersect_no_value = array_intersect($required_response_empty_value, array_keys(array_filter($inputs)));
 
-                $intersect_with_value = array_intersect($required_response_with_value, array_keys(array_filter($old_new_inputs))); // if this is greater than zero question is complete
-                $intersect_no_value = array_intersect($required_response_empty_value, array_keys(array_filter($old_new_inputs)));
-
-//                array_walk($old_new_inputs, function(&$value, $key, $result){
+//                array_walk($inputs, function(&$value, $key, $result){
 //                    if(empty($value)) {
 //                        $value = $result->{$key};
 //                    }
@@ -81,7 +79,7 @@ trait LogicalCheckTrait {
                                     }, $result);
 
 
-                                    $left_values = array_filter(array_intersect_key($old_new_inputs,$left_arr));
+                                    $left_values = array_filter(array_intersect_key($inputs,$left_arr));
 
                                     $right_ids = explode(',', $right);
                                     $right_ids_trimmed = array_map('trim', $right_ids);
@@ -89,7 +87,7 @@ trait LogicalCheckTrait {
                                     array_walk($right_arr, function(&$value, $key, $result){
                                         $value = $result->{$key};
                                     }, $result);
-                                    $right_values = array_filter(array_intersect_key($old_new_inputs,$right_arr));
+                                    $right_values = array_filter(array_intersect_key($inputs,$right_arr));
 
                                     if (!empty($left_values) && !empty($right_values)) {
                                         $error[$section_id][] = $question->qnum;
@@ -123,7 +121,7 @@ trait LogicalCheckTrait {
                 if(!$question_complete) {
                     if (!empty($question->observation_type) && !in_array($sample->data->observer_field, $question->observation_type)) {
 
-                        $question_status[$section_id][$question->qnum] = 'complete';
+                        $question_status[$section_id][$question->qnum] = '';
                     } elseif (empty($intersect_with_value) && empty($intersect_no_value)) {
                         $question_status[$section_id][$question->qnum] = 'missing';
 
@@ -138,9 +136,10 @@ trait LogicalCheckTrait {
                 unset($required_response_empty_value);
 
                 unset($intersect_with_value);
+                unset($intersect_no_value);
             } // question loop
 
-            $questions_status = array_unique(array_values($question_status[$section_id]));
+            $questions_status = array_filter(array_unique(array_values($question_status[$section_id])));
 
             if(in_array('incomplete', $questions_status) || (count($questions_status) > 1 && count(array_intersect(['missing','complete'], $questions_status)) > 0) ) {
                 $section_status = 2; // incomplete
@@ -154,7 +153,6 @@ trait LogicalCheckTrait {
                 $section_status = 0
                 ;
             }
-
 
             $skey = $section->sort + 1;
             $result->{'section' . $skey . 'status'} = $section_status;
