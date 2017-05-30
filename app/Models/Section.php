@@ -23,6 +23,7 @@ class Section extends Model
         'descriptions',
         'indouble',
         'optional',
+        'disablesms',
         'project_id',
     ];
 
@@ -37,6 +38,7 @@ class Section extends Model
         'descriptions' => 'string',
         'indouble' => 'boolean',
         'optional' => 'boolean',
+        'disablesms' => 'boolean',
         'project_id' => 'integer',
     ];
 

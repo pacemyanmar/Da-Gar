@@ -298,9 +298,18 @@ class ProjectController extends AppBaseController
                     }
                     if (isset($section['indouble'])) {
                         $oldsection->indouble = true;
+                    } else {
+                        $oldsection->indouble = false;
                     }
                     if (isset($section['optional'])) {
                         $oldsection->optional = true;
+                    } else {
+                        $oldsection->optional = false;
+                    }
+                    if (isset($section['disablesms'])) {
+                        $oldsection->disablesms = true;
+                    } else {
+                        $oldsection->disablesms = false;
                     }
 
                     $oldsection->save();

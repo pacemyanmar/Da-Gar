@@ -207,6 +207,7 @@
                 <th>Descriptions</th>
                 <th>Optional</th>
                 <th>Double Entry</th>
+                <th>Disable SMS</th>
                 <th><i class=" fa fa-plus btn btn-sm btn-success btn-flat btn-green toggle" id="btnAdd"></i></th>
             </tr>
         </thead>
@@ -234,6 +235,12 @@
                     <div class="toggle">
                     {!! Form::checkbox("sections[][indouble]", 1, ($section->indouble)?$section->indouble:null, ['class' => 'magic-checkbox double ', 'id' => 'double'.$section_key]) !!}
                     <label class="normal-text" for="double{!! $section_key !!}"></label>
+                    </div>
+                </td>
+                <td style="">
+                    <div class="toggle">
+                        {!! Form::checkbox("sections[][disablesms]", 1, ($section->disablesms)?$section->disablesms:null, ['class' => 'magic-checkbox disablesms ', 'id' => 'disablesms'.$section_key]) !!}
+                        <label class="normal-text" for="disablesms{!! $section_key !!}"></label>
                     </div>
                 </td>
                 <td style="vertical-align: middle">
@@ -295,6 +302,9 @@
     htmlStr +=  '<td style="">';
     htmlStr +=  '<div><input type="checkbox" value="Double" class="magic-checkbox double"/><label class="double"></label></div>';
     htmlStr +=  '</td>';
+      htmlStr +=  '<td style="">';
+      htmlStr +=  '<div><input type="checkbox" value="Disablesms" class="magic-checkbox disablesms"/><label class="disablesms"></label></div>';
+      htmlStr +=  '</td>';
     htmlStr +=  '<td style="vertical-align: middle">';
     htmlStr +=  '<i onclick="removeItem(this)" class="remove fa fa-trash-o" style="cursor: pointer;font-size: 20px;color: red"></i>';
     htmlStr +=  '</td>';
@@ -309,6 +319,8 @@
         $(this).find('label.optional').attr('for','optional'+index);
         $(this).find('input.double').attr('id','double'+index);
         $(this).find('label.double').attr('for','double'+index);
+        $(this).find('input.disablesms').attr('id','disablesms'+index);
+        $(this).find('label.disablesms').attr('for','disablesms'+index);
       });
     });
 
@@ -340,6 +352,7 @@
         $(this).find('.descriptions').attr('name','sections['+index+'][descriptions]');
         $(this).find('.optional').attr('name','sections['+index+'][optional]');
         $(this).find('.double').attr('name','sections['+index+'][double]');
+        $(this).find('.disablesms').attr('name','sections['+index+'][disablesms]');
       });
       $('.sample').each(function (index,value) {
         $(this).find('.samplename').attr('name','samples['+index+'][name]');
