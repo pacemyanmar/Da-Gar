@@ -413,23 +413,33 @@ class SmsAPIController extends AppBaseController
                             // To Do :
                             // if checkbox, split string by one character
                             // if not use as is.
+                            switch ($input->type) {
+                                case 'checkbox':
+                                case 'radio':
+                                    $checkbox_values = str_split($response);
+                                    $inputs_values = $inputs->pluck('value')->toArray();
+                                    $invalid_values = array_diff($checkbox_values, $inputs_values);
 
-                            if($input->type == 'checkbox') {
-                                $checkbox_values = str_split($response);
-                                $inputs_values = $inputs->pluck('value')->toArray();
-                                $invalid_values = array_diff($checkbox_values, $inputs_values);
+                                    $valid_values = array_intersect($inputs_values, $checkbox_values);
+                                    // invalid values are empty and valid values are not empty, use value from user input
+                                    // else use value from result database
+                                    if(empty($invalid_values) && !empty($valid_values)) {
+                                        if($input->type == 'checkbox') {
+                                            $rawlog->{$inputid} = $result_arr[$section->id][$question->id][$inputid] = (in_array($input->value, $checkbox_values))? $input->value:null;
+                                        } else {
+                                            $rawlog->{$inputid} = $result_arr[$section->id][$question->id][$inputid] = (in_array($response, $inputs_values))? $response:null;
+                                        }
 
-                                $valid_values = array_intersect($inputs_values, $checkbox_values);
-                                // invalid values are empty and valid values are not empty, use value from user input
-                                // else use value from result database
-                                if(empty($invalid_values) && !empty($valid_values)) {
-                                    $rawlog->{$inputid} = $result_arr[$section->id][$question->id][$inputid] = (in_array($input->value, $checkbox_values))? $input->value:null;
-                                } else {
-                                    $rawlog->{$inputid} = $result_arr[$section->id][$question->id][$inputid] = null;
-                                }
-                            } else {
-                                $rawlog->{$inputid} = $result_arr[$section->id][$question->id][$inputid] = $response;
+                                    } else {
+                                        $rawlog->{$inputid} = $result_arr[$section->id][$question->id][$inputid] = null;
+                                    }
+
+                                    break;
+                                default:
+                                    $rawlog->{$inputid} = $result_arr[$section->id][$question->id][$inputid] = $response;
+                                    break;
                             }
+
                             if(empty($section_with_result)) {
                                     $section_with_result = $section->id;
                                     $section_key = $section->sort + 1;
@@ -437,21 +447,25 @@ class SmsAPIController extends AppBaseController
 //
                             // unset $response  to avoid loop overwrite empty elements with previous value
                             unset($response);
+                        } else {
+                            $result_arr[$section->id][$question->id][$inputid] = $result->{$inputid};
+                            $rawlog->{$inputid} = null;
                         }
-                        // required input complete and count incremental
-                        if (!$input->optional) {
-                            if (!empty($result_arr[$section->id][$question->id][$inputid])) {
 
-                                $rawlog->{$inputid} = $section_inputs[$question->qnum] = $result_arr[$section->id][$question->id][$inputid];
+
+                        if (!$input->optional) {
+                            if (!empty($rawlog->{$inputid})) {
+
+                                $section_inputs[$question->qnum] = $result_arr[$section->id][$question->id][$inputid];
                                 $valid_response[] = $inputid;
 
                             } else {
                                 if (!empty($result->{$inputid}) && $input->type != 'checkbox') {
 
-                                    $rawlog->{$inputid} = $section_inputs[$question->qnum] = $result->{$inputid};
+                                    $section_inputs[$question->qnum] = $result->{$inputid};
 
                                 } else {
-                                    $rawlog->{$inputid} = $section_inputs[$question->qnum] = null;
+                                    $section_inputs[$question->qnum] = null;
                                 }
 
 
@@ -514,6 +528,7 @@ class SmsAPIController extends AppBaseController
 
             $checked = $this->logicalCheck($result_arr, $result, $project, $sample);
             $result = $checked['results'];
+
             $result->save();
 
 
@@ -522,7 +537,8 @@ class SmsAPIController extends AppBaseController
                 if (empty($section_inputs)) {
                     $reply['message'] = 'ERROR';
                 } else {
-                    $reply['message'] = 'ERROR: SMS '.$section_key.': '. implode(', ', $checked['error'][$section_with_result]);
+                    $errors = array_unique($checked['error'][$section_with_result]);
+                    $reply['message'] = 'ERROR: SMS '.$section_key.': '. implode(', ', $errors);
                 }
 
                 $reply['status'] = 'error';
