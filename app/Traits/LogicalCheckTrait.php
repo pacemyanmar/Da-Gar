@@ -7,10 +7,11 @@ use App\Models\Question;
 use App\Models\Section;
 
 
-trait LogicalCheckTrait {
+trait LogicalCheckTrait
+{
 
     /**
-     * @param $result_arr   [section_id] => [question_id => [inputid => response] ] ]
+     * @param $result_arr [section_id] => [question_id => [inputid => response] ] ]
      * @param $result       App\Models\SurveyResult
      * @param $project      App\Models\Project
      * @param $sample       App\Models\Sample
@@ -20,6 +21,9 @@ trait LogicalCheckTrait {
     {
 
         $error = [];
+
+        $all_inputs = $this->array_flatten($result_arr);
+
         while (list ($section_id, $questions) = each($result_arr)) {
             $section = Section::find($section_id);
             $question_status = [];
@@ -46,7 +50,10 @@ trait LogicalCheckTrait {
 //                    }
 //                }, $result);
 
-                if (count($intersect_with_value) > 0 || (!empty($required_response_empty_value) && $required_response_empty_value == $intersect_no_value)) {
+                if (!empty($question->observation_type) && !in_array($sample->data->observer_field, $question->observation_type)) {
+                    $question_complete = true;
+                    $question_status[$section_id][$question->qnum] = '';
+                } elseif (count($intersect_with_value) > 0 || (!empty($required_response_empty_value) && $required_response_empty_value == $intersect_no_value)) {
                     $question_complete = true;
                     $question_status[$section_id][$question->qnum] = 'complete';
                 } else {
@@ -57,7 +64,7 @@ trait LogicalCheckTrait {
                 // To Do:: check logical error only after each question complete
                 $logics = $project->logics;
                 $discard = false;
-                if(!empty($logics) && $question_complete) {
+                if (!empty($logics) && $question_complete) {
 
                     foreach ($logics as $logic) {
                         $left = $logic->leftval;
@@ -74,20 +81,20 @@ trait LogicalCheckTrait {
 
                                     $left_arr = array_fill_keys($left_ids_trimmed, '');
 
-                                    array_walk($left_arr, function(&$value, $key, $result){
+                                    array_walk($left_arr, function (&$value, $key, $result) {
                                         $value = $result->{$key};
                                     }, $result);
 
 
-                                    $left_values = array_filter(array_intersect_key($inputs,$left_arr));
+                                    $left_values = array_filter(array_intersect_key($inputs, $left_arr));
 
                                     $right_ids = explode(',', $right);
                                     $right_ids_trimmed = array_map('trim', $right_ids);
                                     $right_arr = array_fill_keys($right_ids_trimmed, '');
-                                    array_walk($right_arr, function(&$value, $key, $result){
+                                    array_walk($right_arr, function (&$value, $key, $result) {
                                         $value = $result->{$key};
                                     }, $result);
-                                    $right_values = array_filter(array_intersect_key($inputs,$right_arr));
+                                    $right_values = array_filter(array_intersect_key($inputs, $right_arr));
 
                                     if (!empty($left_values) && !empty($right_values)) {
                                         $error[$section_id][] = $question->qnum;
@@ -106,23 +113,50 @@ trait LogicalCheckTrait {
                                     unset($right_values);
                                 }
                                 break;
+                            case 'between':
+
+                                    $leftval = ($all_inputs[$left])? $all_inputs[$left]:$result->{$left};
+                                    $right_values = explode(',', $right);
+                                    if (!is_numeric($right_values[0])) {
+                                        $min = ($all_inputs[$right_values[0]])? $all_inputs[$right_values[0]]:$result->{$right_values[0]};
+                                    } else {
+                                        $min = $right_values[0];
+                                    }
+
+                                    if (!is_numeric($right_values[1])) {
+                                        $max = ($all_inputs[$right_values[1]])? $all_inputs[$right_values[1]]:$result->{$right_values[1]};
+                                    } else {
+                                        $max = $right_values[1];
+                                    }
+
+                                if(array_key_exists($left, $result_arr[$section_id][$question->id]) || array_key_exists($right_values[0], $result_arr[$section_id][$question->id]) || array_key_exists($right_values[1], $result_arr[$section_id][$question->id])) {
+
+                                    if ($max > $min) {
+                                        if ($leftval > $max || $leftval < $min) {
+                                            $question_status[$section_id][$question->qnum] = 'error';
+                                        }
+                                    }
+
+                                    if ($min > $max) {
+                                        if ($leftval < $max || $leftval > $min) {
+                                            $question_status[$section_id][$question->qnum] = 'error';
+                                        }
+                                    }
+                                }
                             default:
                                 break;
                         }
                     }
                 }
 
-                if(!$discard) {
-                    foreach($inputs as $inputid => $response) {
+                if (!$discard) {
+                    foreach ($inputs as $inputid => $response) {
                         $result->{$inputid} = $response;
                     }
                 }
 
-                if(!$question_complete) {
-                    if (!empty($question->observation_type) && !in_array($sample->data->observer_field, $question->observation_type)) {
-
-                        $question_status[$section_id][$question->qnum] = '';
-                    } elseif (empty($intersect_with_value) && empty($intersect_no_value)) {
+                if (!$question_complete) {
+                    if (empty($intersect_with_value) && empty($intersect_no_value)) {
                         $question_status[$section_id][$question->qnum] = 'missing';
 
                         $error[$section_id][] = $question->qnum;
@@ -141,17 +175,16 @@ trait LogicalCheckTrait {
 
             $questions_status = array_filter(array_unique(array_values($question_status[$section_id])));
 
-            if(in_array('incomplete', $questions_status) || (count($questions_status) > 1 && count(array_intersect(['missing','complete'], $questions_status)) > 0) ) {
+            if (in_array('incomplete', $questions_status) || (count($questions_status) > 1 && count(array_intersect(['missing', 'complete'], $questions_status)) > 1)) {
                 $section_status = 2; // incomplete
-            } elseif(count($questions_status) == 1 && $questions_status[0] == 'missing') {
+            } elseif (count($questions_status) == 1 && $questions_status[0] == 'missing') {
                 $section_status = 0; // missing
-            } elseif(count($questions_status) == 1 && $questions_status[0] == 'complete') {
+            } elseif (count($questions_status) == 1 && $questions_status[0] == 'complete') {
                 $section_status = 1; // complete
-            } elseif(!in_array('incomplete', $questions_status) && in_array('error', $questions_status)) {
+            } elseif (!in_array('incomplete', $questions_status) && in_array('error', $questions_status)) {
                 $section_status = 3; // error
             } else {
-                $section_status = 0
-                ;
+                $section_status = 0;
             }
 
             $skey = $section->sort + 1;
@@ -164,4 +197,13 @@ trait LogicalCheckTrait {
 
         return $checked;
     }
+
+
+
+    private function array_flatten(array $array) {
+        $return = array();
+        array_walk_recursive($array, function($a,$b) use (&$return) { $return[$b] = $a; });
+        return $return;
+    }
+
 }

@@ -839,6 +839,40 @@ class ProjectController extends AppBaseController
         if(!empty($logics)) {
 
             foreach ($logics as $logic) {
+                switch ($logic['operator']) {
+                    case 'between':
+                        $leftval = $project->inputs()->where('inputid', $logic['leftval'])->get();
+
+                        if($leftval->isEmpty()) {
+                            Flash::error('Min/Max Logic left value error!');
+                            return redirect()->back();
+                        }
+                        $rightval = explode(',', $logic['rightval']);
+                        $right_error = false;
+                        if(count($rightval) != 2) {
+                            $right_error = true;
+                        } else {
+                            if(!is_numeric($rightval[0])) {
+                                $min = $project->inputs()->where('inputid', $rightval[0])->get();
+                                if($min->isEmpty()) {
+                                    $right_error = true;
+                                }
+                            }
+                            if(!is_numeric($rightval[1])) {
+                                $max = $project->inputs()->where('inputid', $rightval[1])->get();
+                                if($max->isEmpty()) {
+                                    $right_error = true;
+                                }
+                            }
+                        }
+                        if($right_error) {
+                            Flash::error('Min/Max Logic Right value error!');
+                            return redirect()->back();
+                        }
+                        break;
+                    default:
+                        break;
+                }
                 $uuid_str = $logic['leftval'] . $logic['operator'] . $logic['rightval'] . $logic['scope'] . $project->id;
                 $uuid = Uuid::uuid5(Uuid::NAMESPACE_DNS, $uuid_str);
                 $logic['id'] = $uuid->toString();
