@@ -152,9 +152,7 @@ class ProjectResultsController extends AppBaseController
                         ];
                         break;
                     case 'call_primary':
-                    case 'sms_primary':
                     case 'sms_time':
-                    case 'observer_field':
                         $columns[$column] = [
                             'name' => 'sample_datas_view.'.$column,
                             'data' => $column,
@@ -172,6 +170,18 @@ class ProjectResultsController extends AppBaseController
                             'orderable' => false,
                             'defaultContent' => 'N/A',
                             'width' => '90px',
+                        ];
+                        break;
+                    case 'sms_primary':
+                    case 'observer_field':
+                        $columns[$column] = [
+                            'name' => 'sample_datas_view.'.$column,
+                            'data' => $column,
+                            'title' => trans('sample.'.$column),
+                            'orderable' => false,
+                            'defaultContent' => 'N/A',
+                            'width' => '90px',
+                            'visible' => false
                         ];
                         break;
                     case 'level1':
@@ -202,7 +212,6 @@ class ProjectResultsController extends AppBaseController
                                     return html;
                                 }";
                             },
-                            //'width' => '120px',
                         ];
                         break;
                     default:
@@ -212,7 +221,7 @@ class ProjectResultsController extends AppBaseController
                             'title' => trans('messages.' . strtolower($name)),
                             'orderable' => false,
                             'visible' => false,
-                            //'width' => '80px',
+                            'width' => '120px',
                         ];
                         break;
                 }
