@@ -77,9 +77,24 @@ class SmsLogDataTable extends DataTable
      */
     public function html()
     {
+        $auth = Auth::user();
         $tableAttributes = [
             'class' => 'table table-striped table-bordered',
         ];
+
+        if ($auth->role->level > 7) {
+            $button = [
+                'extend' => 'collection',
+                'text' => '<i class="fa fa-download"></i> ' . trans('messages.export'),
+                'buttons' => [
+                    'exportPostCsv',
+                    'exportPostExcel',
+                    //'exportPostPdf',
+                ],
+            ];
+        } else {
+            $button = [];
+        }
         return $this->builder()
             ->setTableAttributes($tableAttributes)
             ->columns($this->getColumns())
@@ -134,15 +149,7 @@ class SmsLogDataTable extends DataTable
                     //'print',
                     'reset',
                    // 'reload',
-                    [
-                        'extend' => 'collection',
-                        'text' => '<i class="fa fa-download"></i> ' . trans('messages.export'),
-                        'buttons' => [
-//                            'csv',
-                            'excel',
-//                            'pdf',
-                        ],
-                    ],
+                    $button,
                     'colvis',
                 ],
                 'initComplete' => "function () {
