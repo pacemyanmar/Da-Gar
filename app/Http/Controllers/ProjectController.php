@@ -896,6 +896,19 @@ class ProjectController extends AppBaseController
                             return redirect()->back();
                         }
                         break;
+                    case 'equalto':
+                        $leftval = $project->inputs()->where('inputid', $logic['leftval'])->get();
+
+                        if($leftval->isEmpty()) {
+                            Flash::error('Equal to Logic left value error!');
+                            return redirect()->back();
+                        }
+
+                        if(!array_key_exists('rightval', $logic)) {
+                            $logic['rightval'] = '';
+                        }
+                        
+                        break;
 
                     default:
                         break;
