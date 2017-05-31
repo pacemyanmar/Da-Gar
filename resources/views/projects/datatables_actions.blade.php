@@ -9,6 +9,11 @@
                 <i class="glyphicon glyphicon-eye-open"></i> {!! trans('messages.list_samples') !!}
             </a>
         @endif
+            <div class="btn-group">
+                <a href="{{ route('projects.smslog', $id) }}" class='btn btn-default btn-sm'>
+                    <i class="fa fa-envelope"></i> {!! trans('messages.smslog') !!}
+                </a>
+            </div>
         @if(Auth::user()->role->level > 8)
             <a href="{{ route('projects.edit', $id) }}" class='btn btn-default btn-sm'>
                 <i class="glyphicon glyphicon-edit"></i> {!! trans('messages.edit') !!}
@@ -25,11 +30,6 @@
                 <i class="glyphicon glyphicon-transfer"></i> {!! trans('messages.double_entry') !!}
             </a>
             @endif
-            <div class="btn-group">
-                <a href="{{ route('projects.smslog', $id) }}" class='btn btn-default btn-sm'>
-                    <i class="fa fa-envelope"></i> {!! trans('messages.smslog') !!}
-                </a>
-            </div>
         </div>
     @endif
 
