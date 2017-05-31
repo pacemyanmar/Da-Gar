@@ -147,7 +147,7 @@ class SmsLogDataTable extends DataTable
                 ],
                 'buttons' => [
                     //'print',
-                    'reset',
+                    //'reset',
                    // 'reload',
                     $button,
                     'colvis',

@@ -47,18 +47,18 @@ class LogicalCheckDataTable extends DataTable
                 'dom' => 'Bfrtip',
                 'scrollX' => false,
                 'buttons' => [
-                    'print',
-                    'reset',
-                    'reload',
-                    [
-                         'extend'  => 'collection',
-                         'text'    => '<i class="fa fa-download"></i> Export',
-                         'buttons' => [
-                             'csv',
-                             'excel',
-                             'pdf',
-                         ],
-                    ],
+                    //'print',
+                    //'reset',
+                    //'reload',
+//                    [
+//                         'extend'  => 'collection',
+//                         'text'    => '<i class="fa fa-download"></i> Export',
+//                         'buttons' => [
+//                             'csv',
+//                             'excel',
+//                             'pdf',
+//                         ],
+//                    ],
                     'colvis'
                 ]
             ]);

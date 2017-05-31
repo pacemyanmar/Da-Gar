@@ -564,6 +564,7 @@ class SurveyResultDataTable extends DataTable
         $selectColumns = array_intersect_key($this->tableColumns, array_flip($selectColumns));
 
         $locationColumns = [];
+
         $selectColsArr = [];
         foreach ($selectColumns as $key => $value) {
             $selectColsArr[] = $columnName[$key] + 1;
@@ -610,7 +611,7 @@ class SurveyResultDataTable extends DataTable
             //'sServerMethod' => 'POST',
             'scrollX' => true,
             'pageLength' => 20,
-            'fixedColumns' => true,
+            'fixedColumns' => false,
             'language' => [
                 "decimal" => trans('messages.decimal'),
                 "emptyTable" => trans('messages.emptyTable'),

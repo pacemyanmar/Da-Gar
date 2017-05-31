@@ -77,18 +77,18 @@ class RoleDataTable extends DataTable
                     ],
                 ],
                 'buttons' => [
-                    'print',
-                    'reset',
-                    'reload',
-                    [
-                        'extend' => 'collection',
-                        'text' => "<i class='fa fa-download'></i> " . trans('messages.export'),
-                        'buttons' => [
-                            'csv',
-                            'excel',
-                            'pdf',
-                        ],
-                    ],
+                    //'print',
+                    //'reset',
+                    //'reload',
+//                    [
+//                        'extend' => 'collection',
+//                        'text' => "<i class='fa fa-download'></i> " . trans('messages.export'),
+//                        'buttons' => [
+//                            'csv',
+//                            'excel',
+//                            'pdf',
+//                        ],
+//                    ],
                     'colvis',
                 ],
             ]);

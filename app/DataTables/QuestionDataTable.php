@@ -77,10 +77,10 @@ class QuestionDataTable extends DataTable
                     ],
                 ],
                 'buttons' => [
-                    'create',
-                    'print',
-                    'reset',
-                    'reload',
+                    //'create',
+                    //'print',
+                    //'reset',
+                    //'reload',
                     [
                         'extend' => 'collection',
                         'text' => '<i class="fa fa-download"></i> ' . trans('messages.export'),

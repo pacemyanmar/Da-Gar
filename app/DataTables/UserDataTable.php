@@ -77,9 +77,9 @@ class UserDataTable extends DataTable
                     ],
                 ],
                 'buttons' => [
-                    'print',
-                    'reset',
-                    'reload',
+//                    'print',
+//                    'reset',
+//                    'reload',
                     [
                         'extend' => 'collection',
                         'text' => '<i class="fa fa-download"></i> ' . trans('messages.export'),
