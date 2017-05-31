@@ -76,7 +76,7 @@ $translation = (Auth::user()->role->level >= 8 && isset($editing));
 		@endphp
 		{!! Form::input($radio->type,"result[".$radio->inputid."]", (isset($results))?Kanaung\Facades\Converter::convert($results->{$radio->inputid},'unicode','zawgyi'):null, $options) !!}
 		@else
-		{!! Form::radio("result[".$radio->inputid."]", $radio->value, (isset($results) && $radio->value == $results->{$radio->inputid}), ['id' => $radio->id,'class' => ' magic-radio '.$radio->className.' '.$sectionClass, 'autocomplete' => 'off']) !!}
+		{!! Form::radio("result[".$radio->inputid."]", $radio->value, (isset($results) && $radio->value == $results->{$radio->inputid}), ['id' => $radio->id,'class' => ' magic-radio '.$radio->className.' '.$sectionClass, 'autocomplete' => 'off', 'data-selected' => (isset($results) && $radio->value == $results->{$radio->inputid})]) !!}
 		@endif
 		<label class="normal-text" for='{{ $radio->id }}'><!-- dummy for magic radio -->
 		@if($radio->value != '')

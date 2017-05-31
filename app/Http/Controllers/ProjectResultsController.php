@@ -770,7 +770,7 @@ class ProjectResultsController extends AppBaseController
                     if(array_key_exists($input->inputid, $results)) {
                         $result_arr[$section->id][$question->id][$input->inputid] = $results[$input->inputid];
                     } else {
-                        if(array_key_exists($section->id, $section_result) && $input->type == 'checkbox') {
+                        if(array_key_exists($section->id, $section_result)) {
                             $result_arr[$section->id][$question->id][$input->inputid] = null;
                         }  else {
                             $result_arr[$section->id][$question->id][$input->inputid] = $surveyResult->{$input->inputid};

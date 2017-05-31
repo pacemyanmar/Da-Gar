@@ -239,6 +239,24 @@ window.url="{!! route('projects.surveys.save', ['project' => $project->id, 'samp
             }
             input.reportValidity();
         });
+        $("input[type=radio]").click(function() {
+            // Get the storedValue
+            var previousValue = $(this).data('selected');
+            // if previousValue = true then
+            //     Step 1: toggle radio button check mark.
+            //     Step 2: save data-StoredValue as false to indicate radio button is unchecked.
+            if (previousValue) {
+                $(this).prop('checked', !previousValue);
+                $(this).data('selected', !previousValue);
+            }
+            // If previousValue is other than true
+            //    Step 1: save data-StoredValue as true to for currently checked radio button.
+            //    Step 2: save data-StoredValue as false for all non-checked radio buttons.
+            else{
+                $(this).data('selected', true);
+                $("input[type=radio]:not(:checked)").data("selected", false);
+            }
+        });
     })(jQuery);
     </script>
 @endpush
@@ -258,5 +276,26 @@ $(":input").on('change keyup', function(e){
     }
     e.preventDefault();
 });
+
+
+$("input[type=radio]").click(function() {
+    // Get the storedValue
+    var previousValue = $(this).data('selected');
+    // if previousValue = true then
+    //     Step 1: toggle radio button check mark.
+    //     Step 2: save data-StoredValue as false to indicate radio button is unchecked.
+    if (previousValue) {
+    $(this).prop('checked', !previousValue);
+    $(this).data('selected', !previousValue);
+    }
+    // If previousValue is other than true
+    //    Step 1: save data-StoredValue as true to for currently checked radio button.
+    //    Step 2: save data-StoredValue as false for all non-checked radio buttons.
+    else{
+    $(this).data('selected', true);
+    $("input[type=radio]:not(:checked)").data("selected", false);
+    }
+});
+
 @endpush
 @endif

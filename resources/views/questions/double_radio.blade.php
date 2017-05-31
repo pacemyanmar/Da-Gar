@@ -1,5 +1,5 @@
 <div class="form-group">
-   		{!! Form::radio("result[".$element->inputid."]", $element->value, (isset($double_results) && $element->value == $double_results->{$element->inputid}), ['data-class'=>$element->inputid,'data-origin'=>(isset($results) && $element->value == $results->{$element->inputid}),'id' => $element->id,'class' => 'magic-radio '.$element->className.' '.$sectionClass, 'autocomplete' => 'off']) !!}
+   		{!! Form::radio("result[".$element->inputid."]", $element->value, (isset($double_results) && $element->value == $double_results->{$element->inputid}), ['data-class'=>$element->inputid,'data-origin'=>(isset($results) && $element->value == $results->{$element->inputid}),'id' => $element->id,'class' => 'magic-radio '.$element->className.' '.$sectionClass, 'autocomplete' => 'off', 'data-selected' => (isset($double_results) && $element->value == $double_results->{$element->inputid})]) !!}
    	<label class="normal-text" for="{!! $element->id !!}">
    		{!! $element->label !!}
    			@if($element->value != '') <span class="label label-primary badge">{!! $element->value !!}</span> @endif
