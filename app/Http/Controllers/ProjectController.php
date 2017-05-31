@@ -147,7 +147,7 @@ class ProjectController extends AppBaseController
 
         foreach ($input['sections'] as $skey => $section) {
             if (!empty($section)) {
-                if (isset($section['double'])) {
+                if (isset($section['indouble'])) {
                     $query = "update survey_inputs as s join questions as q on s.question_id = q.id join projects as p on q.project_id = p.id set s.double_entry = 1, q.double_entry = 1 where p.id = $project->id and q.section = $skey";
                 } else {
                     $query = "update survey_inputs as s join questions as q on s.question_id = q.id join projects as p on q.project_id = p.id set s.double_entry = 0, q.double_entry = 0 where p.id = $project->id and q.section = $skey";
