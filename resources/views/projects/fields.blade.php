@@ -297,13 +297,13 @@
     htmlStr +=  '<input type="text" class="form-control descriptions"/>';
     htmlStr +=  '</td>';
     htmlStr +=  '<td style="">';
-    htmlStr +=  '<div><input type="checkbox" value="Optional" class="magic-checkbox optional"/><label class="optional"></label></div>';
+    htmlStr +=  '<div><input type="checkbox" value="1" class="magic-checkbox optional"/><label class="optional"></label></div>';
     htmlStr +=  '</td>';
     htmlStr +=  '<td style="">';
-    htmlStr +=  '<div><input type="checkbox" value="Double" class="magic-checkbox double"/><label class="double"></label></div>';
+    htmlStr +=  '<div><input type="checkbox" value="1" class="magic-checkbox double"/><label class="double"></label></div>';
     htmlStr +=  '</td>';
       htmlStr +=  '<td style="">';
-      htmlStr +=  '<div><input type="checkbox" value="Disablesms" class="magic-checkbox disablesms"/><label class="disablesms"></label></div>';
+      htmlStr +=  '<div><input type="checkbox" value="1" class="magic-checkbox disablesms"/><label class="disablesms"></label></div>';
       htmlStr +=  '</td>';
     htmlStr +=  '<td style="vertical-align: middle">';
     htmlStr +=  '<i onclick="removeItem(this)" class="remove fa fa-trash-o" style="cursor: pointer;font-size: 20px;color: red"></i>';
@@ -351,7 +351,7 @@
         $(this).find('.sectionname').attr('name','sections['+index+'][sectionname]');
         $(this).find('.descriptions').attr('name','sections['+index+'][descriptions]');
         $(this).find('.optional').attr('name','sections['+index+'][optional]');
-        $(this).find('.double').attr('name','sections['+index+'][double]');
+        $(this).find('.double').attr('name','sections['+index+'][indouble]');
         $(this).find('.disablesms').attr('name','sections['+index+'][disablesms]');
       });
       $('.sample').each(function (index,value) {
