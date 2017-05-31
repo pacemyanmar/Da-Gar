@@ -11,7 +11,7 @@ return [
     'national_id' => 'National ID',
     'level1' => 'Province',
     'level2' => 'District',
-    'level3' => 'Township',
+    'level3' => 'Commune',
     'level4' => 'Ward',
     'level5' => 'Village',
     'level6' => 'Polling Station Address',

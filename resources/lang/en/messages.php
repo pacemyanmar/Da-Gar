@@ -60,6 +60,8 @@ return [
     'nrc_id' => 'NRC ID',
     'nrcid' => 'NRC ID',
     'nrc id' => 'NRC ID',
+    'national_id' => 'National ID',
+    'national id' => 'National ID',
     'formno.' => 'Respondent No.',
     'form no.' => 'Respondent No.',
     'form_id' => 'Respondent No.',
