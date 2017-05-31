@@ -542,33 +542,37 @@ class SmsAPIController extends AppBaseController
                 $result->setTable($dbname . '_training'); // need to set table name again for some reason
                 $sample = Sample::where('sample_data_type', $project->dblink)->where('project_id', $project->id)->where('form_id', 1)->first();
             }
+            if($section_with_result) {
+                $checked = $this->logicalCheck($result_arr, $result, $project, $sample);
+                $result = $checked['results'];
 
-            $checked = $this->logicalCheck($result_arr, $result, $project, $sample);
-            $result = $checked['results'];
+                $result->save();
 
-            $result->save();
+                if (!empty($checked['error'][$section_with_result])) {
+                    if (empty($section_inputs)) {
+                        $reply['message'] = 'ERROR';
+                    } else {
+                        $errors = array_unique($checked['error'][$section_with_result]);
+                        $reply['message'] = 'ERROR: SMS '.$section_key.': '. implode(', ', $errors);
+                    }
 
-
-
-            if (!empty($checked['error'][$section_with_result])) {
-                if (empty($section_inputs)) {
-                    $reply['message'] = 'ERROR';
+                    $reply['status'] = 'error';
                 } else {
-                    $errors = array_unique($checked['error'][$section_with_result]);
-                    $reply['message'] = 'ERROR: SMS '.$section_key.': '. implode(', ', $errors);
-                }
+                    if($form_type == 'incident') {
+                        $reply['message'] = 'OK: INCIDENT';
+                    } else {
+                        $reply['message'] = (isset($section_key))?'OK: SMS '.$section_key:'OK: SMS';
+                    }
 
-                $reply['status'] = 'error';
+                    $reply['status'] = 'success';
+                }
             } else {
-                if($form_type == 'incident') {
-                    $reply['message'] = 'OK: INCIDENT';
-                } else {
-                    $reply['message'] = (isset($section_key))?'OK: SMS '.$section_key:'OK: SMS';
-                }
-
-                $reply['status'] = 'success';
+                $reply['message'] = 'ERROR';
+                $reply['status'] = 'error';
             }
-            $reply['section'] = (isset($section_key))?$section_key:null;
+
+
+            $reply['section'] = (isset($section_key) && !empty($section_key))?$section_key:null;
             $reply['result_id'] = $result->id;
             $reply['project_id'] = $project->id;
 
