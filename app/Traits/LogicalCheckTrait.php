@@ -175,7 +175,11 @@ trait LogicalCheckTrait
                                 }
                                 break;
                             case 'equalto':
-                                $leftval = ($all_inputs[$left])? $all_inputs[$left]:$result->{$left};
+                                if($scope != 'q') {
+                                    $leftval = ($all_inputs[$left]) ? $all_inputs[$left] : $result->{$left};
+                                } else {
+                                    $leftval = ($all_inputs[$left]) ? $all_inputs[$left] : null;
+                                }
                                 if(array_key_exists($left, $result_arr[$section_id][$question->id]) && $leftval != $right) {
                                     $question_status[$section_id][$question->qnum] = 'error';
                                 }
