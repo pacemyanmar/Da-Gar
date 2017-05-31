@@ -448,7 +448,7 @@ class SmsAPIController extends AppBaseController
                                 }
                                 if (!empty($section_with_result) && $section->id != $section_with_result) {
                                     // if sending cross section
-                                    
+
                                     $rawlog->sample = $sample->data->sample;
                                     $rawlog->user_id = 1; // need to change this
 
@@ -457,7 +457,7 @@ class SmsAPIController extends AppBaseController
                                     $reply['sample_id'] = $rawlog->id;
                                     $reply['project_id'] = $project->id;
                                     $reply['result_id'] = $result->id;
-                                    $reply['message'] = 'ERROR 2';
+                                    $reply['message'] = 'ERROR';
                                     $reply['status'] = 'error';
                                     return $reply;
                                 }
@@ -552,7 +552,7 @@ class SmsAPIController extends AppBaseController
 
             if (!empty($checked['error'][$section_with_result])) {
                 if (empty($section_inputs)) {
-                    $reply['message'] = 'ERROR 1';
+                    $reply['message'] = 'ERROR';
                 } else {
                     $errors = array_unique($checked['error'][$section_with_result]);
                     $reply['message'] = 'ERROR: SMS '.$section_key.': '. implode(', ', $errors);
