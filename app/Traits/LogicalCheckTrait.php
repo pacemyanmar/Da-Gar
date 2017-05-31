@@ -174,6 +174,12 @@ trait LogicalCheckTrait
                                     $discard = true;
                                 }
                                 break;
+                            case 'equalto':
+                                $leftval = ($all_inputs[$left])? $all_inputs[$left]:$result->{$left};
+                                if(array_key_exists($left, $result_arr[$section_id][$question->id]) && $leftval != $right) {
+                                    $question_status[$section_id][$question->qnum] = 'error';
+                                }
+                                break;
                             default:
                                 break;
                         }
