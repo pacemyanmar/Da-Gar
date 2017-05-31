@@ -9,6 +9,8 @@
                 logicStr +=  '<select class="form-control operator">';
                 logicStr += '<option value="muex">Mutual Exclusive</option>';
                 logicStr += '<option value="between">Min/Max</option>';
+                logicStr += '<option value="min">Minimum</option>';
+                logicStr += '<option value="max">Maximum</option>';
                 logicStr += '</select>';
                 logicStr +=  '</td>';
             logicStr +=  '<td style="">';
@@ -65,7 +67,7 @@
             <input value="{!! $logic->leftval !!}" class="form-control leftval" type="text">
         </td>
         <td style="vertical-align: middle">
-            {!! Form::select('', ['muex'=>'Mutual Exclusive','between' => 'Min/Max'], $logic->operator, ['class' => 'form-control operator']) !!}
+            {!! Form::select('', ['muex'=>'Mutual Exclusive','between' => 'Min/Max','min' => 'Minimum', 'max' => 'Maximum'], $logic->operator, ['class' => 'form-control operator']) !!}
         </td>
         <td style="vertical-align: middle">
             <input value="{!! $logic->rightval !!}" class="form-control rightval" type="text">

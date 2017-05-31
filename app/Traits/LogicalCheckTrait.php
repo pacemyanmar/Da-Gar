@@ -133,16 +133,47 @@ trait LogicalCheckTrait
 
                                     if ($max > $min) {
                                         if ($leftval > $max || $leftval < $min) {
-                                            $question_status[$section_id][$question->qnum] = 'error';
+                                            if($scope != 'q') {
+                                                $question_status[$section_id][$question->qnum] = 'error';
+                                            }
+                                            $error[$section_id][] = $question->qnum;
+                                            $discard = true;
                                         }
                                     }
 
                                     if ($min > $max) {
                                         if ($leftval < $max || $leftval > $min) {
-                                            $question_status[$section_id][$question->qnum] = 'error';
+                                            if($scope != 'q') {
+                                                $question_status[$section_id][$question->qnum] = 'error';
+                                            }
+                                            $error[$section_id][] = $question->qnum;
+                                            $discard = true;
                                         }
                                     }
                                 }
+                                break;
+                            case 'min':
+                                $leftval = ($all_inputs[$left])? $all_inputs[$left]:$result->{$left};
+
+                                if(array_key_exists($left, $result_arr[$section_id][$question->id]) && $leftval < $right) {
+                                    if($scope != 'q') {
+                                        $question_status[$section_id][$question->qnum] = 'error';
+                                    }
+                                    $error[$section_id][] = $question->qnum;
+                                    $discard = true;
+                                }
+                                break;
+                            case 'max':
+                                $leftval = ($all_inputs[$left])? $all_inputs[$left]:$result->{$left};
+
+                                if(array_key_exists($left, $result_arr[$section_id][$question->id]) && $leftval > $right) {
+                                    if($scope != 'q') {
+                                        $question_status[$section_id][$question->qnum] = 'error';
+                                    }
+                                    $error[$section_id][] = $question->qnum;
+                                    $discard = true;
+                                }
+                                break;
                             default:
                                 break;
                         }

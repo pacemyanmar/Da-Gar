@@ -843,7 +843,7 @@ class ProjectController extends AppBaseController
                     case 'between':
                         $leftval = $project->inputs()->where('inputid', $logic['leftval'])->get();
 
-                        if($leftval->isEmpty()) {
+                        if($leftval->isEmpty() || $leftval->count() != 1) {
                             Flash::error('Min/Max Logic left value error!');
                             return redirect()->back();
                         }
@@ -870,6 +870,33 @@ class ProjectController extends AppBaseController
                             return redirect()->back();
                         }
                         break;
+                    case 'min':
+                        $leftval = $project->inputs()->where('inputid', $logic['leftval'])->get();
+
+                        if($leftval->isEmpty() || $leftval->count() != 1) {
+                            Flash::error('Minimum Logic left value error!');
+                            return redirect()->back();
+                        }
+
+                        if(!is_numeric($logic['rightval'])) {
+                            Flash::error('Minimum Logic right value error!');
+                            return redirect()->back();
+                        }
+                        break;
+                    case 'max':
+                        $leftval = $project->inputs()->where('inputid', $logic['leftval'])->get();
+
+                        if($leftval->isEmpty() || $leftval->count() != 1) {
+                            Flash::error('Maximum Logic left value error!');
+                            return redirect()->back();
+                        }
+
+                        if(!is_numeric($logic['rightval'])) {
+                            Flash::error('Maximum Logic right value error!');
+                            return redirect()->back();
+                        }
+                        break;
+
                     default:
                         break;
                 }
