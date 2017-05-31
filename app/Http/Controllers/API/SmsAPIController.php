@@ -375,119 +375,135 @@ class SmsAPIController extends AppBaseController
                 $questions = $section->questions;
                 $question_completed = 0;
                 $section_error_inputs = [];
-                foreach ($questions as $question) {
-                    $valid_response = []; //  valid response in this question
-                    $inputs = $question->surveyInputs;
+                if(!$section->disablesms) {
+                    foreach ($questions as $question) {
+                        $valid_response = []; //  valid response in this question
+                        $inputs = $question->surveyInputs;
 
-                    foreach ($inputs as $input) {
-                        $inputid = $input->inputid;
+                        foreach ($inputs as $input) {
+                            $inputid = $input->inputid;
 
-                        $inputkey = str_replace('_', '', $inputid);
-                        // check input is optional
-                        if ($input->optional) {
-                            $optional++;
-                        }
-
-
-                        // look for numeric answers
-
-                        if ($input->type == 'checkbox' || $question->surveyInputs->count() === 1) {
-                            preg_match('/' . strtolower($question->qnum) . '(\d+)/', $message, $response_match);
-                        } else {
-                            preg_match('/' . $inputkey . '(\d+)/', $message, $response_match);
-                        }
-
-                        if (array_key_exists(1, $response_match)) {
-                            $response = $response_match[1];
-                        } else {
-                            // look for open text answers
-                            $test_response = preg_match('/' . $inputkey . '@(.*)/', $message, $response_match);
-
-                            if ($test_response) {
-                                $response = $response_match[1];
+                            $inputkey = str_replace('_', '', $inputid);
+                            // check input is optional
+                            if ($input->optional) {
+                                $optional++;
                             }
-                        }
 
-                        // if there is response
-                        if (isset($response)) {
 
-                            // To Do :
-                            // if checkbox, split string by one character
-                            // if not use as is.
-                            switch ($input->type) {
-                                case 'checkbox':
-                                case 'radio':
-                                    $checkbox_values = str_split($response);
-                                    $inputs_values = $inputs->pluck('value')->toArray();
-                                    $invalid_values = array_diff($checkbox_values, $inputs_values);
+                            // look for numeric answers
 
-                                    $valid_values = array_intersect($inputs_values, $checkbox_values);
-                                    // invalid values are empty and valid values are not empty, use value from user input
-                                    // else use value from result database
-                                    if(empty($invalid_values) && !empty($valid_values)) {
-                                        if($input->type == 'checkbox') {
-                                            $rawlog->{$inputid} = $result_arr[$section->id][$question->id][$inputid] = (in_array($input->value, $checkbox_values))? $input->value:null;
+                            if ($input->type == 'checkbox' || $question->surveyInputs->count() === 1) {
+                                preg_match('/' . strtolower($question->qnum) . '(\d+)/', $message, $response_match);
+                            } else {
+                                preg_match('/' . $inputkey . '(\d+)/', $message, $response_match);
+                            }
+
+                            if (array_key_exists(1, $response_match)) {
+                                $response = $response_match[1];
+                            } else {
+                                // look for open text answers
+                                $test_response = preg_match('/' . $inputkey . '@(.*)/', $message, $response_match);
+
+                                if ($test_response) {
+                                    $response = $response_match[1];
+                                }
+                            }
+
+                            // if there is response
+                            if (isset($response)) {
+
+                                // To Do :
+                                // if checkbox, split string by one character
+                                // if not use as is.
+                                switch ($input->type) {
+                                    case 'checkbox':
+                                    case 'radio':
+                                        $checkbox_values = str_split($response);
+                                        $inputs_values = $inputs->pluck('value')->toArray();
+                                        $invalid_values = array_diff($checkbox_values, $inputs_values);
+
+                                        $valid_values = array_intersect($inputs_values, $checkbox_values);
+                                        // invalid values are empty and valid values are not empty, use value from user input
+                                        // else use value from result database
+                                        if (empty($invalid_values) && !empty($valid_values)) {
+                                            if ($input->type == 'checkbox') {
+                                                $rawlog->{$inputid} = $result_arr[$section->id][$question->id][$inputid] = (in_array($input->value, $checkbox_values)) ? $input->value : null;
+                                            } else {
+                                                $rawlog->{$inputid} = $result_arr[$section->id][$question->id][$inputid] = (in_array($response, $inputs_values)) ? $response : null;
+                                            }
+
                                         } else {
-                                            $rawlog->{$inputid} = $result_arr[$section->id][$question->id][$inputid] = (in_array($response, $inputs_values))? $response:null;
+                                            $rawlog->{$inputid} = $result_arr[$section->id][$question->id][$inputid] = null;
                                         }
 
-                                    } else {
-                                        $rawlog->{$inputid} = $result_arr[$section->id][$question->id][$inputid] = null;
-                                    }
+                                        break;
+                                    default:
+                                        $rawlog->{$inputid} = $result_arr[$section->id][$question->id][$inputid] = $response;
+                                        break;
+                                }
 
-                                    break;
-                                default:
-                                    $rawlog->{$inputid} = $result_arr[$section->id][$question->id][$inputid] = $response;
-                                    break;
-                            }
-
-                            if(empty($section_with_result)) {
+                                if (empty($section_with_result)) {
                                     $section_with_result = $section->id;
                                     $section_key = $section->sort + 1;
                                 }
-                            if(!empty($section_with_result) && $section->id != $section_with_result) {
-                                // if sending cross section
+                                if (!empty($section_with_result) && $section->id != $section_with_result) {
+                                    // if sending cross section
+                                    
+                                    $rawlog->sample = $sample->data->sample;
+                                    $rawlog->user_id = 1; // need to change this
 
-                                $rawlog->sample = $sample->data->sample;
-                                $rawlog->user_id = 1; // need to change this
-
-                                $rawlog->sample_id = $result->sample_id;
-                                $rawlog->save();
-                                $reply['sample_id'] = $rawlog->id;
-                                $reply['project_id'] = $project->id;
-                                $reply['result_id'] = $result->id;
-                                $reply['message'] = 'ERROR';
-                                $reply['status'] = 'error';
-                                return $reply;
-                            }
+                                    $rawlog->sample_id = $sample->id;
+                                    $rawlog->save();
+                                    $reply['sample_id'] = $rawlog->id;
+                                    $reply['project_id'] = $project->id;
+                                    $reply['result_id'] = $result->id;
+                                    $reply['message'] = 'ERROR 2';
+                                    $reply['status'] = 'error';
+                                    return $reply;
+                                }
 //
-                            // unset $response  to avoid loop overwrite empty elements with previous value
-                            unset($response);
-                        } else {
-                            $result_arr[$section->id][$question->id][$inputid] = $result->{$inputid};
-                            $rawlog->{$inputid} = null;
-                        }
-
-
-                        if (!$input->optional) {
-                            if (!empty($rawlog->{$inputid})) {
-
-                                $section_inputs[$question->qnum] = $result_arr[$section->id][$question->id][$inputid];
-                                $valid_response[] = $inputid;
-
+                                // unset $response  to avoid loop overwrite empty elements with previous value
+                                unset($response);
                             } else {
-                                if (!empty($result->{$inputid}) && $input->type != 'checkbox') {
+                                $result_arr[$section->id][$question->id][$inputid] = $result->{$inputid};
+                                $rawlog->{$inputid} = null;
+                            }
 
-                                    $section_inputs[$question->qnum] = $result->{$inputid};
+
+                            if (!$input->optional) {
+                                if (!empty($rawlog->{$inputid})) {
+
+                                    $section_inputs[$question->qnum] = $result_arr[$section->id][$question->id][$inputid];
+                                    $valid_response[] = $inputid;
 
                                 } else {
-                                    $section_inputs[$question->qnum] = null;
-                                }
+                                    if (!empty($result->{$inputid}) && $input->type != 'checkbox') {
+
+                                        $section_inputs[$question->qnum] = $result->{$inputid};
+
+                                    } else {
+                                        $section_inputs[$question->qnum] = null;
+                                    }
 
 
-                                if (!$training_mode) {
+                                    if (!$training_mode) {
 
-                                    if (empty($question->observation_type) || in_array($sample_data->observer_field, $question->observation_type)) {
+                                        if (empty($question->observation_type) || in_array($sample_data->observer_field, $question->observation_type)) {
+
+                                            if (in_array($input->type, ['radio', 'checkbox'])) {
+
+                                                $section_error_inputs[$question->qnum] = $question->qnum;
+
+                                            } else {
+
+                                                $error_key = strtoupper($inputkey);
+                                                $section_error_inputs[$error_key] = $error_key;
+
+                                            }
+
+                                        }
+
+                                    } else {
 
                                         if (in_array($input->type, ['radio', 'checkbox'])) {
 
@@ -501,28 +517,13 @@ class SmsAPIController extends AppBaseController
                                         }
 
                                     }
-
-                                } else {
-
-                                    if (in_array($input->type, ['radio', 'checkbox'])) {
-
-                                        $section_error_inputs[$question->qnum] = $question->qnum;
-
-                                    } else {
-
-                                        $error_key = strtoupper($inputkey);
-                                        $section_error_inputs[$error_key] = $error_key;
-
-                                    }
-
                                 }
                             }
-                        }
 
-                    } // after input loop
+                        } // after input loop
 
-                } // after question loop
-
+                    } // after question loop
+                }
 
                 unset($optional); // unset optional to avoid unexpect outcomes when checking section status
 
@@ -534,7 +535,7 @@ class SmsAPIController extends AppBaseController
                 $rawlog->sample = $result->sample = $sample->data->sample;
                 $rawlog->user_id = $result->user_id = 1; // need to change this
                 $result->setTable($dbname); // need to set table name again for some reason
-                $rawlog->sample_id = $result->sample_id;
+                $rawlog->sample_id = $sample->id;
                 $rawlog->save();
                 $reply['sample_id'] = $rawlog->id;
             } else {
@@ -551,7 +552,7 @@ class SmsAPIController extends AppBaseController
 
             if (!empty($checked['error'][$section_with_result])) {
                 if (empty($section_inputs)) {
-                    $reply['message'] = 'ERROR';
+                    $reply['message'] = 'ERROR 1';
                 } else {
                     $errors = array_unique($checked['error'][$section_with_result]);
                     $reply['message'] = 'ERROR: SMS '.$section_key.': '. implode(', ', $errors);
@@ -573,7 +574,7 @@ class SmsAPIController extends AppBaseController
 
             return $reply;
         } else {
-            $reply['message'] = 'ERROR';
+            $reply['message'] = 'ERROR All';
             $reply['status'] = 'error';
             $reply['form_code'] = 'unknown';
             return $reply;
