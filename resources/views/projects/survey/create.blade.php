@@ -183,7 +183,7 @@ window.url="{!! route('projects.surveys.save', ['project' => $project->id, 'samp
 
             var id = $(this).data('id');
 
-            $('#'+id).find(":input").filter(function(){ return !this.value; }).attr("disabled", "disabled");
+            //$('#'+id).find(":input").filter(function(){ return !this.value; }).attr("disabled", "disabled");
             var info_data = $('.info').serializeArray();
 
             var section_data = $('#'+id+' :input').serializeArray();

@@ -534,7 +534,7 @@ class ProjectResultsController extends AppBaseController
         $results = $request->input('result');
 
         if (empty($results)) {
-            return $this->sendError(trans('messages.no_result_submitted'), $code = 404);
+            //return $this->sendError(trans('messages.no_result_submitted'), $code = 404);
         }
 
         if (array_key_exists('ballot', $results)) {
@@ -768,7 +768,7 @@ class ProjectResultsController extends AppBaseController
 
                 foreach ($inputs as $input) {
                     if(array_key_exists($input->inputid, $results)) {
-                        $result_arr[$section->id][$question->id][$input->inputid] = $results[$input->inputid];
+                        $result_arr[$section->id][$question->id][$input->inputid] = ($results[$input->inputid])?$results[$input->inputid]:null;
                     } else {
                         if(array_key_exists($section->id, $section_result)) {
                             $result_arr[$section->id][$question->id][$input->inputid] = null;
