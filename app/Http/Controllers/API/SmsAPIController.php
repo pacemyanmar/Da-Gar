@@ -127,7 +127,7 @@ class SmsAPIController extends AppBaseController
                 //$smsLog->api_project_id = $request->input('project_id');
                 $smsLog->to_number = $to_number;
                 $smsLog->content = $content; // incoming message
-                $uuid = Uuid::uuid5(Uuid::NAMESPACE_DNS, $content . Carbon::now());
+                $uuid = Uuid::uuid5(Uuid::NAMESPACE_DNS, $content.$service_id.$from_number.$to_number . Carbon::now().rand());
                 $smsLog->status_secret = $uuid->toString();
                 $smsLog->status_message = $response['message']; // reply message
                 $smsLog->status = $response['status'];
@@ -164,8 +164,10 @@ class SmsAPIController extends AppBaseController
 
             if ($event != 'send_status') {
                 $reply['content'] = $response['message']; // reply message
-
-                $this->sendToTelerivet($reply); // need to make asycronous
+                $no_reply = $request->input('noreply');
+                if(!$no_reply) {
+                    $this->sendToTelerivet($reply); // need to make asycronous
+                }
             }
         }
         return $this->sendResponse($reply, 'Message processed successfully');
