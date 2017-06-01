@@ -13,7 +13,7 @@
 
                         <th>{!! trans('sample.location_code') !!}</th>
                         <th>{!! trans('sample.level1') !!}</th>
-                        <th>{!! trans('sample.level2') !!}</th>
+                        <th>{!! trans('sample.level3') !!}</th>
                         <th>{!! trans('messages.polling_station') !!}</th>
                         <th>{!! trans('sample.supervisor_name') !!}</th>
                         <th>{!! trans('sample.supervisor_phone') !!}</th>
@@ -30,9 +30,9 @@
                     <tbody>
                     <tr>
 
-                        <td>{!! ucwords($sample->data->location_code) !!}</td>
+                        <td>{!! ucwords($sample->data->ps_code) !!}</td>
                         <td>{!! ucwords($sample->data->level1) !!}</td>
-                        <td>{!! ucwords($sample->data->level2) !!}</td>
+                        <td>{!! ucwords($sample->data->level3) !!}</td>
                         <td>{!! ucwords($sample->data->level6) !!}</td>
                         <td>{!! ucwords($sample->data->supervisor_name) !!}</td>
                         <td>{!! ucwords($sample->data->supervisor_mobile) !!}</td>
