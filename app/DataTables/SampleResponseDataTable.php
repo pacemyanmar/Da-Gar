@@ -143,14 +143,17 @@ class SampleResponseDataTable extends DataTable
         $project = $this->project;
         if($this->section) {
             $dom = 'p';
+            $scrollX = false;
         } else {
             $dom = 'tp';
+            $scrollX = true;
         }
         return [
             'dom' => $dom,
-            'scrollX' => true,
+            'scrollX' => $scrollX,
             'ordering' => false,
             'pageLength' => 50,
+            'fixedColumns' => [ 'leftColumns' => 2 ],
             'language' => [
                 "decimal" => trans('messages.decimal'),
                 "emptyTable" => trans('messages.emptyTable'),
@@ -209,7 +212,7 @@ class SampleResponseDataTable extends DataTable
                                 }, 0 );
                             api.columns().every(function(){
                                   var column = this;
-                                  console.log(column.dataSrc());
+                                  
                                   var sum = column
                                       .data()
                                       .reduce(function (a, b) {

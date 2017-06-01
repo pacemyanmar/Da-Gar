@@ -42,9 +42,15 @@
       headers:
       { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') }
     });
+    window.LaravelDataTables["dataTableBuilder"].columns.adjust().draw();
+    setInterval( function () {
+    window.LaravelDataTables["dataTableBuilder"].ajax.reload( null, false ); // user paging is not reset on reload
+    }, 10000 );
+    ajaxoverlay = false;
     $('#responseBy').on('change', function(e){
         var filterurl = $(this).val();
-        console.log(filterurl);
+
         window.location.href = filterurl;
     });
+
 @endpush

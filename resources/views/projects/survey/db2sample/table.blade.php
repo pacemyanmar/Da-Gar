@@ -10,13 +10,13 @@
 @endsection
 
 
-<table  class="table table-striped table-bordered table-responsive" id="dataTableBuilder" >
+<table class="table table-striped table-bordered" id="dataTableBuilder" width="70%">
 
 <thead>
 <tr>
-<th rowspan="2">State</th>
-<th rowspan="2">Total Forms</th>
-<th rowspan="2">Total</th>
+<th rowspan="2" width="120px">State</th>
+<th rowspan="2" width="25px">Total Forms</th>
+<th rowspan="2" width="25px">Total</th>
 @foreach($project->sectionsDb as $key => $section)
 @php
 	$skey = $key + 1;
