@@ -71,18 +71,23 @@ class SampleResponseDataTable extends DataTable
         $sectionColumnsStr = implode(',', $sectionColumns);
 
         if ($project->status != 'new') {
+            if($this->section) {
+                $total = 'section'.$this->section.'status';
+            } else {
+                $total = 'id';
+            }
             switch ($this->filter) {
                 case 'user':
                     # code...
                     $filter = 'user';
-                    $query->select('user.name AS ' . $filter, DB::raw('SUM(IF(sample_datas.id,1,0)) AS alltotal, SUM(IF(' . $childTable . '.id, 1, 0)) AS total'), DB::raw($sectionColumnsStr));
+                    $query->select('user.name AS ' . $filter, DB::raw('SUM(IF(sample_datas.id,1,0)) AS alltotal, SUM(IF(' . $childTable . '.'.$total.', 1, 0)) AS total'), DB::raw($sectionColumnsStr));
                     $query->groupBy($filter);
                     break;
 
                 default:
                     # code...
                     $filter = $this->filter;
-                    $query->select('sample_datas.' . $filter, DB::raw('SUM(IF(sample_datas.id,1,0)) AS alltotal, SUM(IF(' . $childTable . '.id, 1, 0)) AS total'), DB::raw('GROUP_CONCAT(DISTINCT user.name) as user_name', 'GROUP_CONCAT(DISTINCT update_user.name) as update_user', 'GROUP_CONCAT(DISTINCT qc_user.name) as qc_user'), DB::raw($sectionColumnsStr));
+                    $query->select('sample_datas.' . $filter, DB::raw('SUM(IF(sample_datas.id,1,0)) AS alltotal, SUM(IF(' . $childTable . '.'.$total.', 1, 0)) AS total'), DB::raw('GROUP_CONCAT(DISTINCT user.name) as user_name', 'GROUP_CONCAT(DISTINCT update_user.name) as update_user', 'GROUP_CONCAT(DISTINCT qc_user.name) as qc_user'), DB::raw($sectionColumnsStr));
                     $query->groupBy('sample_datas.' . $filter);
                     break;
             }
@@ -136,8 +141,13 @@ class SampleResponseDataTable extends DataTable
     protected function getBuilderParameters()
     {
         $project = $this->project;
+        if($this->section) {
+            $dom = 'p';
+        } else {
+            $dom = 'tp';
+        }
         return [
-            'dom' => 'Brtip',
+            'dom' => $dom,
             'scrollX' => true,
             'ordering' => false,
             'pageLength' => 50,

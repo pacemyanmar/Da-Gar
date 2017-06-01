@@ -43,26 +43,28 @@
 @endforeach
 </tr>
 </thead>
-<tfoot>
-<tr>
-<td>State</td>
-<td>Total Forms</td>
-<td>Total</td>
-@foreach($project->sectionsDb as $key => $section)
-@php
+    @if($filters['type'] === 'level1')
+    <tfoot>
+    <tr>
+    <td>State</td>
+    <td>Total Forms</td>
+    <td>Total</td>
+    @foreach($project->sectionsDb as $key => $section)
+    @php
 
-	$skey = $key + 1;
-	if($filters['section_num'] && $filters['section_num'] != $skey) {
-		continue;
-	}
-@endphp
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-@endforeach
-</tr>
-</tfoot>
+        $skey = $key + 1;
+        if($filters['section_num'] && $filters['section_num'] != $skey) {
+            continue;
+        }
+    @endphp
+    <td></td>
+    <td></td>
+    <td></td>
+    <td></td>
+    @endforeach
+    </tr>
+    </tfoot>
+    @endif
 </table>
 
 @section('scripts')

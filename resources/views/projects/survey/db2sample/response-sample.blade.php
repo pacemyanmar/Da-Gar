@@ -8,9 +8,9 @@
         <span class="pull-right">
         <label>Response rate by:
            <select autocomplete="off" id="responseBy" class="form-control input-md">
-               <option value="{!! route('projects.response.filter', [$project->id, 'level1']) !!}" @if($filters['type'] === 'level1') selected="selected" @endif>State</option>
-               <option value="{!! route('projects.response.filter', [$project->id, 'level2']) !!}" @if($filters['type'] === 'level2') selected="selected" @endif>District</option>
-               <option value="{!! route('projects.response.filter', [$project->id, 'level3']) !!}" @if($filters['type'] === 'level3') selected="selected" @endif>Township</option>
+               <option value="{!! route('projects.response.filter', [$project->id, 'level1']) !!}" @if($filters['type'] === 'level1') selected="selected" @endif>{!! trans('sample.level1') !!}</option>
+               <option value="{!! route('projects.response.filter', [$project->id, 'level2']) !!}" @if($filters['type'] === 'level2') selected="selected" @endif>{!! trans('sample.level2') !!}</option>
+               <option value="{!! route('projects.response.filter', [$project->id, 'level3']) !!}" @if($filters['type'] === 'level3') selected="selected" @endif>{!! trans('sample.level3') !!}</option>
            </select>
            </label>
         </span>
