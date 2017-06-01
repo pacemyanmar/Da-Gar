@@ -310,19 +310,20 @@ class SampleResponseDataTable extends DataTable
                                     }
                                   }";
             }];
-            $columns[$section_id . '_missing'] = ['data' => $section_id . '_missing', 'name' => $section_id . '_missing', 'defaultContent' => 'N/A', 'title' => $sectionname . $missing_img, 'searchable' => false, 'orderable' => false, "render" => function () use ($project, $filter, $section_id) {
+
+            $columns[$section_id . '_error'] = ['data' => $section_id . '_error', 'name' => $section_id . '_error', 'defaultContent' => 'N/A', 'title' => $sectionname . $error_img, 'searchable' => false, 'orderable' => false, "render" => function () use ($project, $filter, $section_id) {
                 return "function ( data, type, full, meta ) {
                                     if(type == 'display') {
-                                      return '<a class=\"text-danger\" href=" . route('projects.surveys.index', [$project->id]) . "/?" . $filter . "='+ encodeURI(full." . $filter . ") +'&status=0&section=' + encodeURI('" . $section_id . "') + '>' + data + '<br> (' +parseFloat((parseInt(data, 10) * 100)/ parseInt(full.alltotal, 10)).toFixed(0) + '%) </a>';
+                                      return '<a href=" . route('projects.surveys.index', [$project->id]) . "/?" . $filter . "='+ encodeURI(full." . $filter . ") +'&status=3&section=' + encodeURI('" . $section_id . "') + '>' + data + '<br> (' +parseFloat((parseInt(data, 10) * 100)/ parseInt(full.alltotal, 10)).toFixed(0) + '%) </a>';
                                     } else {
                                       return data;
                                     }
                                   }";
             }];
-            $columns[$section_id . '_error'] = ['data' => $section_id . '_error', 'name' => $section_id . '_error', 'defaultContent' => 'N/A', 'title' => $sectionname . $error_img, 'searchable' => false, 'orderable' => false, "render" => function () use ($project, $filter, $section_id) {
+            $columns[$section_id . '_missing'] = ['data' => $section_id . '_missing', 'name' => $section_id . '_missing', 'defaultContent' => 'N/A', 'title' => $sectionname . $missing_img, 'searchable' => false, 'orderable' => false, "render" => function () use ($project, $filter, $section_id) {
                 return "function ( data, type, full, meta ) {
                                     if(type == 'display') {
-                                      return '<a href=" . route('projects.surveys.index', [$project->id]) . "/?" . $filter . "='+ encodeURI(full." . $filter . ") +'&status=3&section=' + encodeURI('" . $section_id . "') + '>' + data + '<br> (' +parseFloat((parseInt(data, 10) * 100)/ parseInt(full.alltotal, 10)).toFixed(0) + '%) </a>';
+                                      return '<a class=\"text-danger\" href=" . route('projects.surveys.index', [$project->id]) . "/?" . $filter . "='+ encodeURI(full." . $filter . ") +'&status=0&section=' + encodeURI('" . $section_id . "') + '>' + data + '<br> (' +parseFloat((parseInt(data, 10) * 100)/ parseInt(full.alltotal, 10)).toFixed(0) + '%) </a>';
                                     } else {
                                       return data;
                                     }

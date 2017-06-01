@@ -36,10 +36,10 @@
 		continue;
 	}
 @endphp
-<th>C</th>
-<th>I</th>
-<th>M</th>
-<th>E</th>
+        <th>C</th>
+        <th>I</th>
+        <th>E</th>
+        <th>M</th>
 @endforeach
 </tr>
 </thead>
@@ -57,10 +57,10 @@
             continue;
         }
     @endphp
-    <td class="success"></td>
-    <td class="warning"></td>
-    <td class="danger"></td>
-    <td class="info"></td>
+            <td class="success"></td>
+            <td class="warning"></td>
+            <td class="info"></td>
+            <td class="danger"></td>
     @endforeach
     </tr>
     </tfoot>
