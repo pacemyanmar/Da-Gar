@@ -57,10 +57,10 @@
             continue;
         }
     @endphp
-    <td></td>
-    <td></td>
-    <td></td>
-    <td></td>
+    <td class="success"></td>
+    <td class="warning"></td>
+    <td class="danger"></td>
+    <td class="info"></td>
     @endforeach
     </tr>
     </tfoot>
