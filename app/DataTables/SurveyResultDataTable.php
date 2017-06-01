@@ -232,9 +232,11 @@ class SurveyResultDataTable extends DataTable
                     $join->on('samples.id', '=', $childTable . '.sample_id');
                 });
             }
-            $query->leftjoin($childTable . '_double', function ($join) use ($childTable) {
-                $join->on('samples.id', '=', $childTable . '_double.sample_id');
-            });
+            if(config('sms.double_entry')) {
+                $query->leftjoin($childTable . '_double', function ($join) use ($childTable) {
+                    $join->on('samples.id', '=', $childTable . '_double.sample_id');
+                });
+            }
         }
 
         $filterColumns = Request::get('columns', []);
