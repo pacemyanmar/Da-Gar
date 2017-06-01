@@ -232,11 +232,9 @@ class SurveyResultDataTable extends DataTable
                     $join->on('samples.id', '=', $childTable . '.sample_id');
                 });
             }
-            if(config('sms.double_entry')) {
-                $query->leftjoin($childTable . '_double', function ($join) use ($childTable) {
-                    $join->on('samples.id', '=', $childTable . '_double.sample_id');
-                });
-            }
+            $query->leftjoin($childTable . '_double', function ($join) use ($childTable) {
+                $join->on('samples.id', '=', $childTable . '_double.sample_id');
+            });
         }
 
         $filterColumns = Request::get('columns', []);
@@ -478,7 +476,7 @@ class SurveyResultDataTable extends DataTable
 
         $township_query = "level3, level3_trans";
 
-        $townships = $sampleData->select(DB::raw($township_query))->get()->unique();
+        $townships = $sampleData->select(DB::raw($township_query))->get()->unique()->sortBy('level3');
 
         $level3_option = "";
         foreach ($townships as $key => $township) {
@@ -496,7 +494,7 @@ class SurveyResultDataTable extends DataTable
 
         $district_query = "level2, level2_trans";
 
-        $districts = $sampleData->select(DB::raw($district_query))->get()->unique();
+        $districts = $sampleData->select(DB::raw($district_query))->get()->unique()->sortBy('level2');
 
         $level2_option = "";
         foreach ($districts as $key => $district) {
@@ -513,7 +511,7 @@ class SurveyResultDataTable extends DataTable
         }
 
         $state_query = "level1, level1_trans";
-        $states = $sampleData->select(DB::raw($state_query))->get()->unique();
+        $states = $sampleData->select(DB::raw($state_query))->get()->unique()->sortBy('level1');
 
         $level1_option = "";
         foreach ($states as $key => $state) {
@@ -552,7 +550,7 @@ class SurveyResultDataTable extends DataTable
         $columnName = array_keys($this->tableColumns);
 
         //$textColumns = ['location_code', 'spotchecker', 'spotchecker_code', 'name', 'nrc_id', 'form_id', 'mobile'];
-        $textColumns = ['location_code', 'user_id', 'full_name', 'phone_1'];
+        $textColumns = ['location_code', 'user_id', 'full_name'];
         $textColumns = array_intersect_key($this->tableColumns, array_flip($textColumns));
 
         $columnName = array_flip($columnName);
