@@ -819,6 +819,8 @@ class ProjectResultsController extends AppBaseController
 
         $surveyResult->save();
 
+        $sample->save();
+
         return $this->sendResponse($results_to_save, trans('messages.saved'));
     }
 
