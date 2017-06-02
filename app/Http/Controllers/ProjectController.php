@@ -939,7 +939,44 @@ class ProjectController extends AppBaseController
             return redirect()->back();
         }
 
-        $results = DB::select("SELECT * FROM (SELECT * FROM samples JOIN (SELECT sd.id AS sdid, sd.location_code, sd.sample, sd.ps_code, sd.area_type, 
+        $inputs = $project->inputs->sortBy('sort')->pluck('type', 'inputid');
+
+        $childTable = $project->dbname;
+
+        $unique_inputs = $inputs->toArray();
+
+
+        array_walk($unique_inputs, function (&$column, $index) {
+            switch ($column) {
+                case 'checkbox':
+                    $column = 'IF(pdb.'.$index.' IS NOT NULL,IF(pdb.'.$index.' = 0, 0, 1),null) AS '.$index;
+                    break;
+                default:
+                    $column = 'pdb.' . $index;
+                    break;
+            }
+        });
+
+        $sample_columns = [
+            'location_code',
+            'updated_at',
+            snake_case(trans('sample.level1')),
+
+        ];
+
+        $sectionColumns = [];
+        foreach ($project->sectionsDb->sortBy('sort') as $k => $section) {
+            $sectionColumns[] = 'section' . ($k + 1) . 'status';
+        }
+
+        $export_columns = array_merge($sample_columns, $sectionColumns, $unique_inputs);
+
+
+
+        $export_columns_list = implode(',', $export_columns);
+
+        if (!Schema::hasTable('sdata_view')) {
+            DB::statement("CREATE VIEW sdata_view AS (SELECT sd.id AS sdid, sd.location_code, sd.sample, sd.ps_code, sd.area_type, 
                            sd.level6 AS ".snake_case(trans('sample.level6')).", sd.level5 AS ".snake_case(trans('sample.level5')).", 
                            sd.level4 AS ".snake_case(trans('sample.level4')).", sd.level3 AS ".snake_case(trans('sample.level3')).", 
                            sd.level2 AS ".snake_case(trans('sample.level2')).", sd.level1 AS ".snake_case(trans('sample.level1')).", 
@@ -949,10 +986,22 @@ class ProjectController extends AppBaseController
                            ".snake_case(trans('sample.level5')).", 
                            ".snake_case(trans('sample.level4')).", ".snake_case(trans('sample.level3')).", 
                            ".snake_case(trans('sample.level2')).", ".snake_case(trans('sample.level1')).", 
-                           sd.parties, sd.sms_time, sd.observer_field) AS sdata ON sdata.sdid = samples.sample_data_id 
-                           WHERE samples.sample_data_type = '$project->dblink' AND samples.project_id = '$project->id') AS projectsample 
-                           LEFT JOIN $project->dbname as projectdb ON projectsample.id = projectdb.sample_id");
-        Excel::create($project->project, function($excel) use ($results) {
+                           sd.parties, sd.sms_time, sd.observer_field)");
+        }
+
+
+        if (!Schema::hasTable($project->dbname.'sample_view')) {
+            DB::statement("CREATE VIEW ".$project->dbname."sample_view AS (SELECT * FROM samples JOIN sdata_view AS sdata ON sdata.sdid = samples.sample_data_id 
+                           WHERE samples.sample_data_type = '$project->dblink' AND samples.project_id = '$project->id')");
+        }
+
+
+
+
+        $results = DB::select("SELECT $export_columns_list FROM ".$project->dbname."sample_view AS psv  LEFT JOIN $project->dbname as pdb ON psv.id = pdb.sample_id");
+
+        $filename = preg_replace('/[^a-zA-Z0-9\s]/','', $project->project).' '.date("Y-m-d-H-i-s");
+        Excel::create($filename, function($excel) use ($results) {
 
             $excel->sheet('result', function($sheet) use ($results) {
                 $rowdata = [];
@@ -962,6 +1011,6 @@ class ProjectController extends AppBaseController
                 $sheet->fromArray($rowdata, null, 'A1', true);
             });
 
-        })->store('xls')->export('xls');
+        })->store('csv')->export('csv');
     }
 }
