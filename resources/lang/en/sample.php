@@ -31,5 +31,9 @@ return [
     'sms_primary' => 'SMS Primary',
     'sms_time' => 'Simulation',
     'observer_type' => 'Type',
-    'observer_field' => 'Type'
+    'observer_field' => 'Type',
+    'pvt1' => 'PVT_Dam_Daek',
+    'pvt2' => 'PVT_Chaom_Chau_Bei',
+    'pvt3' => 'PVT_Bavet',
+    'pvt4' => ''
 ];

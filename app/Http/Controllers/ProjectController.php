@@ -960,7 +960,12 @@ class ProjectController extends AppBaseController
         $sample_columns = [
             'location_code',
             'updated_at',
-            snake_case(trans('sample.level1_id')),
+            'obs_type',
+            'sbo',
+            'pvt1 AS '. strtolower(trans('sample.pvt1')),
+            'pvt2 AS '. strtolower(trans('sample.pvt2')),
+            'pvt3 AS '. strtolower(trans('sample.pvt3')),
+            strtolower(snake_case(trans('sample.level1_id'))),
 
         ];
 
@@ -981,13 +986,14 @@ class ProjectController extends AppBaseController
                            sd.level4 AS ".snake_case(trans('sample.level4')).", sd.level3 AS ".snake_case(trans('sample.level3')).", 
                            sd.level2 AS ".snake_case(trans('sample.level2')).", sd.level1 AS ".snake_case(trans('sample.level1')).", 
                            sd.level1_id AS ".snake_case(trans('sample.level1_id')).", 
+                           sd.obs_type, sd.sbo, sd.pvt1, sd.pvt2, sd.pvt3, sd.pvt4, 
                            sd.parties, sd.sms_time, sd.observer_field, GROUP_CONCAT(ob.code) AS observer_code  
                            FROM sample_datas AS sd LEFT JOIN observers AS ob ON ob.sample_id = sd.id  GROUP BY sd.id, sd.location_code, sd.sample,
                            sd.ps_code, sd.area_type, ".snake_case(trans('sample.level6')).", 
                            ".snake_case(trans('sample.level5')).", 
                            ".snake_case(trans('sample.level4')).", ".snake_case(trans('sample.level3')).", 
                            ".snake_case(trans('sample.level2')).", ".snake_case(trans('sample.level1')).", 
-                           ".snake_case(trans('sample.level1_id')).", 
+                           ".snake_case(trans('sample.level1_id')).", sd.obs_type, sd.sbo, sd.pvt1, sd.pvt2, sd.pvt3, sd.pvt4,
                            sd.parties, sd.sms_time, sd.observer_field)");
         }
 
