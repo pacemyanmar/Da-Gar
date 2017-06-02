@@ -429,7 +429,7 @@ class SmsAPIController extends AppBaseController
                                         // else use value from result database
                                         if (empty($invalid_values) && !empty($valid_values)) {
                                             if ($input->type == 'checkbox') {
-                                                $rawlog->{$inputid} = $result_arr[$section->id][$question->id][$inputid] = (in_array($input->value, $checkbox_values)) ? $input->value : null;
+                                                $rawlog->{$inputid} = $result_arr[$section->id][$question->id][$inputid] = (in_array($input->value, $checkbox_values)) ? $input->value : 0;
                                             } else {
                                                 $rawlog->{$inputid} = $result_arr[$section->id][$question->id][$inputid] = (in_array($response, $inputs_values)) ? $response : null;
                                             }

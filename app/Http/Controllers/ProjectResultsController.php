@@ -777,10 +777,14 @@ class ProjectResultsController extends AppBaseController
 
                 foreach ($inputs as $input) {
                     if(array_key_exists($input->inputid, $results)) {
-                        $result_arr[$section->id][$question->id][$input->inputid] = ($results[$input->inputid])?$results[$input->inputid]:null;
+                        $result_arr[$section->id][$question->id][$input->inputid] = $results[$input->inputid];
                     } else {
                         if(array_key_exists($section->id, $section_result)) {
-                            $result_arr[$section->id][$question->id][$input->inputid] = null;
+                            if($input->type == 'checkbox') {
+                                $result_arr[$section->id][$question->id][$input->inputid] = 0;
+                            } else {
+                                $result_arr[$section->id][$question->id][$input->inputid] = null;
+                            }
                         }  else {
                             $result_arr[$section->id][$question->id][$input->inputid] = $surveyResult->{$input->inputid};
                         }
