@@ -170,6 +170,7 @@ class SampleDataController extends AppBaseController
                     "area_type" => strtolower($row->area_type), // rural or urban
 
                     "level1" => ($row->level1) ? $row->level1 : null, // state or province
+                    "level1_id" => ($row->level1_id) ? $row->level1_id : null,
                     "level2" => ($row->level2) ? $row->level2 : null, // district
                     "level3" => ($row->level3) ? $row->level3 : null, // township
                     "level4" => ($row->level4) ? $row->level4 : null, // village tract, ward, or commune
@@ -205,6 +206,15 @@ class SampleDataController extends AppBaseController
                     "hotline1" => ($row->hotline_1) ? $row->hotline_1 : null,
                     "hotline2" => ($row->hotline_2) ? $row->hotline_2 : null,
                     "sms_time" => ($row->sms_time) ? $row->sms_time : null,
+
+                    "incident_center" => ($row->incident_center) ? $row->incident_center : null,
+                    'obs_type' => ($row->obs_type) ? $row->obs_type : null,
+                    "sbo" => $row->sbo,
+                    "pvt1" => ($row->pvt1) ? $row->pvt1 : false,
+                    "pvt2" => ($row->pvt2) ? $row->pvt2 : false,
+                    "pvt3" => ($row->pvt3) ? $row->pvt3 : false,
+                    "pvt4" => ($row->pvt4) ? $row->pvt4 : false,
+
                 ];
                 $attr = [
                     "location_code" => ($row->location_code) ? $row->location_code : null,

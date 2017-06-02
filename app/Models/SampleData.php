@@ -26,6 +26,7 @@ class SampleData extends Model
         'area_type',
 
         'level1', // state
+        'level1_id',
         'level2',
         'level3',
         'level4',
@@ -59,6 +60,13 @@ class SampleData extends Model
         'hotline1',
         'hotline2',
         'sms_time',
+        'incident_center',
+        'obs_type',
+        'sbo',
+        'pvt1',
+        'pvt2',
+        'pvt3',
+        'pvt4'
     ];
 
     public static $export = [

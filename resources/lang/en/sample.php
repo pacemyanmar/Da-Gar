@@ -10,6 +10,7 @@ return [
     'location_code' => 'Polling Station Code',
     'national_id' => 'National ID',
     'level1' => 'Province',
+    'level1_id' => 'Province ID',
     'level2' => 'District',
     'level3' => 'Commune',
     'level4' => 'Ward',
