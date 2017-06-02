@@ -17,6 +17,7 @@ use Flash;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
@@ -905,9 +906,9 @@ class ProjectController extends AppBaseController
                         }
 
                         if(!array_key_exists('rightval', $logic)) {
-                            $logic['rightval'] = '';
+                            $logic['rightval'] = null;
                         }
-                        
+
                         break;
 
                     default:
@@ -927,5 +928,40 @@ class ProjectController extends AppBaseController
 
         return redirect()->back();
 
+    }
+
+    public function getcsv($project_id, Request $request) {
+        App::setLocale('en');
+        $project = $this->projectRepository->findWithoutFail($project_id);
+        if (empty($project)) {
+            Flash::error('Project not found');
+
+            return redirect()->back();
+        }
+
+        $results = DB::select("SELECT * FROM (SELECT * FROM samples JOIN (SELECT sd.id AS sdid, sd.location_code, sd.sample, sd.ps_code, sd.area_type, 
+                           sd.level6 AS ".snake_case(trans('sample.level6')).", sd.level5 AS ".snake_case(trans('sample.level5')).", 
+                           sd.level4 AS ".snake_case(trans('sample.level4')).", sd.level3 AS ".snake_case(trans('sample.level3')).", 
+                           sd.level2 AS ".snake_case(trans('sample.level2')).", sd.level1 AS ".snake_case(trans('sample.level1')).", 
+                           sd.parties, sd.sms_time, sd.observer_field, GROUP_CONCAT(ob.code) AS observer_code  
+                           FROM sample_datas AS sd LEFT JOIN observers AS ob ON ob.sample_id = sd.id  GROUP BY sd.id, sd.location_code, sd.sample,
+                           sd.ps_code, sd.area_type, ".snake_case(trans('sample.level6')).", 
+                           ".snake_case(trans('sample.level5')).", 
+                           ".snake_case(trans('sample.level4')).", ".snake_case(trans('sample.level3')).", 
+                           ".snake_case(trans('sample.level2')).", ".snake_case(trans('sample.level1')).", 
+                           sd.parties, sd.sms_time, sd.observer_field) AS sdata ON sdata.sdid = samples.sample_data_id 
+                           WHERE samples.sample_data_type = '$project->dblink' AND samples.project_id = '$project->id') AS projectsample 
+                           LEFT JOIN $project->dbname as projectdb ON projectsample.id = projectdb.sample_id");
+        Excel::create($project->project, function($excel) use ($results) {
+
+            $excel->sheet('result', function($sheet) use ($results) {
+                $rowdata = [];
+                foreach($results as $result) {
+                    $rowdata[] = (array) $result;
+                }
+                $sheet->fromArray($rowdata, null, 'A1', true);
+            });
+
+        })->store('xls')->export('xls');
     }
 }
