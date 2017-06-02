@@ -960,7 +960,7 @@ class ProjectController extends AppBaseController
         $sample_columns = [
             'location_code',
             'updated_at',
-            'obs_type',
+            //'obs_type',
             'sbo',
             'pvt1 AS '. strtolower(trans('sample.pvt1')),
             'pvt2 AS '. strtolower(trans('sample.pvt2')),
