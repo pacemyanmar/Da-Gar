@@ -351,7 +351,7 @@ class ProjectResultsController extends AppBaseController
                     $input_columns[$column . '_status'] = ['name' => $dbname . '.' . $column . '_status', 'data' => $column . '_status', 'title' => $title . '_status', 'orderable' => false, 'visible' => false];
                 }
 
-                if (!$input->in_index) {
+                if (!$question->report) {
                     $input_columns[$column]['visible'] = false;
                 }
             }
