@@ -185,7 +185,7 @@ class ProjectResultsController extends AppBaseController
                         ];
                         break;
                     case 'level1':
-                    case 'level2':
+                    //case 'level2':
                     case 'level3':
                         $columns[$column] = [
                             'name' => 'sample_datas_view.'.$column,
