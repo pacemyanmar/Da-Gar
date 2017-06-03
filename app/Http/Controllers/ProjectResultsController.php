@@ -801,17 +801,21 @@ class ProjectResultsController extends AppBaseController
                             $result_arr[$section->id][$question->id][$input->inputid] = ($results[$input->inputid]) ? $results[$input->inputid] : null;
                         }
                     } else {
+                        // if section is submitted
                         if(array_key_exists($section->id, $section_result)) {
+
                             if(empty($question_has_result_submitted)) {
-                                if($input->type == 'checkbox') {
-                                    if($surveyResult->{$input->inputid}) {
-                                        $result_arr[$section->id][$question->id][$input->inputid] = 0;
-                                    } else {
-                                        $result_arr[$section->id][$question->id][$input->inputid] = $surveyResult->{$input->inputid};
-                                    }
-                                } else {
-                                    $result_arr[$section->id][$question->id][$input->inputid] = null;
-                                }
+                                $result_arr[$section->id][$question->id][$input->inputid] = null;
+//                                if($input->type == 'checkbox') {
+////                                    if($surveyResult->{$input->inputid}) {
+////                                        $result_arr[$section->id][$question->id][$input->inputid] = 0;
+////                                    } else {
+////                                        $result_arr[$section->id][$question->id][$input->inputid] = $surveyResult->{$input->inputid};
+////                                    }
+//                                    $result_arr[$section->id][$question->id][$input->inputid] = 0;
+//                                } else {
+//                                    $result_arr[$section->id][$question->id][$input->inputid] = null;
+//                                }
                             } else {
                                 if($input->type == 'checkbox') {
                                     $result_arr[$section->id][$question->id][$input->inputid] = 0;
@@ -819,7 +823,9 @@ class ProjectResultsController extends AppBaseController
                                     $result_arr[$section->id][$question->id][$input->inputid] = null;
                                 }
                             }
+
                         }  else {
+                            // if section is submitted leave as value in database
                             $result_arr[$section->id][$question->id][$input->inputid] = $surveyResult->{$input->inputid};
                         }
 
