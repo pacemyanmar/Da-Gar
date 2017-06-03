@@ -287,7 +287,9 @@ class SmsAPIController extends AppBaseController
                     $observer = Observer::where('code', $sms_code)->first();
 
                     if($observer) {
-                        $location_code = $observer->location->location_code;
+                        if($observer->location) {
+                            $location_code = $observer->location->location_code;
+                        }
                     }
 
                 }

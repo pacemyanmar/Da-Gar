@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Http\Controllers\API\SmsAPIController;
+use App\Repositories\ProjectRepository;
 use App\Repositories\SmsLogRepository;
 use Faker\Factory;
 use Illuminate\Console\Command;
@@ -66,7 +67,9 @@ class GenerateSMSLog extends Command
                 $app = Container::getInstance();
                 $sms_log = new SmsLogRepository($app);
 
-                $sms_api = new SmsAPIController($sms_log);
+                $project_instance = new ProjectRepository($app);
+
+                $sms_api = new SmsAPIController($sms_log,$project_instance);
                 $sms_api->telerivet($request);
             });
         });
