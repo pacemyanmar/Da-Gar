@@ -14,14 +14,18 @@ use App\Models\SampleData;
 use App\Models\Section;
 use App\Models\SmsLog;
 use App\Models\SurveyResult;
+use App\Repositories\ProjectRepository;
 use App\Repositories\SmsLogRepository;
 use App\Traits\LogicalCheckTrait;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Schema;
 use InfyOm\Generator\Criteria\LimitOffsetCriteria;
 use Krucas\Settings\Facades\Settings;
+use Maatwebsite\Excel\Facades\Excel;
 use Prettus\Repository\Criteria\RequestCriteria;
 use Ramsey\Uuid\Uuid;
 use Response;
@@ -38,9 +42,12 @@ class SmsAPIController extends AppBaseController
     /** @var  SmsRepository */
     private $smsRepository;
 
-    public function __construct(SmsLogRepository $smsRepo)
+    private  $projectRepository;
+
+    public function __construct(SmsLogRepository $smsRepo,ProjectRepository $projectRepo)
     {
         $this->smsRepository = $smsRepo;
+        $this->projectRepository = $projectRepo;
         App::setLocale(config('sms.second_locale.locale'));
 
     }
@@ -585,6 +592,98 @@ class SmsAPIController extends AppBaseController
             $reply['form_code'] = 'unknown';
             return $reply;
         }
+    }
+
+    public function getcsv($project_id, Request $request) {
+        App::setLocale('en');
+        $project = $this->projectRepository->findWithoutFail($project_id);
+        if (empty($project)) {
+            Flash::error('Project not found');
+
+            return redirect()->back();
+        }
+
+        $inputs = $project->inputs->sortBy('sort')->pluck('type', 'inputid');
+
+        $childTable = $project->dbname;
+
+        $unique_inputs = $inputs->toArray();
+
+
+        array_walk($unique_inputs, function (&$column, $index) {
+            switch ($column) {
+                case 'checkbox':
+                    $column = 'IF(pdb.'.$index.' IS NOT NULL,IF(pdb.'.$index.' = 0, 0, 1),null) AS '.$index;
+                    break;
+                default:
+                    $column = 'pdb.' . $index;
+                    break;
+            }
+        });
+
+        $sample_columns = [
+            'location_code',
+            'updated_at',
+            //'obs_type',
+            'sbo',
+            'pvt1 AS '. strtolower(trans('sample.pvt1')),
+            'pvt2 AS '. strtolower(trans('sample.pvt2')),
+            'pvt3 AS '. strtolower(trans('sample.pvt3')),
+            strtolower(snake_case(trans('sample.level1_id'))),
+
+        ];
+
+        $sectionColumns = [];
+        foreach ($project->sectionsDb->sortBy('sort') as $k => $section) {
+            $sectionColumns[] = 'section' . ($k + 1) . 'status';
+        }
+
+        $export_columns = array_merge($sample_columns, $sectionColumns, $unique_inputs);
+
+
+
+        $export_columns_list = implode(',', $export_columns);
+
+        if (!Schema::hasTable('sdata_view')) {
+            DB::statement("CREATE VIEW sdata_view AS (SELECT sd.id AS sdid, sd.location_code, sd.sample, sd.ps_code, sd.area_type, 
+                           sd.level6 AS ".snake_case(trans('sample.level6')).", sd.level5 AS ".snake_case(trans('sample.level5')).", 
+                           sd.level4 AS ".snake_case(trans('sample.level4')).", sd.level3 AS ".snake_case(trans('sample.level3')).", 
+                           sd.level2 AS ".snake_case(trans('sample.level2')).", sd.level1 AS ".snake_case(trans('sample.level1')).", 
+                           sd.level1_id AS ".snake_case(trans('sample.level1_id')).", 
+                           sd.obs_type, sd.sbo, sd.pvt1, sd.pvt2, sd.pvt3, sd.pvt4, 
+                           sd.parties, sd.sms_time, sd.observer_field, GROUP_CONCAT(ob.code) AS observer_code  
+                           FROM sample_datas AS sd LEFT JOIN observers AS ob ON ob.sample_id = sd.id  GROUP BY sd.id, sd.location_code, sd.sample,
+                           sd.ps_code, sd.area_type, ".snake_case(trans('sample.level6')).", 
+                           ".snake_case(trans('sample.level5')).", 
+                           ".snake_case(trans('sample.level4')).", ".snake_case(trans('sample.level3')).", 
+                           ".snake_case(trans('sample.level2')).", ".snake_case(trans('sample.level1')).", 
+                           ".snake_case(trans('sample.level1_id')).", sd.obs_type, sd.sbo, sd.pvt1, sd.pvt2, sd.pvt3, sd.pvt4,
+                           sd.parties, sd.sms_time, sd.observer_field)");
+        }
+
+
+        if (!Schema::hasTable($project->dbname.'sample_view')) {
+            DB::statement("CREATE VIEW ".$project->dbname."sample_view AS (SELECT * FROM samples JOIN sdata_view AS sdata ON sdata.sdid = samples.sample_data_id 
+                           WHERE samples.sample_data_type = '$project->dblink' AND samples.project_id = '$project->id')");
+        }
+
+
+
+
+        $results = DB::select("SELECT $export_columns_list FROM ".$project->dbname."sample_view AS psv  LEFT JOIN $project->dbname as pdb ON psv.id = pdb.sample_id");
+
+        $filename = preg_replace('/[^a-zA-Z0-9\s]/','', $project->project).' '.date("Y-m-d-H-i-s");
+        Excel::create($filename, function($excel) use ($results) {
+
+            $excel->sheet('result', function($sheet) use ($results) {
+                $rowdata = [];
+                foreach($results as $result) {
+                    $rowdata[] = (array) $result;
+                }
+                $sheet->fromArray($rowdata, null, 'A1', true);
+            });
+
+        })->store('csv')->export('csv');
     }
 
 }
