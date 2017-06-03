@@ -544,43 +544,44 @@ class ProjectResultsController extends AppBaseController
         // get all result array from form
         $results = $request->input('result');
 
-        if (empty($results)) {
+        if (!empty($results)) {
             //return $this->sendError(trans('messages.no_result_submitted'), $code = 404);
-        }
 
-        if (array_key_exists('ballot', $results)) {
-            $ballots = $results['ballot'];
-            unset($results['ballot']);
-            $party_station_counts = [];
-            $party_advanced_counts = [];
-            foreach ($ballots as $party => $ballot) {
-                if ($project->type != 'tabulation') {
-                    $party_station_counts[] = $results[$party . '_station'] = $ballot['station'];
+
+            if (array_key_exists('ballot', $results)) {
+                $ballots = $results['ballot'];
+                unset($results['ballot']);
+                $party_station_counts = [];
+                $party_advanced_counts = [];
+                foreach ($ballots as $party => $ballot) {
+                    if ($project->type != 'tabulation') {
+                        $party_station_counts[] = $results[$party . '_station'] = $ballot['station'];
+                    }
+                    $party_advanced_counts[] = $results[$party . '_advanced'] = $ballot['advanced'];
+
                 }
-                $party_advanced_counts[] = $results[$party . '_advanced'] = $ballot['advanced'];
-
             }
-        }
 
-        if (array_key_exists('ballot_remark', $results)) {
-            $ballot_remark = $results['ballot_remark'];
-            unset($results['ballot_remark']);
-            foreach ($ballot_remark as $rem => $vote) {
-                $results[$rem] = $vote;
+            if (array_key_exists('ballot_remark', $results)) {
+                $ballot_remark = $results['ballot_remark'];
+                unset($results['ballot_remark']);
+                foreach ($ballot_remark as $rem => $vote) {
+                    $results[$rem] = $vote;
+                }
+                $rem = count($ballot_remark);
             }
-            $rem = count($ballot_remark);
-        }
 
-        if (array_key_exists('registered_voters', $results)) {
-            $rv = $results['registered_voters'];
-            //unset($results['registered_voters']);
-            //$results['registered_voters'] = $rv;
-        }
+            if (array_key_exists('registered_voters', $results)) {
+                $rv = $results['registered_voters'];
+                //unset($results['registered_voters']);
+                //$results['registered_voters'] = $rv;
+            }
 
-        if (array_key_exists('advanced_voters', $results)) {
-            $av = $results['advanced_voters'];
-            //unset($results['advanced_voters']);
-            //$results['advanced_voters'] = $av;
+            if (array_key_exists('advanced_voters', $results)) {
+                $av = $results['advanced_voters'];
+                //unset($results['advanced_voters']);
+                //$results['advanced_voters'] = $av;
+            }
         }
 
         //$results['samplable_id'] = $dblink;
@@ -588,6 +589,10 @@ class ProjectResultsController extends AppBaseController
         //$sectionstatus = [];
         // group by all inputs with section and loop
         $results_to_save = $results;
+
+        if(empty($results)) {
+            $results = (array) $results;
+        }
 
        // $project_by_section = $project->inputs->groupBy('section');
 
@@ -760,6 +765,8 @@ class ProjectResultsController extends AppBaseController
         // get all sections in a project
         $sections = $project->sectionsDb->sortBy('sort');
 
+        $submitted_section = $request->input('section_id');
+
         $result_arr = [];
 
         $section_result = [];
@@ -770,7 +777,7 @@ class ProjectResultsController extends AppBaseController
             $timestamp = 'section'.($key + 1).'updated';
             $section_inputs = $section->inputs->pluck('value', 'inputid');
 
-            $section_has_result_submitted = array_intersect_key($results, $section_inputs->toArray());
+            $section_has_result_submitted = array_intersect_key((array)$results, $section_inputs->toArray());
             if(count($section_has_result_submitted) > 0) {
                 if(!array_key_exists($section->id, $section_result)) {
                     $section_result[$section->id] = true;
@@ -786,7 +793,7 @@ class ProjectResultsController extends AppBaseController
 
                 $question_inputs = $question->surveyInputs->pluck('value', 'inputid');
 
-                $question_has_result_submitted = array_intersect_key($results, $question_inputs->toArray());
+                $question_has_result_submitted = array_intersect_key((array)$results, $question_inputs->toArray());
 
 
 
@@ -832,7 +839,11 @@ class ProjectResultsController extends AppBaseController
 
                         }  else {
                             // if section is submitted leave as value in database
-                            $result_arr[$section->id][$question->id][$input->inputid] = $surveyResult->{$input->inputid};
+                            if($submitted_section == $section->id) {
+                                $result_arr[$section->id][$question->id][$input->inputid] = null;
+                            } else {
+                                $result_arr[$section->id][$question->id][$input->inputid] = $surveyResult->{$input->inputid};
+                            }
                         }
 
                     }

@@ -87,7 +87,7 @@ window.url="{!! route('projects.surveys.save', ['project' => $project->id, 'samp
                 @include('projects.show_fields')
 
                 <h1 class="pull-right">
-                   <a class="btn btn-sm btn-info pull-right save" data-id="{!! $sectionClass !!}" style="display:inline;margin-top: -10px;margin-bottom: 5" href="#"> {{ trans('messages.savesection') }}</a>
+                   <a class="btn btn-sm btn-info pull-right save" data-section="{!! $section->id !!}" data-id="{!! $sectionClass !!}" style="display:inline;margin-top: -10px;margin-bottom: 5" href="#"> {{ trans('messages.savesection') }}</a>
                 </h1>
             </div>
         </div>
@@ -183,12 +183,14 @@ window.url="{!! route('projects.surveys.save', ['project' => $project->id, 'samp
 
             var id = $(this).data('id');
 
+            var section_id = $(this).data('section');
+
             //$('#'+id).find(":input").filter(function(){ return !this.value; }).attr("disabled", "disabled");
             var info_data = $('.info').serializeArray();
 
             var section_data = $('#'+id+' :input').serializeArray();
 
-            section_data.push({name: 'samplable_type', value: $('#sample').val()});
+            section_data.push({name: 'samplable_type', value: $('#sample').val()},{name: 'section_id', value: section_id});
 
             var ajaxData = $.merge(info_data, section_data);
 

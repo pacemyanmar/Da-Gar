@@ -53,7 +53,7 @@ trait LogicalCheckTrait
                 if (!empty($question->observation_type) && !in_array($sample->data->observer_field, $question->observation_type)) {
                     $question_complete = true;
                     $question_status[$section_id][$question->qnum] = '';
-                } elseif ($question->optional || count($intersect_with_value) > 0 || (!empty($required_response_empty_value) && $required_response_empty_value == $intersect_no_value)) {
+                } elseif (count($intersect_with_value) > 0 || (!empty($required_response_empty_value) && $required_response_empty_value == $intersect_no_value)) {
                     $question_complete = true;
                     $question_status[$section_id][$question->qnum] = 'complete';
                 } else {
