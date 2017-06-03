@@ -15,6 +15,7 @@ use App\Repositories\QuestionRepository;
 use App\Repositories\SampleRepository;
 use App\Repositories\SurveyInputRepository;
 use App\Traits\LogicalCheckTrait;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -766,13 +767,18 @@ class ProjectResultsController extends AppBaseController
         $question_result = [];
 
         foreach ($sections as $key => $section) {
+            $timestamp = 'section'.($key + 1).'updated';
             $section_inputs = $section->inputs->pluck('value', 'inputid');
 
             $section_has_result_submitted = array_intersect_key($results, $section_inputs->toArray());
             if(count($section_has_result_submitted) > 0) {
                 if(!array_key_exists($section->id, $section_result)) {
                     $section_result[$section->id] = true;
+
+                    $surveyResult->{$timestamp} = Carbon::now();
                 }
+            } else {
+                $surveyResult->{$timestamp} = $surveyResult->{$timestamp};
             }
             $questions = $section->questions;
             foreach ($questions as $question) {

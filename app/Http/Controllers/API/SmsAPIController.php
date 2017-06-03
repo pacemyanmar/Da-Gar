@@ -560,6 +560,8 @@ class SmsAPIController extends AppBaseController
             if($section_with_result) {
                 $checked = $this->logicalCheck($result_arr, $result, $project, $sample);
                 $result = $checked['results'];
+                $timestamp = 'section'.$section_key.'updated';
+                $result->{$timestamp} = Carbon::now();
 
                 $result->save();
 

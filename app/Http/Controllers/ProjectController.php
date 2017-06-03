@@ -644,6 +644,7 @@ class ProjectController extends AppBaseController
                 $section_num = $key + 1;
                 $table->unsignedSmallInteger('section' . $section_num . 'status')->index()->default(0); // 0 => missing, 1 => complete, 2 => incomplete, 3 => error
                 //$table->json('section' . $key)->nullable();
+                $table->timestamp('section' . $section_num . 'updated')->nullable();
             }
 
             foreach ($fields as $input) {
