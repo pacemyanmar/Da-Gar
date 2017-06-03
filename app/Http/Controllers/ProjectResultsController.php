@@ -781,6 +781,9 @@ class ProjectResultsController extends AppBaseController
                 $question_inputs = $question->surveyInputs->pluck('value', 'inputid');
 
                 $question_has_result_submitted = array_intersect_key($results, $question_inputs->toArray());
+
+
+
                 if(count($question_has_result_submitted) > 0) {
                     if(!array_key_exists($question->id, $question_result)) {
                         $question__result[$question->id] = true;
@@ -798,9 +801,9 @@ class ProjectResultsController extends AppBaseController
                             $result_arr[$section->id][$question->id][$input->inputid] = ($results[$input->inputid]) ? $results[$input->inputid] : null;
                         }
                     } else {
-                        if(array_key_exists($question->id, $question_result)) {
+                        if(array_key_exists($section->id, $section_result) && !empty($question_has_result_submitted)) {
                             if($input->type == 'checkbox') {
-                                $result_arr[$section->id][$question->id][$input->inputid] = 0;
+                                    $result_arr[$section->id][$question->id][$input->inputid] = 0;
                             } else {
                                 $result_arr[$section->id][$question->id][$input->inputid] = null;
                             }
@@ -815,6 +818,7 @@ class ProjectResultsController extends AppBaseController
 
         }
 
+        
         $checked = $this->logicalCheck($result_arr, $surveyResult, $project, $sample);
         $surveyResult = $checked['results'];
 
