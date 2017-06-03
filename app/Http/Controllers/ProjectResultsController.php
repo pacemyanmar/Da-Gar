@@ -763,6 +763,8 @@ class ProjectResultsController extends AppBaseController
 
         $section_result = [];
 
+        $question_result = [];
+
         foreach ($sections as $key => $section) {
             $section_inputs = $section->inputs->pluck('value', 'inputid');
 
@@ -776,15 +778,27 @@ class ProjectResultsController extends AppBaseController
             foreach ($questions as $question) {
                 $inputs = $question->surveyInputs;
 
+                $question_inputs = $question->surveyInputs->pluck('value', 'inputid');
+
+                $question_has_result_submitted = array_intersect_key($results, $question_inputs->toArray());
+                if(count($question_has_result_submitted) > 0) {
+                    if(!array_key_exists($question->id, $question_result)) {
+                        $question__result[$question->id] = true;
+                    }
+                }
+
                 foreach ($inputs as $input) {
+                    // $result = submitted form data
+                    // look for individual inputid submitted or not from $result array
                     if(array_key_exists($input->inputid, $results)) {
+                        // if found, question is summitted and set checkbox values to zero if false
                         if($input->type == 'checkbox') {
                             $result_arr[$section->id][$question->id][$input->inputid] = ($results[$input->inputid]) ? $results[$input->inputid] : 0;
                         } else {
                             $result_arr[$section->id][$question->id][$input->inputid] = ($results[$input->inputid]) ? $results[$input->inputid] : null;
                         }
                     } else {
-                        if(array_key_exists($section->id, $section_result)) {
+                        if(array_key_exists($question->id, $question_result)) {
                             if($input->type == 'checkbox') {
                                 $result_arr[$section->id][$question->id][$input->inputid] = 0;
                             } else {
