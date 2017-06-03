@@ -262,6 +262,13 @@ class SampleDataController extends AppBaseController
                         'code' => ($row->observer_code) ? $row->observer_code : null,
                     ];
                     $observer = Observer::updateOrCreate($observer_attr, $observer_arr);
+
+                    if(empty($location_data->observer1_id)) {
+                        $location_data->observer1_id = ($row->observer_code) ? $row->observer_code : null;
+                    } else {
+                        $location_data->observer2_id = ($row->observer_code) ? $row->observer_code : null;
+                    }
+                    $location_data->save();
                 }
             });
         });

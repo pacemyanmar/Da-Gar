@@ -53,6 +53,9 @@ class SampleData extends Model
         'supervisor_mail2',
         'supervisor_address',
 
+        'observer1_id',
+        'observer2_id',
+
         'sms_primary',
         'sms_backup',
         'call_primary',

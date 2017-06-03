@@ -628,7 +628,8 @@ class SmsAPIController extends AppBaseController
         $sample_columns = [
             'location_code',
             'updated_at',
-            //'obs_type',
+            'observer1_id',
+            'observer2_id',
             'sbo',
             'pvt1 AS '. strtolower(trans('sample.pvt1')),
             'pvt2 AS '. strtolower(trans('sample.pvt2')),
@@ -649,7 +650,7 @@ class SmsAPIController extends AppBaseController
         $export_columns_list = implode(',', $export_columns);
 
         if (!Schema::hasTable('sdata_view')) {
-            DB::statement("CREATE VIEW sdata_view AS (SELECT sd.id AS sdid, sd.location_code, sd.sample, sd.ps_code, sd.area_type, 
+            DB::statement("CREATE VIEW sdata_view AS (SELECT sd.id AS sdid, sd.location_code, sd.observer1_id, sd.observer2_id, sd.sample, sd.ps_code, sd.area_type, 
                            sd.level6 AS ".snake_case(trans('sample.level6')).", sd.level5 AS ".snake_case(trans('sample.level5')).", 
                            sd.level4 AS ".snake_case(trans('sample.level4')).", sd.level3 AS ".snake_case(trans('sample.level3')).", 
                            sd.level2 AS ".snake_case(trans('sample.level2')).", sd.level1 AS ".snake_case(trans('sample.level1')).", 
@@ -662,7 +663,7 @@ class SmsAPIController extends AppBaseController
                            ".snake_case(trans('sample.level4')).", ".snake_case(trans('sample.level3')).", 
                            ".snake_case(trans('sample.level2')).", ".snake_case(trans('sample.level1')).", 
                            ".snake_case(trans('sample.level1_id')).", sd.obs_type, sd.sbo, sd.pvt1, sd.pvt2, sd.pvt3, sd.pvt4,
-                           sd.parties, sd.sms_time, sd.observer_field)");
+                           sd.parties, sd.sms_time, sd.observer_field, sd.observer1_id, sd.observer2_id)");
         }
 
 
