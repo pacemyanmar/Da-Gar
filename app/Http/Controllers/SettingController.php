@@ -42,6 +42,7 @@ class SettingController extends AppBaseController
     {
         $settings = $request->input('configs');
         $settings['training'] = array_key_exists('training', $settings);
+        $settings['noreply'] = array_key_exists('noreply', $settings);
         foreach ($settings as $key => $value) {
             Settings::set($key, $value);
         }
