@@ -461,7 +461,7 @@ class SmsAPIController extends AppBaseController
 
                                 if (!empty($section_with_result) && $section->id != $section_with_result) {
                                     // if sending cross section
-                                    
+
                                     $rawlog->sample = $sample->data->sample;
                                     $rawlog->user_id = 1; // need to change this
 
