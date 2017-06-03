@@ -53,7 +53,7 @@ trait LogicalCheckTrait
                 if (!empty($question->observation_type) && !in_array($sample->data->observer_field, $question->observation_type)) {
                     $question_complete = true;
                     $question_status[$section_id][$question->qnum] = '';
-                } elseif (count($intersect_with_value) > 0 || (!empty($required_response_empty_value) && $required_response_empty_value == $intersect_no_value)) {
+                } elseif ($question->optional || count($intersect_with_value) > 0 || (!empty($required_response_empty_value) && $required_response_empty_value == $intersect_no_value)) {
                     $question_complete = true;
                     $question_status[$section_id][$question->qnum] = 'complete';
                 } else {
@@ -130,24 +130,26 @@ trait LogicalCheckTrait
                                     }
 
                                 if(array_key_exists($left, $result_arr[$section_id][$question->id]) || array_key_exists($right_values[0], $result_arr[$section_id][$question->id]) || array_key_exists($right_values[1], $result_arr[$section_id][$question->id])) {
+                                    if($leftval) {
+                                        if ($max > $min) {
 
-                                    if ($max > $min) {
-                                        if ($leftval > $max || $leftval < $min) {
-                                            if($scope != 'q') {
-                                                $question_status[$section_id][$question->qnum] = 'error';
+                                            if ($leftval > $max || $leftval < $min) {
+                                                if ($scope != 'q') {
+                                                    $question_status[$section_id][$question->qnum] = 'error';
+                                                }
+                                                $error[$section_id][] = $question->qnum;
+                                                $discard = true;
                                             }
-                                            $error[$section_id][] = $question->qnum;
-                                            $discard = true;
                                         }
-                                    }
 
-                                    if ($min > $max) {
-                                        if ($leftval < $max || $leftval > $min) {
-                                            if($scope != 'q') {
-                                                $question_status[$section_id][$question->qnum] = 'error';
+                                        if ($min > $max) {
+                                            if ($leftval < $max || $leftval > $min) {
+                                                if ($scope != 'q') {
+                                                    $question_status[$section_id][$question->qnum] = 'error';
+                                                }
+                                                $error[$section_id][] = $question->qnum;
+                                                $discard = true;
                                             }
-                                            $error[$section_id][] = $question->qnum;
-                                            $discard = true;
                                         }
                                     }
                                 }
@@ -155,23 +157,29 @@ trait LogicalCheckTrait
                             case 'min':
                                 $leftval = ($all_inputs[$left])? $all_inputs[$left]:$result->{$left};
 
-                                if(array_key_exists($left, $result_arr[$section_id][$question->id]) && $leftval < $right) {
-                                    if($scope != 'q') {
-                                        $question_status[$section_id][$question->qnum] = 'error';
+                                if($leftval) {
+
+                                    if (array_key_exists($left, $result_arr[$section_id][$question->id]) && $leftval < $right) {
+                                        if ($scope != 'q') {
+                                            $question_status[$section_id][$question->qnum] = 'error';
+                                        }
+                                        $error[$section_id][] = $question->qnum;
+                                        $discard = true;
                                     }
-                                    $error[$section_id][] = $question->qnum;
-                                    $discard = true;
                                 }
                                 break;
                             case 'max':
                                 $leftval = ($all_inputs[$left])? $all_inputs[$left]:$result->{$left};
 
-                                if(array_key_exists($left, $result_arr[$section_id][$question->id]) && $leftval > $right) {
-                                    if($scope != 'q') {
-                                        $question_status[$section_id][$question->qnum] = 'error';
+                                if($leftval) {
+
+                                    if (array_key_exists($left, $result_arr[$section_id][$question->id]) && $leftval > $right) {
+                                        if ($scope != 'q') {
+                                            $question_status[$section_id][$question->qnum] = 'error';
+                                        }
+                                        $error[$section_id][] = $question->qnum;
+                                        $discard = true;
                                     }
-                                    $error[$section_id][] = $question->qnum;
-                                    $discard = true;
                                 }
                                 break;
                             case 'equalto':
@@ -180,8 +188,10 @@ trait LogicalCheckTrait
                                 } else {
                                     $leftval = ($all_inputs[$left]) ? $all_inputs[$left] : null;
                                 }
-                                if(array_key_exists($left, $result_arr[$section_id][$question->id]) && $leftval != $right) {
-                                    $question_status[$section_id][$question->qnum] = 'error';
+                                if($leftval) {
+                                    if (array_key_exists($left, $result_arr[$section_id][$question->id]) && $leftval != $right) {
+                                        $question_status[$section_id][$question->qnum] = 'error';
+                                    }
                                 }
                                 break;
                             default:
@@ -199,11 +209,14 @@ trait LogicalCheckTrait
                 if (!$question_complete) {
                     if (empty($intersect_with_value) && empty($intersect_no_value)) {
                         $question_status[$section_id][$question->qnum] = 'missing';
-
-                        $error[$section_id][] = $question->qnum;
+                        if(!$question->optional) {
+                            $error[$section_id][] = $question->qnum;
+                        }
                     } else {
                         $question_status[$section_id][$question->qnum] = 'incomplete';
-                        $error[$section_id][] = $question->qnum;
+                        if(!$question->optional) {
+                            $error[$section_id][] = $question->qnum;
+                        }
                     }
                 }
 
@@ -232,7 +245,6 @@ trait LogicalCheckTrait
             $result->{'section' . $skey . 'status'} = $section_status;
 
         }
-
         $checked['results'] = $result;
         $checked['error'] = $error;
 
