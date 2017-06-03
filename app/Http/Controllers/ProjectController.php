@@ -571,7 +571,7 @@ class ProjectController extends AppBaseController
                                 $table->dropIndex($keyIndex->Key_name);
                             }
                         }
-                        if ($input->in_index) {
+                        if ($input->in_index && $inputType != 'text') {
 
                             $table->index($input->inputid);
 
@@ -602,7 +602,7 @@ class ProjectController extends AppBaseController
                                 $inputType = 'string';
                                 break;
                         }
-                        if ($input->in_index) {
+                        if ($input->in_index && $inputType != 'text') {
                             $table->$inputType($input->inputid)
                                 ->index()
                                 ->nullable();
@@ -670,7 +670,7 @@ class ProjectController extends AppBaseController
                         $inputType = 'string';
                         break;
                 }
-                if ($input->in_index) {
+                if ($input->in_index && $inputType != 'text') {
                     $table->$inputType($input->inputid)
                         ->index()
                         ->nullable();
