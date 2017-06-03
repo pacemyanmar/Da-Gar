@@ -81,8 +81,10 @@ class ProjectResultsController extends AppBaseController
 
         if ($project->type == 'sample2db') {
             $table->setJoinMethod('join');
+            $samplesData = config('sms.incident_columns');
         } else {
             $table->setJoinMethod('leftjoin');
+            $samplesData = config('sms.export_columns');
         }
 
         if (!$samplable instanceof SurveyResultDataTable) {
@@ -94,7 +96,6 @@ class ProjectResultsController extends AppBaseController
         $columns = [
         ];
 
-        $samplesData = config('sms.export_columns');
 
         if ($project->index_columns) {
             $sampleDataColumns = array_merge($samplesData, $project->index_columns);
@@ -152,6 +153,7 @@ class ProjectResultsController extends AppBaseController
                         ];
                         break;
                     case 'call_primary':
+                    case 'incident_center':
                     case 'sms_time':
                         $columns[$column] = [
                             'name' => 'sample_datas_view.'.$column,
@@ -185,7 +187,6 @@ class ProjectResultsController extends AppBaseController
                         ];
                         break;
                     case 'level1':
-                    //case 'level2':
                     case 'level3':
                         $columns[$column] = [
                             'name' => 'sample_datas_view.'.$column,

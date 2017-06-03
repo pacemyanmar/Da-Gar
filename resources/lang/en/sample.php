@@ -32,6 +32,7 @@ return [
     'phone2' => 'Phone 2',
     'observer_code' => 'Observer ID',
     'call_primary' => 'Call Center',
+    'incident_center' => 'Incident Center',
     'sms_primary' => 'SMS Primary',
     'sms_time' => 'Simulation',
     'observer_type' => 'Type',

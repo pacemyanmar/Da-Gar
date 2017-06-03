@@ -21,7 +21,15 @@ return [
         'observer_name' => 'observer_name',
         'call_primary' => 'call_primary',
         'sms_primary' => 'sms_primary',
-        'sms_time' => 'sms_time',
+        //'sms_time' => 'sms_time',
+        'observer_field' => 'observer_field',
+    ],
+    'incident_columns' => [
+        'location_code' => 'location_code',
+        'observer_name' => 'observer_name',
+        'incident_center' => 'incident_center',
+        'sms_primary' => 'sms_primary',
+        //'sms_time' => 'sms_time',
         'observer_field' => 'observer_field',
     ]
 ];

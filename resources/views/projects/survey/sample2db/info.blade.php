@@ -21,72 +21,49 @@
             <table class="table table-striped table-bordered table-hover">
                 <thead>
                     <tr>
-                        @if($project->type == 'sample2db')
-                        @if($project->index_columns)
-                            @foreach($project->index_columns as $column => $columnName)
-                                <th>{!! trans('messages.'.snake_case(strtolower($columnName))) !!}</th>
-                            @endforeach
-                        @else
-                            @foreach($sample->fillable as $column)
-                                <th>{!! ucwords($column) !!}</th>
-                            @endforeach
-                        @endif
-                        @else
-                            <th>{!! trans('messages.idcode') !!}</th>
-                            <th>{!! trans('messages.state') !!}</th>
-                            <th>{!! trans('messages.township') !!}</th>
-                            <th>{!! trans('messages.polling_station') !!}</th>
-                        @endif
+                        <th>{!! trans('sample.uecnec_code') !!}</th>
+                        <th>{!! trans('sample.level1') !!}</th>
+                        <th>{!! trans('sample.level3') !!}</th>
+                        <th>{!! trans('messages.polling_station') !!}</th>
+                        <th>{!! trans('sample.supervisor_name') !!}</th>
+                        <th>{!! trans('sample.supervisor_phone') !!}</th>
+                        <th>{!! trans('sample.registered_voters') !!}</th>
+                        <th>{!! trans('sample.supervisor_field') !!}</th>
+
                         @if(count($project->samples) > 1)
-                        <th>{!! trans('messages.sample') !!}</th>
+                            <th>{!! trans('messages.sample') !!}</th>
                         @endif
                         @if($project->copies > 1)
-                        <th>{!! trans('messages.form_id') !!}</th>
+                            <th>{!! trans('messages.form_id') !!}</th>
                         @endif
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
-                        @if($project->type == 'sample2db')
-                            @if($project->index_columns)
-                                @foreach($project->index_columns as $column => $columnName)
-                                    @if($column == 'form_id')
-                                    <td>
-                                        @if(isset($form))
-                                            <p>{!! $form !!}</p>
-                                        @else
-                                        {!! ucwords($sample->{$column}) !!}
-                                        @endif
-                                    </td>
-                                    @else
-                                    <td>{!! ucwords($sample->{$column}) !!}</td>
-                                    @endif
-                                @endforeach
-                            @else
-                                @foreach($sample->fillable as $column)
-                                    <td>{!! ucwords($sample->{$column}) !!}</td>
-                                @endforeach
-                            @endif
-                        @else
-                            <td>{!! ucwords($sample->idcode) !!}</td>
-                            <td>{!! ucwords($sample->state) !!}</td>
-                            <td>{!! ucwords($sample->township) !!}</td>
-                            <td>{!! ucwords($sample->village) !!}</td>
-                        @endif
-                        @if(count($project->samples) > 1)
-                        <td>
-                            <select id="sample" class="info form-control" {!! (isset($sample->sample))?'disabled="disabled"':'name="sample"' !!}>
-                            @foreach($project->samples as $name => $sample_value)
-                                <option value="{!! $sample_value !!}" {!! (isset($sample->sample) && $sample->sample == $sample_value)?' selected="selected"':'' !!}>{!! $name !!}</option>
-                            @endforeach
-                            </select>
+                        <td>{!! ucwords($sample->ps_code) !!}</td>
+                        <td>{!! ucwords($sample->level1) !!}</td>
+                        <td>{!! ucwords($sample->level3) !!}</td>
+                        <td>{!! ucwords($sample->level6) !!}</td>
+                        <td>{!! ucwords($sample->supervisor_name) !!}</td>
+                        <td>{!! ucwords($sample->supervisor_mobile) !!}</td>
+                        <td>{!! $sample->registered_voters !!}</td>
+                        <td>{!! ucwords($sample->supervisor_field) !!}</td>
 
-                        </td>
+                        @if(count($project->samples) > 1)
+                            <td>
+                                <select id="sample"
+                                        class="info form-control" {!! (isset($sample->sample))?'disabled="disabled"':'name="sample"' !!}>
+                                    @foreach($project->samples as $name => $sample_value)
+                                        <option value="{!! $sample_value !!}" {!! (isset($sample->sample) && $sample->sample == $sample_value)?' selected="selected"':'' !!}>{!! $name !!}</option>
+                                    @endforeach
+                                </select>
+
+                            </td>
                         @endif
                         @if(isset($sample->sample))
-                                <input type="hidden" name="sample" value="{!! $sample->sample !!}">
+                            <input type="hidden" name="sample" value="{!! $sample->sample !!}">
                         @else
-                                <input type="hidden" name="sample" value="1">
+                            <input type="hidden" name="sample" value="1">
                         @endif
                         @if($project->copies > 1)
                             <td>
@@ -94,11 +71,11 @@
                                     <input name="copies" id="copies" type=hidden value="{!! $form !!}">
                                     <p>{!! $form !!}</p>
                                 @else
-                                <select name="copies" id="copies" class="info form-control">
-                                @for($i=1; $i <= $project->copies; $i++)
-                                    <option value="{!! $i !!}">{!! $i !!}</option>
-                                @endfor
-                                </select>
+                                    <select name="copies" id="copies" class="info form-control">
+                                        @for($i=1; $i <= $project->copies; $i++)
+                                            <option value="{!! $i !!}">{!! $i !!}</option>
+                                        @endfor
+                                    </select>
                                 @endif
                             </td>
                         @else
@@ -110,25 +87,23 @@
             <table class="table table-striped table-bordered table-hover">
             <thead>
                 <tr>
-                    <th>{!! trans('messages.observer_code') !!}</th>
-                    <th>{!! trans('messages.name') !!}</th>
-                    <th>{!! trans('messages.phone') !!}</th>
-                    <th>{!! trans('messages.phone2') !!}</th>
+                    <th>{!! trans('sample.observer_code') !!}</th>
+                    <th>{!! trans('sample.observer_name') !!}</th>
+                    <th>{!! trans('sample.phone') !!}</th>
+                    <th>{!! trans('sample.phone2') !!}</th>
+                    <th>{!! trans('sample.observer_field') !!}</th>
                 </tr>
             </thead>
             <tbody>
+            @foreach($sample->observers as $observer)
                 <tr>
-                    <td>{!! ucwords($sample->code) !!}</td>
-                    <td>{!! ucwords($sample->name) !!}</td>
-                    <td>{!! ucwords($sample->mobile) !!}</td>
-                    <td>{!! ucwords($sample->line_phone) !!}</td>
+                    <td>{!! ucwords($observer->code) !!}</td>
+                    <td>{!! ucwords($observer->full_name) !!}</td>
+                    <td>{!! ucwords($observer->phone_1) !!}</td>
+                    <td>{!! ucwords($observer->phone_2) !!}</td>
+                    <td>{!! $observer->observer_field !!}</td>
                 </tr>
-                <tr>
-                    <td>{!! ucwords($sample->code2) !!}</td>
-                    <td>{!! ucwords($sample->name2) !!}</td>
-                    <td>{!! ucwords($sample->mobile2) !!}</td>
-                    <td>{!! ucwords($sample->line_phone2) !!}</td>
-                </tr>
+            @endforeach
             </tbody>
 
             </table>

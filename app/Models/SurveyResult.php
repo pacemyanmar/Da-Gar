@@ -13,7 +13,7 @@ class SurveyResult extends Model
 {
     protected $guarded = ['id'];
 
-    public $timestamps = false;
+    //public $timestamps = false;
 
     /**
      * Validation rules

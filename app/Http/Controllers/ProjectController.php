@@ -7,6 +7,7 @@ use App\DataTables\SmsLogDataTable;
 use App\Http\Requests\CreateProjectRequest;
 use App\Http\Requests\UpdateProjectRequest;
 use App\Models\LogicalCheck;
+use App\Models\Observer;
 use App\Models\Project;
 use App\Models\Sample;
 use App\Models\SampleData;
@@ -701,23 +702,36 @@ class ProjectController extends AppBaseController
             return redirect()->back();
         }
 
-        $sampleDb = $project->samplesDb()->first();
-        $sampleData = SampleData::where('location_code', $sample_id)->where('type', $project->dblink)->where('dbgroup', $project->dbgroup)->first();
+        $sms_type = config('sms.type');
 
-        if (empty($sampleData)) {
+        if ($sms_type == 'observer') {
+            $observer = Observer::where('code', $sample_id)->first();
+
+            if($observer) {
+                $location_code = $observer->location->location_code;
+            }
+
+        } else {
+            $location_code = $sample_id;
+        }
+
+        $sampleDb = $project->samplesDb()->first();
+        $sample = SampleData::where('location_code', $location_code)->where('type', $project->dblink)->where('dbgroup', $project->dbgroup)->first();
+
+        if (empty($sample)) {
             Flash::error('Sample Data not found');
 
             return redirect()->back();
         }
 
-        $last_form_id = Sample::where('sample_data_id', $sampleData->id)
+        $last_form_id = Sample::where('sample_data_id', $sample->id)
             ->where('project_id', $project->id)
             ->where('sample_data_type', $project->dblink)->pluck('form_id');
         $max_form_id = $last_form_id->max() + 1;
 
         return view('projects.survey.sample2db.info')
             ->with('project', $project)
-            ->with('sample', $sampleData)
+            ->with('sample', $sample)
             ->with('form_id', $max_form_id);
 
     }

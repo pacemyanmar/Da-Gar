@@ -411,35 +411,35 @@ class SurveyResultDataTable extends DataTable
         $locale = \App::getLocale();
         $project = $this->project;
 
-        $observer = "GROUP_CONCAT(CONCAT('\n', ob.code ,' : \"', ob.id ,'\"')) AS obid, 
-                     GROUP_CONCAT(CONCAT('\n', ob.code ,' : \"', ob.given_name ,'\"')) AS given_name,
-                     GROUP_CONCAT(CONCAT('\n', ob.code ,' : \"', ob.family_name ,'\"')) AS family_name,
-                     GROUP_CONCAT(CONCAT('\n', ob.code ,' : \"', ob.full_name ,'\"')) AS full_name,
-                     GROUP_CONCAT(CONCAT('\n', ob.code ,' : \"', ob.observer_field ,'\"')) AS observer_field,
-                     GROUP_CONCAT(CONCAT('\n', ob.code ,' : \"', ob.code ,'\"')) AS code,
-                     GROUP_CONCAT(CONCAT('\n', ob.code ,' : \"', ob.sample_id ,'\"')) AS sample_id,
-                     GROUP_CONCAT(CONCAT('\n', ob.code ,' : \"', ob.email1 ,'\"')) AS email1,
-                     GROUP_CONCAT(CONCAT('\n', ob.code ,' : \"', ob.email2 ,'\"')) AS email2,
-                     GROUP_CONCAT(CONCAT('\n', ob.code ,' : \"', ob.national_id ,'\"')) AS national_id,
-                     GROUP_CONCAT(CONCAT('\n', ob.code ,' : \"', ob.phone_1 ,'\"')) AS phone_1,
-                     GROUP_CONCAT(CONCAT('\n', ob.code ,' : \"', ob.phone_2 ,'\"')) AS phone_2,
-                     GROUP_CONCAT(CONCAT('\n', ob.code ,' : \"', ob.address ,'\"')) AS address,
-                     GROUP_CONCAT(CONCAT('\n', ob.code ,' : \"', ob.language ,'\"')) AS language,
-                     GROUP_CONCAT(CONCAT('\n', ob.code ,' : \"', ob.ethnicity ,'\"')) AS ethnicity,
-                     GROUP_CONCAT(CONCAT('\n', ob.code ,' : \"', ob.occupation ,'\"')) AS occupation,
-                     GROUP_CONCAT(CONCAT('\n', ob.code ,' : \"', ob.gender ,'\"')) AS gender,
-                     GROUP_CONCAT(CONCAT('\n', ob.code ,' : \"', ob.dob ,'\"')) AS dob,
-                     GROUP_CONCAT(CONCAT('\n', ob.code ,' : \"', ob.education ,'\"')) AS education,
-                     GROUP_CONCAT(CONCAT('\n', ob.code ,' : \"', ob.sms_primary ,'\"')) AS obsms_primary,
-                     GROUP_CONCAT(CONCAT('\n', ob.code ,' : \"', ob.sms_backup ,'\"')) AS obsms_backup,
-                     GROUP_CONCAT(CONCAT('\n', ob.code ,' : \"', ob.call_primary ,'\"')) AS obcall_primary,
-                     GROUP_CONCAT(CONCAT('\n', ob.code ,' : \"', ob.call_backup ,'\"')) AS obcall_backup,
-                     GROUP_CONCAT(CONCAT('\n', ob.code ,' : \"', ob.hotline1 ,'\"')) AS obhotline1,
-                     GROUP_CONCAT(CONCAT('\n', ob.code ,' : \"', ob.hotline2 ,'\"')) AS obhotline2,
-                     GROUP_CONCAT(CONCAT('\n', ob.code ,' : \"', ob.form_type ,'\"')) AS form_type,
-                     GROUP_CONCAT(CONCAT('\n', ob.code ,' : \"', ob.full_name_trans ,'\"')) AS full_name_trans,
-                     GROUP_CONCAT(CONCAT('\n', ob.code ,' : \"', ob.created_at ,'\"')) AS obcreated,
-                     GROUP_CONCAT(CONCAT('\n', ob.code ,' : \"', ob.updated_at ,'\"')) AS obupdated";
+        $observer = "GROUP_CONCAT(CONCAT('\n', ob.code ,' : \"', ob.id ,'\"') SEPARATOR ',<br>\\n') AS obid, 
+                     GROUP_CONCAT(CONCAT('\n', ob.code ,' : \"', ob.given_name ,'\"') SEPARATOR ',<br>\\n') AS given_name,
+                     GROUP_CONCAT(CONCAT('\n', ob.code ,' : \"', ob.family_name ,'\"') SEPARATOR ',<br>\\n') AS family_name,
+                     GROUP_CONCAT(CONCAT('\n', ob.code ,' : \"', ob.full_name ,'\"') SEPARATOR ',<br>\\n') AS full_name,
+                     GROUP_CONCAT(CONCAT('\n', ob.code ,' : \"', ob.observer_field ,'\"') SEPARATOR ',<br>\\n') AS observer_field,
+                     GROUP_CONCAT(CONCAT('\n', ob.code ,' : \"', ob.code ,'\"') SEPARATOR ',<br>\\n') AS code,
+                     GROUP_CONCAT(CONCAT('\n', ob.code ,' : \"', ob.sample_id ,'\"') SEPARATOR ',<br>\\n') AS sample_id,
+                     GROUP_CONCAT(CONCAT('\n', ob.code ,' : \"', ob.email1 ,'\"') SEPARATOR ',<br>\\n') AS email1,
+                     GROUP_CONCAT(CONCAT('\n', ob.code ,' : \"', ob.email2 ,'\"') SEPARATOR ',<br>\\n') AS email2,
+                     GROUP_CONCAT(CONCAT('\n', ob.code ,' : \"', ob.national_id ,'\"') SEPARATOR ',<br>\\n') AS national_id,
+                     GROUP_CONCAT(CONCAT('\n', ob.code ,' : \"', ob.phone_1 ,'\"') SEPARATOR ',<br>\\n') AS phone_1,
+                     GROUP_CONCAT(CONCAT('\n', ob.code ,' : \"', ob.phone_2 ,'\"') SEPARATOR ',<br>\\n') AS phone_2,
+                     GROUP_CONCAT(CONCAT('\n', ob.code ,' : \"', ob.address ,'\"') SEPARATOR ',<br>\\n') AS address,
+                     GROUP_CONCAT(CONCAT('\n', ob.code ,' : \"', ob.language ,'\"') SEPARATOR ',<br>\\n') AS language,
+                     GROUP_CONCAT(CONCAT('\n', ob.code ,' : \"', ob.ethnicity ,'\"') SEPARATOR ',<br>\\n') AS ethnicity,
+                     GROUP_CONCAT(CONCAT('\n', ob.code ,' : \"', ob.occupation ,'\"') SEPARATOR ',<br>\\n') AS occupation,
+                     GROUP_CONCAT(CONCAT('\n', ob.code ,' : \"', ob.gender ,'\"') SEPARATOR ',<br>\\n') AS gender,
+                     GROUP_CONCAT(CONCAT('\n', ob.code ,' : \"', ob.dob ,'\"') SEPARATOR ',<br>\\n') AS dob,
+                     GROUP_CONCAT(CONCAT('\n', ob.code ,' : \"', ob.education ,'\"') SEPARATOR ',<br>\\n') AS education,
+                     GROUP_CONCAT(CONCAT('\n', ob.code ,' : \"', ob.sms_primary ,'\"') SEPARATOR ',<br>\\n') AS obsms_primary,
+                     GROUP_CONCAT(CONCAT('\n', ob.code ,' : \"', ob.sms_backup ,'\"') SEPARATOR ',<br>\\n') AS obsms_backup,
+                     GROUP_CONCAT(CONCAT('\n', ob.code ,' : \"', ob.call_primary ,'\"') SEPARATOR ',<br>\\n') AS obcall_primary,
+                     GROUP_CONCAT(CONCAT('\n', ob.code ,' : \"', ob.call_backup ,'\"') SEPARATOR ',<br>\\n') AS obcall_backup,
+                     GROUP_CONCAT(CONCAT('\n', ob.code ,' : \"', ob.hotline1 ,'\"') SEPARATOR ',<br>\\n') AS obhotline1,
+                     GROUP_CONCAT(CONCAT('\n', ob.code ,' : \"', ob.hotline2 ,'\"') SEPARATOR ',<br>\\n') AS obhotline2,
+                     GROUP_CONCAT(CONCAT('\n', ob.code ,' : \"', ob.form_type ,'\"') SEPARATOR ',<br>\\n') AS form_type,
+                     GROUP_CONCAT(CONCAT('\n', ob.code ,' : \"', ob.full_name_trans ,'\"') SEPARATOR ',<br>\\n') AS full_name_trans,
+                     GROUP_CONCAT(CONCAT('\n', ob.code ,' : \"', ob.created_at ,'\"') SEPARATOR ',<br>\\n') AS obcreated,
+                     GROUP_CONCAT(CONCAT('\n', ob.code ,' : \"', ob.updated_at ,'\"') SEPARATOR ',<br>\\n') AS obupdated";
 
 
 
@@ -450,12 +450,12 @@ class SurveyResultDataTable extends DataTable
                            sd.level6, sd.level5, sd.level4, sd.level3, sd.level2, sd.level1, sd.level6_trans,
                            sd.level5_trans, sd.level4_trans, sd.level3_trans, sd.level2_trans, sd.level1_trans,
                            sd.parties, sd.parent_id, sd.created_at, sd.updated_at, sd.sms_primary, sd.sms_backup, sd.call_primary, 
-                           sd.call_backup, sd.hotline1, sd.hotline2, sd.sms_time, $observer  
+                           sd.call_backup, sd.hotline1, sd.hotline2, sd.sms_time, sd.incident_center, $observer  
                            FROM sample_datas AS sd LEFT JOIN observers AS ob ON ob.sample_id = sd.id  GROUP BY sd.id, sd.location_code, sd.type, sd.dbgroup, sd.sample, sd.ps_code, sd.area_type,
                            sd.level6, sd.level5, sd.level4, sd.level3, sd.level2, sd.level1, sd.level6_trans,
                            sd.level5_trans, sd.level4_trans, sd.level3_trans, sd.level2_trans, sd.level1_trans,
                            sd.parties, sd.parent_id, sd.created_at, sd.updated_at, sd.sms_primary, sd.sms_backup, sd.call_primary, 
-                           sd.call_backup, sd.hotline1, sd.hotline2, sd.sms_time
+                           sd.call_backup, sd.hotline1, sd.hotline2, sd.sms_time, sd.incident_center
                            )");
         }
         $sampleData = DB::table('sample_datas_view')->where('type', $project->dblink)->where('dbgroup', $project->dbgroup);
@@ -537,6 +537,16 @@ class SurveyResultDataTable extends DataTable
             }
         }
 
+        $incident_center_option = "";
+
+        $incident_center = $project->samplesData->pluck('incident_center','incident_center');
+
+        foreach ($incident_center as $phone) {
+            if($phone) {
+                $incident_center_option .= "<option value=\"$phone\">$phone</option>";
+            }
+        }
+
         $sms_time_option = "";
 
         $sms_time = $project->samplesData->pluck('sms_time','sms_time');
@@ -559,7 +569,7 @@ class SurveyResultDataTable extends DataTable
             $textColsArr[] = $columnName[$key] + 1;
         }
 
-        $selectColumns = ['level5', 'level4', 'level3', 'level2', 'level1', 'call_primary', 'sms_time'];
+        $selectColumns = ['level5', 'level4', 'level3', 'level2', 'level1', 'call_primary', 'sms_time', 'incident_center'];
 
         $selectColumns = array_intersect_key($this->tableColumns, array_flip($selectColumns));
 
