@@ -649,7 +649,8 @@ class SmsAPIController extends AppBaseController
 
         $sectionColumns = [];
         foreach ($project->sectionsDb->sortBy('sort') as $k => $section) {
-            $sectionColumns[] = 'section' . ($k + 1) . 'status';
+            $skey = $k + 1;
+            $sectionColumns[] = 'section' . $skey . 'status, section'.$skey.'updated';
         }
 
         $export_columns = array_merge($sample_columns, $sectionColumns, $unique_inputs);
