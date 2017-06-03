@@ -155,6 +155,7 @@ class ProjectResultsController extends AppBaseController
                     case 'call_primary':
                     case 'incident_center':
                     case 'sms_time':
+                    case 'observer_field':
                         $columns[$column] = [
                             'name' => 'sample_datas_view.'.$column,
                             'data' => $column,
@@ -175,7 +176,6 @@ class ProjectResultsController extends AppBaseController
                         ];
                         break;
                     case 'sms_primary':
-                    case 'observer_field':
                         $columns[$column] = [
                             'name' => 'sample_datas_view.'.$column,
                             'data' => $column,

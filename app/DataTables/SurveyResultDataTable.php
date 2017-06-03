@@ -557,6 +557,16 @@ class SurveyResultDataTable extends DataTable
             }
         }
 
+        $observer_field_option = "";
+
+        $obs_type = $project->samplesData->pluck('observer_field','observer_field');
+
+        foreach ($obs_type as $type) {
+            if($type) {
+                $observer_field_option .= "<option value=\"$type\">$type</option>";
+            }
+        }
+
         $columnName = array_keys($this->tableColumns);
 
         //$textColumns = ['location_code', 'spotchecker', 'spotchecker_code', 'name', 'nrc_id', 'form_id', 'mobile'];
@@ -569,7 +579,7 @@ class SurveyResultDataTable extends DataTable
             $textColsArr[] = $columnName[$key] + 1;
         }
 
-        $selectColumns = ['level5', 'level4', 'level3', 'level2', 'level1', 'call_primary', 'sms_time', 'incident_center'];
+        $selectColumns = ['level5', 'level4', 'level3', 'level2', 'level1', 'call_primary', 'sms_time', 'incident_center','observer_field'];
 
         $selectColumns = array_intersect_key($this->tableColumns, array_flip($selectColumns));
 
