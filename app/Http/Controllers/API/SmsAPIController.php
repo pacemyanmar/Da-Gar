@@ -277,6 +277,8 @@ class SmsAPIController extends AppBaseController
             $reply['form_code'] = $pcode[2];
             $sms_code = $pcode[2];
 
+            $message = str_replace($pcode[1].$pcode[2],'',$message);
+
             if (!$training_mode) {
 
                 $sms_type = config('sms.type');
@@ -453,11 +455,13 @@ class SmsAPIController extends AppBaseController
 
                                 if (empty($section_with_result)) {
                                     $section_with_result = $section->id;
+
                                     $section_key = $section->sort + 1;
                                 }
+
                                 if (!empty($section_with_result) && $section->id != $section_with_result) {
                                     // if sending cross section
-
+                                    
                                     $rawlog->sample = $sample->data->sample;
                                     $rawlog->user_id = 1; // need to change this
 

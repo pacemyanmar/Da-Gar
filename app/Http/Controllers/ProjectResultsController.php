@@ -818,7 +818,7 @@ class ProjectResultsController extends AppBaseController
 
         }
 
-        
+
         $checked = $this->logicalCheck($result_arr, $surveyResult, $project, $sample);
         $surveyResult = $checked['results'];
 
