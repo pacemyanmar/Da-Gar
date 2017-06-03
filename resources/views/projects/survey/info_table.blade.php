@@ -11,13 +11,14 @@
                     <thead>
                     <tr>
 
-                        <th>{!! trans('sample.location_code') !!}</th>
+                        <th>{!! trans('sample.uecnec_code') !!}</th>
                         <th>{!! trans('sample.level1') !!}</th>
                         <th>{!! trans('sample.level3') !!}</th>
                         <th>{!! trans('messages.polling_station') !!}</th>
                         <th>{!! trans('sample.supervisor_name') !!}</th>
                         <th>{!! trans('sample.supervisor_phone') !!}</th>
-                        <th>{!! trans('sample.supervisor_address') !!}</th>
+                        <th>{!! trans('sample.registered_voters') !!}</th>
+                        <th>{!! trans('sample.supervisor_field') !!}</th>
 
                         @if(count($project->samples) > 1)
                             <th>{!! trans('messages.sample') !!}</th>
@@ -36,7 +37,8 @@
                         <td>{!! ucwords($sample->data->level6) !!}</td>
                         <td>{!! ucwords($sample->data->supervisor_name) !!}</td>
                         <td>{!! ucwords($sample->data->supervisor_mobile) !!}</td>
-                        <td>{!! ucwords($sample->data->supervisor_address) !!}</td>
+                        <td>{!! $sample->data->registered_voters !!}</td>
+                        <td>{!! ucwords($sample->data->supervisor_field) !!}</td>
 
                         @if(count($project->samples) > 1)
                             <td>
@@ -82,6 +84,7 @@
                         <th>{!! trans('sample.observer_name') !!}</th>
                         <th>{!! trans('sample.phone') !!}</th>
                         <th>{!! trans('sample.phone2') !!}</th>
+                        <th>{!! trans('sample.observer_field') !!}</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -91,6 +94,7 @@
                             <td>{!! ucwords($observer->full_name) !!}</td>
                             <td>{!! ucwords($observer->phone_1) !!}</td>
                             <td>{!! ucwords($observer->phone_2) !!}</td>
+                            <td>{!! $observer->observer_field !!}</td>
                         </tr>
                     @endforeach
                     </tbody>

@@ -8,6 +8,8 @@
 
 return [
     'location_code' => 'Polling Station Code',
+    'uecnec_code' => 'NEC Code',
+    'registered_voters' => 'Registered Voters',
     'national_id' => 'National ID',
     'level1' => 'Province',
     'level1_id' => 'Province ID',
@@ -20,10 +22,12 @@ return [
     'user_id' => 'Data Clerk',
     'form_id' => 'Report No.',
     'observer_name' => 'Observer Name',
+    'observer_field' => 'Obs Type',
     'observer_id' => 'Observer ID',
     'supervisor_name' => 'Supervisor Name',
     'supervisor_phone' => 'Supervisor Phone',
     'supervisor_address' => 'Supervisor Address',
+    'supervisor_field' => 'Supervisor obs Type',
     'phone' => 'Phone',
     'phone2' => 'Phone 2',
     'observer_code' => 'Observer ID',

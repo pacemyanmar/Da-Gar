@@ -20,6 +20,7 @@ class PvtColumnsSampleData extends Migration
             $table->boolean('pvt2')->default(false);
             $table->boolean('pvt3')->default(false);
             $table->boolean('pvt4')->default(false);
+            $table->unsignedBigInteger('registered_voters')->nullable();
             $table->unsignedInteger('level1_id')->nullable();
             $table->string('incident_center')->nullable();
         });
@@ -39,6 +40,7 @@ class PvtColumnsSampleData extends Migration
             $table->dropColumn('pvt2');
             $table->dropColumn('pvt3');
             $table->dropColumn('pvt4');
+            $table->dropColumn('registered_voters');
             $table->dropColumn('level1_id');
             $table->dropColumn('incident_center');
         });

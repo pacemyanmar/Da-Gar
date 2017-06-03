@@ -61,6 +61,7 @@ class SampleData extends Model
         'hotline2',
         'sms_time',
         'incident_center',
+        'registered_voters',
         'obs_type',
         'sbo',
         'pvt1',
