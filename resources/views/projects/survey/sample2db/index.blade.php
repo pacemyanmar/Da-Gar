@@ -74,9 +74,15 @@
 @push('before-body-end')
     <script type="text/javascript">
         (function($) {
+
+            setInterval( function () {
+                window.LaravelDataTables["dataTableBuilder"].ajax.reload( null, false ); // user paging is not reset on reload
+            }, 60000 );
+
             table = window.LaravelDataTables["dataTableBuilder"];
+
             window.locations = {!! json_encode($locations) !!};
-            console.log(locations);
+            //console.log(locations);
             table.columns([{!! $selectCols !!}]).every( function ( colIdx ) {
                 var column = this;
                 var columnName = {!! json_encode(array_flip($columnName)) !!};
@@ -156,7 +162,7 @@
 
             $('#dataTableBuilder').on( 'draw.dt', function () {
 
-                console.log( 'Redraw occurred at: '+new Date().getTime() );
+                //console.log( 'Redraw occurred at: '+new Date().getTime() );
             } );
 
             $('#state').on('change', function(){
