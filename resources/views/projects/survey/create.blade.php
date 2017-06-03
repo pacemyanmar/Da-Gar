@@ -5,8 +5,8 @@ window.url="{!! route('projects.surveys.save', ['project' => $project->id, 'samp
 </script>
 @endpush
 @push('after-body-start')
-<a class="btn btn-primary pull-right btn-float btn-float-up save" style="display:inline;margin-right:15px;" href="#" data-id="survey-form">{{ trans('messages.saveall') }}</a>
-           <a class="pull-right btn-float btn-float-bottom btn-float-to-up" style="display:inline;font-size: 40px;" href="#"><i class="fa fa-arrow-circle-up"></i></a>
+<!--a class="btn btn-primary pull-right btn-float btn-float-up save" style="display:inline;margin-right:15px;" href="#" data-id="survey-form">{{ trans('messages.saveall') }}</a>
+           <a class="pull-right btn-float btn-float-bottom btn-float-to-up" style="display:inline;font-size: 40px;" href="#"><i class="fa fa-arrow-circle-up"></i></a-->
 @endpush
 @section('content')
 <form autocomplete="off">
@@ -19,10 +19,10 @@ window.url="{!! route('projects.surveys.save', ['project' => $project->id, 'samp
         @endif
         <h1 class="pull-left">{!! Form::label('name', $project->project) !!}</h1>
 
-        <h1 class="pull-right">
+        <!--h1 class="pull-right">
             <a class="btn btn-default pull-right" style="display:inline;margin-top: -10px;margin-bottom: 5" href="{!! route('projects.surveys.index', $project->id) !!}" data-id="survey-form"> {{ trans('messages.back') }}</a>
            <a class="btn btn-primary pull-right save" style="display:inline;margin-top: -10px;margin-bottom: 5" href="#" data-id="survey-form"> {{ trans('messages.saveall') }}</a>
-        </h1>
+        </h1-->
     </section>
     <div class="content">
         <div class="clearfix"></div>
