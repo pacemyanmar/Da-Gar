@@ -164,7 +164,7 @@ class SmsAPIController extends AppBaseController
 
             if ($event != 'send_status') {
                 $reply['content'] = $response['message']; // reply message
-                $no_reply = $request->input('noreply');
+                $no_reply = ($request->input('noreply'))?$request->input('noreply'):Settings::get('noreply');
                 if(!$no_reply) {
                     $this->sendToTelerivet($reply); // need to make asycronous
                 }

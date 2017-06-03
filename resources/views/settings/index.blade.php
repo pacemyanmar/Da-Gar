@@ -68,6 +68,10 @@
                                 {!! Form::checkbox("configs[training]", true,settings('training', null), ['class' => 'magic-checkbox', 'id' => 'training', 'autocomplete' => 'off']) !!}
                                 <label class="normal-text" for="training">Training Mode
                                 </label>
+
+                                {!! Form::checkbox("configs[noreply]", true,settings('noreply', null), ['class' => 'magic-checkbox', 'id' => 'noreply', 'autocomplete' => 'off']) !!}
+                                <label class="normal-text" for="noreply">Disable SMS Reply
+                                </label>
                             </div>
                         <!-- Submit Field -->
                         <div class="form-group col-sm-12">
