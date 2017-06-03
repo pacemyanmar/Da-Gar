@@ -613,14 +613,19 @@ class SmsAPIController extends AppBaseController
 
         $unique_inputs = $inputs->toArray();
 
+        $comment = $request->input('comments');
 
-        array_walk($unique_inputs, function (&$column, $index) {
+        array_walk($unique_inputs, function (&$column, $index) use ($comment) {
             switch ($column) {
                 case 'checkbox':
                     $column = 'IF(pdb.'.$index.' IS NOT NULL,IF(pdb.'.$index.' = 0, 0, 1),null) AS '.$index;
                     break;
                 default:
-                    $column = 'pdb.' . $index;
+                    if($comment == 'off' && str_contains($index, 'comment')) {
+                        $column = '';
+                    } else {
+                        $column = 'pdb.' . $index;
+                    }
                     break;
             }
         });
@@ -645,7 +650,7 @@ class SmsAPIController extends AppBaseController
 
         $export_columns = array_merge($sample_columns, $sectionColumns, $unique_inputs);
 
-
+        $export_columns = array_filter($export_columns);
 
         $export_columns_list = implode(',', $export_columns);
 
