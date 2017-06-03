@@ -25,6 +25,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Schema;
 use InfyOm\Generator\Criteria\LimitOffsetCriteria;
 use Krucas\Settings\Facades\Settings;
+use Laracasts\Flash\Flash;
 use Maatwebsite\Excel\Facades\Excel;
 use Prettus\Repository\Criteria\RequestCriteria;
 use Ramsey\Uuid\Uuid;
@@ -603,6 +604,14 @@ class SmsAPIController extends AppBaseController
     }
 
     public function getcsv($project_id, Request $request) {
+        $allowedip = config('sms.allowedip');
+
+        if(!in_array($request->getClientIp(),$allowedip)) {
+            Flash::error('Project not found');
+
+            return redirect('home');
+        }
+
         App::setLocale('en');
         $project = $this->projectRepository->findWithoutFail($project_id);
         if (empty($project)) {

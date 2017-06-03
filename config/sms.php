@@ -13,7 +13,11 @@ return [
         'locale' => 'my'
     ],
     'double_entry' => false,
-
+    'allowedip' => [
+        '172.20.0.1',
+        '172.16.16.61',
+        '116.212.155.142',
+    ],
 
     // export columns
     'export_columns' => [
