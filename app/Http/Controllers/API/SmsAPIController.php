@@ -620,28 +620,47 @@ class SmsAPIController extends AppBaseController
             return redirect()->back();
         }
 
-        $inputs = $project->inputs->sortBy('sort')->pluck('type', 'inputid');
-
-        $childTable = $project->dbname;
-
-        $unique_inputs = $inputs->toArray();
+        $inputs = $project->inputs->sortBy('sort');
 
         $comment = $request->input('comments');
 
-        array_walk($unique_inputs, function (&$column, $index) use ($comment) {
-            switch ($column) {
-                case 'checkbox':
-                    $column = 'IF(pdb.'.$index.' IS NOT NULL,IF(pdb.'.$index.' = 0, 0, 1),null) AS '.$index;
-                    break;
-                default:
-                    if($comment == 'off' && str_contains($index, 'comment')) {
-                        $column = '';
-                    } else {
-                        $column = 'pdb.' . $index;
-                    }
-                    break;
+        $request_columns = $request->input('columns');
+
+        $request_columns = explode(',', $request_columns);
+
+        $map_inputs = $inputs->map(function($input, $key) use ($request_columns,$comment) {
+            $inputid = null;
+            if(!empty(array_filter($request_columns))) {
+                if(in_array(strtolower($input->question->qnum), $request_columns)) {
+                    $inputid =  $input->inputid;
+                }
+            } elseif( $comment == 'off' ) {
+                if(str_contains($input->inputid, 'comment')) {
+                    $inputid =  null;
+                } else {
+                    $inputid = $input->inputid;
+                }
+            } else {
+                $inputid = $input->inputid;
             }
+            if($inputid) {
+                switch ($input->type) {
+                    case 'checkbox':
+                        $column = 'IF(pdb.' . $inputid . ' IS NOT NULL,IF(pdb.' . $inputid . ' = 0, 0, 1),null) AS ' . $inputid;
+                        break;
+                    default:
+                        $column = 'pdb.' . $inputid;
+                        break;
+                }
+                return $column;
+            }
+
         });
+
+
+        $childTable = $project->dbname;
+
+        $unique_inputs = $map_inputs->toArray();
 
         $sample_columns = [
             'location_code',
@@ -659,7 +678,7 @@ class SmsAPIController extends AppBaseController
         $sectionColumns = [];
         foreach ($project->sectionsDb->sortBy('sort') as $k => $section) {
             $skey = $k + 1;
-            $sectionColumns[] = 'section' . $skey . 'status, section'.$skey.'updated';
+            $sectionColumns[] = 'pdb.section' . $skey . 'status, pdb.section'.$skey.'updated';
         }
 
         $export_columns = array_merge($sample_columns, $sectionColumns, $unique_inputs);
