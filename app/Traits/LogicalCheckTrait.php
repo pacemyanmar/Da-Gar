@@ -41,8 +41,13 @@ trait LogicalCheckTrait
                 })->pluck('inputid')->toArray();
 
 
-                $intersect_with_value = array_intersect($required_response_with_value, array_keys(array_filter($inputs))); // if this is greater than zero question is complete
-                $intersect_no_value = array_intersect($required_response_empty_value, array_keys(array_filter($inputs)));
+                $intersect_with_value = array_intersect($required_response_with_value, array_keys(array_filter($inputs,function($value) {
+                    return ($value !== null && $value !== false && $value !== '');
+                })));
+                // if this is greater than zero question is complete
+                $intersect_no_value = array_intersect($required_response_empty_value, array_keys(array_filter($inputs,function($value) {
+                    return ($value !== null && $value !== false && $value !== '');
+                })));
 
 //                array_walk($inputs, function(&$value, $key, $result){
 //                    if(empty($value)) {

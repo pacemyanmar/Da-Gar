@@ -559,6 +559,7 @@ class SmsAPIController extends AppBaseController
                 $sample = Sample::where('sample_data_type', $project->dblink)->where('project_id', $project->id)->where('form_id', 1)->first();
             }
             if($section_with_result) {
+                
                 $checked = $this->logicalCheck($result_arr, $result, $project, $sample);
                 $result = $checked['results'];
                 $timestamp = 'section'.$section_key.'updated';
