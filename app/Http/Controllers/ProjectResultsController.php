@@ -811,7 +811,7 @@ class ProjectResultsController extends AppBaseController
                         if($input->type == 'checkbox') {
                             $result_arr[$section->id][$question->id][$input->inputid] = ($results[$input->inputid]) ? $results[$input->inputid] : 0;
                         } else {
-                            $result_arr[$section->id][$question->id][$input->inputid] = ($results[$input->inputid]) ? $results[$input->inputid] : null;
+                            $result_arr[$section->id][$question->id][$input->inputid] = ($results[$input->inputid] !== null && $results[$input->inputid] !== false && $results[$input->inputid] !== '') ? $results[$input->inputid] : null;
                         }
                     } else {
                         // if section is submitted
