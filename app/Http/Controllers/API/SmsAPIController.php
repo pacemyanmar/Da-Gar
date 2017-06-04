@@ -633,6 +633,8 @@ class SmsAPIController extends AppBaseController
             if(!empty(array_filter($request_columns))) {
                 if(in_array(strtolower($input->question->qnum), $request_columns)) {
                     $inputid =  $input->inputid;
+                } else {
+                    $inputid =  null;
                 }
             } elseif( $comment == 'off' ) {
                 if(str_contains($input->inputid, 'comment')) {
@@ -643,6 +645,7 @@ class SmsAPIController extends AppBaseController
             } else {
                 $inputid = $input->inputid;
             }
+
             if($inputid) {
                 switch ($input->type) {
                     case 'checkbox':
@@ -652,6 +655,7 @@ class SmsAPIController extends AppBaseController
                         $column = 'pdb.' . $inputid;
                         break;
                 }
+
                 return $column;
             }
 
