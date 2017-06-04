@@ -605,7 +605,7 @@ class SmsAPIController extends AppBaseController
 
     public function getcsv($project_id, Request $request) {
         $allowedip = config('sms.allowedip');
-
+        Log::info($request->getClientIp());
         if(!in_array($request->getClientIp(),$allowedip)) {
             Flash::error('Project not found');
 
