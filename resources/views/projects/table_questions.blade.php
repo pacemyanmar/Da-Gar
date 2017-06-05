@@ -65,6 +65,7 @@
                            data-question="{!! $question->question !!}"
                            data-section="{!! $section->id !!}"
                            data-observation='{!! str_replace("'","&#39;",json_encode($question->observation_type, JSON_HEX_QUOT)) !!}'
+                           data-party='{!! str_replace("'","&#39;",json_encode($question->party, JSON_HEX_QUOT)) !!}'
                            data-sort="{!! $question->sort !!}"
                            data-answers='{!! str_replace("'","&#39;",$question->raw_ans) !!}'
                            data-layout='{!! $question->layout !!}'

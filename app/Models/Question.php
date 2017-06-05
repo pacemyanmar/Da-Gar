@@ -31,6 +31,7 @@ class Question extends Model
         'optional',
         'report',
         'observation_type',
+        'party',
         'project_id',
     ];
 
@@ -54,7 +55,8 @@ class Question extends Model
         'optional' => 'boolean',
         'report' => 'boolean',
         'layout' => 'string',
-        'observation_type' => 'array'
+        'observation_type' => 'array',
+        'party' => 'array'
     ];
 
     /**

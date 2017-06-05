@@ -186,18 +186,24 @@
                 var actionurl = button.data('qurl')
                 var method = button.data('method')
                 var observation = button.data('observation')
+                var party = button.data('party')
 
                 // If necessary, you could initiate an AJAX request here (and then do the updating in a callback).
                 // Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.
                 var modal = $(this)
 
                 if(observation) {
-                    console.log(observation);
                     $.each(observation, function (key, value) {
                         modal.find("input[name='observation_type[" + key + "]']").prop('checked', true)
                     });
                 } else {
                         modal.find("input.observation_type").prop('checked', false)
+                }
+
+                if(party) {
+                    $.each(party, function (key, value) {
+                        modal.find("input[name='party[" + key + "]']").val(value);
+                    });
                 }
 
                 modal.find("input[name='qnum']").val(qnum)

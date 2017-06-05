@@ -47,9 +47,12 @@
         <tr>
             @foreach($observation_type as $label => $type)
                 <td>
-                {!! Form::checkbox("observation_type[".str_slug($type)."]", $type, null, ['class' => 'magic-checkbox observation_type', 'id' => str_slug($type)]) !!}
-                <label class="normal-text" for="{!! str_slug($type) !!}">{!! $label !!}
-                </label>
+                    <span class="input-group-addon">
+                        {!! Form::checkbox("observation_type[".str_slug($type)."]", $type, null, ['class' => 'magic-checkbox observation_type', 'id' => str_slug($type)]) !!}
+                        <label class="normal-text" for="{!! str_slug($type) !!}">{!! $label !!}
+                        </label>
+                    </span>
+                    {!! Form::text("party[".str_slug($type)."]", null, ['class' => 'form-control party', 'id' => str_slug($type).'party', 'placeholder' => 'Party Name']) !!}
                 </td>
             @endforeach
         </tr>

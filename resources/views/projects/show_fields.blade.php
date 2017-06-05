@@ -17,7 +17,10 @@
                     @endif
                 </td>
                 <td class="col-xs-11">
-                    <div class="row"><label>{!! $question->question !!}</label></div>
+                    <div class="row"><label>{!! $question->question !!}
+                            @if($question->party && array_key_exists(str_slug($sample->data->observer_field), $question->party))
+                                {!! $question->party[str_slug($sample->data->observer_field)] !!}
+                            @endif</label></div>
                     <div class="row">
 
                         @include('questions.ans_fields')
