@@ -669,6 +669,7 @@ class SmsAPIController extends AppBaseController
 
         $sample_columns = [
             'location_code',
+            'ps_code',
             'updated_at',
             'observer1_id',
             'observer2_id',
