@@ -767,8 +767,10 @@ class ProjectController extends AppBaseController
             "index_columns" => json_encode($project->index_columns),
             "status" => $project->status,
         ];
-        foreach ($project->project_trans as $lang => $trans) {
-            $project_array[0]['project::' . $lang] = $trans;
+        if(!empty($project->project_trans)) {
+            foreach ($project->project_trans as $lang => $trans) {
+                $project_array[0]['project::' . $lang] = $trans;
+            }
         }
         $sections = $project->sectionsDb->toArray();
 

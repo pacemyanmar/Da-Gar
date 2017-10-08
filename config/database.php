@@ -26,7 +26,7 @@ return [
     |
      */
 
-    'default' => env('DB_CONNECTION', 'sms'),
+    'default' => env('DB_CONNECTION', 'mariadb'),
 
     /*
     |--------------------------------------------------------------------------
@@ -70,8 +70,8 @@ return [
             'driver' => 'mysql',
             'host' => env('DB_HOST', 'mariadb'),
             'port' => env('DB_PORT', '3306'),
-            'database' => env('DB_DATABASE', 'thwin_smslaravel'),
-            'username' => env('DB_USERNAME', 'homestead'),
+            'database' => env('DB_DATABASE', 'default'),
+            'username' => env('DB_USERNAME', 'default'),
             'password' => env('DB_PASSWORD', 'secret'),
             'charset' => 'utf8',
             'collation' => 'utf8_myanmar_ci',
