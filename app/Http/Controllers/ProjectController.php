@@ -460,38 +460,55 @@ class ProjectController extends AppBaseController
             return redirect()->back();
         }
 
-        // get unique collection of inputs
-        $fields = $project->inputs->unique('inputid');
+
+        //$projectViewQuery = "CREATE VIEW ".$project->dbname." AS (SELECT * FROM ";
+        $joinQuery = '';
+        $sectionFields = '';
+
+        // check if table has already created
+        foreach ($project->sectionsDb as $key => $section) {
+            $section_key = $key + 1;
+
+            $fields = $section->inputs->unique('inputid');
+
+            $section_code = 'section_'.$section->sort;
+
+            $section_dbname = $project->dbname.$section_code;
+
+            if (Schema::hasTable($section_dbname)) {
+                $this->updateTable($project,  'main', $fields, $section);
+            } else {
+                $this->createTable($project,  'main', $fields, $section);
+            }
+            $sectionFields .= implode(',', $fields);
+
+            $joinQuery .= $section_dbname;
+        }
+
+        $project_fields = $project->inputs->unique('inputid');
 
         //if ($project->training) {
         // check if table has already created
         if (Schema::hasTable($project->dbname . '_training')) {
-            $this->updateTable($project->dbname . '_training', $project, $fields);
+            $this->updateTable($project,  'training', $project_fields);
         } else {
-            $this->createTable($project->dbname . '_training', $project, $fields);
+            $this->createTable($project,  'training', $project_fields);
         }
 
         // }
 
         // check if table has already created
-        if (Schema::hasTable($project->dbname)) {
-            $this->updateTable($project->dbname, $project, $fields);
-        } else {
-            $this->createTable($project->dbname, $project, $fields);
-        }
-
-        // check if table has already created
         if (Schema::hasTable($project->dbname . '_double')) {
-            $this->updateTable($project->dbname . '_double', $project, $fields);
+            $this->updateTable($project,  'double', $project_fields);
         } else {
-            $this->createTable($project->dbname . '_double', $project, $fields);
+            $this->createTable($project,  'double', $project_fields);
         }
 
         // check if table has already created
         if (Schema::hasTable($project->dbname . '_rawlog')) {
-            $this->updateTable($project->dbname . '_rawlog', $project, $fields);
+            $this->updateTable($project,  'rawlog', $project_fields);
         } else {
-            $this->createTable($project->dbname . '_rawlog', $project, $fields);
+            $this->createTable($project,  'rawlog', $project_fields);
         }
 
 
@@ -508,15 +525,27 @@ class ProjectController extends AppBaseController
         return redirect()->back();
     }
 
-    private function updateTable($dbname, $project, $fields)
+    private function updateTable($project,  $type = 'main', $fields, $section = null)
     {
-        foreach ($project->sectionsDb as $key => $section) {
-            $section_num = $key + 1;
-            $section_name = 'section' . $section_num . 'status';
-            if (!Schema::hasColumn($dbname, $section_name)) {
-                Schema::table($dbname, function ($table) use ($section_name) {
-                    $table->unsignedSmallInteger($section_name)->index()->default(0); // 0 => missing, 1 => complete, 2 => incomplete, 3 => error
-                });
+        $db_name = $project->dbname;
+        switch ($type) {
+            case 'main':
+                $dbname = $db_name.'_'.$section;
+                break;
+            default:
+                $dbname = $db_name.'_'.$type;
+                break;
+        }
+        if($type != 'main') {
+
+            foreach ($project->sectionsDb as $key => $section) {
+                $section_num = $key + 1;
+                $section_name = 'section' . $section_num . 'status';
+                if (!Schema::hasColumn($dbname, $section_name)) {
+                    Schema::table($dbname, function ($table) use ($section_name) {
+                        $table->unsignedSmallInteger($section_name)->index()->default(0); // 0 => missing, 1 => complete, 2 => incomplete, 3 => error
+                    });
+                }
             }
         }
 
@@ -624,14 +653,25 @@ class ProjectController extends AppBaseController
             ->update(['status' => 'published']);
     }
 
-    private function createTable($dbname, $project, $fields)
+    private function createTable($project,  $type = 'main', $fields, $section = null)
     {
+        $db_name = $project->dbname;
+
+        switch ($type) {
+            case 'main':
+                $dbname = $db_name.'_section'.$section->sort;
+                break;
+            default:
+                $dbname = $db_name.'_'.$type;
+                break;
+        }
+
         // if table is not yet created, create table and inputs columns
-        Schema::create($dbname, function (Blueprint $table) use ($project, $fields, $dbname) {
+        Schema::create($dbname, function (Blueprint $table) use ($project, $type, $fields, $section) {
 
             $table->increments('id');
-            $training_mode = preg_match('/_training$/', $dbname, $mode);
-            if ($training_mode) {
+
+            if ($type == 'training') {
                 $table->string('sample_code')->index(); // sample
             } else {
                 $table->unsignedInteger('sample_id')->index(); // sample
@@ -640,11 +680,19 @@ class ProjectController extends AppBaseController
                 $table->unsignedInteger('update_user_id')->index()->nullable();
             }
             $table->timestamps();
-            foreach ($project->sectionsDb as $key => $section) {
-                $section_num = $key + 1;
-                $table->unsignedSmallInteger('section' . $section_num . 'status')->index()->default(0); // 0 => missing, 1 => complete, 2 => incomplete, 3 => error
+
+            if ($type != 'main') {
+                // get unique collection of inputs
+                foreach ($project->sectionsDb as $key => $section) {
+                    $section_num = $key + 1;
+                    $table->unsignedSmallInteger('section' . $section_num . 'status')->index()->default(0); // 0 => missing, 1 => complete, 2 => incomplete, 3 => error
+                    //$table->json('section' . $key)->nullable();
+                    $table->timestamp('section' . $section_num . 'updated')->nullable();
+                }
+            } else {
+                $table->unsignedSmallInteger('section' . $section->sort . 'status')->index()->default(0); // 0 => missing, 1 => complete, 2 => incomplete, 3 => error
                 //$table->json('section' . $key)->nullable();
-                $table->timestamp('section' . $section_num . 'updated')->nullable();
+                $table->timestamp('section' . $section->sort . 'updated')->nullable();
             }
 
             foreach ($fields as $input) {

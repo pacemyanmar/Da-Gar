@@ -4,7 +4,7 @@ namespace App\DataTables;
 
 use App\Models\SampleData;
 use Illuminate\Support\Facades\Auth;
-use Yajra\Datatables\Services\DataTable;
+use Yajra\DataTables\Services\DataTable;
 
 class SampleDataDataTable extends DataTable
 {
@@ -14,7 +14,7 @@ class SampleDataDataTable extends DataTable
      */
     public function ajax()
     {
-        $table = $this->datatables
+        $table = datatables()
             ->eloquent($this->query());
 //        if (Auth::user()->role->level > 5) {
 //            $table->addColumn('action', 'sample_datas.datatables_actions');
@@ -43,7 +43,7 @@ class SampleDataDataTable extends DataTable
     {
         $builder = $this->builder()
             ->columns($this->getColumns())
-            ->ajax(['type' => 'POST', 'data' => '{"_method":"GET"}'])
+            ->ajax(['type' => 'POST'])
             ->parameters([
                 'dom' => 'Bfrtip',
                 'scrollX' => true,

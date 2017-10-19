@@ -4,7 +4,7 @@ namespace App\DataTables;
 
 use App\Models\Observer;
 use Form;
-use Yajra\Datatables\Services\DataTable;
+use Yajra\DataTables\Services\DataTable;
 
 class ObserverDataTable extends DataTable
 {
@@ -14,7 +14,7 @@ class ObserverDataTable extends DataTable
      */
     public function ajax()
     {
-        return $this->datatables
+        return datatables()
             ->eloquent($this->query())
             //->addColumn('action', 'observers.datatables_actions')
             ->make(true);

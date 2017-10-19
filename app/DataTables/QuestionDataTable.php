@@ -3,7 +3,7 @@
 namespace App\DataTables;
 
 use App\Models\Question;
-use Yajra\Datatables\Services\DataTable;
+use Yajra\DataTables\Services\DataTable;
 
 class QuestionDataTable extends DataTable
 {
@@ -13,7 +13,7 @@ class QuestionDataTable extends DataTable
      */
     public function ajax()
     {
-        return $this->datatables
+        return datatables()
             ->eloquent($this->query())
             ->addColumn('action', 'questions.datatables_actions')
             ->make(true);

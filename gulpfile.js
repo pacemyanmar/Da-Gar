@@ -23,7 +23,7 @@ elixir(mix => {
         .copy('resources/assets/vendor/datatables/media/images', 'public/build/images')
         .copy('resources/assets/vendor/ion-checkradio/img', 'public/build/img')
         .copy('resources/assets/vendor/gasparesganga-jquery-loading-overlay/src/loading.gif', 'public/build/img')
-        .copy('resources/assets/js/buttons.server-side.js', 'public/vendor/datatables/buttons.server-side.js')
+        .copy('resources/assets/js/buttons.server-side-post.js', 'public/vendor/datatables/buttons.server-side-post.js')
         .copy('resources/assets/images', 'public/images')
         .styles([
             //'bootstrap/dist/css/bootstrap.min.css',

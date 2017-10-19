@@ -4,7 +4,7 @@ namespace App\DataTables;
 
 use App\Models\Sample;
 use Illuminate\Support\Facades\DB;
-use Yajra\Datatables\Services\DataTable;
+use Yajra\DataTables\Services\DataTable;
 
 class DoubleResponseDataTable extends DataTable
 {
@@ -30,7 +30,7 @@ class DoubleResponseDataTable extends DataTable
      */
     public function ajax()
     {
-        return $this->datatables
+        return datatables()
             ->eloquent($this->query())
             ->addIndexColumn()
         //->addColumn('action', 'path.to.action.view')
@@ -97,8 +97,6 @@ class DoubleResponseDataTable extends DataTable
                 'headers' => [
                     'X-CSRF-TOKEN' => csrf_token(),
                 ],
-
-                'data' => '{"_method":"GET"}',
             ])
         //->addAction(['width' => '80px'])
             ->parameters($this->getBuilderParameters());

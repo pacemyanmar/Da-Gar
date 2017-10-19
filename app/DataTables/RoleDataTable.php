@@ -3,7 +3,7 @@
 namespace App\DataTables;
 
 use App\Models\Role;
-use Yajra\Datatables\Services\DataTable;
+use Yajra\DataTables\Services\DataTable;
 
 class RoleDataTable extends DataTable
 {
@@ -13,7 +13,7 @@ class RoleDataTable extends DataTable
      */
     public function ajax()
     {
-        return $this->datatables
+        return datatables()
             ->eloquent($this->query())
             ->addColumn('action', 'roles.datatables_actions')
             ->make(true);

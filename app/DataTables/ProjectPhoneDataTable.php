@@ -4,7 +4,7 @@ namespace App\DataTables;
 
 use App\Models\ProjectPhone;
 use Form;
-use Yajra\Datatables\Services\DataTable;
+use Yajra\DataTables\Services\DataTable;
 
 class ProjectPhoneDataTable extends DataTable
 {
@@ -14,7 +14,7 @@ class ProjectPhoneDataTable extends DataTable
      */
     public function ajax()
     {
-        return $this->datatables
+        return datatables()
             ->eloquent($this->query())
             ->addColumn('action', 'project_phones.datatables_actions')
             ->make(true);

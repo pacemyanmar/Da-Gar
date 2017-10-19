@@ -29,13 +29,13 @@ Auth::routes();
 Route::get('/home', 'HomeController@index');
 
 Route::group(['prefix' => 'projects/{project}'], function () {
-    Route::match(['get', 'post'], '/response/{filter}', ['as' => 'projects.response.filter', 'uses' => 'ProjectResultsController@responseRateSample']);
-    Route::match(['get', 'post'], '/double/{section}', ['as' => 'projects.response.double', 'uses' => 'ProjectResultsController@responseRateDouble']);
-    Route::match(['get', 'post'], '/useorigin/{survey_id}/{column}', ['as' => 'projects.response.origin.use', 'uses' => 'ProjectResultsController@originUse']);
-    Route::match(['get', 'post'], '/usedouble/{survey_id}/{column}', ['as' => 'projects.response.double.use', 'uses' => 'ProjectResultsController@doubleUse']);
+    Route::match(['get', 'post'], '/response/{filter}', ['as' => 'projects.response.filter', 'uses' => 'SurveyResultsController@responseRateSample']);
+    Route::match(['get', 'post'], '/double/{section}', ['as' => 'projects.response.double', 'uses' => 'SurveyResultsController@responseRateDouble']);
+    Route::match(['get', 'post'], '/useorigin/{survey_id}/{column}', ['as' => 'projects.response.origin.use', 'uses' => 'SurveyResultsController@originUse']);
+    Route::match(['get', 'post'], '/usedouble/{survey_id}/{column}', ['as' => 'projects.response.double.use', 'uses' => 'SurveyResultsController@doubleUse']);
     Route::get('/search/sample', ['as' => 'projects.sample.search', 'uses' => 'ProjectController@search']);
     Route::get('/sampledata/{sampledata}/dblink/{dblink}/form/{formid}', ['as' => 'projects.incident.create', 'uses' => 'ProjectController@addIncident']);
-    Route::get('/analysis', ['as' => 'projects.analysis', 'uses' => 'ProjectResultsController@analysis']);
+    Route::get('/analysis', ['as' => 'projects.analysis', 'uses' => 'SurveyResultsController@analysis']);
     Route::get('/smslog', ['as' => 'projects.smslog', 'uses' => 'ProjectController@smslog']);
     Route::get('/export', ['as' => 'projects.export', 'uses' => 'ProjectController@export']);
     Route::post('/import', ['as' => 'projects.import', 'uses' => 'ProjectController@import']);
@@ -46,19 +46,19 @@ Route::group(['prefix' => 'projects/{project}'], function () {
 
 Route::group(['prefix' => 'projects/{project}/surveys'], function () {
 
-    Route::match(['get', 'post'], '/{sample_type?}', ['as' => 'projects.surveys.index', 'uses' => 'ProjectResultsController@index']);
+    Route::match(['get', 'post'], '/{sample_type?}', ['as' => 'projects.surveys.index', 'uses' => 'SurveyResultsController@index']);
 
-    Route::get('/{result}/create/{form_id?}/{sample_type?}', ['as' => 'projects.surveys.create', 'uses' => 'ProjectResultsController@create']);
+    Route::get('/{result}/create/{form_id?}/{sample_type?}', ['as' => 'projects.surveys.create', 'uses' => 'SurveyResultsController@create']);
 
-    Route::post('/{result}/save/{form_id?}/{sample_type?}', ['as' => 'projects.surveys.save', 'uses' => 'ProjectResultsController@save']);
+    Route::post('/{result}/save/{form_id?}/{sample_type?}', ['as' => 'projects.surveys.save', 'uses' => 'SurveyResultsController@save']);
 
-    Route::get('/{result}', ['as' => 'projects.surveys.show', 'uses' => 'ProjectResultsController@show']);
+    Route::get('/{result}', ['as' => 'projects.surveys.show', 'uses' => 'SurveyResultsController@show']);
 
-    // Route::get('/{sample_id}/edit', ['as' => 'projects.surveys.edit', 'uses' => 'ProjectResultsController@edit']);
+    // Route::get('/{sample_id}/edit', ['as' => 'projects.surveys.edit', 'uses' => 'SurveyResultsController@edit']);
 
-    Route::match(['put', 'patch'], '/{result}', ['as' => 'projects.surveys.update', 'uses' => 'ProjectResultsController@update']);
+    Route::match(['put', 'patch'], '/{result}', ['as' => 'projects.surveys.update', 'uses' => 'SurveyResultsController@update']);
 
-    Route::delete('/{result}', ['as' => 'projects.surveys.destroy', 'uses' => 'ProjectResultsController@destroy']);
+    Route::delete('/{result}', ['as' => 'projects.surveys.destroy', 'uses' => 'SurveyResultsController@destroy']);
 
 });
 

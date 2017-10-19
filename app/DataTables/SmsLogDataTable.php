@@ -6,7 +6,7 @@ use App\Models\SmsLog;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Request;
 use Krucas\Settings\Facades\Settings;
-use Yajra\Datatables\Services\DataTable;
+use Yajra\DataTables\Services\DataTable;
 
 class SmsLogDataTable extends DataTable
 {
@@ -23,7 +23,7 @@ class SmsLogDataTable extends DataTable
      */
     public function ajax()
     {
-        return $this->datatables
+        return datatables()
             ->eloquent($this->query())
             //->addColumn('action', 'sms_logs.datatables_actions')
             ->make(true);

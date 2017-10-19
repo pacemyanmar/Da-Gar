@@ -4,7 +4,7 @@ namespace App\DataTables;
 
 use App\Models\Sample;
 use Illuminate\Support\Facades\DB;
-use Yajra\Datatables\Services\DataTable;
+use Yajra\DataTables\Services\DataTable;
 
 class SampleResponseDataTable extends DataTable
 {
@@ -38,7 +38,7 @@ class SampleResponseDataTable extends DataTable
      */
     public function ajax()
     {
-        return $this->datatables
+        return datatables()
             ->eloquent($this->query())
             ->make(true, true);
     }

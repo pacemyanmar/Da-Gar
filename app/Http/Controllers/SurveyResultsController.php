@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\DataTables\DoubleResponseDataTable;
 use App\DataTables\SampleResponseDataTable;
-use App\DataTables\SurveyResultDataTable;
+use App\DataTables\SurveyResultsDataTable;
 use App\Http\Controllers\AppBaseController;
 use App\Models\Sample;
 use App\Models\SampleData;
@@ -22,7 +22,7 @@ use Illuminate\Support\Facades\DB;
 use Kanaung\Facades\Converter;
 use Laracasts\Flash\Flash;
 
-class ProjectResultsController extends AppBaseController
+class SurveyResultsController extends AppBaseController
 {
     use LogicalCheckTrait;
 
@@ -49,7 +49,7 @@ class ProjectResultsController extends AppBaseController
         $this->sampleDataModel = $sampleDataModel;
     }
 
-    public function index($project_id, $samplable = null, SurveyResultDataTable $resultDataTable = null)
+    public function index(SurveyResultsDataTable $resultDataTable, $project_id, $samplable = null)
     {
         $project = $this->projectRepository->findWithoutFail($project_id);
         $locale = \App::getLocale();
@@ -69,10 +69,8 @@ class ProjectResultsController extends AppBaseController
             }
         }
 
-        if ($resultDataTable instanceof SurveyResultDataTable) {
+        if ($resultDataTable instanceof SurveyResultsDataTable) {
             $table = $resultDataTable;
-        } else if ($samplable instanceof SurveyResultDataTable) {
-            $table = $samplable;
         } else {
             $table = null;
             return redirect()->back()->withErrors('No datatable instance found!');
@@ -88,7 +86,7 @@ class ProjectResultsController extends AppBaseController
             $samplesData = config('sms.export_columns');
         }
 
-        if (!$samplable instanceof SurveyResultDataTable) {
+        if (!$samplable instanceof SurveyResultsDataTable) {
             $table->setSampleType($samplable);
         }
 

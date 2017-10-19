@@ -8,9 +8,9 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Schema;
-use Yajra\Datatables\Services\DataTable;
+use Yajra\DataTables\Services\DataTable;
 
-class SurveyResultDataTable extends DataTable
+class SurveyResultsDataTable extends DataTable
 {
     protected $project;
 
@@ -27,7 +27,7 @@ class SurveyResultDataTable extends DataTable
     /**
      * Project Setter
      * @param  App\Models\Project $project [Project Models from route]
-     * @return $this ( App\DataTables\SurveyResultDataTable )
+     * @return $this ( App\DataTables\SurveyResultsDataTable )
      */
     public function forProject(Project $project)
     {
@@ -38,7 +38,7 @@ class SurveyResultDataTable extends DataTable
     /**
      * Columns Setter
      * @param array $columns [array of columns to use by datatables]
-     * @return $this ( App\DataTables\SurveyResultDataTable )
+     * @return $this ( App\DataTables\SurveyResultsDataTable )
      */
     public function setColumns($columns)
     {
@@ -49,7 +49,7 @@ class SurveyResultDataTable extends DataTable
     /**
      * Columns Setter
      * @param array $columns [array of columns to use by datatables]
-     * @return $this ( App\DataTables\SurveyResultDataTable )
+     * @return $this ( App\DataTables\SurveyResultsDataTable )
      */
     public function setBaseColumns($columns)
     {
@@ -60,7 +60,7 @@ class SurveyResultDataTable extends DataTable
     /**
      * Columns Setter
      * @param array $columns [array of columns to use by datatables]
-     * @return $this ( App\DataTables\SurveyResultDataTable )
+     * @return $this ( App\DataTables\SurveyResultsDataTable )
      */
     public function setSectionColumns($columns)
     {
@@ -71,7 +71,7 @@ class SurveyResultDataTable extends DataTable
     /**
      * Survey type setter (country|region)
      * @param string $surveyType [country|region]
-     * @return $this ( App\DataTables\SurveyResultDataTable )
+     * @return $this ( App\DataTables\SurveyResultsDataTable )
      */
     public function setSampleType($sampleType)
     {
@@ -96,7 +96,7 @@ class SurveyResultDataTable extends DataTable
         $orderBy = (isset($this->orderBy)) ? $orderTable . '.' . $this->orderBy : 'sample_datas_view.location_code';
         $order = (isset($this->order)) ? $this->order : 'asc';
 
-        $table = $this->datatables
+        $table = datatables()
             ->eloquent($this->query());
         $table->addColumn('project_id', $this->project->id);
 
@@ -372,10 +372,11 @@ class SurveyResultDataTable extends DataTable
             'class' => 'table table-striped table-bordered',
         ];
         $table = $this->builder()
+            ->minifiedAjax(['type' => 'POST'])
             ->setTableAttributes($tableAttributes)
             ->addAction(['width' => '40px', 'title' => trans('messages.action')])
-            ->columns($this->getColumns())
-            ->ajax(['type' => 'POST', 'data' => '{"_method":"GET"}']);
+            ->columns($this->getColumns());
+
 
         //$table->addAction(['width' => '80px']);
 
@@ -467,7 +468,6 @@ class SurveyResultDataTable extends DataTable
                 'buttons' => [
                     'exportPostCsv',
                     'exportPostExcel',
-                    //'exportPostPdf',
                 ],
             ];
         } else {
@@ -628,7 +628,7 @@ class SurveyResultDataTable extends DataTable
             'dom' => 'Brtip',
             'ordering' => false,
             'autoWidth' => false,
-            //'sServerMethod' => 'POST',
+            'sServerMethod' => 'POST',
             'scrollX' => true,
             'pageLength' => 20,
             'fixedColumns' => false,
