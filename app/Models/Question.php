@@ -89,6 +89,11 @@ class Question extends Model
         return $this->belongsTo(\App\Models\Project::class);
     }
 
+    public function sectionDb()
+    {
+        return $this->belongsTo(Section::class, 'section');
+    }
+
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      **/

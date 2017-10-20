@@ -51,17 +51,26 @@ class SurveyResultsController extends AppBaseController
 
     public function index(SurveyResultsDataTable $resultDataTable, $project_id, $samplable = null)
     {
+        // get project by id
         $project = $this->projectRepository->findWithoutFail($project_id);
+
+        // get application current locale
         $locale = \App::getLocale();
+
+        // get current authenticated user
+        $auth = Auth::user();
+
+        // check wheather project exists, return with error if not.
         if (empty($project)) {
             Flash::error('Project not found');
 
             return redirect(route('projects.index'));
         }
-        $auth = Auth::user();
 
+        // check project status, if not published, redirect to edit page to build form and publish.
         if ($project->status != 'published') {
             Flash::error('Project need to build form.');
+            // change redirect page based on user role
             if ($auth->role->level > 5) {
                 return redirect(route('projects.edit', [$project->id]));
             } else {
@@ -69,6 +78,7 @@ class SurveyResultsController extends AppBaseController
             }
         }
 
+        // check datatables instance and return error if not exist
         if ($resultDataTable instanceof SurveyResultsDataTable) {
             $table = $resultDataTable;
         } else {
@@ -76,8 +86,10 @@ class SurveyResultsController extends AppBaseController
             return redirect()->back()->withErrors('No datatable instance found!');
         }
 
+        // set project on datatables table
         $table->forProject($project);
 
+        // set table join method based on project type
         if ($project->type == 'sample2db') {
             $table->setJoinMethod('join');
             $samplesData = config('sms.incident_columns');
@@ -86,16 +98,18 @@ class SurveyResultsController extends AppBaseController
             $samplesData = config('sms.export_columns');
         }
 
-        if (!$samplable instanceof SurveyResultsDataTable) {
+        // set sample type if not null
+        if (null !== $samplable) {
             $table->setSampleType($samplable);
         }
 
+        // get database table base name
         $dbname = $project->dbname;
 
         $columns = [
         ];
 
-
+        // get columns to show on index page table
         if ($project->index_columns) {
             $sampleDataColumns = array_merge($samplesData, $project->index_columns);
 
@@ -231,7 +245,7 @@ class SurveyResultsController extends AppBaseController
             switch ($project->dblink) {
                 case 'voter':
                     $columns = [
-                        'location_code' => ['name' => 'location_code', 'data' => 'location_code', 'title' => 'Voter ID'],
+                        'location_code' => ['name' => 'sample_datas_view.location_code', 'data' => 'location_code', 'title' => 'Voter ID'],
                         'name' => ['name' => 'name', 'data' => 'name', 'title' => 'Name'],
                         'nrc_id' => ['name' => 'nrc_id', 'data' => 'nrc_id', 'title' => 'NRC ID'],
                     ];
@@ -239,16 +253,17 @@ class SurveyResultsController extends AppBaseController
 
                 case 'enumerator':
                     $columns = [
-                        'location_code' => ['name' => 'location_code', 'data' => 'location_code', 'title' => 'Code'],
-                        'form_id' => ['name' => 'form_id', 'data' => 'form_id', 'title' => 'Form No.'],
-                        'name' => ['name' => 'name', 'data' => 'name', 'title' => 'Name'],
-                        'nrc_id' => ['name' => 'nrc_id', 'data' => 'nrc_id', 'title' => 'NRC ID'],
+                        'location_code' => ['name' => 'sample_datas_view.location_code', 'data' => 'location_code', 'title' => 'Code'],
+                        'form_id' => ['name' => 'samples.form_id', 'data' => 'form_id', 'title' => 'Form No.'],
+                        'name' => ['name' => 'sample_datas_view.full_name', 'data' => 'full_name', 'title' => 'Name'],
+                        'nrc_id' => ['name' => 'sample_datas_view.national_id', 'data' => 'national_id', 'title' => 'NRC ID'],
                     ];
+                    break;
 
                 default:
                     $columns = [
-                        'location_code' => ['name' => 'location_code', 'data' => 'location_code', 'title' => 'Code'],
-                        'form_id' => ['name' => 'form_id', 'data' => 'form_id', 'title' => 'Form No.'],
+                        'location_code' => ['name' => 'sample_datas_view.location_code', 'data' => 'location_code', 'title' => 'Code'],
+                        'form_id' => ['name' => 'samples.form_id', 'data' => 'form_id', 'title' => 'Form No.'],
                     ];
                     break;
             }
@@ -259,16 +274,17 @@ class SurveyResultsController extends AppBaseController
         }
 
         $baseColumns = $columns;
-
+        // set index columns as base column
         $table->setBaseColumns($baseColumns);
 
         $section_columns = [];
         $wordcount = 17;
+        // loop through sections in a project
         foreach ($project->sectionsDb as $k => $section) {
-            $section_num = $k + 1;
+            $section_num = $section->sort;
             $sectionColumn = 'section' . $section_num . 'status';
             $sectionname = $section['sectionname'];
-            $sectionshort = 'R' . $section_num . '';
+            $sectionshort = 'R' . ($section_num + 1) . '';
             // if string long to show in label show as tooltip
             //if (mb_strlen($section['sectionname']) > $wordcount) {
 
@@ -276,7 +292,7 @@ class SurveyResultsController extends AppBaseController
             //}
 
             $section_columns[$sectionColumn] = [
-                'name' => $dbname . '.' . $sectionColumn,
+                'name' => $dbname .'_section'.$section_num. '.' . $sectionColumn,
                 'data' => $sectionColumn,
                 'orderable' => false,
                 'searchable' => false,
@@ -313,7 +329,7 @@ class SurveyResultsController extends AppBaseController
 
         $input_columns = [];
 
-        $project->load('samplesDb.data');
+        //$project->load('samplesDb.data');
 
         $project->load(['inputs' => function ($query) {
             $query->where('status', 'published');
@@ -323,8 +339,11 @@ class SurveyResultsController extends AppBaseController
 
         foreach($project_questions as $question) {
             $inputs = $question->surveyInputs->sortBy('sort');
+
+            $section_num = $question->sectionDb->sort;
             foreach($inputs as $input) {
                 $column = $input->inputid;
+
                 //$title = preg_replace('/s[0-9]+|ir/', '', $column);
                 //$title = strtoupper(preg_replace('/i/', '_', $title));
                 switch ($input->type) {
@@ -346,9 +365,9 @@ class SurveyResultsController extends AppBaseController
                         break;
                 }
 
-                $input_columns[$column] = ['name' => $dbname . '.' . $column, 'data' => $column, 'title' => $title, 'class' => 'result', 'orderable' => false, 'width' => '80px'];
+                $input_columns[$column] = ['name' => $dbname .'_section'.$section_num. '.' . $column, 'data' => $column, 'title' => $title, 'class' => 'result', 'orderable' => false, 'width' => '80px', 'type' => $input->type];
                 if(config('sms.double_entry')) {
-                    $input_columns[$column . '_status'] = ['name' => $dbname . '.' . $column . '_status', 'data' => $column . '_status', 'title' => $title . '_status', 'orderable' => false, 'visible' => false];
+                    $input_columns[$column . '_status'] = ['name' => $dbname .'_section'.$section_num. '_dbl' . '.' . $column, 'data' => $column . '_status', 'title' => $title . '_status', 'orderable' => false, 'visible' => false, 'type' => 'double_entry', 'origin_name' => $dbname .'_section'.$section_num. '.' . $column];
                 }
 
                 if (!$question->report) {

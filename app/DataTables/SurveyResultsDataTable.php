@@ -97,14 +97,14 @@ class SurveyResultsDataTable extends DataTable
         $order = (isset($this->order)) ? $this->order : 'asc';
 
         $table = datatables()
-            ->eloquent($this->query());
-        $table->addColumn('project_id', $this->project->id);
-
-        $table->addColumn('action', 'projects.sample_datatables_actions');
+            ->eloquent($this->query())
+            ->addColumn('project_id', $this->project->id)
+            ->addColumn('action', 'projects.sample_datatables_actions');
+        $table->escapeColumns(['action']);
 
         //$table->orderColumn($orderBy, DB::raw('LENGTH(' . $orderBy . ')') . " $1");
 
-        return $table->make(true);
+        return $table->make(true, true);
     }
 
     /**
@@ -137,6 +137,12 @@ class SurveyResultsDataTable extends DataTable
                 case 'user_id':
                     $column = 'user.name as username';
                     break;
+                case 'name':
+                    $column = 'sample_datas_view.full_name';
+                    break;
+                case 'nrc_id':
+                    $column = 'sample_datas_view.national_id';
+                    break;
                 default:
                     $column = 'sample_datas_view.' . $column;
                     break;
@@ -149,35 +155,41 @@ class SurveyResultsDataTable extends DataTable
         $project = $this->project;
         $childTable = $project->dbname;
         $sectionColumns = [];
-        foreach ($project->sectionsDb as $k => $section) {
-            $sectionColumns[] = 'section' . ($k + 1) . 'status';
-        }
+//        foreach ($project->sectionsDb as $k => $section) {
+//            $sectionColumns[] = 'section' . ($k + 1) . 'status';
+//        }
 
         $input_columns = '';
         // get all inputs for a project form by name key index
         $inputs = $this->project->inputs->pluck('type', 'inputid');
 
-        $unique_inputs = $inputs->toArray();
+        //$unique_inputs = $inputs->toArray();
 
-
-        array_walk($unique_inputs, function (&$column, $index) use ($childTable) {
-            switch ($column) {
-                case 'checkbox':
-                    $column = 'IF('. $childTable. '.'.$index.',1,0) AS '.$index;
-                    break;
-                default:
-                    $column = $childTable . '.' . $index;
-                    break;
-            }
-            if(config('sms.double_entry')) {
-                $column .= ', IF(' . $childTable . '_double.' . $index . ' = ' . $childTable . '.' . $index . ', 1, 0) AS ' . $index . '_status';
+        //dd($inputs);
+        $unique_inputs = $this->tableColumns;
+        array_walk($unique_inputs, function (&$column, $column_name) use ($childTable) {
+            $old_column = $column;
+            if(array_key_exists('type', $old_column)) {
+                switch ($old_column['type']) {
+                    case 'checkbox':
+                        $column = 'IF(' . $old_column['name'] . ',1,0) AS ' . $column_name;
+                        break;
+                    case 'double_entry':
+                        $column = 'IF(' . $old_column['name']. ' = ' . $old_column['origin_name']. ', 1, 0) AS ' . $column_name;
+                        break;
+                    default:
+                        $column = $old_column['name'];
+                        break;
+                }
+            } else {
+                $column = $old_column['name'];
             }
         });
 
         // modify column name to use in sql query TABLE.COLUMN format
-        array_walk($sectionColumns, function (&$column, $index) use ($childTable) {
-            $column = $childTable . '.' . $column;
-        });
+//        array_walk($sectionColumns, function (&$column, $index) use ($childTable) {
+//            $column = $childTable . '.' . $column;
+//        });
 
         $columnsFromResults = array_merge($sectionColumns, array_values($unique_inputs));
 
@@ -191,8 +203,10 @@ class SurveyResultsDataTable extends DataTable
 
         $selectColumnsUnique = array_unique($trimmedSelectColumns);
 
+        $all_columns_array = array_merge($selectColumnsUnique, $columnsFromResults);
+        $all_columns_unique = array_unique($all_columns_array);
 
-        $selectColumns = implode(',', $selectColumnsUnique);
+        $selectColumns = implode(',', $all_columns_unique);
         if ($table == 'enumerators') {
 
         }
@@ -201,7 +215,6 @@ class SurveyResultsDataTable extends DataTable
         $query = Sample::query();
         if ($auth->role->role_name == 'doublechecker') {
             $query->whereRaw(DB::raw('(samples.qc_user_id is null or samples.qc_user_id = ' . $auth->id . ')'));
-            $resultdbname = $childTable . '_double';
         }
         // if ($auth->role->role_name == 'entryclerk') {
         //     $query->whereRaw(DB::raw('(samples.user_id is null or samples.user_id = ' . $auth->id . ')'));
@@ -216,7 +229,7 @@ class SurveyResultsDataTable extends DataTable
             $join->on('qc_user.id', 'samples.qc_user_id');
         });
         if ($this->project->status != 'new') {
-            $query->select(DB::raw($selectColumns), DB::raw($input_columns));
+            $query->select(DB::raw($selectColumns));
             // join with samplable database (voters, enumerators)
             $query->leftjoin('sample_datas_view', function ($join) use ($project) {
                 $join->on('samples.sample_data_id', 'sample_datas_view.id')->where('samples.project_id', $project->id);
@@ -224,17 +237,28 @@ class SurveyResultsDataTable extends DataTable
 
             // join with result database
             if ($auth->role->role_name == 'doublechecker') {
-                $query->join($childTable, function ($join) use ($childTable) {
-                    $join->on('samples.id', '=', $childTable . '.sample_id');
-                });
+                foreach ($project->sectionsDb as $k => $section) {
+                    $section_table = $childTable.'_section'.$section->sort;
+                    $query->join($section_table, function ($join) use ($section_table) {
+                        $join->on('samples.id', '=', $section_table . '.sample_id');
+                    });
+                }
             } else {
-                $query->{$joinMethod}($childTable, function ($join) use ($childTable) {
-                    $join->on('samples.id', '=', $childTable . '.sample_id');
-                });
+                foreach ($project->sectionsDb as $k => $section) {
+                    $section_table = $childTable.'_section'.$section->sort;
+                    $query->{$joinMethod}($section_table, function ($join) use ($section_table) {
+                        $join->on('samples.id', '=', $section_table . '.sample_id');
+                    });
+                }
             }
-            $query->leftjoin($childTable . '_double', function ($join) use ($childTable) {
-                $join->on('samples.id', '=', $childTable . '_double.sample_id');
-            });
+            if(config('sms.double_entry')) {
+                foreach ($project->sectionsDb as $k => $section) {
+                    $section_table = $childTable.'_section'.$section->sort. '_dbl';
+                    $query->leftjoin($section_table, function ($join) use ($section_table) {
+                        $join->on('samples.id', '=', $section_table . '.sample_id');
+                    });
+                }
+            }
         }
 
         $filterColumns = Request::get('columns', []);
@@ -372,15 +396,20 @@ class SurveyResultsDataTable extends DataTable
             'class' => 'table table-striped table-bordered',
         ];
         $table = $this->builder()
-            ->minifiedAjax(['type' => 'POST'])
             ->setTableAttributes($tableAttributes)
             ->addAction(['width' => '40px', 'title' => trans('messages.action')])
-            ->columns($this->getColumns());
+            ->columns($this->getColumns())
+            ->ajax(['type' => 'POST',
+                'headers' => [
+                    'X-CSRF-TOKEN' => csrf_token(),
+                ],
+                'data' => '{"_method":"GET"}'])
+            ->parameters($this->getBuilderParameters());
 
 
         //$table->addAction(['width' => '80px']);
 
-        return $table->parameters($this->getBuilderParameters());
+        return $table;
     }
 
     /**
@@ -391,7 +420,11 @@ class SurveyResultsDataTable extends DataTable
     protected function getColumns()
     {
         if (!empty($this->tableColumns) && is_array($this->tableColumns)) {
-            return $this->tableColumns;
+            //dd($this->tableColumns);
+            $action = ['action' => ['title' => '', 'orderable' => false, 'searchable' => false, 'width' => '5px', 'order' => [[1, 'asc']]]];
+            $columns = array_merge($action, $this->tableColumns);
+
+            return $columns;
         } else {
             return [
                 'inputid' => ['name' => 'inputid', 'data' => 'inputid', 'title' => 'No.'],
@@ -571,24 +604,26 @@ class SurveyResultsDataTable extends DataTable
 
         //$textColumns = ['location_code', 'spotchecker', 'spotchecker_code', 'name', 'nrc_id', 'form_id', 'mobile'];
         $textColumns = ['location_code', 'user_id', 'full_name', 'phone_1'];
-        $textColumns = array_intersect_key($this->tableColumns, array_flip($textColumns));
+        $textColumns = array_intersect($columnName, $textColumns);
 
-        $columnName = array_flip($columnName);
+
+        $flippedColumnName = array_flip($columnName);
+
         $textColsArr = [];
         foreach ($textColumns as $key => $value) {
-            $textColsArr[] = $columnName[$key] + 1;
+            $textColsArr[] = $flippedColumnName[$value] + 1;
         }
 
         $selectColumns = ['level5', 'level4', 'level3', 'level2', 'level1', 'call_primary', 'sms_time', 'incident_center','observer_field'];
 
-        $selectColumns = array_intersect_key($this->tableColumns, array_flip($selectColumns));
+        $selectColumns = array_intersect_key($columnName, $selectColumns);
 
         $locationColumns = [];
 
         $selectColsArr = [];
         foreach ($selectColumns as $key => $value) {
-            $selectColsArr[] = $columnName[$key] + 1;
-            $locationColumns[$key] = $columnName[$key] + 1;
+            $selectColsArr[] = $flippedColumnName[$value] + 1;
+            $locationColumns[$value] = $flippedColumnName[$value] + 1;
         }
 
         $select_js = "";
@@ -615,9 +650,10 @@ class SurveyResultsDataTable extends DataTable
         }
 
         $statusColumns = array_intersect_key($this->tableColumns, $this->tableSectionColumns);
+
         $statusColsArr = [];
         foreach ($statusColumns as $key => $value) {
-            $statusColsArr[] = $columnName[$key] + 1;
+            $statusColsArr[] = $flippedColumnName[$key] + 1;
         }
 
         $textCols = implode(',', $textColsArr);
@@ -627,8 +663,8 @@ class SurveyResultsDataTable extends DataTable
         return [
             'dom' => 'Brtip',
             'ordering' => false,
-            'autoWidth' => false,
-            'sServerMethod' => 'POST',
+            'autoWidth' => true,
+            //'sServerMethod' => 'POST',
             'scrollX' => true,
             'pageLength' => 20,
             'fixedColumns' => false,

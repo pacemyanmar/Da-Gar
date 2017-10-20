@@ -471,18 +471,21 @@ class ProjectController extends AppBaseController
 
             $fields = $section->inputs->unique('inputid');
 
-            $section_code = 'section_'.$section->sort;
+            $section_code = 'section'.$section->sort;
 
-            $section_dbname = $project->dbname.$section_code;
+            $section_dbname = $project->dbname.'_'.$section_code;
 
             if (Schema::hasTable($section_dbname)) {
                 $this->updateTable($project,  'main', $fields, $section);
             } else {
                 $this->createTable($project,  'main', $fields, $section);
             }
-            $sectionFields .= implode(',', $fields);
-
-            $joinQuery .= $section_dbname;
+            // check if table has already created
+            if (Schema::hasTable($section_dbname . '_dbl')) {
+                $this->updateTable($project,  'double', $fields, $section);
+            } else {
+                $this->createTable($project,  'double', $fields, $section);
+            }
         }
 
         $project_fields = $project->inputs->unique('inputid');
@@ -497,12 +500,7 @@ class ProjectController extends AppBaseController
 
         // }
 
-        // check if table has already created
-        if (Schema::hasTable($project->dbname . '_double')) {
-            $this->updateTable($project,  'double', $project_fields);
-        } else {
-            $this->createTable($project,  'double', $project_fields);
-        }
+
 
         // check if table has already created
         if (Schema::hasTable($project->dbname . '_rawlog')) {
@@ -532,14 +530,17 @@ class ProjectController extends AppBaseController
             case 'main':
                 $dbname = $db_name.'_'.$section;
                 break;
+            case 'double':
+                $dbname = $db_name.'_'.$section.'_dbl';
+                break;
             default:
                 $dbname = $db_name.'_'.$type;
                 break;
         }
-        if($type != 'main') {
+        if($type != 'main' && $type != 'double') {
 
             foreach ($project->sectionsDb as $key => $section) {
-                $section_num = $key + 1;
+                $section_num = $section->sort;
                 $section_name = 'section' . $section_num . 'status';
                 if (!Schema::hasColumn($dbname, $section_name)) {
                     Schema::table($dbname, function ($table) use ($section_name) {
@@ -661,6 +662,9 @@ class ProjectController extends AppBaseController
             case 'main':
                 $dbname = $db_name.'_section'.$section->sort;
                 break;
+            case 'double':
+                $dbname = $db_name.'_section'.$section->sort.'_dbl';
+                break;
             default:
                 $dbname = $db_name.'_'.$type;
                 break;
@@ -681,7 +685,7 @@ class ProjectController extends AppBaseController
             }
             $table->timestamps();
 
-            if ($type != 'main') {
+            if ($type != 'main' && $type != 'double') {
                 // get unique collection of inputs
                 foreach ($project->sectionsDb as $key => $section) {
                     $section_num = $key + 1;

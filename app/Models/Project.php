@@ -72,7 +72,7 @@ class Project extends Model
      */
     public function inputs()
     {
-        return $this->hasManyThrough(SurveyInput::class, Question::class);
+        return $this->hasManyThrough(SurveyInput::class, Question::class, 'project_id', 'question_id');
     }
 
     public function samplesDb()
