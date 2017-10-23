@@ -75,7 +75,7 @@ class Project extends Model
         return $this->hasManyThrough(SurveyInput::class, Question::class, 'project_id', 'question_id');
     }
 
-    public function samplesDb()
+    public function samplesList()
     {
         return $this->hasMany(Sample::class);
     }

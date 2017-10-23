@@ -329,7 +329,7 @@ class SurveyResultsController extends AppBaseController
 
         $input_columns = [];
 
-        //$project->load('samplesDb.data');
+        //$project->load('samplesList.data');
 
         $project->load(['inputs' => function ($query) {
             $query->where('status', 'published');
@@ -477,7 +477,7 @@ class SurveyResultsController extends AppBaseController
             return redirect(route('projects.index'));
         }
         $dbname = $project->dbname;
-        
+
         $result = $sample->resultWithTable($dbname)->first();
 
         $project->load(['questions' => function ($query) {
