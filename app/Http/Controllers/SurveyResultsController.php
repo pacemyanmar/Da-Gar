@@ -280,7 +280,7 @@ class SurveyResultsController extends AppBaseController
         $section_columns = [];
         $wordcount = 17;
         // loop through sections in a project
-        foreach ($project->sectionsDb as $k => $section) {
+        foreach ($project->sections as $k => $section) {
             $section_num = $section->sort;
             $sectionColumn = 'section' . $section_num . 'status';
             $sectionname = $section['sectionname'];

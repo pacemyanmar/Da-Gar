@@ -237,14 +237,14 @@ class SurveyResultsDataTable extends DataTable
 
             // join with result database
             if ($auth->role->role_name == 'doublechecker') {
-                foreach ($project->sectionsDb as $k => $section) {
+                foreach ($project->sections as $k => $section) {
                     $section_table = $childTable.'_section'.$section->sort;
                     $query->join($section_table, function ($join) use ($section_table) {
                         $join->on('samples.id', '=', $section_table . '.sample_id');
                     });
                 }
             } else {
-                foreach ($project->sectionsDb as $k => $section) {
+                foreach ($project->sections as $k => $section) {
                     $section_table = $childTable.'_section'.$section->sort;
                     $query->{$joinMethod}($section_table, function ($join) use ($section_table) {
                         $join->on('samples.id', '=', $section_table . '.sample_id');
@@ -252,7 +252,7 @@ class SurveyResultsDataTable extends DataTable
                 }
             }
             if(config('sms.double_entry')) {
-                foreach ($project->sectionsDb as $k => $section) {
+                foreach ($project->sections as $k => $section) {
                     $section_table = $childTable.'_section'.$section->sort. '_dbl';
                     $query->leftjoin($section_table, function ($join) use ($section_table) {
                         $join->on('samples.id', '=', $section_table . '.sample_id');
