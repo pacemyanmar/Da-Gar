@@ -61,10 +61,10 @@ if(isset($sample)) {
 			<p>{!! $party !!}</p>
 		</td>
 		<td>
-			{!! Form::number("result[ballot][".trim($party)."][station]", (isset($results))?Kanaung\Facades\Converter::convert($results->{trim($party).'_station'},'unicode','zawgyi'):null, ['class' => 'form-control input-sm party-station']) !!}
+			{!! Form::number("result[ballot][".trim($party)."][station]", (isset($results))?Kanaung\Facades\Converter::convert($results['section'.$section->sort]->{trim($party).'_station'},'unicode','zawgyi'):null, ['class' => 'form-control input-sm party-station']) !!}
 		</td>
 		<td>
-			{!! Form::number("result[ballot][".trim($party)."][advanced]", (isset($results))?Kanaung\Facades\Converter::convert($results->{trim($party).'_advanced'},'unicode','zawgyi'):null, ['class' => 'form-control input-sm party-advanced']) !!}
+			{!! Form::number("result[ballot][".trim($party)."][advanced]", (isset($results))?Kanaung\Facades\Converter::convert($results['section'.$section->sort]->{trim($party).'_advanced'},'unicode','zawgyi'):null, ['class' => 'form-control input-sm party-advanced']) !!}
 		</td>
 		<td>
 
@@ -90,7 +90,7 @@ if(isset($sample)) {
 	<p>{!! trans('ballots.ballots_issued_on_e_day') !!}</p>
 </td>
 <td class="col-sm-5">
-	{!! Form::number("result[ballot_remark][rem1]", (isset($results))?Kanaung\Facades\Converter::convert($results->rem1,'unicode','zawgyi'):null, ['class' => 'form-control input-sm remarks', 'id' => 'rem1']) !!}
+	{!! Form::number("result[ballot_remark][rem1]", (isset($results))?Kanaung\Facades\Converter::convert($results['section'.$section->sort]->rem1,'unicode','zawgyi'):null, ['class' => 'form-control input-sm remarks', 'id' => 'rem1']) !!}
 </td>
 <tr>
 <tr>
@@ -98,7 +98,7 @@ if(isset($sample)) {
 	<p>{!! trans('ballots.ballots_received_for_advanced_voting') !!}</p>
 </td>
 <td class="col-sm-5">
-	{!! Form::number("result[ballot_remark][rem2]", (isset($results))?Kanaung\Facades\Converter::convert($results->rem2,'unicode','zawgyi'):null, ['class' => 'form-control input-sm remarks', 'id' => 'rem2']) !!}
+	{!! Form::number("result[ballot_remark][rem2]", (isset($results))?Kanaung\Facades\Converter::convert($results['section'.$section->sort]->rem2,'unicode','zawgyi'):null, ['class' => 'form-control input-sm remarks', 'id' => 'rem2']) !!}
 </td>
 <tr>
 <tr>
@@ -106,7 +106,7 @@ if(isset($sample)) {
 	<p>{!! trans('ballots.valid') !!}</p>
 </td>
 <td class="col-sm-5">
-	{!! Form::number("result[ballot_remark][rem3]", (isset($results))?Kanaung\Facades\Converter::convert($results->rem3,'unicode','zawgyi'):null, ['class' => 'form-control input-sm remarks', 'id' => 'rem3']) !!}
+	{!! Form::number("result[ballot_remark][rem3]", (isset($results))?Kanaung\Facades\Converter::convert($results['section'.$section->sort]->rem3,'unicode','zawgyi'):null, ['class' => 'form-control input-sm remarks', 'id' => 'rem3']) !!}
 </td>
 <tr>
 <tr>
@@ -114,7 +114,7 @@ if(isset($sample)) {
 	<p>{!! trans('ballots.invalid') !!}</p>
 </td>
 <td class="col-sm-5">
-	{!! Form::number("result[ballot_remark][rem4]", (isset($results))?Kanaung\Facades\Converter::convert($results->rem4,'unicode','zawgyi'):null, ['class' => 'form-control input-sm remarks', 'id' => 'rem4']) !!}
+	{!! Form::number("result[ballot_remark][rem4]", (isset($results))?Kanaung\Facades\Converter::convert($results['section'.$section->sort]->rem4,'unicode','zawgyi'):null, ['class' => 'form-control input-sm remarks', 'id' => 'rem4']) !!}
 </td>
 <tr>
 <tr>
@@ -122,7 +122,7 @@ if(isset($sample)) {
 	<p>{!! trans('ballots.missing') !!}</p>
 </td>
 <td class="col-sm-5">
-	{!! Form::number("result[ballot_remark][rem5]", (isset($results))?Kanaung\Facades\Converter::convert($results->rem5,'unicode','zawgyi'):null, ['class' => 'form-control input-sm remarks', 'id' => 'rem5']) !!}
+	{!! Form::number("result[ballot_remark][rem5]", (isset($results))?Kanaung\Facades\Converter::convert($results['section'.$section->sort]->rem5,'unicode','zawgyi'):null, ['class' => 'form-control input-sm remarks', 'id' => 'rem5']) !!}
 </td>
 <tr>
 

@@ -1,5 +1,5 @@
 <div class="form-group">
-   		{!! Form::radio("result[".$element->inputid."]", $element->value, (isset($double_results) && $element->value == $double_results->{$element->inputid}), ['data-class'=>$element->inputid,'data-origin'=>(isset($results) && $element->value == $results->{$element->inputid}),'id' => $element->id,'class' => 'magic-radio '.$element->className.' '.$sectionClass, 'autocomplete' => 'off', 'data-selected' => (isset($double_results) && $element->value == $double_results->{$element->inputid})]) !!}
+   		{!! Form::radio("result[".$element->inputid."]", $element->value, (isset($double_results) && $element->value == $double_results->{$element->inputid}), ['data-class'=>$element->inputid,'data-origin'=>(isset($results) && $element->value == $results['section'.$section->sort]->{$element->inputid}),'id' => $element->id,'class' => 'magic-radio '.$element->className.' '.$sectionClass, 'autocomplete' => 'off', 'data-selected' => (isset($double_results) && $element->value == $double_results->{$element->inputid})]) !!}
    	<label class="normal-text" for="{!! $element->id !!}">
    		{!! $element->label !!}
    			@if($element->value != '') <span class="label label-primary badge">{!! $element->value !!}</span> @endif
@@ -35,7 +35,7 @@
 		'autocomplete' => 'off'
 		];
     @endphp
-    	{!! Form::text("result[".$element->inputid."]", (isset($results))?Kanaung\Facades\Converter::convert($results->{$element->inputid},'unicode','zawgyi'):null, $options) !!}
+    	{!! Form::text("result[".$element->inputid."]", (isset($results))?Kanaung\Facades\Converter::convert($results['section'.$section->sort]->{$element->inputid},'unicode','zawgyi'):null, $options) !!}
     @endif
 </div>
 @if(!empty($element->skip) && !isset($editing))

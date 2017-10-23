@@ -1,11 +1,11 @@
 <div class="form-group">
-   		{!! Form::radio("result[".$element->inputid."]", $element->value, (isset($results) && $element->value == $results->{$element->inputid}), ['id' => $element->id,'class' => 'magic-radio '.$element->className.' '.$sectionClass, 'autocomplete' => 'off', 'data-selected' => (isset($results) && $element->value == $results->{$element->inputid})]) !!}
+   		{!! Form::radio("result[".$element->inputid."]", $element->value, (isset($results) && !empty($results['section'.$section->sort]) && $element->value == $results['section'.$section->sort]->{$element->inputid}), ['id' => $element->id,'class' => 'magic-radio '.$element->className.' '.$sectionClass, 'autocomplete' => 'off', 'data-selected' => (isset($results) && !empty($results['section'.$section->sort]) && $element->value == $results['section'.$section->sort]->{$element->inputid})]) !!}
    	<label class="normal-text" for="{!! $element->id !!}">
    		{!! $element->label !!}
    			@if($element->value != '') <span class="label label-primary badge">{!! $element->value !!}</span> @endif
             @if($element->status != 'published') <span class="label label-warning badge">{!! $element->status !!}</span> @endif
         @if($element->other)
-		{!! Form::text("result[".$element->inputid."]", (isset($results))?$results->{$element->inputid}:null, ['class' => $element->className.' form-control input-sm zawgyi', 'autocomplete' => 'off', 'id' => $element->id.'other', 'style' => 'width:80%']) !!}
+		{!! Form::text("result[".$element->inputid."]", (isset($results) && !empty($results['section'.$section->sort]))?$results['section'.$section->sort]->{$element->inputid}:null, ['class' => $element->className.' form-control input-sm zawgyi', 'autocomplete' => 'off', 'id' => $element->id.'other', 'style' => 'width:80%']) !!}
 			@push('document-ready')
 				$("input[name='result[{!! $element->inputid !!}]']").change(function(e){
 					if($("input[name='result[{!! $element->inputid !!}]']:checked").val() == {!! $element->value !!}) {
@@ -34,7 +34,7 @@
 		'autocomplete' => 'off'
 		];
     @endphp
-    	{!! Form::text("result[".$element->inputid."]", (isset($results))?Kanaung\Facades\Converter::convert($results->{$element->inputid},'unicode','zawgyi'):null, $options) !!}
+    	{!! Form::text("result[".$element->inputid."]", (isset($results) && !empty($results['section'.$section->sort]))?Kanaung\Facades\Converter::convert($results['section'.$section->sort]->{$element->inputid},'unicode','zawgyi'):null, $options) !!}
     @endif
 </div>
 @if(!empty($element->skip) && !isset($editing))

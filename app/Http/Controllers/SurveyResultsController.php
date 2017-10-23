@@ -476,9 +476,25 @@ class SurveyResultsController extends AppBaseController
             Flash::error("No sample database found.");
             return redirect(route('projects.index'));
         }
-        $dbname = $project->dbname;
 
-        $result = $sample->resultWithTable($dbname)->first();
+        $view = view('projects.survey.create')
+            ->with('project', $project)
+            ->with('sample', $sample);
+
+        $dbname = $project->dbname;
+        $results = [];
+        $double_results = [];
+
+        foreach ($project->sections as $k => $section) {
+             $section_table = $dbname.'_section'.$section->sort;
+             $results['section'.$section->sort] = $sample->resultWithTable($section_table)->first();
+
+            if ($auth->role->role_name == 'doublechecker') {
+                $section_dbl_table = $dbname.'_section'.$section->sort . '_dbl';
+                $double_results['section'.$section->sort] = $sample->resultWithTable($section_dbl_table)->first();
+            }
+        }
+
 
         $project->load(['questions' => function ($query) {
             $query->where('qstatus', 'published');
@@ -489,19 +505,15 @@ class SurveyResultsController extends AppBaseController
                 ->orderBy('sort', 'ASC');
         }]);
 
-        $view = view('projects.survey.create')
-            ->with('project', $project)
-            ->with('sample', $sample);
 
-        if (!empty($result)) {
-            $view->with('results', $result);
+
+        if (!empty($results)) {
+            $view->with('results', $results);
         }
-
         if ($auth->role->role_name == 'doublechecker') {
-            $dbname_double = $project->dbname . '_double';
-            $double_results = $sample->resultWithTable($dbname_double)->first();
             $view->with('double_results', $double_results);
         }
+
 
         if (!empty($form_id) && $project->copies > 1) {
             $view->with('form', $form_id);

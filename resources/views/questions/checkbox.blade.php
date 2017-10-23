@@ -1,7 +1,7 @@
 <div class="form-group">
 
     @if($element->other)
-    {!! Form::checkbox("result[".$element->inputid."]", $element->value, (isset($results) && $results->{$element->inputid}), ['class' => 'magic-checkbox '.$element->className.' '.$sectionClass, 'id' => $element->id, 'autocomplete' => 'off']) !!}
+    {!! Form::checkbox("result[".$element->inputid."]", $element->value, (isset($results) && !empty($results['section'.$section->sort]) && $results['section'.$section->sort]->{$element->inputid}), ['class' => 'magic-checkbox '.$element->className.' '.$sectionClass, 'id' => $element->id, 'autocomplete' => 'off']) !!}
 	<label class="normal-text" for="{!! $element->id !!}">{!! $element->label !!} @if($element->value != '') <span class="label label-primary badge">{!! $element->value !!}</span> @endif
 	@if($element->status != 'published') <span class="label label-warning badge">{!! $element->status !!}</span> @endif
     </label>
@@ -14,8 +14,9 @@
 		'autocomplete' => 'off',
 		'disabled' => true
 		];
+
     @endphp
-    	{!! Form::text("result[".$element->inputid."]", (isset($results))?Kanaung\Facades\Converter::convert($results->{$element->inputid},'unicode','zawgyi'):null, $options) !!}
+    	{!! Form::text("result[".$element->inputid."]", (isset($results) && !empty($results['section'.$section->sort]) )?Kanaung\Facades\Converter::convert($results['section'.$section->sort]->{$element->inputid},'unicode','zawgyi'):null, $options) !!}
     	@push('document-ready')
     		if($('#{{ $element->id }}').is(':checked')){
     				$('#{{ $element->id.'text' }}').prop('disabled', false);
@@ -29,7 +30,7 @@
     		});
     	@endpush
     @else
-    {!! Form::checkbox("result[".$element->inputid."]", $element->value, (isset($results) && $element->value == $results->{$element->inputid}), ['class' => 'magic-checkbox '.$element->className.' '.$sectionClass, 'id' => $element->id, 'autocomplete' => 'off']) !!}
+    {!! Form::checkbox("result[".$element->inputid."]", $element->value, (isset($results) && !empty($results['section'.$section->sort]) && $element->value == $results['section'.$section->sort]->{$element->inputid}), ['class' => 'magic-checkbox '.$element->className.' '.$sectionClass, 'id' => $element->id, 'autocomplete' => 'off']) !!}
 	<label class="normal-text" for="{!! $element->id !!}">{!! $element->label !!} @if($element->value != '') <span class="label label-primary badge">{!! $element->value !!}</span> @endif
 	@if($element->status != 'published') <span class="label label-warning badge">{!! $element->status !!}</span> @endif
     </label>

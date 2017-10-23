@@ -37,10 +37,10 @@ window.url="{!! route('projects.surveys.save', ['project' => $project->id, 'samp
         @php
             //section as css class name
             $sectionClass = str_slug($section->sectionname, $separator = "-");
-            $section_num = $section_key + 1;
+            $section_num = $section->sort + 1;
 
-            if( isset($results) ) {
-                $section_status = $results->{'section'.$section_num.'status'};
+            if( isset($results) && !empty($results['section'.$section->sort]) ) {
+                $section_status = $results['section'.$section->sort]->{'section'.$section_num.'status'};
                 if( $section_status == 0) {
                     $section_status = 'danger';
                     $icon = 'remove';
@@ -59,6 +59,7 @@ window.url="{!! route('projects.surveys.save', ['project' => $project->id, 'samp
                 }
             } else {
                 $section_status = 'primary';
+                $icon = 'question';
             }
 
         @endphp

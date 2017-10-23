@@ -43,7 +43,7 @@ $locale = \App::getLocale();
 		@endphp
 		{!! Form::input($radio->type,"result[".$radio->inputid."]", (isset($double_results))?Kanaung\Facades\Converter::convert($double_results->{$radio->inputid},'unicode','zawgyi'):null, $options) !!}
 		@else
-		{!! Form::radio("result[".$radio->inputid."]", $radio->value, (isset($double_results) && $radio->value == $double_results->{$radio->inputid}), ['data-origin' =>(isset($results) && $radio->value == $results->{$radio->inputid}), 'id' => $radio->id,'class' => ' magic-radio '.$radio->className.' '.$sectionClass, 'autocomplete' => 'off', 'data-selected' => (isset($double_results) && $radio->value == $double_results->{$radio->inputid})]) !!}
+		{!! Form::radio("result[".$radio->inputid."]", $radio->value, (isset($double_results) && $radio->value == $double_results->{$radio->inputid}), ['data-origin' =>(isset($results) && $radio->value == $results['section'.$section->sort]->{$radio->inputid}), 'id' => $radio->id,'class' => ' magic-radio '.$radio->className.' '.$sectionClass, 'autocomplete' => 'off', 'data-selected' => (isset($double_results) && $radio->value == $double_results->{$radio->inputid})]) !!}
 		@endif
 		<label class="normal-text" for='{{ $radio->id }}'>
 		@if($radio->value != '') <span class="label label-primary badge">{!! $radio->value !!}</span> @endif

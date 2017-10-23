@@ -39,7 +39,7 @@ if($element->type == 'number') {
             @endif
             @if($element->status != 'published') <span class="label label-warning badge">{!! $element->status !!}</span> @endif
     		</span>
-    		{!! Form::input($element->type,"result[".$element->inputid."]", (isset($results))?Kanaung\Facades\Converter::convert($results->{$element->inputid},'unicode','zawgyi'):null, $options) !!}
+    		{!! Form::input($element->type,"result[".$element->inputid."]", (isset($results) && !empty($results['section'.$section->sort]))?Kanaung\Facades\Converter::convert($results['section'.$section->sort]->{$element->inputid},'unicode','zawgyi'):null, $options) !!}
     	</div>
 
     </div>

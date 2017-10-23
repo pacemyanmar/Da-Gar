@@ -46,18 +46,20 @@ $ans_in_col = round($anscount / $col_group_count);
 @elseif($question->layout == 'form18')
 	@include('questions.'.$prefix.'form18-table')
 @else
+
 	@for($i=0,$j=0;$i<$col_group_count; $i++)
 		@if($j == ($i * $ans_in_col))
 			<div class="{!! $css_class[$col_group_count] !!} @if($i>0) {{ ' padleft' }}@endif">
 		@endif
 
 		@foreach ($surveyInputs as $k => $element)
+
 			@if($k >= ($i * $ans_in_col) && $k < (($i + 1) * $ans_in_col))
 				@php
-					$origin = (isset($results) && $element->value == $results->{$element->inputid});
-					$double = (isset($double_results) && $element->value == $double_results->{$element->inputid});
-					$origin_text = (isset($results))?$results->{$element->inputid}:null;
-					$double_text = (isset($double_results))?$double_results->{$element->inputid}:null;
+					$origin = (isset($results) && !empty($results['section'.$section->sort]) && $element->value == $results['section'.$section->sort]->{$element->inputid});
+					$double = (isset($double_results) && !empty($double_results['section'.$section->sort]) && $element->value == $double_results['section'.$section->sort]->{$element->inputid});
+					$origin_text = (isset($results) && !empty($results['section'.$section->sort]))?$results['section'.$section->sort]->{$element->inputid}:null;
+					$double_text = (isset($double_results) && !empty($double_results['section'.$section->sort]) )?$double_results['section'.$section->sort]->{$element->inputid}:null;
 				@endphp
 				@if(!isset($element->value))
 					@php
