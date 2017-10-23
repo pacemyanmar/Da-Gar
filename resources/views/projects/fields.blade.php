@@ -213,8 +213,8 @@
         </thead>
         <tbody id="container" class="no-border-x no-border-y ui-sortable">
         @if(isset($project))
-            @if(!$project->sectionsDb->isEmpty())
-            @foreach($project->sectionsDb as $section_key => $section)
+            @if(!$project->sections->isEmpty())
+            @foreach($project->sections as $section_key => $section)
             <tr class="item" style="display: table-row;">
                 {!! Form::hidden("sections[][sectionid]", isset($section->id)?$section->id:null) !!}
                 <td style="vertical-align: middle">

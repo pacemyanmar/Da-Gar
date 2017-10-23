@@ -80,7 +80,7 @@ class Project extends Model
         return $this->hasMany(Sample::class);
     }
 
-    public function sectionsDb()
+    public function sections()
     {
         return $this->hasMany(Section::class);
     }

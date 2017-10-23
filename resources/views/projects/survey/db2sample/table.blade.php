@@ -17,7 +17,7 @@
 <th rowspan="2" width="120px">State</th>
 <th rowspan="2" width="25px">Total Forms</th>
 <th rowspan="2" width="25px">Total</th>
-@foreach($project->sectionsDb as $key => $section)
+@foreach($project->sections as $key => $section)
 @php
 	$skey = $key + 1;
 	if($filters['section_num'] && $filters['section_num'] != $skey) {
@@ -29,7 +29,7 @@
 @endforeach
 </tr>
 <tr>
-@foreach($project->sectionsDb as $key => $section)
+@foreach($project->sections as $key => $section)
 @php
 	$skey = $key + 1;
 	if($filters['section_num'] && $filters['section_num'] != $skey) {
@@ -49,7 +49,7 @@
     <td>State</td>
     <td>Total Forms</td>
     <td>Total</td>
-    @foreach($project->sectionsDb as $key => $section)
+    @foreach($project->sections as $key => $section)
     @php
 
         $skey = $key + 1;

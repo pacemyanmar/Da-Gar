@@ -67,8 +67,8 @@
                 </div>
             </div>
 
-            @if(!$project->sectionsDb->isEmpty())
-                @foreach($project->sectionsDb as $section_key => $section)
+            @if(!$project->sections->isEmpty())
+                @foreach($project->sections as $section_key => $section)
                     @php
                         //section as css class name
                         $sectionClass = str_slug($section['sectionname'], $separator = "-");

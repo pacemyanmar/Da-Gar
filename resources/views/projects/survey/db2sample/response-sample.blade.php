@@ -29,7 +29,7 @@
         <div class="box box-default">
             <div class="box-body">
                <a href="{{ url()->current() }}" class="btn btn-default">All</a>
-              @foreach($project->sectionsDb as $key => $section)
+              @foreach($project->sections as $key => $section)
                 <a href="{{ url()->current() }}/?section={{ $key + 1 }}" class="btn btn-default">{{$section->sectionname}}</a>
               @endforeach
             </div>

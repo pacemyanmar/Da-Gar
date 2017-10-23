@@ -33,7 +33,7 @@ window.url="{!! route('projects.surveys.save', ['project' => $project->id, 'samp
         @include('projects.survey.info_table')
 
         <div id="survey-form">
-        @foreach($project->sectionsDb as $section_key => $section)
+        @foreach($project->sections as $section_key => $section)
         @php
             //section as css class name
             $sectionClass = str_slug($section->sectionname, $separator = "-");

@@ -15,7 +15,7 @@
         <div class="clearfix"></div>
         @if(isset($project))
             <a href="{!! route('projects.smslog', $project->id) !!}" class="btn btn-primary navbar-btn @if(empty(request('section', $default = null))) active @endif">All</a>
-            @foreach($project->sectionsDb as $key => $section)
+            @foreach($project->sections as $key => $section)
                 @if(!$section->disablesms)
                 <a href="{!! route('projects.smslog', $project->id) !!}/?section={!! $key + 1 !!}" class="btn btn-primary navbar-btn @if(request('section', $default = null) == ($key + 1)) active @endif">SMS {!! $key + 1 !!}</a>
                 @endif
