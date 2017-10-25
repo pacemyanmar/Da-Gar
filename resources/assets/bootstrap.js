@@ -6,12 +6,9 @@ window._ = require('lodash');
  * for JavaScript based Bootstrap features such as modals and tabs. This
  * code may be modified to fit the specific needs of your application.
  */
-import $ from 'jquery';
-import hyperform from 'hyperform';
+
 try {
-    window.jQuery = $;
-    window.$ = $;
-    global.jQuery = $;
+    window.$ = window.jQuery = require('jquery');
 
     require('bootstrap-sass');
 
@@ -31,16 +28,15 @@ try {
     require('datatables.net-buttons');
     require('datatables.net-buttons-bs');
     require( 'datatables.net-buttons/js/buttons.colVis' );
-    require( './plugins/buttons.server-side');
     require('./buttons.server-side-post');
-
 
     window.moment = require('moment');
 
+    require('jquery-ui');
+    require('jquery-ui/ui/widgets/datepicker');
     require('select2');
     require('select2/dist/js/i18n/en');
-    require('gasparesganga-jquery-loading-overlay');
-    window.hyperform = hyperform;
+    require('hyperform');
     require('admin-lte');
 
 } catch (e) {}

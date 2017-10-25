@@ -6,7 +6,35 @@
 @import "variables";
 
 // Bootstrap
-@import "node_modules/bootstrap-sass/assets/stylesheets/bootstrap";
+@import "~bootstrap-sass/assets/stylesheets/bootstrap";
+@import "~datatables.net-bs/css/dataTables.bootstrap";
+
+$fa-font-path: "~font-awesome/fonts" !default;
+@import "~font-awesome/css/font-awesome.css";
+
+@import '~magic-check/sass/magic-check.scss';
+
+@import "~select2/dist/css/select2.min.css";
+
+@import "~hyperform/css/hyperform.css";
+
+@import "~admin-lte/dist/css/AdminLTE.min.css";
+
+@import "~admin-lte/dist/css/skins/_all-skins.css";
+
+@import "~datatables.net-bs/css/dataTables.bootstrap.css";
+
+@import "~datatables.net-buttons-bs/css/buttons.bootstrap.css";
+
+@import "~jquery-datetimepicker/jquery.datetimepicker.css";
+
+.buttons-container {
+  margin-bottom: 15px;
+  & .dt-buttons {
+    float: right;
+  }
+}
+
 /*
  * Noto Sans Myanmar (Myanmar) http://www.google.com/fonts/earlyaccess
  */
@@ -14,21 +42,21 @@
   font-family: 'Noto Sans Myanmar';
   font-style: normal;
   font-weight: 400;
-  src: url(../fonts/NotoSansMyanmar-Regular.eot);
-  src: url(../fonts/NotoSansMyanmar-Regular.eot?#iefix) format('embedded-opentype'),
-       url(../fonts/NotoSansMyanmar-Regular.woff2) format('woff2'),
-       url(../fonts/NotoSansMyanmar-Regular.woff) format('woff'),
-       url(../fonts/NotoSansMyanmar-Regular.ttf) format('truetype');
+  src: url(../fonts/NotoSansMyanmar/NotoSansMyanmar-Regular.eot);
+  src: url(../fonts/NotoSansMyanmar/NotoSansMyanmar-Regular.eot?#iefix) format('embedded-opentype'),
+       url(../fonts/NotoSansMyanmar/NotoSansMyanmar-Regular.woff2) format('woff2'),
+       url(../fonts/NotoSansMyanmar/NotoSansMyanmar-Regular.woff) format('woff'),
+       url(../fonts/NotoSansMyanmar/NotoSansMyanmar-Regular.ttf) format('truetype');
 }
 @font-face {
   font-family: 'Noto Sans Myanmar';
   font-style: normal;
   font-weight: 700;
-  src: url(../fonts/NotoSansMyanmar-Bold.eot);
-  src: url(../fonts/NotoSansMyanmar-Bold.eot?#iefix) format('embedded-opentype'),
-       url(../fonts/NotoSansMyanmar-Bold.woff2) format('woff2'),
-       url(../fonts/NotoSansMyanmar-Bold.woff) format('woff'),
-       url(../fonts/NotoSansMyanmar-Bold.ttf) format('truetype');
+  src: url(../fonts/NotoSansMyanmar/NotoSansMyanmar-Bold.eot);
+  src: url(../fonts/NotoSansMyanmar/NotoSansMyanmar-Bold.eot?#iefix) format('embedded-opentype'),
+       url(../fonts/NotoSansMyanmar/NotoSansMyanmar-Bold.woff2) format('woff2'),
+       url(../fonts/NotoSansMyanmar/NotoSansMyanmar-Bold.woff) format('woff'),
+       url(../fonts/NotoSansMyanmar/NotoSansMyanmar-Bold.ttf) format('truetype');
 }
 
 .zawgyi {

@@ -1,37 +1,49 @@
 {
   "private": true,
   "scripts": {
-    "prod": "gulp --production",
-    "dev": "gulp watch"
-  },
-  "babel": {
-    "presets": [
-      "es2015"
-    ],
-    "plugins": [
-      "transform-vue-jsx"
-    ]
+    "dev": "npm run development",
+    "development": "cross-env NODE_ENV=development node_modules/webpack/bin/webpack.js --progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js",
+    "watch": "cross-env NODE_ENV=development node_modules/webpack/bin/webpack.js --watch --progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js",
+    "watch-poll": "npm run watch -- --watch-poll",
+    "hot": "cross-env NODE_ENV=development node_modules/webpack-dev-server/bin/webpack-dev-server.js --inline --hot --config=node_modules/laravel-mix/setup/webpack.config.js",
+    "prod": "npm run production",
+    "production": "cross-env NODE_ENV=production node_modules/webpack/bin/webpack.js --progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js"
   },
   "devDependencies": {
-    "babel-core": "^6.18.2",
-    "babel-helper-vue-jsx-merge-props": "^2.0.2",
-    "babel-loader": "^6.2.7",
-    "babel-plugin-syntax-jsx": "^6.18.0",
-    "babel-plugin-transform-vue-jsx": "^3.1.2",
-    "babel-preset-es2015": "^6.18.0",
+    "axios": "^0.16.2",
     "bootstrap-sass": "^3.3.7",
-    "gulp": "^3.9.1",
-    "jquery": "^3.1.0",
-    "laravel-elixir": "^6.0.0-14",
-    "laravel-elixir-vue-2": "^0.2.0",
-    "laravel-elixir-webpack-official": "^1.0.2",
-    "lodash": "^4.16.2"
+    "cross-env": "^5.0.1",
+    "jquery": "^3.1.1",
+    "laravel-mix": "^1.0",
+    "lodash": "^4.17.4",
+    "vue": "^2.1.10"
   },
   "dependencies": {
-    "vue": "^2.0.1",
-    "vue-pagination-2": "^0.2.4",
-    "vue-resource": "^1.0.3",
-    "vue-tables-2": "^0.2.4",
-    "vuex": "^2.0.0"
+    "admin-lte": "^2.4.2",
+    "babel-preset-env": "^1.6.1",
+    "babel-preset-es2015": "^6.24.1",
+    "babel-preset-stage-2": "^6.24.1",
+    "babili-webpack-plugin": "^0.1.2",
+    "bootstrap-sass": "^3.3.7",
+    "cross-env": "^5.1.0",
+    "d3": "^4.11.0",
+    "datatables.net": "^1.10.16",
+    "datatables.net-bs": "^1.10.16",
+    "datatables.net-buttons": "^1.4.2",
+    "datatables.net-buttons-bs": "^1.4.2",
+    "datatables.net-responsive": "^2.2.0",
+    "datatables.net-responsive-bs": "^2.2.0",
+    "font-awesome": "^4.7.0",
+    "formBuilder": "^2.9.8",
+    "gasparesganga-jquery-loading-overlay": "^1.5.4",
+    "hyperform": "^0.9.9",
+    "hyperform-l10n": "^0.9.3",
+    "ionicons": "^3.0.0",
+    "jquery-datetimepicker": "^2.5.11",
+    "jquery-ui": "^1.12.1",
+    "magic-check": "^1.0.3",
+    "moment": "^2.19.1",
+    "select2": "^4.0.4",
+    "webpack": "^3.8.1"
   }
 }
