@@ -9,6 +9,12 @@ use App\Models\Section;
 
 trait LogicalCheckTrait
 {
+    protected $error_bag;
+
+    protected function logicalCheck($input, $value)
+    {
+        return $value;
+    }
 
     /**
      * @param $result_arr [section_id] => [question_id => [inputid => response] ] ]
@@ -17,7 +23,7 @@ trait LogicalCheckTrait
      * @param $sample       App\Models\Sample
      * @return mixed
      */
-    private function logicalCheck($result_arr, $result, $project, $sample)
+    private function logicalCheckAll($result_arr, $result, $project, $sample)
     {
 
         $error = [];
@@ -250,10 +256,10 @@ trait LogicalCheckTrait
             $result->{'section' . $skey . 'status'} = $section_status;
 
         }
-        $checked['results'] = $result;
-        $checked['error'] = $error;
 
-        return $checked;
+        $this->error_bag = $error;
+
+        return $result;
     }
 
 

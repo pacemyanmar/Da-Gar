@@ -39,7 +39,11 @@ class SurveyResultsController extends AppBaseController
 
     private $sampleDataModel;
 
-    public function __construct(ProjectRepository $projectRepo, QuestionRepository $questionRepo, SurveyInputRepository $surveyInputRepo, SampleRepository $sampleRepo, SampleData $sampleDataModel)
+    public function __construct(ProjectRepository $projectRepo,
+                                QuestionRepository $questionRepo,
+                                SurveyInputRepository $surveyInputRepo,
+                                SampleRepository $sampleRepo,
+                                SampleData $sampleDataModel)
     {
         $this->middleware('auth');
         $this->projectRepository = $projectRepo;
@@ -490,7 +494,7 @@ class SurveyResultsController extends AppBaseController
              $results['section'.$section->sort] = $sample->resultWithTable($section_table)->first();
 
             if ($auth->role->role_name == 'doublechecker') {
-                $section_dbl_table = $dbname.'_section'.$section->sort . '_dbl';
+                $section_dbl_table = $section_table . '_dbl';
                 $double_results['section'.$section->sort] = $sample->resultWithTable($section_dbl_table)->first();
             }
         }
@@ -539,79 +543,9 @@ class SurveyResultsController extends AppBaseController
             return redirect(route('projects.index'));
         }
 
-        $questions = $project->questions;
-
-        $dblink = strtolower($project->dblink);
-
-        // find out which repository to use based on $dblink
-        // voter | location | enumerator
-        $dblink = strtolower($project->dblink);
-        $sample = $this->sampleRepository->findWithoutFail($samplable);
-
-
-        if (Auth::user()->role->role_name == 'doublechecker') {
-            $dbname = $project->dbname . '_double';
-        } else {
-            $dbname = $project->dbname;
-        }
-
-        $sample->setRelatedTable($dbname);
-
-        $surveyResult = $sample->resultWithTable($dbname)->first();
-
-        if(empty($surveyResult)) {
-
-            $surveyResult = new SurveyResult();
-
-            $surveyResult->setTable($dbname);
-        }
-
         // get all result array from form
         $results = $request->input('result');
 
-        if (!empty($results)) {
-            //return $this->sendError(trans('messages.no_result_submitted'), $code = 404);
-
-
-            if (array_key_exists('ballot', $results)) {
-                $ballots = $results['ballot'];
-                unset($results['ballot']);
-                $party_station_counts = [];
-                $party_advanced_counts = [];
-                foreach ($ballots as $party => $ballot) {
-                    if ($project->type != 'tabulation') {
-                        $party_station_counts[] = $results[$party . '_station'] = $ballot['station'];
-                    }
-                    $party_advanced_counts[] = $results[$party . '_advanced'] = $ballot['advanced'];
-
-                }
-            }
-
-            if (array_key_exists('ballot_remark', $results)) {
-                $ballot_remark = $results['ballot_remark'];
-                unset($results['ballot_remark']);
-                foreach ($ballot_remark as $rem => $vote) {
-                    $results[$rem] = $vote;
-                }
-                $rem = count($ballot_remark);
-            }
-
-            if (array_key_exists('registered_voters', $results)) {
-                $rv = $results['registered_voters'];
-                //unset($results['registered_voters']);
-                //$results['registered_voters'] = $rv;
-            }
-
-            if (array_key_exists('advanced_voters', $results)) {
-                $av = $results['advanced_voters'];
-                //unset($results['advanced_voters']);
-                //$results['advanced_voters'] = $av;
-            }
-        }
-
-        //$results['samplable_id'] = $dblink;
-        //$results['samplable_id'] = $sample_dblink->id;
-        //$sectionstatus = [];
         // group by all inputs with section and loop
         $results_to_save = $results;
 
@@ -619,272 +553,7 @@ class SurveyResultsController extends AppBaseController
             $results = (array) $results;
         }
 
-       // $project_by_section = $project->inputs->groupBy('section');
-
-//        foreach ($project_by_section as $section_id => $section_inputs) {
-//
-//            $section = Section::find($section_id);
-//
-//            $section_key = $section->sort + 1;
-//            $origin_inputs = $section_inputs;
-//
-//            // get all inputs array of inputid and skip in a section which is not optional
-//            $max_total_inputs = $section_inputs->where('optional', 0)->pluck('inputid', 'skip')->toArray();
-//
-//            $inputs_with_skip = array_filter(array_flip($max_total_inputs)); // from database only inputs with skip column remove NULL
-//
-//            $submitted_inputs_with_skip = array_intersect_key($inputs_with_skip, $results);
-//
-//            $max_total_inputs_by_name = $section_inputs->where('optional', 0)->pluck('name', 'inputid')->toArray();
-//
-//            $submitted_total_inputs = array_intersect_key($max_total_inputs_by_name, $results);
-//
-//            $classNames = [];
-//
-//            $skips = [];
-//            // array of inputs with skip column from database
-//            foreach ($submitted_inputs_with_skip as $skip_input => $skipped) {
-//                // explode by commas all skip classes
-//                $skipped_inputs_arr = explode(',', $skipped);
-//
-//                unset($max_total_inputs[$skip_input]);
-//                // loop skip classes .s0q4,.s0q5
-//                foreach ($skipped_inputs_arr as $skipid) {
-//                    // TODO: remove trailing space
-//                    //$classNames[] = ' ' . str_slug($skipid); // inputid from skip column
-//                    $classNames[] = $className = trim(str_slug($skipid));
-//                    $section_inputs->where('className', 'like', '%' . $className . '%');
-//                }
-//            }
-//            // find inputs to skip based on submitted results
-//            $skipped_inputs = $section_inputs->whereIn('className', $classNames)->pluck('name', 'inputid')->toArray();
-//            //$skipped_inputs = $section_inputs->pluck('className', 'inputid')->toArray();
-//
-//            if (!empty($skipped_inputs)) {
-//                foreach ($skipped_inputs as $toskip => $name) {
-//                    if (array_key_exists($toskip, $submitted_total_inputs)) {
-//                        // remove skipped inputs to avoid validating
-//                        unset($submitted_total_inputs[$toskip]);
-//                    }
-//                }
-//            }
-//            // if section not empty in form submit
-//            if (!empty($submitted_total_inputs)) {
-//
-//                $checked_inputs = [];
-//                $qsum = [];
-//                $q = 0;
-//                // group inputs by 'question_id'
-//                foreach ($section_inputs->groupBy('question_id') as $question => $question_inputs) {
-//                    // get all inputs which is not optional in a question
-//                    $inputs = $question_inputs->where('optional', 0)->pluck('name', 'inputid')->toArray();
-//
-//                    if (!empty($skipped_inputs)) {
-//                        foreach ($skipped_inputs as $toskip => $name) {
-//                            // $toskip = inputid, $name = name
-//                            $qsum[$toskip] = $inputs;
-//                            if (array_key_exists($toskip, $inputs)) {
-//                                // remove skipped inputs
-//                                unset($inputs[$toskip]);
-//                            }
-//                        }
-//                    }
-//
-//                    // check all inputs submitted by matching from database and submitted data
-//                    $interset_inputs = array_intersect_key($inputs, $submitted_total_inputs);
-//                    $max = count($inputs);
-//                    $min = count(array_flip($inputs));
-//                    $actual = count($interset_inputs);
-//                    $checked_inputs[] = $interset_inputs;
-//                    if (($actual >= $min && $actual <= $max)) {
-//                        $q += 0;
-//                    } else {
-//                        $q += 1;
-//                    }
-//
-//                }
-//
-//                if ($q) {
-//                    $results['section' . $section_key . 'status'] = 2;
-//                } else {
-//                    $results['section' . $section_key . 'status'] = 1;
-//                }
-//            }
-//
-//            $voters = $origin_inputs->where('inputid', 'ballot_table')->all();
-//
-//            if (!empty($voters) && isset($rem)) {
-//
-//                if ($rem != 5) {
-//                    $results['section' . $section_key . 'status'] = 2;
-//                }
-//
-//                if ($project->type != 'tabulation' && (empty($rv) || empty($av))) {
-//                    $results['section' . $section_key . 'status'] = 2;
-//                }
-//
-//                if ($rem == 5) {
-//                    // ballot remarks is submited and have 5 results
-//                    $results['section' . $section_key . 'status'] = 1;
-//                    $rem1 = $ballot_remark['rem1'];
-//                    $rem2 = $ballot_remark['rem2'];
-//                    $rem3 = $ballot_remark['rem3'];
-//                    $rem4 = $ballot_remark['rem4'];
-//                    $rem5 = $ballot_remark['rem5'];
-//
-//                    $total_party_advanced = array_sum($party_advanced_counts);
-//                    //  Rem(1) + Rem(2) != Rem(3) + Rem(4) + Rem(5) ||
-//                    //  Rem(4) / (Rem(1) + Rem(2)) > 0.15 ||
-//                    //  Rem(5) / (Rem(1) + Rem(2)) > 0.15 ||
-//                    //  Rem(2) / (Rem(1) + Rem(2)) > 0.1 ||
-//                    //  EA < (Rem(1) + Rem(2)) ||
-//                    //  EB != Rem(2) ||
-//                    //  Adv(USDP) + Adv(NLD) > Rem(2)
-//                    if ($project->type != 'tabulation') {
-//                        $total_votes = $rem1 + $rem2;
-//                        $total_counted = $rem3 + $rem4 + $rem5;
-//
-//                        if (!empty($total_votes)) {
-//
-//                            if ($total_votes != $total_counted || ($rem4 / $total_votes > 0.15) || ($rem5 / $total_votes > 0.15) || ($rem2 / $total_votes > 0.15)) {
-//                                $results['section' . $section_key . 'status'] = 3;
-//                            }
-//
-//                            if (($av / ($rv + $av) > 0.1) || ($rv < $total_votes) || ($av != $rem2) || $total_party_advanced > $rem2) {
-//                                $results['section' . $section_key . 'status'] = 3;
-//                            }
-//                        } else {
-//                            $results['section' . $section_key . 'status'] = 3;
-//                        }
-//                    } else {
-//                        // tabulation validation
-//                        if (($rem1 != ($rem2 + $rem5)) || ($rem2 != ($rem3 + $rem4)) || $total_party_advanced > $rem3) {
-//                            $results['section' . $section_key . 'status'] = 3;
-//                        } else {
-//                            $results['section' . $section_key . 'status'] = 1;
-//                        }
-//                        $tabulation = true;
-//                    }
-//                }
-//            }
-//
-//            // get all inputs in a section
-//            $section_all_inputs = $origin_inputs->pluck('inputid')->unique()->toArray();
-//
-//            // check section has submitted results
-//            $section_submitted = array_intersect_key(array_flip($section_all_inputs), $results);
-//
-//            if (!empty($section_submitted)) {
-//                $empty_inputs = array_fill_keys($section_all_inputs, null);
-//                $results_to_save = array_merge($empty_inputs, $results);
-//            }
-//            if ($project->type == 'tabulation' && isset($tabulation)) {
-//                $results_to_save = array_merge($results_to_save, $results);
-//            }
-//        }
-
-
-        // sample (country|region|1|2)
-        //$results['sample'] = (!empty($request->only('samplable_type')['samplable_type'])) ? $request->only('samplable_type')['samplable_type'] : '';
-
-        // get all sections in a project
-        $sections = $project->sectionsDb->sortBy('sort');
-
-        $submitted_section = $request->input('section_id');
-
-        $result_arr = [];
-
-        $section_result = [];
-
-        $question_result = [];
-
-        foreach ($sections as $key => $section) {
-            $timestamp = 'section'.($key + 1).'updated';
-            $section_inputs = $section->inputs->pluck('value', 'inputid');
-
-            $section_has_result_submitted = array_intersect_key((array)$results, $section_inputs->toArray());
-            if(count($section_has_result_submitted) > 0) {
-                if(!array_key_exists($section->id, $section_result)) {
-                    $section_result[$section->id] = true;
-
-                    $surveyResult->{$timestamp} = Carbon::now();
-                }
-            } else {
-                $surveyResult->{$timestamp} = $surveyResult->{$timestamp};
-            }
-            $questions = $section->questions;
-            foreach ($questions as $question) {
-                $inputs = $question->surveyInputs;
-
-                $question_inputs = $question->surveyInputs->pluck('value', 'inputid');
-
-                $question_has_result_submitted = array_intersect_key((array)$results, $question_inputs->toArray());
-
-
-
-                if(count($question_has_result_submitted) > 0) {
-                    if(!array_key_exists($question->id, $question_result)) {
-                        $question__result[$question->id] = true;
-                    }
-                }
-
-                foreach ($inputs as $input) {
-                    // $result = submitted form data
-                    // look for individual inputid submitted or not from $result array
-                    if(array_key_exists($input->inputid, $results)) {
-                        // if found, question is summitted and set checkbox values to zero if false
-                        if($input->type == 'checkbox') {
-                            $result_arr[$section->id][$question->id][$input->inputid] = ($results[$input->inputid]) ? $results[$input->inputid] : 0;
-                        } else {
-                            $result_arr[$section->id][$question->id][$input->inputid] = ($results[$input->inputid] !== null && $results[$input->inputid] !== false && $results[$input->inputid] !== '') ? $results[$input->inputid] : null;
-                        }
-                    } else {
-                        // if section is submitted
-                        if(array_key_exists($section->id, $section_result)) {
-
-                            if(empty($question_has_result_submitted)) {
-                                $result_arr[$section->id][$question->id][$input->inputid] = null;
-//                                if($input->type == 'checkbox') {
-////                                    if($surveyResult->{$input->inputid}) {
-////                                        $result_arr[$section->id][$question->id][$input->inputid] = 0;
-////                                    } else {
-////                                        $result_arr[$section->id][$question->id][$input->inputid] = $surveyResult->{$input->inputid};
-////                                    }
-//                                    $result_arr[$section->id][$question->id][$input->inputid] = 0;
-//                                } else {
-//                                    $result_arr[$section->id][$question->id][$input->inputid] = null;
-//                                }
-                            } else {
-                                if($input->type == 'checkbox') {
-                                    $result_arr[$section->id][$question->id][$input->inputid] = 0;
-                                } else {
-                                    $result_arr[$section->id][$question->id][$input->inputid] = null;
-                                }
-                            }
-
-                        }  else {
-                            // if section is submitted leave as value in database
-                            if($submitted_section == $section->id) {
-                                $result_arr[$section->id][$question->id][$input->inputid] = null;
-                            } else {
-                                $result_arr[$section->id][$question->id][$input->inputid] = $surveyResult->{$input->inputid};
-                            }
-                        }
-
-                    }
-
-                }
-            }
-
-        }
-
-
-        $checked = $this->logicalCheck($result_arr, $surveyResult, $project, $sample);
-        $surveyResult = $checked['results'];
-
-        $sample_type = $request->input('sample');
-
-        $surveyResult->sample = (isset($sample_type)) ? $sample_type : 1;
+        $sample = $this->sampleRepository->findWithoutFail($samplable);
 
         $auth_user = Auth::user();
 
@@ -898,11 +567,129 @@ class SurveyResultsController extends AppBaseController
             $sample->user_id = $auth_user->id;
         }
 
+
+        // get all sections in a project
+        $sections = $project->sections->sortBy('sort');
+
+        $submitted_section = $request->input('section_id');
+
+        $section = Section::findOrFail($submitted_section);
+
+        $result_arr = [];
+
+        $section_result = [];
+
+        $question_result = [];
+
+        $dbName = $project->dbname;
+
+        $sample_type = $request->input('sample');
+
+
+        $section_table = $dbName.'_section'.$section->sort;
+
+        if (Auth::user()->role->role_name == 'doublechecker') {
+            $db_name = $section_dbl_table = $section_table . '_dbl';
+        } else {
+            $db_name = $section_table;
+        }
+
+        $sample->setRelatedTable($db_name);
+
+        $surveyResult = $sample->resultWithTable($db_name)->first();
+
+        if(empty($surveyResult)) {
+
+            $surveyResult = new SurveyResult();
+
+        }
+
+        $surveyResult->setTable($db_name);
+
+
+        $timestamp = 'section'.$section->sort.'updated';
+
+        $section_inputs = $section->inputs->pluck('value', 'inputid');
+
+        $section_has_result_submitted = array_intersect_key((array)$results, $section_inputs->toArray());
+
+        if(count($section_has_result_submitted) > 0) {
+            if(!array_key_exists($section->id, $section_result)) {
+                $section_result[$section->id] = true;
+
+                $surveyResult->{$timestamp} = Carbon::now();
+            }
+        }
+
+        $questions = $section->questions;
+        foreach ($questions as $question) {
+            $qid = $question->id;
+            $inputs = $question->surveyInputs;
+
+            $question_inputs = $question->surveyInputs->pluck('value', 'inputid');
+
+            $question_has_result_submitted = array_intersect_key((array)$results, $question_inputs->toArray());
+
+
+
+            if(count($question_has_result_submitted) > 0) {
+                if(!array_key_exists($question->id, $question_result)) {
+                    $question__result[$question->id] = true;
+                }
+            }
+
+            foreach ($inputs as $input) {
+                $inputid = $input->inputid;
+                // $result = submitted form data
+                // look for individual inputid submitted or not from $result array
+                if(array_key_exists($input->inputid, $results)) {
+                    // if found, question is summitted and set checkbox values to zero if false
+                    if($input->type == 'checkbox') {
+                        $result_arr[$qid][$inputid] = ($results[$inputid]) ? $results[$inputid] : 0;
+                    } else {
+                        $result_arr[$qid][$inputid] = ($results[$inputid] !== null && $results[$inputid] !== false && $results[$inputid] !== '') ? $results[$inputid] : null;
+                    }
+                } else {
+                    // if section is submitted
+                    if(array_key_exists($section->id, $section_result)) {
+
+                        if(empty($question_has_result_submitted)) {
+                            $result_arr[$qid][$inputid] = null;
+
+                        } else {
+                            if($input->type == 'checkbox') {
+                                $result_arr[$qid][$inputid] = 0;
+                            } else {
+                                $result_arr[$qid][$inputid] = null;
+                            }
+                        }
+
+                    }  else {
+                        // if section is submitted leave as value in database
+                        if($submitted_section == $section->id) {
+                            $result_arr[$qid][$inputid] = null;
+                        } else {
+                            $result_arr[$qid][$inputid] = $surveyResult->{$input->inputid};
+                        }
+                    }
+
+                }
+                $result_arr[$qid][$inputid] = $this->logicalCheck($input, $result_arr[$qid][$inputid]);
+            }
+            $surveyResult->fill($result_arr[$qid]);
+        }
+ 
+        //$surveyResult = $this->logicalCheck($result_arr, $surveyResult, $project, $sample);
+
+
+        $surveyResult->sample = (isset($sample_type)) ? $sample_type : 1;
+
+
         $surveyResult->user_id = $auth_user->id;
 
         $surveyResult->sample()->associate($sample);
 
-        $surveyResult->setTable($dbname);
+        $surveyResult->setTable($db_name);
 
         $surveyResult->save();
 
