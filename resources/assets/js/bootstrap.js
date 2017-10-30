@@ -7,7 +7,6 @@ window._ = require('lodash');
  * code may be modified to fit the specific needs of your application.
  */
 import $ from 'jquery';
-import hyperform from 'hyperform';
 try {
     window.jQuery = $;
     window.$ = $;
@@ -40,7 +39,7 @@ try {
     require('select2');
     require('select2/dist/js/i18n/en');
     require('gasparesganga-jquery-loading-overlay');
-    window.hyperform = hyperform;
+    window.hyperform = require('hyperform').default;
     require('admin-lte');
 
 } catch (e) {}
