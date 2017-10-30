@@ -40,7 +40,7 @@ window.url="{!! route('projects.surveys.save', ['project' => $project->id, 'samp
             $section_num = $section->sort + 1;
 
             if( isset($results) && !empty($results['section'.$section->sort]) ) {
-                $section_status = $results['section'.$section->sort]->{'section'.$section_num.'status'};
+                $section_status = $results['section'.$section->sort]->{'section'.$section->sort.'status'};
                 if( $section_status == 0) {
                     $section_status = 'danger';
                     $icon = 'remove';

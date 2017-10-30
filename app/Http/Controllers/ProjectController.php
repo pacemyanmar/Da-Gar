@@ -66,7 +66,7 @@ class ProjectController extends AppBaseController
                 $sections_to_save[] = new Section($section);
             }
 
-            $project->sectionsDb()->saveMany($sections_to_save);
+            $project->sections()->saveMany($sections_to_save);
             unset($sections_to_save);
         }
 
@@ -143,7 +143,7 @@ class ProjectController extends AppBaseController
             $sections_to_save[] = new Section($section);
         }
 
-        $project->sectionsDb()->saveMany($sections_to_save);
+        $project->sections()->saveMany($sections_to_save);
 
         // update survey_inputs as s join questions as q on s.question_id = q.id join projects as p on q.project_id = p.id set s.double_entry = 1, q.double_entry = 1 where p.id = 1 and q.section = 1;
 
@@ -253,7 +253,7 @@ class ProjectController extends AppBaseController
             return redirect(route('projects.index'));
         }
 
-        $input = $request->except('samples');
+        $input = $request->except('samples','sections');
         if (!array_key_exists('parties', $input)) {
             $input['parties'] = null;
         }
@@ -276,7 +276,8 @@ class ProjectController extends AppBaseController
         // $input['project_trans'] = array_merge($new_translation, $translation);
 
         $project = $this->projectRepository->update($input, $id);
-        $sections = $input['sections'];
+
+        $sections = $request->input('sections');
 
         if (empty($sections)) {
             $sections[0] = [
@@ -284,7 +285,7 @@ class ProjectController extends AppBaseController
             ];
         }
 
-        $sectionsDb = $project->sectionsDb->pluck('id', 'id');
+        $sectionsDb = $project->sections->pluck('id', 'id');
 
         foreach ($sections as $skey => $section) {
             if (!empty($section)) {
@@ -338,7 +339,7 @@ class ProjectController extends AppBaseController
         }
 
         if (!empty($sections_to_save)) {
-            $project->sectionsDb()->saveMany($sections_to_save);
+            $project->sections()->saveMany($sections_to_save);
         }
 
         Flash::success('Project updated successfully.');
@@ -429,7 +430,7 @@ class ProjectController extends AppBaseController
             return redirect()->back();
         }
 
-        $sections = $project->sectionsDb;
+        $sections = $project->sections;
 
         foreach($sections as $section) {
             $questions = $section->questions;
@@ -466,7 +467,7 @@ class ProjectController extends AppBaseController
         $sectionFields = '';
 
         // check if table has already created
-        foreach ($project->sectionsDb as $key => $section) {
+        foreach ($project->sections as $key => $section) {
             $section_key = $key + 1;
 
             $fields = $section->inputs->unique('inputid');
@@ -539,7 +540,7 @@ class ProjectController extends AppBaseController
         }
         if($type != 'main' && $type != 'double') {
 
-            foreach ($project->sectionsDb as $key => $section) {
+            foreach ($project->sections as $key => $section) {
                 $section_num = $section->sort;
                 $section_name = 'section' . $section_num . 'status';
                 if (!Schema::hasColumn($dbname, $section_name)) {
@@ -687,7 +688,7 @@ class ProjectController extends AppBaseController
 
             if ($type != 'main' && $type != 'double') {
                 // get unique collection of inputs
-                foreach ($project->sectionsDb as $key => $section) {
+                foreach ($project->sections as $key => $section) {
                     $section_num = $key + 1;
                     $table->unsignedSmallInteger('section' . $section_num . 'status')->index()->default(0); // 0 => missing, 1 => complete, 2 => incomplete, 3 => error
                     //$table->json('section' . $key)->nullable();
@@ -824,7 +825,7 @@ class ProjectController extends AppBaseController
                 $project_array[0]['project::' . $lang] = $trans;
             }
         }
-        $sections = $project->sectionsDb->toArray();
+        $sections = $project->sections->toArray();
 
         $questions = $project->questions->toArray();
         $inputs = $project->inputs->toArray();

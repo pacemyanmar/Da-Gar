@@ -376,7 +376,7 @@ class SmsAPIController extends AppBaseController
             $rawlog->setTable($dbname.'_rawlog');
 
             // get all sections in a project
-            $sections = $project->sectionsDb->sortBy('sort');
+            $sections = $project->sections->sortBy('sort');
             $error_inputs = [];
 
             $result_arr = [];
@@ -682,7 +682,7 @@ class SmsAPIController extends AppBaseController
         ];
 
         $sectionColumns = [];
-        foreach ($project->sectionsDb->sortBy('sort') as $k => $section) {
+        foreach ($project->sections->sortBy('sort') as $k => $section) {
             $skey = $k + 1;
             $sectionColumns[] = 'pdb.section' . $skey . 'status, pdb.section'.$skey.'updated';
         }

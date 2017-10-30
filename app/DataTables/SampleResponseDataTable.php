@@ -55,7 +55,7 @@ class SampleResponseDataTable extends DataTable
         $childTable = $project->dbname;
 
         $sectionColumns = [];
-        foreach ($project->sectionsDb as $k => $section) {
+        foreach ($project->sections as $k => $section) {
             $sectionColumns[] = 'section' . ($k + 1) . 'status';
         }
 
@@ -280,7 +280,7 @@ class SampleResponseDataTable extends DataTable
         ];
 
         $sectionColumns = [];
-        foreach ($project->sectionsDb as $k => $section) {
+        foreach ($project->sections as $k => $section) {
             $section_key = ($k + 1);
             if ($this->section && $this->section != $section_key) {
                 continue;
