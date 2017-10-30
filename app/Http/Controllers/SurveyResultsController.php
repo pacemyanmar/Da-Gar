@@ -5,8 +5,6 @@ namespace App\Http\Controllers;
 use App\DataTables\DoubleResponseDataTable;
 use App\DataTables\SampleResponseDataTable;
 use App\DataTables\SurveyResultsDataTable;
-use App\Http\Controllers\AppBaseController;
-use App\Models\Sample;
 use App\Models\SampleData;
 use App\Models\Section;
 use App\Models\SurveyResult;
@@ -38,6 +36,8 @@ class SurveyResultsController extends AppBaseController
     private $sampleRepository;
 
     private $sampleDataModel;
+
+    protected $error_bag;
 
     public function __construct(ProjectRepository $projectRepo,
                                 QuestionRepository $questionRepo,
@@ -91,7 +91,7 @@ class SurveyResultsController extends AppBaseController
         }
 
         // set project on datatables table
-        $table->forProject($project);
+        $table->setProject($project);
 
         // set table join method based on project type
         if ($project->type == 'sample2db') {
@@ -107,289 +107,6 @@ class SurveyResultsController extends AppBaseController
             $table->setSampleType($samplable);
         }
 
-        // get database table base name
-        $dbname = $project->dbname;
-
-        $columns = [
-        ];
-
-        // get columns to show on index page table
-        if ($project->index_columns) {
-            $sampleDataColumns = array_merge($samplesData, $project->index_columns);
-
-            foreach ($sampleDataColumns as $column => $name) {
-                switch ($column) {
-                    case 'user_id':
-                        $columns['user_id'] = [
-                            'name' => 'user.name',
-                            'data' => 'username',
-                            'title' => trans('messages.user'),
-                            'orderable' => false,
-                            'defaultContent' => 'N/A',
-                            'visible' => false,
-                            'width' => '80px',
-                        ];
-                        break;
-                    case 'observer_name':
-                        $columns['full_name'] = [
-                            'name' => 'sample_datas_view.full_name',
-                            'data' => 'full_name',
-                            'title' => trans('sample.observer_id'),
-                            'orderable' => false,
-                            'defaultContent' => 'N/A',
-                            'width' => '90px',
-                            'render' => function () use ($locale) {
-                                $data = ($locale == config('app.fallback_locale'))? 'data':'full.full_name_trans';
-                                return "function(data,type,full,meta){
-                                    var html;
-                                    if(type === 'display') {
-
-                                        if(full.full_name_trans) {
-                                            html = $data;
-                                        } else {
-                                            html =data;
-                                        }
-                                    } else {
-                                        html = data;
-                                    }
-
-                                    return html;
-                                }";
-                            },
-                        ];
-                        break;
-                    case 'location_code':
-                        $columns[$column] = [
-                            'name' => 'sample_datas_view.'.$column,
-                            'data' => $column,
-                            'title' => trans('sample.'.$column),
-                            'orderable' => false,
-                            'defaultContent' => 'N/A',
-                            'visible' => false,
-                            'width' => '90px',
-                        ];
-                        break;
-                    case 'call_primary':
-                    case 'incident_center':
-                    case 'sms_time':
-                    case 'observer_field':
-                        $columns[$column] = [
-                            'name' => 'sample_datas_view.'.$column,
-                            'data' => $column,
-                            'title' => trans('sample.'.$column),
-                            'orderable' => false,
-                            'defaultContent' => 'N/A',
-                            'width' => '90px',
-                        ];
-                        break;
-                    case 'mobile':
-                        $columns['phone_1'] = [
-                            'name' => 'sample_datas_view.phone_1',
-                            'data' => 'phone_1',
-                            'title' => trans('messages.mobile'),
-                            'orderable' => false,
-                            'defaultContent' => 'N/A',
-                            'width' => '90px',
-                        ];
-                        break;
-                    case 'sms_primary':
-                        $columns[$column] = [
-                            'name' => 'sample_datas_view.'.$column,
-                            'data' => $column,
-                            'title' => trans('sample.'.$column),
-                            'orderable' => false,
-                            'defaultContent' => 'N/A',
-                            'width' => '90px',
-                            'visible' => false
-                        ];
-                        break;
-                    case 'level1':
-                    case 'level3':
-                        $columns[$column] = [
-                            'name' => 'sample_datas_view.'.$column,
-                            'data' => $column,
-                            'title' => trans('sample.'.$column),
-                            'orderable' => false,
-                            'defaultContent' => 'N/A',
-                            'width' => '90px',
-                            'render' => function () use ($locale, $column) {
-                                $data = ($locale == config('app.fallback_locale'))? 'data':'full.'.$column.'_trans';
-                                return "function(data,type,full,meta){
-                                    var html;
-                                    if(type === 'display') {
-
-                                        if(full.".$column."_trans) {
-                                            html = $data;
-                                        } else {
-                                            html =data;
-                                        }
-                                    } else {
-                                        html = data;
-                                    }
-
-                                    return html;
-                                }";
-                            },
-                        ];
-                        break;
-                    default:
-                        $columns[$column] = [
-                            'name' => $column,
-                            'data' => $column,
-                            'title' => trans('messages.' . strtolower($name)),
-                            'orderable' => false,
-                            'visible' => false,
-                            'width' => '120px',
-                        ];
-                        break;
-                }
-                $exportColumns[$column] = trans('messages.' . strtolower($name));
-            }
-        } else {
-            switch ($project->dblink) {
-                case 'voter':
-                    $columns = [
-                        'location_code' => ['name' => 'sample_datas_view.location_code', 'data' => 'location_code', 'title' => 'Voter ID'],
-                        'name' => ['name' => 'name', 'data' => 'name', 'title' => 'Name'],
-                        'nrc_id' => ['name' => 'nrc_id', 'data' => 'nrc_id', 'title' => 'NRC ID'],
-                    ];
-                    break;
-
-                case 'enumerator':
-                    $columns = [
-                        'location_code' => ['name' => 'sample_datas_view.location_code', 'data' => 'location_code', 'title' => 'Code'],
-                        'form_id' => ['name' => 'samples.form_id', 'data' => 'form_id', 'title' => 'Form No.'],
-                        'name' => ['name' => 'sample_datas_view.full_name', 'data' => 'full_name', 'title' => 'Name'],
-                        'nrc_id' => ['name' => 'sample_datas_view.national_id', 'data' => 'national_id', 'title' => 'NRC ID'],
-                    ];
-                    break;
-
-                default:
-                    $columns = [
-                        'location_code' => ['name' => 'sample_datas_view.location_code', 'data' => 'location_code', 'title' => 'Code'],
-                        'form_id' => ['name' => 'samples.form_id', 'data' => 'form_id', 'title' => 'Form No.'],
-                    ];
-                    break;
-            }
-            $exportColumns['location_code'] = 'ID Code';
-            $exportColumns['form_id'] = 'Form No.';
-            $exportColumns['name'] = 'Name';
-            $exportColumns['nrc_id'] = 'NRC ID';
-        }
-
-        $baseColumns = $columns;
-        // set index columns as base column
-        $table->setBaseColumns($baseColumns);
-
-        $section_columns = [];
-        $wordcount = 17;
-        // loop through sections in a project
-        foreach ($project->sections as $k => $section) {
-            $section_num = $section->sort;
-            $sectionColumn = 'section' . $section_num . 'status';
-            $sectionname = $section['sectionname'];
-            $sectionshort = 'R' . ($section_num + 1) . '';
-            // if string long to show in label show as tooltip
-            //if (mb_strlen($section['sectionname']) > $wordcount) {
-
-            $sectionname = "<span data-toggle='tooltip' data-placement='top' title='$sectionname' data-container='body'> $sectionshort <i class='fa fa-info-circle'></i></span>";
-            //}
-
-            $section_columns[$sectionColumn] = [
-                'name' => $dbname .'_section'.$section_num. '.' . $sectionColumn,
-                'data' => $sectionColumn,
-                'orderable' => false,
-                'searchable' => false,
-                'width' => '40px',
-                'render' => function () {
-                    return "function(data,type,full,meta){
-                        var html;
-                        if(type === 'display') {
-                            if(data == 1) {
-                                html = '<span class=\"glyphicon glyphicon-ok text-success\"></span>';
-                            } else if(data == 2) {
-                                html = '<span class=\"glyphicon glyphicon-ban-circle text-warning\"></span>';
-                            } else if(data == 3) {
-                                html = '<span class=\"glyphicon glyphicon-alert text-info\"></span>';
-                            } else {
-                                html = '<span class=\"glyphicon glyphicon-remove text-danger\"></span>';
-                            }
-                        } else {
-                            html = data;
-                        }
-
-                        return html;
-                    }";
-                },
-                'title' => $sectionname,
-            ];
-
-            $exportSectionColumns[$sectionColumn] = $sectionColumn;
-        }
-
-        $table->setSectionColumns($section_columns);
-
-        $exportColumns = array_merge($exportColumns, $exportSectionColumns);
-
-        $input_columns = [];
-
-        //$project->load('samplesList.data');
-
-        $project->load(['inputs' => function ($query) {
-            $query->where('status', 'published');
-        }]);
-
-        $project_questions = $project->questions->sortBy('sort');
-
-        foreach($project_questions as $question) {
-            $inputs = $question->surveyInputs->sortBy('sort');
-
-            $section_num = $question->sectionDb->sort;
-            foreach($inputs as $input) {
-                $column = $input->inputid;
-
-                //$title = preg_replace('/s[0-9]+|ir/', '', $column);
-                //$title = strtoupper(preg_replace('/i/', '_', $title));
-                switch ($input->type) {
-                    case 'radio':
-                        $title = $question->qnum;
-                        break;
-                    case 'checkbox':
-                        $title = $question->qnum . ' ' . $input->value;
-                        break;
-                    case 'template':
-                        $title = $input->label;
-                        break;
-                    default:
-                        if($inputs->count() > 1) {
-                            $title = $question->qnum . ' ' . $input->value;
-                        } else {
-                            $title = $question->qnum;
-                        }
-                        break;
-                }
-
-                $input_columns[$column] = ['name' => $dbname .'_section'.$section_num. '.' . $column, 'data' => $column, 'title' => $title, 'class' => 'result', 'orderable' => false, 'width' => '80px', 'type' => $input->type];
-                if(config('sms.double_entry')) {
-                    $input_columns[$column . '_status'] = ['name' => $dbname .'_section'.$section_num. '_dbl' . '.' . $column, 'data' => $column . '_status', 'title' => $title . '_status', 'orderable' => false, 'visible' => false, 'type' => 'double_entry', 'origin_name' => $dbname .'_section'.$section_num. '.' . $column];
-                }
-
-                if (!$question->report) {
-                    $input_columns[$column]['visible'] = false;
-                }
-            }
-            unset($inputs);
-
-        }
-
-
-
-        if ($project->status != 'new') {
-            //ksort($input_columns, SORT_NATURAL);
-            $all_columns = array_merge($columns, $section_columns, $input_columns);
-        }
-
-        $table->setColumns($all_columns);
 
         $statesCollections = $project->samplesData->groupBy('level1');
         $locations['allStates'] = $project->samplesData->pluck('level1')->unique();
@@ -674,10 +391,14 @@ class SurveyResultsController extends AppBaseController
                     }
 
                 }
-                $result_arr[$qid][$inputid] = $this->logicalCheck($input, $result_arr[$qid][$inputid]);
+                $this->logicalCheck($input, $result_arr[$qid][$inputid]);
             }
+
             $surveyResult->fill($result_arr[$qid]);
         }
+
+
+        $surveyResult->{'section'.$section->sort.'status'} = $this->error_bag;
  
         //$surveyResult = $this->logicalCheck($result_arr, $surveyResult, $project, $sample);
 
@@ -781,7 +502,7 @@ class SurveyResultsController extends AppBaseController
             'project_id' => $project->id,
             'section' => $section,
         ];
-        $sections_array = $project->sectionsDb;
+        $sections_array = $project->sections;
         $sections = [];
         foreach ($sections_array as $sect) {
             $sections[$sect->id] = $sect->sectionname;

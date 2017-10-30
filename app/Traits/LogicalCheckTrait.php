@@ -13,7 +13,17 @@ trait LogicalCheckTrait
 
     protected function logicalCheck($input, $value)
     {
-        return $value;
+        // $status => 1 : complete, 2 : missing, 3 : error, 0 :unknown or empty
+
+        if($value !== null) {
+            // if value exists, set status as complete
+            $this->error_bag = 1;
+        }
+
+        if(!$input->optional && $value === null) {
+            // if value is null and input is required, set status as incomplete
+            $this->error_bag = 2;
+        }
     }
 
     /**

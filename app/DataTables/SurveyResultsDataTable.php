@@ -4,6 +4,7 @@ namespace App\DataTables;
 
 use App\Models\Project;
 use App\Models\Sample;
+use App\Traits\SurveyQueryTrait;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Request;
@@ -12,78 +13,7 @@ use Yajra\DataTables\Services\DataTable;
 
 class SurveyResultsDataTable extends DataTable
 {
-    protected $project;
-
-    protected $tableColumns;
-
-    protected $tableBaseColumns;
-
-    protected $tableSectionColumns;
-
-    protected $sampleType;
-
-    protected $joinMethod;
-
-    /**
-     * Project Setter
-     * @param  App\Models\Project $project [Project Models from route]
-     * @return $this ( App\DataTables\SurveyResultsDataTable )
-     */
-    public function forProject(Project $project)
-    {
-        $this->project = $project;
-        return $this;
-    }
-
-    /**
-     * Columns Setter
-     * @param array $columns [array of columns to use by datatables]
-     * @return $this ( App\DataTables\SurveyResultsDataTable )
-     */
-    public function setColumns($columns)
-    {
-        $this->tableColumns = $columns;
-        return $this;
-    }
-
-    /**
-     * Columns Setter
-     * @param array $columns [array of columns to use by datatables]
-     * @return $this ( App\DataTables\SurveyResultsDataTable )
-     */
-    public function setBaseColumns($columns)
-    {
-        $this->tableBaseColumns = $columns;
-        return $this;
-    }
-
-    /**
-     * Columns Setter
-     * @param array $columns [array of columns to use by datatables]
-     * @return $this ( App\DataTables\SurveyResultsDataTable )
-     */
-    public function setSectionColumns($columns)
-    {
-        $this->tableSectionColumns = $columns;
-        return $this;
-    }
-
-    /**
-     * Survey type setter (country|region)
-     * @param string $surveyType [country|region]
-     * @return $this ( App\DataTables\SurveyResultsDataTable )
-     */
-    public function setSampleType($sampleType)
-    {
-        $this->sampleType = $sampleType;
-        return $this;
-    }
-
-    public function setJoinMethod($join)
-    {
-        $this->joinMethod = $join;
-        return $this;
-    }
+    use SurveyQueryTrait;
 
     /**
      * Display ajax response.
@@ -125,88 +55,12 @@ class SurveyResultsDataTable extends DataTable
 
         $joinMethod = (isset($this->joinMethod)) ? $this->joinMethod : 'join';
 
-        // get dblink table base columns
-        $tableColumnsArray = array_keys($this->tableBaseColumns);
-        // modify column name to use in sql query TABLE.COLUMN format
-        array_walk($tableColumnsArray, function (&$column, $index) use ($table) {
-            switch ($column) {
-                case 'form_id':
-                    $column = 'samples.' . $column . ' as sform_id';
-                    break;
-
-                case 'user_id':
-                    $column = 'user.name as username';
-                    break;
-                case 'name':
-                    $column = 'sample_datas_view.full_name';
-                    break;
-                case 'nrc_id':
-                    $column = 'sample_datas_view.national_id';
-                    break;
-                default:
-                    $column = 'sample_datas_view.' . $column;
-                    break;
-            }
-
-        });
-        // concat all columns with comma
-        $dbLinkTableColumns = implode(', ', $tableColumnsArray);
 
         $project = $this->project;
+
         $childTable = $project->dbname;
-        $sectionColumns = [];
-//        foreach ($project->sections as $k => $section) {
-//            $sectionColumns[] = 'section' . ($k + 1) . 'status';
-//        }
 
-        $input_columns = '';
-        // get all inputs for a project form by name key index
-        $inputs = $this->project->inputs->pluck('type', 'inputid');
-
-        //$unique_inputs = $inputs->toArray();
-
-        //dd($inputs);
-        $unique_inputs = $this->tableColumns;
-        array_walk($unique_inputs, function (&$column, $column_name) use ($childTable) {
-            $old_column = $column;
-            if(array_key_exists('type', $old_column)) {
-                switch ($old_column['type']) {
-                    case 'checkbox':
-                        $column = 'IF(' . $old_column['name'] . ',1,0) AS ' . $column_name;
-                        break;
-                    case 'double_entry':
-                        $column = 'IF(' . $old_column['name']. ' = ' . $old_column['origin_name']. ', 1, 0) AS ' . $column_name;
-                        break;
-                    default:
-                        $column = $old_column['name'];
-                        break;
-                }
-            } else {
-                $column = $old_column['name'];
-            }
-        });
-
-        // modify column name to use in sql query TABLE.COLUMN format
-//        array_walk($sectionColumns, function (&$column, $index) use ($childTable) {
-//            $column = $childTable . '.' . $column;
-//        });
-
-        $columnsFromResults = array_merge($sectionColumns, array_values($unique_inputs));
-
-        $input_columns = implode(',', $columnsFromResults);
-
-        $defaultColumns = "samples.id as samples_id, samples.form_id, sample_datas_view.location_code,sample_datas_view.ps_code,sample_datas_view.type,sample_datas_view.dbgroup,sample_datas_view.sample,sample_datas_view.area_type,sample_datas_view.level1,sample_datas_view.level1_trans,sample_datas_view.level2,sample_datas_view.level2_trans,sample_datas_view.level3,sample_datas_view.level3_trans,sample_datas_view.level4,sample_datas_view.level4_trans,sample_datas_view.level5,sample_datas_view.level5_trans,sample_datas_view.parties";
-
-        $defaultColumnsArr = explode(',', $defaultColumns);
-        $selectColumns = array_merge($defaultColumnsArr, $tableColumnsArray);
-        $trimmedSelectColumns=array_map('trim',$selectColumns);
-
-        $selectColumnsUnique = array_unique($trimmedSelectColumns);
-
-        $all_columns_array = array_merge($selectColumnsUnique, $columnsFromResults);
-        $all_columns_unique = array_unique($all_columns_array);
-
-        $selectColumns = implode(',', $all_columns_unique);
+        $selectColumns = implode(',', $this->getSelectColumns());
         if ($table == 'enumerators') {
 
         }
@@ -262,6 +116,8 @@ class SurveyResultsDataTable extends DataTable
         }
 
         $filterColumns = Request::get('columns', []);
+
+        $sectionColumns = $this->makeSectionColumns();
 
         foreach ($filterColumns as $index => $column) {
             if (in_array($filterColumns[$index]['name'], $sectionColumns) && $filterColumns[$index]['search']['value'] != '') {
@@ -419,10 +275,10 @@ class SurveyResultsDataTable extends DataTable
      */
     protected function getColumns()
     {
-        if (!empty($this->tableColumns) && is_array($this->tableColumns)) {
-            //dd($this->tableColumns);
+        if (!empty($this->getDatatablesColumns()) && is_array($this->getDatatablesColumns())) {
+            //dd($this->getDatatablesColumns());
             $action = ['action' => ['title' => '', 'orderable' => false, 'searchable' => false, 'width' => '5px', 'order' => [[1, 'asc']]]];
-            $columns = array_merge($action, $this->tableColumns);
+            $columns = array_merge($action, $this->getDatatablesColumns());
 
             return $columns;
         } else {
@@ -600,7 +456,7 @@ class SurveyResultsDataTable extends DataTable
             }
         }
 
-        $columnName = array_keys($this->tableColumns);
+        $columnName = array_keys($this->getDatatablesColumns());
 
         //$textColumns = ['location_code', 'spotchecker', 'spotchecker_code', 'name', 'nrc_id', 'form_id', 'mobile'];
         $textColumns = ['location_code', 'user_id', 'full_name', 'phone_1'];
@@ -649,7 +505,7 @@ class SurveyResultsDataTable extends DataTable
             }
         }
 
-        $statusColumns = array_intersect_key($this->tableColumns, $this->tableSectionColumns);
+        $statusColumns = array_intersect_key($this->getDatatablesColumns(), $this->makeSectionColumns());
 
         $statusColsArr = [];
         foreach ($statusColumns as $key => $value) {

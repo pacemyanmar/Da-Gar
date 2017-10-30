@@ -33,10 +33,11 @@ trait QuestionsTrait
          */
         foreach ($ans as $k => $a) {
             // $k is loop index start from 0. $a is input
+            $input_index = $k + 1;
             /**
              * create unique name attribute for each input
              */
-            $param = str_slug('p' . $project_id . $qnum . 'i' . $k);
+            $param = str_slug('p' . $project_id . $qnum . 'i' . $input_index);
 
             /**
              * assign className attribute using format_input method
@@ -56,9 +57,9 @@ trait QuestionsTrait
             }
 
             if (!array_key_exists('inputid', $a)) {
-                $input_index = (array_key_exists('value', $a) && is_numeric($a['value'])) ? $a['value'] : $k + 1;
-                //$input_index = $input_index + 1;
-                $a['inputid'] = strtolower($qnum . '_' . $input_index);
+                $qindex = (array_key_exists('value', $a) && is_numeric($a['value'])) ? $a['value'] : $input_index;
+
+                $a['inputid'] = strtolower($qnum . '_' . $qindex);
             }
 
             if (!array_key_exists('section', $a)) {
@@ -74,7 +75,7 @@ trait QuestionsTrait
             }
 
             if (!array_key_exists('sort', $a)) {
-                $a['sort'] = $qsort . $k;
+                $a['sort'] = $qsort . $input_index;
             }
 
             if (array_key_exists('goto', $a)) {
@@ -98,7 +99,7 @@ trait QuestionsTrait
                 'p' => $project_id,
                 's' => $section_id,
                 'q' => $qnum,
-                'i' => $k,
+                'i' => $input_index,
             ];
 
             array_walk_recursive($a, array(&$this, 'format_input'), $param_array);
