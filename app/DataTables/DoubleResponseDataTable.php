@@ -3,26 +3,27 @@
 namespace App\DataTables;
 
 use App\Models\Sample;
+use App\Traits\SurveyQueryTrait;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 use Yajra\DataTables\Services\DataTable;
 
 class DoubleResponseDataTable extends DataTable
 {
-    private $project;
+    use SurveyQueryTrait;
+
+    protected $project;
 
     private $section;
 
-    public function setProject($project)
-    {
-        $this->project = $project;
-        return $this;
-    }
 
     public function setSection($section)
     {
         $this->section = $section;
         return $this;
     }
+
+
     /**
      * Display ajax response.
      *
@@ -33,7 +34,9 @@ class DoubleResponseDataTable extends DataTable
         return datatables()
             ->eloquent($this->query())
             ->addIndexColumn()
-        //->addColumn('action', 'path.to.action.view')
+            ->addColumn('project_id', $this->project->id)
+            ->addColumn('double', 'double')
+            ->addColumn('action', 'projects.sample_datatables_actions')
             ->make(true, true);
     }
 
@@ -47,34 +50,35 @@ class DoubleResponseDataTable extends DataTable
         $project = $this->project;
         $section = $this->section;
         $sample = Sample::query();
-        $project_inputs = $project->load(['inputs' => function ($query) use ($section) {
-            return $query->where('survey_inputs.section', $section);
-        }])->inputs;
-        $origin_db = $project->dbname;
-        $double_db = $project->dbname . '_double';
-        $columns = [];
-        foreach ($project_inputs as $input) {
-            $column = $input->inputid;
-            $columnName = preg_replace('/s[0-9]+/', '', $column, 1);
-            $oriCol = 'ori_' . $columnName;
-            $douCol = 'dou_' . $columnName;
-            $columns[] = $origin_db . '.' . $column . ' AS ' . $oriCol . ',' . $double_db . '.' . $column . ' AS ' . $douCol . ', IF(' . $origin_db . '.' . $column . ' = ' . $double_db . '.' . $column . ', TRUE, FALSE) AS ' . $columnName;
+        $section_status_query = [];
+        foreach($this->project->sections as $section) {
+            $inputs = $section->inputs->pluck('inputid','inputid')->toArray();
+
+            array_walk($inputs, function(&$input, $key){
+                $input = "SUM(".$input.")";
+            });
+            $section_status_query[$section->id] = implode("+", array_values($inputs)). ' AS section'.$section->sort;
+            unset($inputs);
         }
 
-        $select_columns = implode(',', $columns);
-        $sample->select('samples.id as samples_id', 'sample_datas.idcode', 'samples.form_id', DB::raw($select_columns));
+        $select_columns = implode(',', array_values($section_status_query));
+
+        $sample->select('samples.id as samples_id', 'sample_datas.location_code', 'samples.form_id', DB::raw($select_columns));
 
         $sample->leftjoin('sample_datas', function ($join) {
             $join->on('samples.sample_data_id', 'sample_datas.id');
         });
 
-        $sample->leftjoin($project->dbname, function ($join) use ($project) {
-            $join->on('samples.id', '=', $project->dbname . '.sample_id');
-        })
-            ->leftjoin($project->dbname . '_double', function ($join) use ($project) {
-                $join->on('samples.id', '=', $project->dbname . '_double.sample_id');
-            })
-            ->where('project_id', $project->id);
+        foreach ($project->sections as $k => $section) {
+            $viewName = $this->dbname . '_s' . $section->sort.'_view';
+            $sample->leftjoin($viewName, function ($join) use ($viewName) {
+                $join->on('samples.id', '=', $viewName . '.sample_id');
+            });
+        }
+            $sample->where('samples.project_id', $project->id)
+                ->groupBy('samples.id')
+                ->groupBy('sample_datas.location_code')
+                ->groupBy('samples.form_id');
 
         return $this->applyScopes($sample);
     }
@@ -91,6 +95,7 @@ class DoubleResponseDataTable extends DataTable
         ];
         return $this->builder()
             ->setTableAttributes($tableAttributes)
+            ->addAction(['width' => '40px', 'title' => trans('messages.action')])
             ->columns($this->getColumns())
             ->ajax([
                 'type' => 'POST',
@@ -182,7 +187,7 @@ class DoubleResponseDataTable extends DataTable
                 'colvis',
             ],
             'initComplete' => "function () {
-                            this.api().columns(['0,1']).every(function () {
+                            this.api().columns(['1']).every(function () {
                                 var column = this;
                                 var br = document.createElement(\"br\");
                                 var input = document.createElement(\"input\");
@@ -226,67 +231,33 @@ class DoubleResponseDataTable extends DataTable
     protected function getColumns()
     {
         $project = $this->project;
-        $section = $this->section;
-        $project_inputs = $project->load(['inputs' => function ($query) use ($section) {
-            return $query->where('survey_inputs.section', $section);
-        }])->inputs;
-        $origin_db = $project->dbname;
-        $double_db = $project->dbname . '_double';
-        $columns = ['idcode', 'form_id'];
-        $columns['samples_id'] = ['data' => 'samples_id', 'name' => 'samples_id', 'visible' => false, 'orderable' => false];
-        $visibality = true;
-        $k = 0;
-        $baseUrl = url("projects/$project->id");
-        foreach ($project_inputs as $input) {
+        $columns['action'] = ['title' => '', 'orderable' => false, 'searchable' => false, 'width' => '5px', 'order' => [[1, 'asc']]];
 
-            $column = $input->inputid;
-            $columnName = preg_replace('/s[0-9]+/', '', $column, 1);
-
-            $ori_render = "function (data, type, full, meta) {
-                            if(type === 'display') {
-                                if(full.$columnName) {
-                                    return '<span class=\'label label-success\'>'+data+'</span>';
-                                } else {
-                                    return '<span class=\'label label-danger\'>'+data+'</span><button class=\'btn btn-xs btn-warning usethis\' type=\'button\' data-url=\'$baseUrl/useorigin/'+full.samples_id+'/$column\'>Use this</button>';
-                                }
-                            }
-                            return data;
-                        }";
-            $dou_render = "function (data, type, full, meta) {
-                            if(type === 'display') {
-                                if(full.$columnName) {
-                                    return '<span class=\'label label-success\'>'+data+'</span>';
-                                } else {
-                                    return '<span class=\'label label-danger\'>'+data+'</span><button class=\'btn btn-xs btn-warning usethis\' type=\'button\' data-url=\'$baseUrl/usedouble/'+full.samples_id+'/$column\'>Use this</button>';
-                                }
-                            }
-                            return data;
-                        }";
-            $columns['ori_' . $columnName] = [
-                'data' => 'ori_' . $columnName,
-                'name' => 'ori_' . $columnName,
-                'title' => title_case('(1) ' . $columnName),
-                'defaultContent' => 'N',
-                'searchable' => false,
-                'visible' => $visibality,
-                'className' => trim($columnName),
-                'render' => function () use ($ori_render) {
-                    return $ori_render;
-                },
+        $columns['location_code'] = [
+            'name' => 'sample_datas.location_code',
+            'data' => 'location_code',
+            'title' => trans('sample.location_code'),
+            'orderable' => false,
+            'visible' => true,
+            'width' => '80px'
+        ];
+        $columns['form_id'] = [
+            'name' => 'samples.form_id',
+            'data' => 'form_id',
+            'title' => trans('sample.form_id'),
+            'orderable' => false,
+            'visible' => true,
+            'width' => '80px'
+        ];
+        foreach($project->sections as $section) {
+            $columns['section'.$section->sort] = [
+                'name' => 'section'.$section->sort,
+                'data' => 'section'.$section->sort,
+                'title' => 'R'.$section->sort,
+                'orderable' => false,
+                'visible' => true,
+                'width' => '120px',
             ];
-            $columns['dou_' . $columnName] = [
-                'data' => 'dou_' . $columnName,
-                'name' => 'dou_' . $columnName,
-                'title' => title_case('(2) ' . $columnName),
-                'defaultContent' => 'N',
-                'searchable' => false,
-                'visible' => $visibality,
-                'className' => trim($columnName),
-                'render' => function () use ($dou_render) {
-                    return $dou_render;
-                },
-            ];
-            $k++;
         }
         return $columns;
     }

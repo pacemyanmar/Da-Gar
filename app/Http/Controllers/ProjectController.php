@@ -34,6 +34,10 @@ class ProjectController extends AppBaseController
 
     private $projectRepository;
 
+    private $project;
+
+    private $dbname;
+
     public function __construct(ProjectRepository $projectRepo)
     {
         $this->middleware('auth');
@@ -461,6 +465,9 @@ class ProjectController extends AppBaseController
             return redirect()->back();
         }
 
+        $this->project = $project;
+        $this->dbname = $project->dbname;
+
 
         //$projectViewQuery = "CREATE VIEW ".$project->dbname." AS (SELECT * FROM ";
         $joinQuery = '';
@@ -477,15 +484,19 @@ class ProjectController extends AppBaseController
             $section_dbname = $project->dbname.'_'.$section_code;
 
             if (Schema::hasTable($section_dbname)) {
-                $this->updateTable($project,  'main', $fields, $section);
+                $this->updateTable('main', $fields, $section);
             } else {
-                $this->createTable($project,  'main', $fields, $section);
+                $this->createTable('main', $fields, $section);
             }
-            // check if table has already created
-            if (Schema::hasTable($section_dbname . '_dbl')) {
-                $this->updateTable($project,  'double', $fields, $section);
-            } else {
-                $this->createTable($project,  'double', $fields, $section);
+            if(config('sms.double_entry')) {
+                // check if table has already created
+                if (Schema::hasTable($section_dbname . '_dbl')) {
+                    $this->updateTable('double', $fields, $section);
+                } else {
+                    $this->createTable('double', $fields, $section);
+                }
+
+                $this->createDoubleStatusView($section);
             }
         }
 
@@ -494,9 +505,9 @@ class ProjectController extends AppBaseController
         //if ($project->training) {
         // check if table has already created
         if (Schema::hasTable($project->dbname . '_training')) {
-            $this->updateTable($project,  'training', $project_fields);
+            $this->updateTable('training', $project_fields);
         } else {
-            $this->createTable($project,  'training', $project_fields);
+            $this->createTable('training', $project_fields);
         }
 
         // }
@@ -505,9 +516,9 @@ class ProjectController extends AppBaseController
 
         // check if table has already created
         if (Schema::hasTable($project->dbname . '_rawlog')) {
-            $this->updateTable($project,  'rawlog', $project_fields);
+            $this->updateTable('rawlog', $project_fields);
         } else {
-            $this->createTable($project,  'rawlog', $project_fields);
+            $this->createTable('rawlog', $project_fields);
         }
 
 
@@ -524,9 +535,10 @@ class ProjectController extends AppBaseController
         return redirect()->back();
     }
 
-    private function updateTable($project,  $type = 'main', $fields, $section = null)
+    private function updateTable($type = 'main', $fields, $section = null)
     {
-        $db_name = $project->dbname;
+        $project = $this->project;
+        $db_name = $this->dbname;
         switch ($type) {
             case 'main':
                 $dbname = $db_name.'_'.$section;
@@ -655,9 +667,10 @@ class ProjectController extends AppBaseController
             ->update(['status' => 'published']);
     }
 
-    private function createTable($project,  $type = 'main', $fields, $section = null)
+    private function createTable($type = 'main', $fields, $section = null)
     {
-        $db_name = $project->dbname;
+        $project = $this->project;
+        $db_name = $this->dbname;
 
         switch ($type) {
             case 'main':
@@ -997,6 +1010,49 @@ class ProjectController extends AppBaseController
         }
 
         return redirect()->back();
+
+    }
+
+    private function makeDoubleStatusColumns($section)
+    {
+        $section_questions = $section->questions->sortBy('sort');
+        $section_num = $section->sort;
+        $dbName = $this->dbname .'_section'.$section_num;
+        $dbDblName = $this->dbname .'_section'.$section_num.'_dbl';
+        $columns = [];
+        foreach($section_questions as $question) {
+            $inputs = $question->surveyInputs->sortBy('sort');
+
+            foreach($inputs as $input) {
+                $column = $input->inputid;
+                $columns[$column] = "IF(".$dbName.".".$column." = ".$dbDblName.".".$column.", 0, 1) AS ".$column;
+            }
+            unset($inputs);
+        }
+
+        return implode(',', $columns);
+    }
+
+    private function createDoubleStatusView($section)
+    {
+        //SELECT sunt_aut_d_59c93_section0.sample_id, IF(sunt_aut_d_59c93_section0.jw_1 = sunt_aut_d_59c93_section0_dbl.jw_1, 0, 1) AS jw_1 FROM sunt_aut_d_59c93_section0 LEFT JOIN sunt_aut_d_59c93_section0_dbl ON sunt_aut_d_59c93_section0.sample_id = sunt_aut_d_59c93_section0_dbl.sample_id;
+
+        $section_num = $section->sort;
+        $select = $this->makeDoubleStatusColumns($section);
+
+        $viewName = $this->dbname . '_s' . $section_num.'_view';
+
+        $dbName = $this->dbname .'_section'.$section_num;
+
+        $dbDblName = $this->dbname .'_section'.$section_num.'_dbl';
+
+        if (!Schema::hasTable($viewName)) {
+            $viewStatement = "CREATE VIEW ".$viewName." AS (SELECT ".$dbName.".sample_id, ".$select. " FROM ";
+            $viewStatement .= $dbName." LEFT JOIN ".$dbDblName. " ON ";
+            $viewStatement .= $dbName.".sample_id = ".$dbDblName.".sample_id)";
+
+            DB::statement($viewStatement);
+        }
 
     }
 

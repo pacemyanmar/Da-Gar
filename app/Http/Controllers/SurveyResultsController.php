@@ -107,7 +107,7 @@ class SurveyResultsController extends AppBaseController
             $table->setSampleType($samplable);
         }
 
-
+        // To Do: all following codes need to remove
         $statesCollections = $project->samplesData->groupBy('level1');
         $locations['allStates'] = $project->samplesData->pluck('level1')->unique();
         $locations['allDistricts'] = $project->samplesData->pluck('level2')->unique();
@@ -483,7 +483,7 @@ class SurveyResultsController extends AppBaseController
         return $sampleResponse->render('projects.survey.' . $project_type . '.response-sample', compact('project', $project), compact('filters', $filters));
     }
 
-    public function responseRateDouble($project_id, $section, DoubleResponseDataTable $doubleResponse)
+    public function responseRateDouble($project_id, DoubleResponseDataTable $doubleResponse)
     {
         $project = $this->projectRepository->findWithoutFail($project_id);
         if (empty($project)) {
@@ -500,17 +500,10 @@ class SurveyResultsController extends AppBaseController
 
         $settings = [
             'project_id' => $project->id,
-            'section' => $section,
         ];
-        $sections_array = $project->sections;
-        $sections = [];
-        foreach ($sections_array as $sect) {
-            $sections[$sect->id] = $sect->sectionname;
-        }
+
 
         $doubleResponse->setProject($project);
-
-        $doubleResponse->setSection($section);
 
         switch ($project->type) {
             case 'sample2db':
@@ -522,7 +515,7 @@ class SurveyResultsController extends AppBaseController
                 break;
         }
 
-        return $doubleResponse->render('projects.survey.' . $project_type . '.response-double', compact('sections', $sections), compact('settings', $settings));
+        return $doubleResponse->render('projects.survey.' . $project_type . '.response-double', compact('settings', $settings));
     }
 
     public function originUse($project_id, $survey_id, $column, Request $request)

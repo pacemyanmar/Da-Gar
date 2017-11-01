@@ -26,7 +26,7 @@
                 <i class="glyphicon glyphicon-equalizer"></i> {!! trans('messages.response') !!}
             </a>
             @if(config('sms.double_entry'))
-            <a href="{{ route('projects.response.double', [$id, 1]) }}" class='btn btn-default btn-sm'>
+            <a href="{{ route('projects.response.double', [$id]) }}" class='btn btn-default btn-sm'>
                 <i class="glyphicon glyphicon-transfer"></i> {!! trans('messages.double_entry') !!}
             </a>
             @endif

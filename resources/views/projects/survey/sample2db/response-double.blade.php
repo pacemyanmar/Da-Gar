@@ -3,15 +3,6 @@
 @section('content')
     <section class="content-header">
         <h1 class="pull-left">Projects Double Entry Response</h1>
-        <span class="pull-right col-xs-3">
-        <label>Select section
-        <select id="responseSection" class="form-control">
-            @foreach($sections as $value => $name)
-            <option value="{!! route('projects.response.double',[$settings['project_id'], $value]) !!}" @if($value == $settings['section']) selected="selected" @endif>{!! $name !!}</option>
-            @endforeach
-        </select>
-        </label>
-        </span>
     </section>
     <div class="content">
         <div class="clearfix"></div>
@@ -19,6 +10,16 @@
         @include('flash::message')
 
         <div class="clearfix"></div>
+        <div class="box box-primary">
+            <div class="box-body">
+                <fieldset>
+                    <legend>Legend:</legend>
+                    <p>blank = no form submitted by data clerk.</p>
+                    <p>0 (zero) = no conflict between 2 datasets (data clerk and double entry)</p>
+                    <p>number > 0 = number of conflict between 2 datasets (data clerk and double entry)</p>
+                </fieldset>
+            </div>
+        </div>
         <div class="box box-primary">
             <div class="box-body">
                     @include('projects.table')
