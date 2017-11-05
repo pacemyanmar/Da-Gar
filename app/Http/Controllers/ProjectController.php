@@ -541,10 +541,10 @@ class ProjectController extends AppBaseController
         $db_name = $this->dbname;
         switch ($type) {
             case 'main':
-                $dbname = $db_name.'_'.$section;
+                $dbname = $db_name.'_s'.$section->sort;
                 break;
             case 'double':
-                $dbname = $db_name.'_'.$section.'_dbl';
+                $dbname = $db_name.'_s'.$section->sort.'_dbl';
                 break;
             default:
                 $dbname = $db_name.'_'.$type;
@@ -674,10 +674,10 @@ class ProjectController extends AppBaseController
 
         switch ($type) {
             case 'main':
-                $dbname = $db_name.'_section'.$section->sort;
+                $dbname = $db_name.'_s'.$section->sort;
                 break;
             case 'double':
-                $dbname = $db_name.'_section'.$section->sort.'_dbl';
+                $dbname = $db_name.'_s'.$section->sort.'_dbl';
                 break;
             default:
                 $dbname = $db_name.'_'.$type;
@@ -693,7 +693,7 @@ class ProjectController extends AppBaseController
                 $table->string('sample_code')->index(); // sample
             } else {
                 $table->unsignedInteger('sample_id')->index(); // sample
-                $table->string('sample')->index(); // sample
+                $table->string('sample_type')->index(); // sample
                 $table->unsignedInteger('user_id')->index();
                 $table->unsignedInteger('update_user_id')->index()->nullable();
             }

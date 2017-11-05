@@ -1,14 +1,14 @@
 <table class="table table-responsive" id="questions-table">
     <thead>
-        <th class="col-xs-1">{!! trans('messages.no_') !!}</th>
-        <th class="col-xs-11">{!! trans('messages.question') !!}</th>
+    <th class="col-xs-1">{!! trans('messages.no_') !!}</th>
+    <th class="col-xs-11">{!! trans('messages.question') !!}</th>
     </thead>
     <tbody>
-        @foreach($section->questions as $question)
-            @if(empty($question->observation_type) || in_array($sample->data->observer_field,$question->observation_type))
+    @foreach($section->questions as $question)
+        @if(empty($question->observation_type) || in_array($sample->data->observer_field,$question->observation_type))
             <tr id="{!! $question->css_id !!}">
                 <td class="col-xs-1">
-                <label>{!! $question->qnum !!}</label>
+                    <label>{!! $question->qnum !!}</label>
                     @if($question->report)
                         <span class="badge">In report</span>
                     @endif
@@ -28,7 +28,7 @@
                     </div>
                 </td>
             </tr>
-            @endif
-        @endforeach
+        @endif
+    @endforeach
     </tbody>
 </table>

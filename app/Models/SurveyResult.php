@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Traits\BindDynamicTableTrait;
 use Eloquent as Model;
 
 /**
@@ -11,6 +12,7 @@ use Eloquent as Model;
  */
 class SurveyResult extends Model
 {
+    use BindDynamicTableTrait;
     protected $guarded = ['id'];
 
     //public $timestamps = false;

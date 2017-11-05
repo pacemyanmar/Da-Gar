@@ -2,7 +2,6 @@
 
 namespace App\DataTables;
 
-use App\Models\Project;
 use App\Models\Sample;
 use App\Traits\SurveyQueryTrait;
 use Illuminate\Support\Facades\Auth;
@@ -61,9 +60,7 @@ class SurveyResultsDataTable extends DataTable
         $childTable = $project->dbname;
 
         $selectColumns = implode(',', $this->getSelectColumns());
-        if ($table == 'enumerators') {
 
-        }
         //$count = sizeof($unique_inputs);
         // run query
         $query = Sample::query();
@@ -89,30 +86,30 @@ class SurveyResultsDataTable extends DataTable
                 $join->on('samples.sample_data_id', 'sample_datas_view.id')->where('samples.project_id', $project->id);
             });
 
-            // join with result database
-            if ($auth->role->role_name == 'doublechecker') {
-                foreach ($project->sections as $k => $section) {
-                    $section_table = $childTable.'_section'.$section->sort;
-                    $query->join($section_table, function ($join) use ($section_table) {
-                        $join->on('samples.id', '=', $section_table . '.sample_id');
+            // loop sections
+            foreach ($project->sections as $k => $section) {
+                if (config('sms.double_entry')) {
+                    $dbl_section_table = $childTable . '_section' . $section->sort . '_dbl';
+                    $query->leftjoin($dbl_section_table, function ($join) use ($dbl_section_table) {
+                        $join->on('samples.id', '=', $dbl_section_table . '.sample_id');
                     });
+
+                    if ($auth->role->role_name == 'doublechecker') {
+                        $joinMethod = 'leftjoin';
+                    }
+
                 }
-            } else {
-                foreach ($project->sections as $k => $section) {
-                    $section_table = $childTable.'_section'.$section->sort;
-                    $query->{$joinMethod}($section_table, function ($join) use ($section_table) {
-                        $join->on('samples.id', '=', $section_table . '.sample_id');
-                    });
-                }
+                // join with result database
+
+                $section_table = $childTable . '_section' . $section->sort;
+                $query->{$joinMethod}($section_table, function ($join) use ($section_table) {
+                    $join->on('samples.id', '=', $section_table . '.sample_id');
+                });
+
+
+
             }
-            if(config('sms.double_entry')) {
-                foreach ($project->sections as $k => $section) {
-                    $section_table = $childTable.'_section'.$section->sort. '_dbl';
-                    $query->leftjoin($section_table, function ($join) use ($section_table) {
-                        $join->on('samples.id', '=', $section_table . '.sample_id');
-                    });
-                }
-            }
+
         }
 
         $filterColumns = Request::get('columns', []);
@@ -332,7 +329,6 @@ class SurveyResultsDataTable extends DataTable
                      GROUP_CONCAT(CONCAT('\n', ob.code ,' : \"', ob.updated_at ,'\"') SEPARATOR ',<br>\\n') AS obupdated";
 
 
-
         if (!Schema::hasTable('sample_datas_view')) {
             DB::statement("CREATE VIEW sample_datas_view AS
                            (
@@ -369,7 +365,7 @@ class SurveyResultsDataTable extends DataTable
 
         $level3_option = "";
         foreach ($townships as $key => $township) {
-            if($township->level3) {
+            if ($township->level3) {
                 $townshipkey = str_replace("'", "\\'", $township->level3);
                 if (!$township->level3_trans || $locale == config('app.fallback_locale')) {
                     $level3_option .= "<option value=\"$townshipkey\">$townshipkey</option>";
@@ -387,7 +383,7 @@ class SurveyResultsDataTable extends DataTable
 
         $level2_option = "";
         foreach ($districts as $key => $district) {
-            if($district->level2) {
+            if ($district->level2) {
                 $districtkey = str_replace("'", "\\'", $district->level2);
                 if (!$district->level2_trans || $locale == config('app.fallback_locale')) {
                     $level2_option .= "<option value=\"$districtkey\">$districtkey</option>";
@@ -404,7 +400,7 @@ class SurveyResultsDataTable extends DataTable
 
         $level1_option = "";
         foreach ($states as $key => $state) {
-            if($state->level1) {
+            if ($state->level1) {
                 $statekey = str_replace("'", "\\'", $state->level1);
                 if (!$state->level1_trans || $locale == config('app.fallback_locale')) {
                     $level1_option .= "<option value=\"$statekey\">$statekey</option>";
@@ -418,40 +414,40 @@ class SurveyResultsDataTable extends DataTable
 
         $call_primary_option = "";
 
-        $call_primary = $project->samplesData->pluck('call_primary','call_primary');
+        $call_primary = $project->samplesData->pluck('call_primary', 'call_primary');
 
         foreach ($call_primary as $phone) {
-            if($phone) {
+            if ($phone) {
                 $call_primary_option .= "<option value=\"$phone\">$phone</option>";
             }
         }
 
         $incident_center_option = "";
 
-        $incident_center = $project->samplesData->pluck('incident_center','incident_center');
+        $incident_center = $project->samplesData->pluck('incident_center', 'incident_center');
 
         foreach ($incident_center as $phone) {
-            if($phone) {
+            if ($phone) {
                 $incident_center_option .= "<option value=\"$phone\">$phone</option>";
             }
         }
 
         $sms_time_option = "";
 
-        $sms_time = $project->samplesData->pluck('sms_time','sms_time');
+        $sms_time = $project->samplesData->pluck('sms_time', 'sms_time');
 
         foreach ($sms_time as $time) {
-            if($time) {
+            if ($time) {
                 $sms_time_option .= "<option value=\"$time\">$time</option>";
             }
         }
 
         $observer_field_option = "";
 
-        $obs_type = $project->samplesData->pluck('observer_field','observer_field');
+        $obs_type = $project->samplesData->pluck('observer_field', 'observer_field');
 
         foreach ($obs_type as $type) {
-            if($type) {
+            if ($type) {
                 $observer_field_option .= "<option value=\"$type\">$type</option>";
             }
         }
@@ -470,7 +466,7 @@ class SurveyResultsDataTable extends DataTable
             $textColsArr[] = $flippedColumnName[$value] + 1;
         }
 
-        $selectColumns = ['level5', 'level4', 'level3', 'level2', 'level1', 'call_primary', 'sms_time', 'incident_center','observer_field'];
+        $selectColumns = ['level5', 'level4', 'level3', 'level2', 'level1', 'call_primary', 'sms_time', 'incident_center', 'observer_field'];
 
         $selectColumns = array_intersect_key($columnName, $selectColumns);
 
@@ -486,7 +482,7 @@ class SurveyResultsDataTable extends DataTable
         foreach ($locationColumns as $location => $column_key) {
             $location_option = isset(${$location . '_option'}) ? ${$location . '_option'} : '';
 
-            if($location_option) {
+            if ($location_option) {
                 $select_js .= "this.api().columns('$column_key').every( function () {
                               var column = this;
                               var location = $('<select style=\"width:80% !important\"><option value=\"\">-</option>$location_option</select>')

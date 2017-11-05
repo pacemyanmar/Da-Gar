@@ -24,20 +24,17 @@ class SurveyResultsController extends AppBaseController
 {
     use LogicalCheckTrait;
 
+    protected $error_bag;
     /** @var  ProjectRepository */
     private $projectRepository;
-
     private $questionRepository;
-
-    private $surveyResultModel;
-
     private $surveyInputRepo;
-
     private $sampleRepository;
-
     private $sampleDataModel;
-
-    protected $error_bag;
+    private $saveSample;
+    private $saveSampleType;
+    private $saveResults;
+    private $sampleId;
 
     public function __construct(ProjectRepository $projectRepo,
                                 QuestionRepository $questionRepo,
@@ -173,11 +170,11 @@ class SurveyResultsController extends AppBaseController
     /**
      * [create results for project]
      * @param  integer $project_id [current project id from route parameter]
-     * @param  integer|string $samplable  [sample id from route parameter]
-     * @param  string $form_id      [sample form id]
+     * @param  integer|string $samplable [sample id from route parameter]
+     * @param  string $form_id [sample form id]
      * @return Illuminate\View\View         [view for result creation]
      */
-    public function create($project_id, $samplable, $form_id = '')
+    public function create($project_id, $samplable, $form_id = '', Request $request)
     {
         $project = $this->projectRepository->findWithoutFail($project_id);
         $auth = Auth::user();
@@ -193,6 +190,8 @@ class SurveyResultsController extends AppBaseController
 
         $sample = $this->sampleRepository->findWithoutFail($samplable);
 
+        $this->sampleId = $sample->id;
+
         if (empty($sample)) {
             Flash::error("No sample database found.");
             return redirect(route('projects.index'));
@@ -207,13 +206,12 @@ class SurveyResultsController extends AppBaseController
         $double_results = [];
 
         foreach ($project->sections as $k => $section) {
-             $section_table = $dbname.'_section'.$section->sort;
-             $results['section'.$section->sort] = $sample->resultWithTable($section_table)->first();
+            $section_table = $dbname . '_section' . $section->sort;
+            $results['section' . $section->sort] = $sample->resultWithTable($section_table)->first();
 
-            if ($auth->role->role_name == 'doublechecker') {
-                $section_dbl_table = $section_table . '_dbl';
-                $double_results['section'.$section->sort] = $sample->resultWithTable($section_dbl_table)->first();
-            }
+            $section_dbl_table = $section_table . '_dbl';
+            $double_results['section' . $section->sort] = $sample->resultWithTable($section_dbl_table)->first();
+
         }
 
 
@@ -227,11 +225,10 @@ class SurveyResultsController extends AppBaseController
         }]);
 
 
-
         if (!empty($results)) {
             $view->with('results', $results);
         }
-        if ($auth->role->role_name == 'doublechecker') {
+        if (!empty($double_results)) {
             $view->with('double_results', $double_results);
         }
 
@@ -240,14 +237,18 @@ class SurveyResultsController extends AppBaseController
             $view->with('form', $form_id);
         }
 
+        if ($request->has('double')) {
+            $view->with('double', true);
+        }
+
         return $view;
     }
 
     /**
      * [save results]
-     * @param  integer  $project_id [current project id from route parameter]
-     * @param  integer|string $samplable  [sample id from route parameter]
-     * @param  Request $request    [form input]
+     * @param  integer $project_id [current project id from route parameter]
+     * @param  integer|string $samplable [sample id from route parameter]
+     * @param  Request $request [form input]
      * @return string              [json string]
      */
     public function save($project_id, $samplable, Request $request)
@@ -263,14 +264,12 @@ class SurveyResultsController extends AppBaseController
         // get all result array from form
         $results = $request->input('result');
 
-        // group by all inputs with section and loop
-        $results_to_save = $results;
-
-        if(empty($results)) {
-            $results = (array) $results;
+        if (empty($results)) {
+            $results = (array)$results;
         }
 
         $sample = $this->sampleRepository->findWithoutFail($samplable);
+
 
         $auth_user = Auth::user();
 
@@ -284,6 +283,7 @@ class SurveyResultsController extends AppBaseController
             $sample->user_id = $auth_user->id;
         }
 
+        $this->saveSample = $sample;
 
         // get all sections in a project
         $sections = $project->sections->sortBy('sort');
@@ -303,42 +303,22 @@ class SurveyResultsController extends AppBaseController
         $sample_type = $request->input('sample');
 
 
-        $section_table = $dbName.'_section'.$section->sort;
-
-        if (Auth::user()->role->role_name == 'doublechecker') {
-            $db_name = $section_dbl_table = $section_table . '_dbl';
-        } else {
-            $db_name = $section_table;
-        }
-
-        $sample->setRelatedTable($db_name);
-
-        $surveyResult = $sample->resultWithTable($db_name)->first();
-
-        if(empty($surveyResult)) {
-
-            $surveyResult = new SurveyResult();
-
-        }
-
-        $surveyResult->setTable($db_name);
-
-
-        $timestamp = 'section'.$section->sort.'updated';
+        $allResults = [];
 
         $section_inputs = $section->inputs->pluck('value', 'inputid');
 
         $section_has_result_submitted = array_intersect_key((array)$results, $section_inputs->toArray());
 
-        if(count($section_has_result_submitted) > 0) {
-            if(!array_key_exists($section->id, $section_result)) {
+        if (count($section_has_result_submitted) > 0) {
+            if (!array_key_exists($section->id, $section_result)) {
                 $section_result[$section->id] = true;
 
-                $surveyResult->{$timestamp} = Carbon::now();
+                $allResults['section' . $section->sort . 'updated'] = Carbon::now();
             }
         }
 
         $questions = $section->questions;
+        $allResults = [];
         foreach ($questions as $question) {
             $qid = $question->id;
             $inputs = $question->surveyInputs;
@@ -348,9 +328,8 @@ class SurveyResultsController extends AppBaseController
             $question_has_result_submitted = array_intersect_key((array)$results, $question_inputs->toArray());
 
 
-
-            if(count($question_has_result_submitted) > 0) {
-                if(!array_key_exists($question->id, $question_result)) {
+            if (count($question_has_result_submitted) > 0) {
+                if (!array_key_exists($question->id, $question_result)) {
                     $question__result[$question->id] = true;
                 }
             }
@@ -358,92 +337,102 @@ class SurveyResultsController extends AppBaseController
             foreach ($inputs as $input) {
                 $inputid = $input->inputid;
                 // $result = submitted form data
-                // look for individual inputid submitted or not from $result array
-                if(array_key_exists($input->inputid, $results)) {
+                // look for individual inputid in $result array submitted or not
+                if (array_key_exists($input->inputid, $results)) {
                     // if found, question is summitted and set checkbox values to zero if false
-                    if($input->type == 'checkbox') {
+                    if ($input->type == 'checkbox') {
                         $result_arr[$qid][$inputid] = ($results[$inputid]) ? $results[$inputid] : 0;
                     } else {
                         $result_arr[$qid][$inputid] = ($results[$inputid] !== null && $results[$inputid] !== false && $results[$inputid] !== '') ? $results[$inputid] : null;
                     }
                 } else {
                     // if section is submitted
-                    if(array_key_exists($section->id, $section_result)) {
+                    if (array_key_exists($section->id, $section_result)) {
 
-                        if(empty($question_has_result_submitted)) {
+                        if (empty($question_has_result_submitted)) {
                             $result_arr[$qid][$inputid] = null;
 
                         } else {
-                            if($input->type == 'checkbox') {
+                            if ($input->type == 'checkbox') {
                                 $result_arr[$qid][$inputid] = 0;
                             } else {
                                 $result_arr[$qid][$inputid] = null;
                             }
                         }
 
-                    }  else {
-                        // if section is submitted leave as value in database
-                        if($submitted_section == $section->id) {
-                            $result_arr[$qid][$inputid] = null;
-                        } else {
-                            $result_arr[$qid][$inputid] = $surveyResult->{$input->inputid};
-                        }
                     }
 
                 }
                 $this->logicalCheck($input, $result_arr[$qid][$inputid]);
             }
 
-            $surveyResult->fill($result_arr[$qid]);
+            $allResults += $result_arr[$qid];
         }
 
+        $section_table = $dbName . '_section' . $section->sort;
 
-        $surveyResult->{'section'.$section->sort.'status'} = $this->error_bag;
- 
-        //$surveyResult = $this->logicalCheck($result_arr, $surveyResult, $project, $sample);
+        $this->saveSampleType = (isset($sample_type)) ? $sample_type : 1;
+
+        $this->saveResults = $allResults;
+
+        $originTable = $section_table;
+
+        $doubleTable = $section_table . '_dbl';
+
+        $this->saveSection = 'section' . $section->sort . 'status';
 
 
-        $surveyResult->sample = (isset($sample_type)) ? $sample_type : 1;
-
-
-        $surveyResult->user_id = $auth_user->id;
-
-        $surveyResult->sample()->associate($sample);
-
-        $surveyResult->setTable($db_name);
-
-        $surveyResult->save();
-
-        $sample->save();
-
-        return $this->sendResponse($results_to_save, trans('messages.saved'));
-    }
-
-    private function zawgyiUnicode(&$value, $key)
-    {
-        $mya_en = [
-            '၀' => '0',
-            '၁' => '1',
-            '၂' => '2',
-            '၃' => '3',
-            '၄' => '4',
-            '၅' => '5',
-            '၆' => '6',
-            '၇' => '7',
-            '၈' => '8',
-            '၉' => '9',
-        ];
-        if (is_string($value)) {
-            $value = strtr($value, $mya_en);
-
-            $value = Converter::convert($value, 'zawgyi', 'unicode');
+        if (Auth::user()->role->role_name == 'doublechecker') {
+            $this->saveResults($doubleTable);
+        } else {
+            $this->saveResults($originTable);
+            if ($request->has('double')) {
+                $this->saveResults($doubleTable);
+            }
         }
+
+        return $this->sendResponse($allResults, trans('messages.saved'));
     }
 
-    private function unicodeZawgyi(&$value, $key)
+    /**
+     * private $originTable;
+     *
+     * private $doubleTable;
+     *
+     * private $saveSample;
+     *
+     * private $saveResults;
+     */
+
+    private function saveResults($table)
     {
-        $value = Converter::convert($value, 'unicode', 'zawgyi');
+        $sample = $this->saveSample;
+
+        $sample->setRelatedTable($table);
+
+        $surveyResult = $sample->resultWithTable()->first();
+
+        if (empty($surveyResult)) {
+
+            $surveyResult = new SurveyResult();
+
+        }
+
+        $surveyResult->setTable($table);
+
+        $surveyResult->sample()->associate($this->saveSample);
+
+        $surveyResult->{$this->saveSection} = $this->error_bag;
+
+        $surveyResult->sample_type = $this->saveSampleType;
+
+        $surveyResult->user_id = Auth()->user()->id;
+
+        $surveyResult->forceFill($this->saveResults);
+
+        $result = $surveyResult->save();
     }
+
 
     public function responseRateSample($project_id, $filter, SampleResponseDataTable $sampleResponse, Request $request)
     {
@@ -609,7 +598,7 @@ class SurveyResultsController extends AppBaseController
         $sample_query = 'project_id, count(project_id) as total, SUM(IF(' . $project->dbname . '.sample_id IS NOT NULL,1,0)) AS reported';
 
         foreach ($project->inputs as $input) {
-            if($input->value) {
+            if ($input->value) {
                 $sample_query .= ' , SUM(IF(' . $input->inputid . '=' . $input->value . ',1,0)) AS ' . $input->inputid . '_' . $input->value . ' , SUM(IF(' . $input->inputid . ' IS NULL,1,0)) AS q' . $input->question->qnum . '_none';
             }
         }
@@ -623,6 +612,32 @@ class SurveyResultsController extends AppBaseController
             ->with('project', $project)
             ->with('questions', $project->questions)
             ->with('results', $results_count);
+    }
+
+    private function zawgyiUnicode(&$value, $key)
+    {
+        $mya_en = [
+            '၀' => '0',
+            '၁' => '1',
+            '၂' => '2',
+            '၃' => '3',
+            '၄' => '4',
+            '၅' => '5',
+            '၆' => '6',
+            '၇' => '7',
+            '၈' => '8',
+            '၉' => '9',
+        ];
+        if (is_string($value)) {
+            $value = strtr($value, $mya_en);
+
+            $value = Converter::convert($value, 'zawgyi', 'unicode');
+        }
+    }
+
+    private function unicodeZawgyi(&$value, $key)
+    {
+        $value = Converter::convert($value, 'unicode', 'zawgyi');
     }
 
 }

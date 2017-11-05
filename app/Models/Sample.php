@@ -87,7 +87,7 @@ class Sample extends Model
 
         $instance = new SurveyResult();
 
-        $instance->setTable($table);
+        $instance->bind($table);
 
         $localKey = $this->getKeyName();
 
