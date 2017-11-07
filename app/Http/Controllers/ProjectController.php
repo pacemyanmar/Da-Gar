@@ -1017,8 +1017,8 @@ class ProjectController extends AppBaseController
     {
         $section_questions = $section->questions->sortBy('sort');
         $section_num = $section->sort;
-        $dbName = $this->dbname .'_section'.$section_num;
-        $dbDblName = $this->dbname .'_section'.$section_num.'_dbl';
+        $dbName = $this->dbname .'_s'.$section_num;
+        $dbDblName = $this->dbname .'_s'.$section_num.'_dbl';
         $columns = [];
         foreach($section_questions as $question) {
             $inputs = $question->surveyInputs->sortBy('sort');
