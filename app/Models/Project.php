@@ -54,7 +54,7 @@ class Project extends Model
      */
     public static $rules = [
         'project' => 'required',
-        'unique_code' => 'unique:projects',
+        'unique_code' => 'unique:projects|required',
     ];
 
     /**
