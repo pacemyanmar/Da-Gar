@@ -1042,9 +1042,9 @@ class ProjectController extends AppBaseController
 
         $viewName = $this->dbname . '_s' . $section_num.'_view';
 
-        $dbName = $this->dbname .'_section'.$section_num;
+        $dbName = $this->dbname .'_s'.$section_num;
 
-        $dbDblName = $this->dbname .'_section'.$section_num.'_dbl';
+        $dbDblName = $this->dbname .'_s'.$section_num.'_dbl';
 
         $baseColumns = [$dbName.".sample_id"];
 
