@@ -1050,6 +1050,8 @@ class ProjectController extends AppBaseController
 
         $selectColumns = array_merge($baseColumns, $select);
 
+        $selectColumns = implode(',', $selectColumns);
+
         if (!Schema::hasTable($viewName)) {
             $viewStatement = "CREATE VIEW ".$viewName." AS (SELECT ".$selectColumns. " FROM ";
             $viewStatement .= $dbName." LEFT JOIN ".$dbDblName. " ON ";
