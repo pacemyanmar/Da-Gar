@@ -9,20 +9,71 @@ use App\Models\Section;
 
 trait LogicalCheckTrait
 {
-    protected $error_bag;
+    protected $errorBag;
+    private $sectionErrorBag;
 
     protected function logicalCheck($input, $value)
     {
         // $status => 1 : complete, 2 : missing, 3 : error, 0 :unknown or empty
 
-        if($value !== null) {
-            // if value exists, set status as complete
-            $this->error_bag = 1;
+        if($value === 0 || $value || $input->optional) {
+            // if value not empty, set status as complete
+            $this->errorBag[$input->question->qnum][] = 1;
         }
 
-        if(!$input->optional && $value === null) {
+        if(!$input->optional && $value !== 0 && !$value) {
             // if value is null and input is required, set status as incomplete
-            $this->error_bag = 2;
+            $this->errorBag[$input->question->qnum][] = 2;
+        }
+    }
+
+    private function getQuestionStatus($qError, $qnum)
+    {
+
+        $unique_error = array_unique($qError);
+        $error_count = count($unique_error);
+
+        if (1 == $error_count) {
+            $this->sectionErrorBag[$qnum] = array_shift($qError); //this can be any of 1,2,3
+        }
+
+        if ($error_count > 1) {
+            // if no error and missing, set status as missing (2)
+            if (!in_array(3, $qError) && in_array(2, $qError)) {
+                $this->sectionErrorBag[$qnum] = 2; // missing or incomplete
+            }
+            // if at least 1 input complete, set question status as complete (1)
+            if (in_array(1, $qError)) {
+                $this->sectionErrorBag[$qnum] = 1;
+            }
+            // if there is error on one input, set question as error (3)
+            if (in_array(3, $qError)) {
+                $this->sectionErrorBag[$qnum] = 3; // error
+            }
+
+        }
+    }
+
+    private function getSectionStatus()
+    {
+        $unique_error = array_unique($this->sectionErrorBag);
+        $error_count = count($unique_error);
+        // if all questions have same status, set that status to section
+        // section must be set as complete only after all questions complete
+        if (1 == $error_count) {
+            return array_shift($this->sectionErrorBag); //this can be any of 1,2,3
+        }
+        // if questions have different status
+        if ($error_count > 1) {
+            // if one question has error, set section status as error (3)
+            if (in_array(3, $this->sectionErrorBag)) {
+                return 3; // error
+            }
+            // if no error and if one question missing/incomplete, set section status as incomplete (2)
+            if (!in_array(3, $this->sectionErrorBag) && in_array(2, $this->sectionErrorBag)) {
+                return 2; // missing or incomplete
+            }
+
         }
     }
 

@@ -24,7 +24,8 @@ class SurveyResultsController extends AppBaseController
 {
     use LogicalCheckTrait;
 
-    protected $error_bag;
+    protected $errorBag;
+
     /** @var  ProjectRepository */
     private $projectRepository;
     private $questionRepository;
@@ -330,7 +331,7 @@ class SurveyResultsController extends AppBaseController
 
             if (count($question_has_result_submitted) > 0) {
                 if (!array_key_exists($question->id, $question_result)) {
-                    $question__result[$question->id] = true;
+                    $question_result[$question->id] = true;
                 }
             }
 
@@ -346,25 +347,24 @@ class SurveyResultsController extends AppBaseController
                         $result_arr[$qid][$inputid] = ($results[$inputid] !== null && $results[$inputid] !== false && $results[$inputid] !== '') ? $results[$inputid] : null;
                     }
                 } else {
-                    // if section is submitted
-                    if (array_key_exists($section->id, $section_result)) {
 
-                        if (empty($question_has_result_submitted)) {
-                            $result_arr[$qid][$inputid] = null;
+                    if ($input->type == 'checkbox') {
 
+                        if (count($question_has_result_submitted) > 0) {
+                            $result_arr[$qid][$inputid] = 0;
                         } else {
-                            if ($input->type == 'checkbox') {
-                                $result_arr[$qid][$inputid] = 0;
-                            } else {
-                                $result_arr[$qid][$inputid] = null;
-                            }
+                            $result_arr[$qid][$inputid] = null;
                         }
 
+                    } else {
+                        $result_arr[$qid][$inputid] = null;
                     }
 
                 }
                 $this->logicalCheck($input, $result_arr[$qid][$inputid]);
             }
+
+            $this->getQuestionStatus($this->errorBag[$question->qnum], $question->qnum);
 
             $allResults += $result_arr[$qid];
         }
@@ -422,7 +422,7 @@ class SurveyResultsController extends AppBaseController
 
         $surveyResult->sample()->associate($this->saveSample);
 
-        $surveyResult->{$this->saveSection} = $this->error_bag;
+        $surveyResult->{$this->saveSection} = $this->getSectionStatus();
 
         $surveyResult->sample_type = $this->saveSampleType;
 
