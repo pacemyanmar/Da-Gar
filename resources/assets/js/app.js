@@ -7,7 +7,9 @@
 
 require('./bootstrap');
 require('./settings');
-
+hyperform = require('hyperform').default;
+window.hyperform = hyperform;
+global.hyperform = hyperform;
 hyperform.add_translation("mm",{
     TextTooLong: 'စာလုံးအေရအတွက်အား %l အောက်သို့ လျှော့ချပါ (လောလောဆယ် %l စာလုံးအား အသုံးပြုထားသည်).',
     TextTooShort:"စာလုံးအေရအတွက်အား %l ထက်ပိုသုံးပါ (လောလောဆယ် %l စာလုံးအား အသုံးပြုထားသည်).",
@@ -31,8 +33,7 @@ hyperform.add_translation("mm",{
     BadInputNumber: 'ဂဏန်း တစ်ခုဖြစ်ည့သွင်းပါ။'
 });
 
-hyperform(window, {revalidate: 'oninput'});
-
+window.Vue = require('vue');
 /**
  * Next, we will create a fresh Vue application instance and attach it to
  * the page. Then, you may begin adding components to this application

@@ -12,6 +12,11 @@ try {
     window.$ = $;
     global.jQuery = $;
 
+    require('jquery-ui');
+    require('jquery-ui-sortable');
+
+    require('./tooltip-conflict');
+
     require('bootstrap-sass');
 
     /**
@@ -20,14 +25,14 @@ try {
      * and simple, leaving you to focus on building your next great project.
      */
 
-    window.Vue = require('vue');
 
 
-    require('select2');
-    require('select2/dist/js/i18n/en');
+
 
     require('formBuilder');
     require('formBuilder/dist/form-render.min')
+
+
 
     /**
      * Require datatables library
@@ -42,12 +47,14 @@ try {
 
 
     window.moment = require('moment');
-
     require('gasparesganga-jquery-loading-overlay');
-    window.hyperform = require('hyperform').default;
+
+
+    require('select2');
+    require('select2/dist/js/i18n/en');
+
     require('admin-lte');
-    require('jquery-ui');
-    require('jquery-ui-sortable')
+
 
 } catch (e) {}
 
