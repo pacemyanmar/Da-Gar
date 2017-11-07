@@ -1030,7 +1030,7 @@ class ProjectController extends AppBaseController
             unset($inputs);
         }
 
-        return implode(',', $columns);
+        return $columns;
     }
 
     private function createDoubleStatusView($section)
@@ -1046,8 +1046,12 @@ class ProjectController extends AppBaseController
 
         $dbDblName = $this->dbname .'_section'.$section_num.'_dbl';
 
+        $baseColumns = [$dbName.".sample_id"];
+
+        $selectColumns = array_merge($baseColumns, $select);
+
         if (!Schema::hasTable($viewName)) {
-            $viewStatement = "CREATE VIEW ".$viewName." AS (SELECT ".$dbName.".sample_id, ".$select. " FROM ";
+            $viewStatement = "CREATE VIEW ".$viewName." AS (SELECT ".$selectColumns. " FROM ";
             $viewStatement .= $dbName." LEFT JOIN ".$dbDblName. " ON ";
             $viewStatement .= $dbName.".sample_id = ".$dbDblName.".sample_id)";
 
