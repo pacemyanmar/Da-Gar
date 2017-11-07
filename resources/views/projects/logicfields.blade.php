@@ -1,6 +1,6 @@
 @push('before-body-end')
 <script type="text/javascript">
-
+    (function($) {
     $(document).ready(function(){
         var logicStr =   '<tr class="logic" style="display: table-row;"><td style="vertical-align: middle">';
                 logicStr +=  '<input type="text" style="width: 100%" class="form-control leftval"/>';
@@ -45,6 +45,7 @@
             $(this).find(":input").filter(function(){ return !this.value; }).attr("disabled", "disabled");
         });
     });
+    })(jQuery);
 </script>
 @endpush
 <div class="form-group col-sm-12 col-lg-12">
