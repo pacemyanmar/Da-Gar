@@ -18,13 +18,7 @@
             $options['placeholder'] .= $element->extras['min'].' - '. $element->extras['max'];
     }
 @endphp
-@push("before-head-end")
-    <style>
-        input[type=date]::-webkit-inner-spin-button, input[type=date]::-webkit-calendar-picker-indicator {
-            display: none;
-        }
-    </style>
-@endpush
+
 <div class="form-group">
     <div class="input-group">
         <!-- if string long to show in label show as tooltip -->
