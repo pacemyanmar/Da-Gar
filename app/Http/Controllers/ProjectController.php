@@ -479,7 +479,7 @@ class ProjectController extends AppBaseController
 
             $fields = $section->inputs->unique('inputid');
 
-            $section_code = 'section'.$section->sort;
+            $section_code = 's'.$section->sort;
 
             $section_dbname = $project->dbname.'_'.$section_code;
 
