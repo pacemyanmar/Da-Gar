@@ -28,6 +28,8 @@ $fa-font-path: "~font-awesome/fonts" !default;
 
 @import "~jquery-datetimepicker/jquery.datetimepicker.css";
 
+@import "../css/form-builder.css";
+
 .buttons-container {
   margin-bottom: 15px;
   & .dt-buttons {

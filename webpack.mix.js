@@ -17,7 +17,7 @@ mix.js('resources/assets/js/app.js', 'public/js').autoload({
     'datatables.net','datatables.net-bs',
     'datatables.net-buttons','datatables.net-buttons-bs',
     'datatables.net-buttons/js/buttons.colVis','gasparesganga-jquery-loading-overlay',
-    'select2','select2/dist/js/i18n/en','admin-lte'])
+    'select2','select2/dist/js/i18n/en','admin-lte','jquery-ui','jquery-ui-sortable'])
     .sass('resources/assets/sass/app.scss', 'public/css')
     .version();
 

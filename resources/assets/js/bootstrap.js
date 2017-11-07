@@ -22,6 +22,13 @@ try {
 
     window.Vue = require('vue');
 
+
+    require('select2');
+    require('select2/dist/js/i18n/en');
+
+    require('formBuilder');
+    require('formBuilder/dist/form-render.min')
+
     /**
      * Require datatables library
      */
@@ -36,11 +43,11 @@ try {
 
     window.moment = require('moment');
 
-    require('select2');
-    require('select2/dist/js/i18n/en');
     require('gasparesganga-jquery-loading-overlay');
     window.hyperform = require('hyperform').default;
     require('admin-lte');
+    require('jquery-ui');
+    require('jquery-ui-sortable')
 
 } catch (e) {}
 
