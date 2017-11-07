@@ -210,7 +210,7 @@ class SampleDataController extends AppBaseController
                     "incident_center" => ($row->incident_center) ? $row->incident_center : null,
                     "obs_type" => ($row->obs_type) ? $row->obs_type : null,
                     "registered_voters" => ($row->registered_voters) ? $row->registered_voters : null,
-                    "sbo" => $row->sbo,
+                    "sbo" => ($row->sbo) ? $row->sbo : false,
                     "pvt1" => ($row->pvt1) ? $row->pvt1 : false,
                     "pvt2" => ($row->pvt2) ? $row->pvt2 : false,
                     "pvt3" => ($row->pvt3) ? $row->pvt3 : false,
@@ -229,10 +229,10 @@ class SampleDataController extends AppBaseController
 
                     $given_name = ($row->given_name) ? $row->given_name : null;
                     $family_name = ($row->family_name) ? $row->family_name : null;
-                    $full_name = ($row->full_name) ? $row->full_name : $given_name . ' ' . $family_name;
+                    $full_name = ($row->name) ? $row->name : $given_name . ' ' . $family_name;
 
                     $observer_arr = [
-                        "code" => ($row->observer_code) ? $row->observer_code : null,
+                        "code" => ($row->observer_code) ? $row->location_code.'-'.$row->observer_code : null,
                         "observer_field" => ($row->observer_field) ? $row->observer_field : null,
 
                         'given_name' => $given_name,
