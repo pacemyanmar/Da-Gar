@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\AppBaseController;
 use App\Http\Requests\CreateQuestionRequest;
 use App\Http\Requests\UpdateQuestionRequest;
+use App\Models\Question;
 use App\Repositories\ProjectRepository;
 use App\Repositories\QuestionRepository;
 use App\Repositories\SurveyInputRepository;
@@ -62,7 +63,7 @@ class QuestionController extends AppBaseController
 
         // $input['question_trans'] = json_encode([$lang => $input['question']]);
 
-        $question = $this->questionRepository->create($input);
+        $question = Question::create($input);
 
         $args = [
             'project' => $project,

@@ -138,7 +138,7 @@ class ProjectController extends AppBaseController
 
         // $input['project_trans'] = json_encode([$lang => $input['project']]);
 
-        $project = $this->projectRepository->create($input);
+        $project = Project::create($input);
 
         $sections = $input['sections'];
 
