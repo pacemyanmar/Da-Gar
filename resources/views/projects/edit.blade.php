@@ -218,14 +218,30 @@
                 modal.find("select[name='layout']").val(layout)
                 modal.find("input[name='_method']").val(method)
                 $('#qModalLabel').text(question);
-                var fbEditor = $(document.getElementById('fb-editor'));
+                let fbEditor = $(document.getElementById('fb-editor'));
 
-                var options = {
+                let fields = [{
+                    label: 'Checkbox',
+                    attrs: {
+                        type: 'check'
+                    },
+                    icon: '🌟'
+                }];
+                let templates = {
+                    check: function(fieldData) {
+                        return {
+                            field: '<input type="checkbox" id="'+fieldData.name+'">'
+                        };
+                    }
+                };
+
+                let options = {
                     showActionButtons: false, // defaults: true
                     editOnAdd: true,
                     stickyControls: true,
                     dataType: 'json',
                     controlOrder: [
+                        'checkbox',
                         'checkbox-group',
                         'radio-group',
                         'text',
@@ -234,7 +250,7 @@
                         'textarea'
                     ],
 
-                    disableFields: ['autocomplete', 'button', 'header', 'file', 'paragraph', 'hidden', 'select'],
+                    disableFields: ['autocomplete', 'button', 'header', 'file', 'paragraph', 'hidden'],
 
                     typeUserAttrs: {
                         text: {
@@ -309,7 +325,7 @@
                                 name: 'other'
                             }
                         },
-                        checkbox: {
+                        check: {
                             skip: {
                                 label: 'Skip',
                                 type: 'text',
@@ -385,7 +401,9 @@
                         'access',
                         'description'
                     ],
-                    defaultFields: formData
+                    defaultFields: formData,
+                    fields,
+                    templates
                 };
 
                 var formBuilder = fbEditor.formBuilder(options);

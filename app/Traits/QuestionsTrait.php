@@ -166,6 +166,9 @@ trait QuestionsTrait
                 $a['name'] = $a['inputid'] = str_slug($qnum);
             } elseif ($a['type'] == 'checkbox') {
                 $a['name'] = str_slug('p' . $project_id . $qnum . 'c');
+            } elseif ($a['type'] == 'check') {
+                $a['type'] = 'checkbox';
+                $a['name'] = str_slug('p' . $project_id . $qnum . 'c');
             } elseif ($a['type'] == 'template') {
                 // if layout is form16 or form18
                 // set input type as layout
