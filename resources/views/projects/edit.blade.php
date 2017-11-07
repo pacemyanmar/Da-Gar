@@ -118,7 +118,7 @@
             });
 
             $('#training').change(function () {
-                if($(this).is(':checked')) {
+                if ($(this).is(':checked')) {
                     var trainingmode = 1;
                 } else {
                     var trainingmode = 0;
@@ -192,15 +192,15 @@
                 // Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.
                 var modal = $(this)
 
-                if(observation) {
+                if (observation) {
                     $.each(observation, function (key, value) {
                         modal.find("input[name='observation_type[" + key + "]']").prop('checked', true)
                     });
                 } else {
-                        modal.find("input.observation_type").prop('checked', false)
+                    modal.find("input.observation_type").prop('checked', false)
                 }
 
-                if(party) {
+                if (party) {
                     $.each(party, function (key, value) {
                         modal.find("input[name='party[" + key + "]']").val(value);
                     });
@@ -220,19 +220,34 @@
                 $('#qModalLabel').text(question);
                 let fbEditor = $(document.getElementById('fb-editor'));
 
-                let fields = [{
-                    label: 'Checkbox',
-                    attrs: {
-                        type: 'check'
+                let fields = [
+                    {
+                        label: 'Checkbox',
+                        attrs: {
+                            type: 'check'
+                        },
+                        icon: '🌟'
                     },
-                    icon: '🌟'
-                }];
-                let templates = {
-                    check: function(fieldData) {
-                        return {
-                            field: '<input type="checkbox" id="'+fieldData.name+'">'
-                        };
+                    {
+                        label: 'Radio',
+                        attrs: {
+                            type: 'single'
+                        },
+                        icon: '🌟'
                     }
+                ];
+                let templates = {
+                    check: function (fieldData) {
+                        return {
+                            field: '<input type="checkbox" id="' + fieldData.name + '">'
+                        };
+                    },
+                    single: function (fieldData) {
+                        return {
+                            field: '<input type="radio" id="' + fieldData.name + '">'
+                        };
+                    },
+
                 };
 
                 let options = {
@@ -353,7 +368,7 @@
                                 name: 'other'
                             }
                         },
-                        radio: {
+                        single: {
                             skip: {
                                 label: 'Skip',
                                 type: 'text',
@@ -458,101 +473,101 @@
 
 
 @push('before-body-end')
-<style type="text/css">
-    .invalid {
-        border: 1px solid red;
-    }
+    <style type="text/css">
+        .invalid {
+            border: 1px solid red;
+        }
 
-    .hf-warning {
-        color: red;
-    }
+        .hf-warning {
+            color: red;
+        }
 
-    /* The switch - the box around the slider */
-    .switch {
-        position: relative;
-        display: inline-block;
-        width: 60px;
-        height: 34px;
-    }
+        /* The switch - the box around the slider */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+        }
 
-    /* Hide default HTML checkbox */
-    .switch input {
-        display: none;
-    }
+        /* Hide default HTML checkbox */
+        .switch input {
+            display: none;
+        }
 
-    /* The slider */
-    .slider {
-        position: absolute;
-        cursor: pointer;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background-color: #ccc;
-        -webkit-transition: .4s;
-        transition: .4s;
-    }
+        /* The slider */
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            -webkit-transition: .4s;
+            transition: .4s;
+        }
 
-    .slider:before {
-        position: absolute;
-        content: "";
-        height: 26px;
-        width: 26px;
-        left: 4px;
-        bottom: 4px;
-        background-color: white;
-        -webkit-transition: .4s;
-        transition: .4s;
-    }
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            -webkit-transition: .4s;
+            transition: .4s;
+        }
 
-    input:checked + .slider {
-        background-color: #2196F3;
-    }
+        input:checked + .slider {
+            background-color: #2196F3;
+        }
 
-    input:focus + .slider {
-        box-shadow: 0 0 1px #2196F3;
-    }
+        input:focus + .slider {
+            box-shadow: 0 0 1px #2196F3;
+        }
 
-    input:checked + .slider:before {
-        -webkit-transform: translateX(26px);
-        -ms-transform: translateX(26px);
-        transform: translateX(26px);
-    }
+        input:checked + .slider:before {
+            -webkit-transform: translateX(26px);
+            -ms-transform: translateX(26px);
+            transform: translateX(26px);
+        }
 
-    /* Rounded sliders */
-    .slider.round {
-        border-radius: 34px;
-    }
+        /* Rounded sliders */
+        .slider.round {
+            border-radius: 34px;
+        }
 
-    .slider.round:before {
-        border-radius: 50%;
-    }
-</style>
-<script type="text/javascript">
-    (function ($) {
-        $('form.translation').submit(function (e) {
-            $.ajax({
-                type: $(this).attr('method'),
-                url: $(this).attr('action'),
-                data: $(this).serialize(),
-                success: function (data) {
-                    alert('OK. Translation saved!');
-                }
+        .slider.round:before {
+            border-radius: 50%;
+        }
+    </style>
+    <script type="text/javascript">
+        (function ($) {
+            $('form.translation').submit(function (e) {
+                $.ajax({
+                    type: $(this).attr('method'),
+                    url: $(this).attr('action'),
+                    data: $(this).serialize(),
+                    success: function (data) {
+                        alert('OK. Translation saved!');
+                    }
+                });
+                e.preventDefault();
             });
-            e.preventDefault();
-        });
-        $(':input').on('keyup change', function () {
-            var input = $(this)[0];
-            var parent = $(this).parent();
-            var validity = input.checkValidity();
+            $(':input').on('keyup change', function () {
+                var input = $(this)[0];
+                var parent = $(this).parent();
+                var validity = input.checkValidity();
 
-            if (validity) {
-                $(this).removeClass('invalid');
-            } else {
-                $(this).addClass('invalid');
-            }
-            input.reportValidity();
-        });
-    })(jQuery);
-</script>
+                if (validity) {
+                    $(this).removeClass('invalid');
+                } else {
+                    $(this).addClass('invalid');
+                }
+                input.reportValidity();
+            });
+        })(jQuery);
+    </script>
 @endpush
