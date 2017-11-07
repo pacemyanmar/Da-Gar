@@ -226,119 +226,16 @@
                     stickyControls: true,
                     dataType: 'json',
                     controlOrder: [
-                        'checkbox',
-                        'radio',
+                        'checkbox-group',
                         'radio-group',
                         'text',
                         'date',
                         'number',
                         'textarea'
                     ],
-                    disableFields: ['autocomplete', 'button', 'header', 'checkbox-group', 'file', 'paragraph', 'hidden', 'select'],
-                    typeUserEvents: {
-                        text: {
-                            onadd: function (fld) {
-                                $('.name-wrap', fld).remove();
-                                $('.required-wrap', fld).remove();
-                                $('.access-wrap', fld).remove();
-                            },
-                            onclone: function (fld) {
-                                $('.name-wrap', fld).remove();
-                                $('.required-wrap', fld).remove();
-                                $('.access-wrap', fld).remove();
-                            }
-                        },
-                        date: {
-                            onadd: function (fld) {
-                                $('.name-wrap', fld).remove();
-                                $('.required-wrap', fld).remove();
-                                $('.access-wrap', fld).remove();
-                            },
-                            onclone: function (fld) {
-                                $('.name-wrap', fld).remove();
-                                $('.required-wrap', fld).remove();
-                                $('.access-wrap', fld).remove();
-                            }
-                        },
-                        number: {
-                            onadd: function (fld) {
-                                $('.name-wrap', fld).remove();
-                                $('.required-wrap', fld).remove();
-                                $('.access-wrap', fld).remove();
-                            },
-                            onclone: function (fld) {
-                                $('.name-wrap', fld).remove();
-                                $('.required-wrap', fld).remove();
-                                $('.access-wrap', fld).remove();
-                            }
-                        },
-                        checkbox: {
-                            onadd: function (fld) {
-                                $('.name-wrap', fld).remove();
-                                $('.required-wrap', fld).remove();
-                                $('.access-wrap', fld).remove();
-                                $('.toggle-wrap', fld).remove();
-                            },
-                            onclone: function (fld) {
-                                $('.name-wrap', fld).remove();
-                                $('.required-wrap', fld).remove();
-                                $('.access-wrap', fld).remove();
-                                $('.toggle-wrap', fld).remove();
-                            }
-                        },
-                        radio: {
-                            onadd: function (fld) {
-                                $('.name-wrap', fld).remove();
-                                $('.required-wrap', fld).remove();
-                                $('.access-wrap', fld).remove();
-                                $('.toggle-wrap', fld).remove();
-                            },
-                            onclone: function (fld) {
-                                $('.name-wrap', fld).remove();
-                                $('.required-wrap', fld).remove();
-                                $('.access-wrap', fld).remove();
-                                $('.toggle-wrap', fld).remove();
-                            }
-                        },
-                        'radio-group': {
-                            onadd: function (fld) {
-                                $('.name-wrap', fld).remove();
-                                $('.required-wrap', fld).remove();
-                                $('.access-wrap', fld).remove();
-                                $('.toggle-wrap', fld).remove();
-                            },
-                            onclone: function (fld) {
-                                $('.name-wrap', fld).remove();
-                                $('.required-wrap', fld).remove();
-                                $('.access-wrap', fld).remove();
-                                $('.toggle-wrap', fld).remove();
-                            }
-                        },
-                        textarea: {
-                            onadd: function (fld) {
-                                $('.name-wrap', fld).remove();
-                                $('.required-wrap', fld).remove();
-                                $('.access-wrap', fld).remove();
-                            },
-                            onclone: function (fld) {
-                                $('.name-wrap', fld).remove();
-                                $('.required-wrap', fld).remove();
-                                $('.access-wrap', fld).remove();
-                            }
-                        },
-                        template: {
-                            onadd: function (fld) {
-                                $('.name-wrap', fld).remove();
-                                $('.required-wrap', fld).remove();
-                                $('.access-wrap', fld).remove();
-                            },
-                            onclone: function (fld) {
-                                $('.name-wrap', fld).remove();
-                                $('.required-wrap', fld).remove();
-                                $('.access-wrap', fld).remove();
-                            }
-                        }
-                    },
+
+                    disableFields: ['autocomplete', 'button', 'header', 'file', 'paragraph', 'hidden', 'select'],
+
                     typeUserAttrs: {
                         text: {
                             skip: {
@@ -483,10 +380,15 @@
                             }
                         }
                     },
+                    disabledAttrs: [
+                        'name',
+                        'access',
+                        'description'
+                    ],
                     defaultFields: formData
                 };
 
-                var formBuilder = fbEditor.formBuilder(options).data('formBuilder');
+                var formBuilder = fbEditor.formBuilder(options);
 
                 $('#saveQuest').on('click', function (e) {
                     e.preventDefault();

@@ -128,6 +128,25 @@ trait QuestionsTrait
                 }
 
                 continue; // this is require to remove 'radio-group' as input type
+            } elseif ($a['type'] == 'checkbox-group' && $layout != 'matrix') {
+                /**
+                 * $a['values'] is radio options in radio group
+                 * loop through $a['values'] and remove $a['values'] from $a array
+                 * $j is options index start from 0 and $av is radio inputs
+                 */
+                foreach ($a['values'] as $j => $av) {
+                    unset($a['values']);
+                    $av['type'] = 'checkbox';
+                    $av['id'] = $param . 'o' . $j;
+                    $av['sort'] = $qsort . $j;
+                    if (str_contains(strtolower($av['label']), 'other') || str_contains(strtolower($av['label']), 'text')) {
+                        $av['other'] = true;
+                    }
+                    // merge $a and $av to get input array as $answer
+                    $answer[] = array_merge($a, $av);
+                }
+
+                continue; // this is require to remove 'checkbox-group' from input type
             } elseif ($a['type'] == 'radio-group' && $layout == 'matrix') {
                 /**
                  * if input type is radio-group and layout is matrix, add input type "radio" to each options and
