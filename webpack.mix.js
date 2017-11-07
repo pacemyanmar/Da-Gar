@@ -20,7 +20,10 @@ mix.js('resources/assets/js/app.js', 'public/js').autoload({
     'select2','select2/dist/js/i18n/en','admin-lte','jquery-ui','jquery-ui-sortable'])
     .sass('resources/assets/sass/app.scss', 'public/css')
     .version();
-
+mix.scripts([
+    'node_modules/formBuilder/dist/form-builder.min.js',
+    'node_modules/formBuilder/dist/form-render.min.js'
+],'public/js/formbuilder.js');
 if (mix.inProduction()) {
 
     mix.version();

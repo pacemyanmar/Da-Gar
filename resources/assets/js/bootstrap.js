@@ -29,8 +29,8 @@ try {
 
 
 
-    require('formBuilder');
-    require('formBuilder/dist/form-render.min')
+    // require('formBuilder');
+    // require('formBuilder/dist/form-render.min')
 
 
 

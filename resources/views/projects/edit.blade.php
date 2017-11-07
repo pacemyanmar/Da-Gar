@@ -106,7 +106,7 @@
 @section('scripts')
     @include('projects.logicmodal')
     <script type='text/javascript'>
-
+        (function($) {
         var formData = {'fields': ''};
         var sortURL = '{!! route('questions.sort') !!}';
         var trainingUrl = '{!! route('projects.trainingmode', $project->id) !!}';
@@ -171,307 +171,312 @@
                 }
             });
 
-            $('#qModal').on('shown.bs.modal', function (event) {
-                var button = $(event.relatedTarget) // Button that triggered the modal
-                var formData = button.data('answers')
-                var qid = button.data('qid') // Extract info from data-* attributes
-                var qnum = button.data('qnum')
-                var question = button.data('question')
-                var double = button.data('double')
-                var optional = button.data('optional')
-                var report = button.data('report')
-                var sort = button.data('sort')
-                var section = button.data('section')
-                var layout = button.data('layout')
-                var actionurl = button.data('qurl')
-                var method = button.data('method')
-                var observation = button.data('observation')
-                var party = button.data('party')
-
-                // If necessary, you could initiate an AJAX request here (and then do the updating in a callback).
-                // Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.
-                var modal = $(this)
-
-                if (observation) {
-                    $.each(observation, function (key, value) {
-                        modal.find("input[name='observation_type[" + key + "]']").prop('checked', true)
-                    });
-                } else {
-                    modal.find("input.observation_type").prop('checked', false)
-                }
-
-                if (party) {
-                    $.each(party, function (key, value) {
-                        modal.find("input[name='party[" + key + "]']").val(value);
-                    });
-                }
-
-                modal.find("input[name='qnum']").val(qnum)
-                modal.find("input[name='question']").val(question)
-                modal.find("input[name='double_entry']").prop('checked', double)
-                modal.find("input[name='optional']").prop('checked', optional)
-                modal.find("input[name='report']").prop('checked', report)
-                if (sort) {
-                    modal.find("input[name='sort']").val(sort)
-                }
-                modal.find("input[name='section']").val(section)
-                modal.find("select[name='layout']").val(layout)
-                modal.find("input[name='_method']").val(method)
-                $('#qModalLabel').text(question);
-                let fbEditor = $(document.getElementById('fb-editor'));
-
-                let fields = [
-                    {
-                        label: 'Checkbox',
-                        attrs: {
-                            type: 'check'
-                        },
-                        icon: '🌟'
-                    },
-                    {
-                        label: 'Radio',
-                        attrs: {
-                            type: 'single'
-                        },
-                        icon: '🌟'
-                    }
-                ];
-                let templates = {
-                    check: function (fieldData) {
-                        return {
-                            field: '<input type="checkbox" id="' + fieldData.name + '">'
-                        };
-                    },
-                    single: function (fieldData) {
-                        return {
-                            field: '<input type="radio" id="' + fieldData.name + '">'
-                        };
-                    },
-
-                };
-
-                let options = {
-                    showActionButtons: false, // defaults: true
-                    editOnAdd: true,
-                    stickyControls: true,
-                    dataType: 'json',
-                    controlOrder: [
-                        'checkbox',
-                        'checkbox-group',
-                        'radio-group',
-                        'text',
-                        'date',
-                        'number',
-                        'textarea'
-                    ],
-
-                    disableFields: ['autocomplete', 'button', 'header', 'file', 'paragraph', 'hidden'],
-
-                    typeUserAttrs: {
-                        text: {
-                            skip: {
-                                label: 'Skip',
-                                type: 'text',
-                                name: 'skip',
-                                placeholder: 'Space seperated list of Question Number'
-                            },
-                            goto: {
-                                label: 'Go to',
-                                type: 'text',
-                                name: 'goto',
-                                placeholder: 'Single Question Number'
-                            },
-                            optional: {
-                                label: 'Optional',
-                                type: 'checkbox',
-                                name: 'optional'
-                            },
-                            other: {
-                                label: 'Show Other Textbox',
-                                type: 'checkbox',
-                                name: 'other'
-                            }
-                        },
-                        date: {
-                            skip: {
-                                label: 'Skip',
-                                type: 'text',
-                                name: 'skip',
-                                placeholder: 'Space seperated list of Question Number'
-                            },
-                            goto: {
-                                label: 'Go to',
-                                type: 'text',
-                                name: 'goto',
-                                placeholder: 'Single Question Number'
-                            },
-                            optional: {
-                                label: 'Optional',
-                                type: 'checkbox',
-                                name: 'optional'
-                            },
-                            other: {
-                                label: 'Show Other Textbox',
-                                type: 'checkbox',
-                                name: 'other'
-                            }
-                        },
-                        number: {
-                            skip: {
-                                label: 'Skip',
-                                type: 'text',
-                                name: 'skip',
-                                placeholder: 'Space seperated list of Question Number'
-                            },
-                            goto: {
-                                label: 'Go to',
-                                type: 'text',
-                                name: 'goto',
-                                placeholder: 'Single Question Number'
-                            },
-                            optional: {
-                                label: 'Optional',
-                                type: 'checkbox',
-                                name: 'optional'
-                            },
-                            other: {
-                                label: 'Show Other Textbox',
-                                type: 'checkbox',
-                                name: 'other'
-                            }
-                        },
-                        check: {
-                            skip: {
-                                label: 'Skip',
-                                type: 'text',
-                                name: 'skip',
-                                placeholder: 'Space seperated list of Question Number'
-                            },
-                            goto: {
-                                label: 'Go to',
-                                type: 'text',
-                                name: 'goto',
-                                placeholder: 'Single Question Number'
-                            },
-                            optional: {
-                                label: 'Optional',
-                                type: 'checkbox',
-                                name: 'optional'
-                            },
-                            value: {
-                                type: 'number',
-                                placeholder: 'Only number allow'
-                            },
-                            other: {
-                                label: 'Show Other Textbox',
-                                type: 'checkbox',
-                                name: 'other'
-                            }
-                        },
-                        single: {
-                            skip: {
-                                label: 'Skip',
-                                type: 'text',
-                                name: 'skip',
-                                placeholder: 'Space seperated list of Question Number'
-                            },
-                            goto: {
-                                label: 'Go to',
-                                type: 'text',
-                                name: 'goto',
-                                placeholder: 'Single Question Number'
-                            },
-                            optional: {
-                                label: 'Optional',
-                                type: 'checkbox',
-                                name: 'optional'
-                            },
-                            value: {
-                                type: 'number',
-                                placeholder: 'Only number allow'
-                            },
-                            other: {
-                                label: 'Show Other Textbox',
-                                type: 'checkbox',
-                                name: 'other'
-                            }
-                        },
-                        'radio-group': {
-                            optional: {
-                                label: 'Optional',
-                                type: 'checkbox',
-                                name: 'optional'
-                            }
-                        },
-                        textarea: {
-                            optional: {
-                                label: 'Optional',
-                                type: 'checkbox',
-                                name: 'optional'
-                            }
-                        }
-                    },
-                    disabledAttrs: [
-                        'name',
-                        'access',
-                        'description'
-                    ],
-                    defaultFields: formData,
-                    fields,
-                    templates
-                };
-
-                var formBuilder = fbEditor.formBuilder(options);
-
-                $('#saveQuest').on('click', function (e) {
-                    e.preventDefault();
-                    var payload;
-                    var message;
-                    payload = formBuilder.formData;
-                    modal.find('input[name="raw_ans"]').val(payload)
-                    $.ajax({
-                        url: actionurl,
-                        type: 'POST',
-                        cache: false,
-                        data: $("#qModalForm").serialize(),
-                        success: function (data) {
-                            button.attr('data-answers', data.data.answers);
-                            $('#ajaxMesg').text(data.message).addClass('text-success').removeClass('hidden').fadeOut(1400);
-
-                        },
-                        error: function (data) {
-                            if (data.status == '401')
-                                message = "Your session has expired. You need to log in again!"
-                            else
-                                message = data.message
-
-                            $('#ajaxMesg').text(message).addClass('text-danger').removeClass('hidden').fadeOut(1400);
-                        },
-                        complete: function () {
-                            window.beforeunload = function () {
-                                return void 0;
-                            }
-                            resetForm($("#qModalForm"))
-                            setTimeout(function () {
-                                window.location.reload();
-                            }, 1800);
-                        }
-                    });
-                    return false;
-                });
-
-            }).on('hidden.bs.modal', function () {
-                $("#fb-editor").empty()
-            })
-
-
         });
-
+        })(jQuery);
 
     </script>
 @endsection
 
+@section('formbuilder')
+    <script type="text/javascript">
+        (function ($) {
+            $(document).ready(function () {
+        $('#qModal').on('shown.bs.modal', function (event) {
+            var button = $(event.relatedTarget) // Button that triggered the modal
+            var formData = button.data('answers')
+            var qid = button.data('qid') // Extract info from data-* attributes
+            var qnum = button.data('qnum')
+            var question = button.data('question')
+            var double = button.data('double')
+            var optional = button.data('optional')
+            var report = button.data('report')
+            var sort = button.data('sort')
+            var section = button.data('section')
+            var layout = button.data('layout')
+            var actionurl = button.data('qurl')
+            var method = button.data('method')
+            var observation = button.data('observation')
+            var party = button.data('party')
 
+            // If necessary, you could initiate an AJAX request here (and then do the updating in a callback).
+            // Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.
+            var modal = $(this)
+
+            if (observation) {
+                $.each(observation, function (key, value) {
+                    modal.find("input[name='observation_type[" + key + "]']").prop('checked', true)
+                });
+            } else {
+                modal.find("input.observation_type").prop('checked', false)
+            }
+
+            if (party) {
+                $.each(party, function (key, value) {
+                    modal.find("input[name='party[" + key + "]']").val(value);
+                });
+            }
+
+            modal.find("input[name='qnum']").val(qnum)
+            modal.find("input[name='question']").val(question)
+            modal.find("input[name='double_entry']").prop('checked', double)
+            modal.find("input[name='optional']").prop('checked', optional)
+            modal.find("input[name='report']").prop('checked', report)
+            if (sort) {
+                modal.find("input[name='sort']").val(sort)
+            }
+            modal.find("input[name='section']").val(section)
+            modal.find("select[name='layout']").val(layout)
+            modal.find("input[name='_method']").val(method)
+            $('#qModalLabel').text(question);
+            let fbEditor = $(document.getElementById('fb-editor'));
+
+            let fields = [
+                {
+                    label: 'Checkbox',
+                    attrs: {
+                        type: 'check'
+                    },
+                    icon: '🌟'
+                },
+                {
+                    label: 'Radio',
+                    attrs: {
+                        type: 'single'
+                    },
+                    icon: '🌟'
+                }
+            ];
+            let templates = {
+                check: function (fieldData) {
+                    return {
+                        field: '<input type="checkbox" id="' + fieldData.name + '">'
+                    };
+                },
+                single: function (fieldData) {
+                    return {
+                        field: '<input type="radio" id="' + fieldData.name + '">'
+                    };
+                },
+
+            };
+
+            let options = {
+                showActionButtons: false, // defaults: true
+                editOnAdd: true,
+                stickyControls: true,
+                dataType: 'json',
+                controlOrder: [
+                    'checkbox',
+                    'checkbox-group',
+                    'radio-group',
+                    'text',
+                    'date',
+                    'number',
+                    'textarea'
+                ],
+
+                disableFields: ['autocomplete', 'button', 'header', 'file', 'paragraph', 'hidden'],
+
+                typeUserAttrs: {
+                    text: {
+                        skip: {
+                            label: 'Skip',
+                            type: 'text',
+                            name: 'skip',
+                            placeholder: 'Space seperated list of Question Number'
+                        },
+                        goto: {
+                            label: 'Go to',
+                            type: 'text',
+                            name: 'goto',
+                            placeholder: 'Single Question Number'
+                        },
+                        optional: {
+                            label: 'Optional',
+                            type: 'checkbox',
+                            name: 'optional'
+                        },
+                        other: {
+                            label: 'Show Other Textbox',
+                            type: 'checkbox',
+                            name: 'other'
+                        }
+                    },
+                    date: {
+                        skip: {
+                            label: 'Skip',
+                            type: 'text',
+                            name: 'skip',
+                            placeholder: 'Space seperated list of Question Number'
+                        },
+                        goto: {
+                            label: 'Go to',
+                            type: 'text',
+                            name: 'goto',
+                            placeholder: 'Single Question Number'
+                        },
+                        optional: {
+                            label: 'Optional',
+                            type: 'checkbox',
+                            name: 'optional'
+                        },
+                        other: {
+                            label: 'Show Other Textbox',
+                            type: 'checkbox',
+                            name: 'other'
+                        }
+                    },
+                    number: {
+                        skip: {
+                            label: 'Skip',
+                            type: 'text',
+                            name: 'skip',
+                            placeholder: 'Space seperated list of Question Number'
+                        },
+                        goto: {
+                            label: 'Go to',
+                            type: 'text',
+                            name: 'goto',
+                            placeholder: 'Single Question Number'
+                        },
+                        optional: {
+                            label: 'Optional',
+                            type: 'checkbox',
+                            name: 'optional'
+                        },
+                        other: {
+                            label: 'Show Other Textbox',
+                            type: 'checkbox',
+                            name: 'other'
+                        }
+                    },
+                    check: {
+                        skip: {
+                            label: 'Skip',
+                            type: 'text',
+                            name: 'skip',
+                            placeholder: 'Space seperated list of Question Number'
+                        },
+                        goto: {
+                            label: 'Go to',
+                            type: 'text',
+                            name: 'goto',
+                            placeholder: 'Single Question Number'
+                        },
+                        optional: {
+                            label: 'Optional',
+                            type: 'checkbox',
+                            name: 'optional'
+                        },
+                        value: {
+                            type: 'number',
+                            placeholder: 'Only number allow'
+                        },
+                        other: {
+                            label: 'Show Other Textbox',
+                            type: 'checkbox',
+                            name: 'other'
+                        }
+                    },
+                    single: {
+                        skip: {
+                            label: 'Skip',
+                            type: 'text',
+                            name: 'skip',
+                            placeholder: 'Space seperated list of Question Number'
+                        },
+                        goto: {
+                            label: 'Go to',
+                            type: 'text',
+                            name: 'goto',
+                            placeholder: 'Single Question Number'
+                        },
+                        optional: {
+                            label: 'Optional',
+                            type: 'checkbox',
+                            name: 'optional'
+                        },
+                        value: {
+                            type: 'number',
+                            placeholder: 'Only number allow'
+                        },
+                        other: {
+                            label: 'Show Other Textbox',
+                            type: 'checkbox',
+                            name: 'other'
+                        }
+                    },
+                    'radio-group': {
+                        optional: {
+                            label: 'Optional',
+                            type: 'checkbox',
+                            name: 'optional'
+                        }
+                    },
+                    textarea: {
+                        optional: {
+                            label: 'Optional',
+                            type: 'checkbox',
+                            name: 'optional'
+                        }
+                    }
+                },
+                disabledAttrs: [
+                    'name',
+                    'access',
+                    'description'
+                ],
+                defaultFields: formData,
+                fields,
+                templates
+            };
+
+            var formBuilder = fbEditor.formBuilder(options);
+
+            $('#saveQuest').on('click', function (e) {
+                e.preventDefault();
+                var payload;
+                var message;
+                payload = formBuilder.formData;
+                modal.find('input[name="raw_ans"]').val(payload)
+                $.ajax({
+                    url: actionurl,
+                    type: 'POST',
+                    cache: false,
+                    data: $("#qModalForm").serialize(),
+                    success: function (data) {
+                        button.attr('data-answers', data.data.answers);
+                        $('#ajaxMesg').text(data.message).addClass('text-success').removeClass('hidden').fadeOut(1400);
+
+                    },
+                    error: function (data) {
+                        if (data.status == '401')
+                            message = "Your session has expired. You need to log in again!"
+                        else
+                            message = data.message
+
+                        $('#ajaxMesg').text(message).addClass('text-danger').removeClass('hidden').fadeOut(1400);
+                    },
+                    complete: function () {
+                        window.beforeunload = function () {
+                            return void 0;
+                        }
+                        resetForm($("#qModalForm"))
+                        setTimeout(function () {
+                            window.location.reload();
+                        }, 1800);
+                    }
+                });
+                return false;
+            });
+
+        }).on('hidden.bs.modal', function () {
+            $("#fb-editor").empty()
+        })
+        });
+        })(jQuery);
+    </script>
+@endsection
 @push('before-body-end')
     <style type="text/css">
         .invalid {

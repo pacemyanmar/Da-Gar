@@ -33,14 +33,14 @@ hyperform.add_translation("mm",{
     BadInputNumber: 'ဂဏန်း တစ်ခုဖြစ်ည့သွင်းပါ။'
 });
 
-window.Vue = require('vue');
+//window.Vue = require('vue');
 /**
  * Next, we will create a fresh Vue application instance and attach it to
  * the page. Then, you may begin adding components to this application
  * or customize the JavaScript scaffolding to fit your unique needs.
  */
 
-Vue.component('data-table', require('./components/DataTable.vue'));
+//Vue.component('data-table', require('./components/DataTable.vue'));
 
 
 // Form reset method from stackoverflow
