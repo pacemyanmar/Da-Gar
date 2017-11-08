@@ -13,13 +13,13 @@
         @php
             $options = [
             'class' => $element->className.' form-control zawgyi '.$sectionClass,
-            'id' => $element->id,
+            'id' => $element->id.'_other',
             'placeholder' => Kanaung\Facades\Converter::convert($element->label,'unicode','zawgyi'),
             'aria-describedby'=> $element->id.'-addons',
             'autocomplete' => 'off'
             ];
         @endphp
-        {!! Form::text("result[".$element->inputid."]", (isset($results))?Kanaung\Facades\Converter::convert($results['section'.$section->sort]->{$element->inputid},'unicode','zawgyi'):null, $options) !!}
+        {!! Form::text("result[".$element->inputid."_other]", (isset($results))?Kanaung\Facades\Converter::convert($results['section'.$section->sort]->{$element->inputid},'unicode','zawgyi'):null, $options) !!}
     @endif
 </div>
 @if(!empty($element->skip) && !isset($editing))

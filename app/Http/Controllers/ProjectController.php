@@ -626,11 +626,7 @@ class ProjectController extends AppBaseController
                         switch ($input->type) {
                             case 'radio':
                             case 'checkbox':
-                                if ($input->other) {
-                                    $inputType = 'string';
-                                } else {
-                                    $inputType = 'unsignedTinyInteger';
-                                }
+                                $inputType = 'unsignedTinyInteger';
                                 break;
 
                             case 'number':
@@ -657,6 +653,11 @@ class ProjectController extends AppBaseController
                                 $table->$inputType($input->inputid)
                                     ->nullable();
                             }
+                        }
+
+                        if ($input->other) {
+                            $table->string($input->inputid.'_other', 100)
+                                ->nullable();
                         }
                     });
                 }
@@ -718,11 +719,7 @@ class ProjectController extends AppBaseController
                 switch ($input->type) {
                     case 'radio':
                     case 'checkbox':
-                        if ($input->other) {
-                            $inputType = 'string';
-                        } else {
-                            $inputType = 'unsignedTinyInteger';
-                        }
+                        $inputType = 'unsignedTinyInteger';
                         break;
 
                     case 'number':
@@ -737,6 +734,7 @@ class ProjectController extends AppBaseController
                         $inputType = 'string';
                         break;
                 }
+
                 if ($input->in_index && $inputType != 'text') {
                     $table->$inputType($input->inputid)
                         ->index()
@@ -749,6 +747,11 @@ class ProjectController extends AppBaseController
                         $table->$inputType($input->inputid)
                             ->nullable();
                     }
+                }
+
+                if ($input->other) {
+                    $table->string($input->inputid.'_other', 100)
+                        ->nullable();
                 }
             }
         });

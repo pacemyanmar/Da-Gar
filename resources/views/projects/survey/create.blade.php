@@ -162,6 +162,34 @@
     </style>
     <script type='text/javascript'>
         (function ($) {
+            $('.other').on('change click',function(){
+                var other_text = $(this).closest("div.form-group").find("input[type='text'].othertext");
+                if($(this).is(':checked')){
+                    other_text.focus().addClass('has-error').prop('disabled', false).prop('required', true);
+                } else {
+                    other_text.removeClass('has-error').prop('disabled', true).prop('required', false);
+                }
+            });
+
+            $('.skippable').on('change click',function(){
+                if($(this).is(':checked')){
+                    var toskip = $(this).data('skip');
+                    var goto = $(this).data('goto');
+                    if(!empty(toskip)) {
+                        $(toskip).prop("disabled", true);
+                    }
+                    if(!empty(goto)) {
+                        $("body, html").animate({
+                            scrollTop: $(goto).offset().top
+                        }, 600);
+                    }
+
+                } else {
+
+                }
+            });
+
+            //$( ".date" ).datetimepicker();
 
             if ($(".none").is(':checked')) {
                 $(".none:checked").closest('.row').children().children().children().children('input').each(function (i, obj) {

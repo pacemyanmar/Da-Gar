@@ -32,7 +32,3 @@
     @endforeach
     </tbody>
 </table>
-
-@push('document-ready')
-    $( ".date" ).datepicker({ dateFormat: 'yy-mm-dd',changeYear: true,changeMonth: true});
-@endpush

@@ -347,10 +347,20 @@ trait SurveyQueryTrait {
                     'class' => 'result', 'orderable' => false,
                     'width' => '80px', 'type' => $input->type
                 ];
+
+                if($input->other) {
+                    $input_columns[$column.'_other'] = [
+                        'name' => $base_dbname. '.' . $column.'_other',
+                        'data' => $column, 'title' => $title. ' Other',
+                        'class' => 'result', 'orderable' => false,
+                        'width' => '80px', 'type' => $input->type
+                    ];
+                }
+
                 if(config('sms.double_entry')) {
-                    $input_columns[$column . '_status'] = [
+                    $input_columns[$column . '_dstatus'] = [
                         'name' => $base_dbname. '_dbl' . '.' . $column,
-                        'data' => $column . '_status', 'title' => $title . '_status',
+                        'data' => $column . '_dstatus', 'title' => $title . ' Matched',
                         'orderable' => false, 'visible' => false,
                         'type' => 'double_entry',
                         'origin_name' => $base_dbname. '.' . $column

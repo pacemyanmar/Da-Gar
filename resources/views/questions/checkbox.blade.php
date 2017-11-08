@@ -1,7 +1,14 @@
 <div class="form-group">
 
     @if($element->other)
-        {!! Form::checkbox("result[".$element->inputid."]", $element->value, (isset($results) && !empty($results['section'.$section->sort]) && $results['section'.$section->sort]->{$element->inputid}), ['class' => 'magic-checkbox '.$element->className.' '.$sectionClass, 'id' => $element->id, 'autocomplete' => 'off']) !!}
+        {!! Form::checkbox("result[".$element->inputid."]",
+        $element->value,
+        (isset($results) && !empty($results['section'.$section->sort]) && $results['section'.$section->sort]->{$element->inputid}),
+        [
+        'class' => (($element->other)?'other':null).' magic-checkbox '.$element->className.' '.$sectionClass,
+        'id' => $element->id,
+        'autocomplete' => 'off'])
+        !!}
         <label class="normal-text" for="{!! $element->id !!}">{!! $element->label !!} @if($element->value != '') <span
                     class="label label-primary badge">{!! $element->value !!}</span> @endif
             @if($element->status != 'published') <span
@@ -16,8 +23,8 @@
         </label>
         @php
             $options = [
-            'class' => $element->className.' form-control zawgyi '.$sectionClass,
-            'id' => $element->id.'text',
+            'class' => $element->className.' form-control othertext zawgyi '.$sectionClass,
+            'id' => $element->id.'_other',
             'placeholder' => Kanaung\Facades\Converter::convert($element->label,'unicode','zawgyi'),
             'aria-describedby'=> $element->id.'-addons',
             'autocomplete' => 'off',
@@ -25,19 +32,9 @@
             ];
 
         @endphp
-        {!! Form::text("result[".$element->inputid."]", (isset($results) && !empty($results['section'.$section->sort]) )?Kanaung\Facades\Converter::convert($results['section'.$section->sort]->{$element->inputid},'unicode','zawgyi'):null, $options) !!}
-        @push('document-ready')
-            if($('#{{ $element->id }}').is(':checked')){
-            $('#{{ $element->id.'text' }}').prop('disabled', false);
-            }
-            $('#{{ $element->id }}').change(function(){
-            if($(this).is(':checked')){
-            $('#{{ $element->id.'text' }}').prop('disabled', false);
-            } else {
-            $('#{{ $element->id.'text' }}').prop('disabled', true);
-            }
-            });
-        @endpush
+        {!! Form::text("result[".$element->inputid."_other]", (isset($results) && !empty($results['section'.$section->sort]) )?Kanaung\Facades\Converter::convert($results['section'.$section->sort]->{$element->inputid},'unicode','zawgyi'):null, $options) !!}
+
+
     @else
         {!! Form::checkbox("result[".$element->inputid."]", $element->value, (isset($results) && !empty($results['section'.$section->sort]) && $element->value == $results['section'.$section->sort]->{$element->inputid}), ['class' => 'magic-checkbox '.$element->className.' '.$sectionClass, 'id' => $element->id, 'autocomplete' => 'off']) !!}
         <label class="normal-text" for="{!! $element->id !!}">{!! $element->label !!} @if($element->value != '') <span
