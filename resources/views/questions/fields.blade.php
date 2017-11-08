@@ -42,9 +42,11 @@
     </tr>
     </table>
 </div>
+@if($observation_type->isEmpty()))
 <div class="form-group col-sm-12">
     <table class="table">
         <tr>
+
             @foreach($observation_type as $label => $type)
                 <td>
                     <span class="input-group-addon">
@@ -55,9 +57,11 @@
                     {!! Form::text("party[".str_slug($type)."]", null, ['class' => 'form-control party', 'id' => str_slug($type).'party', 'placeholder' => 'Party Name']) !!}
                 </td>
             @endforeach
+
         </tr>
     </table>
 </div>
+@endif
 <!-- Project Id Field -->
 <!--div class="form-group col-sm-6"-->
     {{-- Form::label('answers', 'Answers:') --}}
