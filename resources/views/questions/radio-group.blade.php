@@ -87,7 +87,7 @@ $translation = (Auth::user()->role->level >= 8 && isset($editing));
 			<span class="label label-primary badge">{!! $radio->value !!}</span>
 		@endif
 		@if($radio->other)
-		{!! Form::text("result[".$radio->inputid."_other]", (isset($results) && !empty($results['section'.$section->sort]) && $radio->value == $results['section'.$section->sort]->{$radio->inputid})?$results['section'.$section->sort]->{$radio->inputid}:null, ['class' => $radio->className.' form-control input-sm', 'autocomplete' => 'off', 'id' => $radio->id.'other', 'style' => 'width:80%']) !!}
+		{!! Form::text("result[".$radio->inputid."_other]", (isset($results) && !empty($results['section'.$section->sort]) && $radio->value == $results['section'.$section->sort]->{$radio->inputid})?$results['section'.$section->sort]->{$radio->inputid.'_other'}:null, ['class' => $radio->className.' form-control input-sm', 'autocomplete' => 'off', 'id' => $radio->id.'other', 'style' => 'width:80%']) !!}
 			@push('document-ready')
 				$("input[name='result[{!! $radio->inputid !!}]']").change(function(e){
 					var other_val = $("input[name='result[{!! $radio->inputid !!}_other]']:checked").val();

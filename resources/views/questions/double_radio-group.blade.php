@@ -56,7 +56,7 @@ $locale = \App::getLocale();
 
 		@if($radio->other)
 		{!! Form::text("result[".$radio->inputid."]",
-		(isset($double_results) && $radio->value == $double_results->{$radio->inputid})?$double_results->{$radio->inputid}:null,
+		(isset($double_results) && $radio->value == $double_results->{$radio->inputid})?$double_results->{$radio->inputid.'_other'}:null,
 		['class' => $radio->className.' form-control input-sm',
 		'autocomplete' => 'off',
 		'id' => $radio->id.'other',
