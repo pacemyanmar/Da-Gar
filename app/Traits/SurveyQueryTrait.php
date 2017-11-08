@@ -121,7 +121,7 @@ trait SurveyQueryTrait {
         $section_columns = [];
         foreach ($sections as $k => $section) {
             $section_num = $section->sort;
-            $base_dbname = $this->dbname .'_section'.$section_num;
+            $base_dbname = $this->dbname .'_s'.$section_num;
             $sectionColumn = 'section' . $section_num . 'status';
             $sectionname = $section['sectionname'];
             $sectionshort = 'R' . ($section_num + 1) . '';
@@ -339,7 +339,7 @@ trait SurveyQueryTrait {
                         break;
                 }
 
-                $base_dbname = $this->dbname .'_section'.$section_num;
+                $base_dbname = $this->dbname .'_s'.$section_num;
 
                 $input_columns[$column] = [
                     'name' => $base_dbname. '.' . $column,

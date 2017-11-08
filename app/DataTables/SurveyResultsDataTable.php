@@ -89,7 +89,7 @@ class SurveyResultsDataTable extends DataTable
             // loop sections
             foreach ($project->sections as $k => $section) {
                 if (config('sms.double_entry')) {
-                    $dbl_section_table = $childTable . '_section' . $section->sort . '_dbl';
+                    $dbl_section_table = $childTable . '_s' . $section->sort . '_dbl';
                     $query->leftjoin($dbl_section_table, function ($join) use ($dbl_section_table) {
                         $join->on('samples.id', '=', $dbl_section_table . '.sample_id');
                     });
@@ -101,7 +101,7 @@ class SurveyResultsDataTable extends DataTable
                 }
                 // join with result database
 
-                $section_table = $childTable . '_section' . $section->sort;
+                $section_table = $childTable . '_s' . $section->sort;
                 $query->{$joinMethod}($section_table, function ($join) use ($section_table) {
                     $join->on('samples.id', '=', $section_table . '.sample_id');
                 });
@@ -350,10 +350,10 @@ class SurveyResultsDataTable extends DataTable
             $button = [
                 'extend' => 'collection',
                 'text' => '<i class="fa fa-download"></i> ' . trans('messages.export'),
-                'buttons' => [
-                    'exportPostCsv',
-                    'exportPostExcel',
-                ],
+//                'buttons' => [
+//                    'exportPostCsv',
+//                    'exportPostExcel',
+//                ],
             ];
         } else {
             $button = [];
@@ -555,7 +555,7 @@ class SurveyResultsDataTable extends DataTable
                 //'print',
                 //'reset',
                 //'reload',
-                $button,
+                //$button,
                 'colvis',
             ],
             'initComplete' => "function () {
