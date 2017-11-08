@@ -76,7 +76,11 @@ $translation = (Auth::user()->role->level >= 8 && isset($editing));
 		@endphp
 		{!! Form::input($radio->type,"result[".$radio->inputid."]", (isset($results)&& !empty($results['section'.$section->sort]))?Kanaung\Facades\Converter::convert($results['section'.$section->sort]->{$radio->inputid},'unicode','zawgyi'):null, $options) !!}
 		@else
-		{!! Form::radio("result[".$radio->inputid."]", $radio->value, (isset($results) && !empty($results['section'.$section->sort]) && $radio->value == $results['section'.$section->sort]->{$radio->inputid}), ['id' => $radio->id,'class' => ' magic-radio '.$radio->className.' '.$sectionClass, 'autocomplete' => 'off', 'data-selected' => (isset($results) && $radio->value == $results['section'.$section->sort]->{$radio->inputid})]) !!}
+		{!!
+		 Form::radio("result[".$radio->inputid."]", $radio->value, (isset($results) && !empty($results['section'.$section->sort]) && $radio->value == $results['section'.$section->sort]->{$radio->inputid}), ['id' => $radio->id,'class' => ' magic-radio '.$radio->className.' '.$sectionClass,
+                'autocomplete' => 'off',
+                'data-selected' => (isset($results) && array_key_exists('section'.$section->sort, $results) && !empty($results['section'.$section->sort]) && $radio->value == $results['section'.$section->sort]->{$radio->inputid})])
+		 !!}
 		@endif
 		<label class="normal-text" for='{{ $radio->id }}'><!-- dummy for magic radio -->
 		@if($radio->value != '')
