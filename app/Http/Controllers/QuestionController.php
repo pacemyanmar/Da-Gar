@@ -87,7 +87,7 @@ class QuestionController extends AppBaseController
 
         $question->surveyInputs()->saveMany($inputs);
 
-        if ($project->status == 'published') {
+        if ($request->input('qnum') && $project->status == 'published') {
             $project->status = 'modified';
             $project->save();
         }
@@ -175,7 +175,7 @@ class QuestionController extends AppBaseController
             $new_question->surveyInputs()->saveMany($inputs);
 
             $project = $new_question->project;
-            if ($project->status == 'published') {
+            if ($request->input('qnum') && $project->status == 'published') {
                 $project->status = 'modified';
                 $project->save();
             }
