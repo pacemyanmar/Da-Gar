@@ -1,16 +1,13 @@
 
-window._ = require('lodash');
+window._ = global._ = require('lodash');
 
 /**
  * We'll load jQuery and the Bootstrap jQuery plugin which provides support
  * for JavaScript based Bootstrap features such as modals and tabs. This
  * code may be modified to fit the specific needs of your application.
  */
-import $ from 'jquery';
+window.$ = window.jQuery = global.jQuery = global.$ = require('jquery');
 try {
-    window.jQuery = $;
-    window.$ = $;
-    global.jQuery = $;
 
     require('jquery-ui');
     require('jquery-ui-sortable');
@@ -27,27 +24,25 @@ try {
 
 
 
-
-
-    // require('formBuilder');
-    // require('formBuilder/dist/form-render.min')
-
-
-
     /**
      * Require datatables library
      */
     require('datatables.net');
     require('datatables.net-bs');
+
     require('datatables.net-buttons');
+
+    require('gasparesganga-jquery-loading-overlay');
+    //require( './plugins/buttons.server-side');
+    // require('./buttons.server-side-post');
     require('datatables.net-buttons-bs');
     require( 'datatables.net-buttons/js/buttons.colVis' );
-    require( './plugins/buttons.server-side');
-    require('./buttons.server-side-post');
+    require( 'datatables.net-responsive' );
 
 
-    window.moment = require('moment');
-    require('gasparesganga-jquery-loading-overlay');
+
+    window.moment = global.moment = require('moment');
+
 
 
     require('select2');
@@ -55,6 +50,12 @@ try {
 
     require('admin-lte');
 
+    global.hyperform = window.hyperform = require('hyperform');
+
+    require('jquery-datetimepicker');
+
+    require('formBuilder');
+    require('formBuilder/dist/form-render.min')
 
 } catch (e) {}
 

@@ -7,10 +7,10 @@
 
 require('./bootstrap');
 require('./settings');
-hyperform = require('hyperform').default;
-window.hyperform = hyperform;
-global.hyperform = hyperform;
-hyperform.add_translation("mm",{
+require( './plugins/buttons.server-side');
+require('./buttons.server-side-post');
+hyperform = hyperform.default;
+hyperform.addTranslation("mm",{
     TextTooLong: 'စာလုံးအေရအတွက်အား %l အောက်သို့ လျှော့ချပါ (လောလောဆယ် %l စာလုံးအား အသုံးပြုထားသည်).',
     TextTooShort:"စာလုံးအေရအတွက်အား %l ထက်ပိုသုံးပါ (လောလောဆယ် %l စာလုံးအား အသုံးပြုထားသည်).",
     ValueMissing: 'ဒီအကွက်ကို ဖြည့်ပေးပါ။',

@@ -350,10 +350,10 @@ class SurveyResultsDataTable extends DataTable
             $button = [
                 'extend' => 'collection',
                 'text' => '<i class="fa fa-download"></i> ' . trans('messages.export'),
-//                'buttons' => [
-//                    'exportPostCsv',
-//                    'exportPostExcel',
-//                ],
+                'buttons' => [
+                    'csvp',
+                    'excelp',
+                ],
             ];
         } else {
             $button = [];
@@ -555,7 +555,7 @@ class SurveyResultsDataTable extends DataTable
                 //'print',
                 //'reset',
                 //'reload',
-                //$button,
+                $button,
                 'colvis',
             ],
             'initComplete' => "function () {

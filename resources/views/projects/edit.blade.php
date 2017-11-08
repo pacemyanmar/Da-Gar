@@ -249,12 +249,12 @@
             let templates = {
                 check: function (fieldData) {
                     return {
-                        field: '<input type="checkbox" id="' + fieldData.name + '">'
+                        field: '<input type="checkbox" class="magic-pre-checkbox" id="' + fieldData.name + '">'
                     };
                 },
                 single: function (fieldData) {
                     return {
-                        field: '<input type="radio" id="' + fieldData.name + '">'
+                        field: '<input type="radio" class="magic-pre-radio"  id="' + fieldData.name + '">'
                     };
                 },
 
