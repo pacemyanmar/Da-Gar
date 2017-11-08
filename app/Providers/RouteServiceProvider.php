@@ -26,6 +26,8 @@ class RouteServiceProvider extends ServiceProvider
         //
 
         parent::boot();
+        // force https on production
+        $this->app['request']->server->set('HTTPS', $this->app->environment() != 'local');
     }
 
     /**

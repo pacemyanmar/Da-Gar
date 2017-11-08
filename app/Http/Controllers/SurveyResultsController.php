@@ -264,7 +264,7 @@ class SurveyResultsController extends AppBaseController
 
         // get all result array from form
         $results = $request->input('result');
-dd($results);
+
         if (empty($results)) {
             $results = (array)$results;
         }
