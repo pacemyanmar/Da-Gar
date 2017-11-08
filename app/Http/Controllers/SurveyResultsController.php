@@ -361,6 +361,9 @@ class SurveyResultsController extends AppBaseController
                     }
 
                 }
+                if($input->other) {
+                    $result_arr[$qid][$inputid.'_other'] = $results[$inputid.'_other'];
+                }
                 $this->logicalCheck($input, $result_arr[$qid][$inputid]);
             }
 
