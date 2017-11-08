@@ -207,7 +207,7 @@ class SampleDataController extends AppBaseController
                     "hotline2" => ($row->hotline_2) ? $row->hotline_2 : null,
                     "sms_time" => ($row->sms_time) ? $row->sms_time : null,
 
-                    "incident_center" => ($row->incident_center) ? $row->incident_center : null,
+                    //"incident_center" => ($row->incident_center) ? $row->incident_center : null,
                     "obs_type" => ($row->obs_type) ? $row->obs_type : null,
                     "registered_voters" => ($row->registered_voters) ? $row->registered_voters : null,
                     "sbo" => ($row->sbo) ? $row->sbo : false,
