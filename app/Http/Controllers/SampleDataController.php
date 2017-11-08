@@ -170,7 +170,7 @@ class SampleDataController extends AppBaseController
                     "area_type" => strtolower($row->area_type), // rural or urban
 
                     "level1" => ($row->level1) ? $row->level1 : null, // state or province
-                    "level1_id" => ($row->level1_id) ? $row->level1_id : null,
+                    //"level1_id" => ($row->level1_id) ? $row->level1_id : null,
                     "level2" => ($row->level2) ? $row->level2 : null, // district
                     "level3" => ($row->level3) ? $row->level3 : null, // township
                     "level4" => ($row->level4) ? $row->level4 : null, // village tract, ward, or commune
