@@ -207,7 +207,7 @@ class SurveyResultsController extends AppBaseController
         $double_results = [];
 
         foreach ($project->sections as $k => $section) {
-            $section_table = $dbname . '_section' . $section->sort;
+            $section_table = $dbname . '_s' . $section->sort;
             $results['section' . $section->sort] = $sample->resultWithTable($section_table)->first();
 
             $section_dbl_table = $section_table . '_dbl';
@@ -369,7 +369,7 @@ class SurveyResultsController extends AppBaseController
             $allResults += $result_arr[$qid];
         }
 
-        $section_table = $dbName . '_section' . $section->sort;
+        $section_table = $dbName . '_s' . $section->sort;
 
         $this->saveSampleType = (isset($sample_type)) ? $sample_type : 1;
 
