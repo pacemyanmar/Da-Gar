@@ -208,13 +208,13 @@ class SampleDataController extends AppBaseController
                     "sms_time" => ($row->sms_time) ? $row->sms_time : null,
 
                     //"incident_center" => ($row->incident_center) ? $row->incident_center : null,
-                    "obs_type" => ($row->obs_type) ? $row->obs_type : null,
-                    "registered_voters" => ($row->registered_voters) ? $row->registered_voters : null,
-                    "sbo" => ($row->sbo) ? $row->sbo : false,
-                    "pvt1" => ($row->pvt1) ? $row->pvt1 : false,
-                    "pvt2" => ($row->pvt2) ? $row->pvt2 : false,
-                    "pvt3" => ($row->pvt3) ? $row->pvt3 : false,
-                    "pvt4" => ($row->pvt4) ? $row->pvt4 : false,
+                    //"obs_type" => ($row->obs_type) ? $row->obs_type : null,
+//                    "registered_voters" => ($row->registered_voters) ? $row->registered_voters : null,
+//                    "sbo" => ($row->sbo) ? $row->sbo : false,
+//                    "pvt1" => ($row->pvt1) ? $row->pvt1 : false,
+//                    "pvt2" => ($row->pvt2) ? $row->pvt2 : false,
+//                    "pvt3" => ($row->pvt3) ? $row->pvt3 : false,
+//                    "pvt4" => ($row->pvt4) ? $row->pvt4 : false,
 
                 ];
                 $attr = [
