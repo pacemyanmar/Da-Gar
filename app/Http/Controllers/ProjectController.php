@@ -578,11 +578,7 @@ class ProjectController extends AppBaseController
                         switch ($input->type) {
                             case 'radio':
                             case 'checkbox':
-                                if ($input->other) {
-                                    $inputType = 'string';
-                                } else {
-                                    $inputType = 'unsignedTinyInteger';
-                                }
+                                $inputType = 'unsignedTinyInteger';
                                 break;
 
                             case 'number':
@@ -618,6 +614,10 @@ class ProjectController extends AppBaseController
 
                             $table->index($input->inputid);
 
+                        }
+                        if ($input->other) {
+                            $table->string($input->inputid.'_other', 100)
+                                ->nullable();
                         }
                     });
                 } else {
