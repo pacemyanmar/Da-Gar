@@ -13,11 +13,12 @@
 <div class="form-group col-sm-6">
 <select name="layout" id="layout" class="form-control">
 	<option value="">-- Select One/None --</option>
+    <option value="description">Sub Section Description</option>
 	<option value="2cols">2 Columns</option>
 	<option value="3cols">3 Columns</option>
 	<option value="matrix">Matrix Table (Use only with radio button)</option>
-    <option value="form16">Form 16 Table</option>
-    <option value="form18">Form 18 Table</option>
+    <!--option value="form16">Form 16 Table</option>
+    <option value="form18">Form 18 Table</option-->
 </select>
 </div>
 

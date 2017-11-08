@@ -55,6 +55,15 @@ class QuestionController extends AppBaseController
         if (!empty($section)) {
             $input['double_entry'] = (isset($section['double'])) ? $section['double'] : false;
         }
+
+        $unique = uniqid();
+        $short_unique = substr($unique, 0, 3);
+
+        if(!$request->input('qnum') && $request->input('layout') == 'description') {
+            $input['qnum'] = 'desc_'.$short_unique;
+        }
+
+
         $input['css_id'] = str_slug('qnum' . $input['qnum']);
 
         // $lang = config('app.fallback_locale');
@@ -118,6 +127,14 @@ class QuestionController extends AppBaseController
         if (!empty($section)) {
             $form_input['double_entry'] = (isset($section['double'])) ? $section['double'] : $double_entry;
         }
+
+        $unique = uniqid();
+        $short_unique = substr($unique, 0, 3);
+
+        if(!$request->input('qnum') && $request->input('layout') == 'description') {
+            $form_input['qnum'] = 'desc_'.$short_unique;
+        }
+
         $form_input['css_id'] = str_slug('qnum' . $form_input['qnum']);
 
         $form_input['raw_ans'] = str_replace("'", "&#39;", $form_input['raw_ans']);

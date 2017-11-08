@@ -6,7 +6,43 @@
     </thead>
     <tbody data-section="{!! $section->id !!}">
         @foreach($section->questions as $question)
+            @if($question->layout == 'description')
+                <tr id="sort-{!! $question->id !!}">
+                    <td class="col-xs-10" colspan="2">
+                        <div class="">
+                            <label>{!! $question->question !!}</label>
+                        </div>
+                    </td>
+                    <td class="col-xs-2">
+                        {!! Form::open(['route' => ['questions.destroy', $question->id], 'method' => 'delete']) !!}
+                        <div class='btn-group'>
+                            <button type="button" class="btn btn-info btn-xs" data-toggle="collapse" data-target="#accordion{!! $question->css_id !!}">
+                                <i class="glyphicon glyphicon-collapse"></i>
+                                {!! trans('messages.click_to_expend') !!}
+                            </button>
+                            <a href="#" class='btn btn-default btn-xs'
+                               data-toggle="modal" data-target="#qModal"
+                               data-qid="{!! $question->id !!}"
+                               data-double="{!! $question->double_entry !!}"
+                               data-optional="{!! $question->optional !!}"
+                               data-report="{!! $question->report !!}"
+                               data-qurl="{!! route('questions.update', [$question->id]) !!}"
+                               data-qnum="{!! $question->qnum !!}"
+                               data-question="{!! $question->question !!}"
+                               data-section="{!! $section->id !!}"
+                               data-observation='{!! str_replace("'","&#39;",json_encode($question->observation_type, JSON_HEX_QUOT)) !!}'
+                               data-party='{!! str_replace("'","&#39;",json_encode($question->party, JSON_HEX_QUOT)) !!}'
+                               data-sort="{!! $question->sort !!}"
+                               data-answers='{!! str_replace("'","&#39;",$question->raw_ans) !!}'
+                               data-layout='{!! $question->layout !!}'
+                               data-method='PATCH'><i class="glyphicon glyphicon-edit"></i> {!! trans('messages.edit') !!}</a>
 
+                            {!! Form::button('<i class="glyphicon glyphicon-trash"></i>', ['type' => 'submit', 'class' => 'btn btn-danger btn-xs', 'onclick' => "return confirm('".trans('messages.are_you_sure')."')"]) !!}
+                        </div>
+                        {!! Form::close() !!}
+                    </td>
+                </tr>
+            @else
             <tr id="sort-{!! $question->id !!}">
                 <td class="col-xs-1" id="{!! $question->css_id !!}">
                     <label>{!! $question->qnum !!}</label>
@@ -76,6 +112,7 @@
                     {!! Form::close() !!}
                 </td>
             </tr>
+            @endif
         @endforeach
     </tbody>
 </table>
