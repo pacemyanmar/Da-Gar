@@ -12,6 +12,27 @@
                         <div class="">
                             <label>{!! $question->question !!}</label>
                         </div>
+                        <div id="accordion{!! $question->css_id !!}" class="row collapse">
+                            @if(Auth::user()->role->level >= 8)
+                                <div class="btn-group form-inline" style="margin-bottom:20px;">
+                                    {!! Form::open(['route' => ['translate', $question->id], 'method' => 'post', 'class' => 'translation']) !!}
+                                    
+                                    <div class="input-group">
+                                        <span class="input-group-addon">{!! trans('messages.question') !!}</span>
+                                        <input type="text" name="columns[question]" class="form-control" placeholder="{!! trans('messages.add_translation') !!}" @if(!empty($question->question_trans) )
+                                        value="{!! $question->question_trans !!}"
+                                                @endif>
+                                        <input type="hidden" name="model" value="question">
+                                        <span class="input-group-btn">
+                                <button class="btn btn-default" type="submit">{!! trans('messages.save') !!}</button>
+                              </span>
+
+                                    </div><!-- /input-group -->
+                                    {!! Form::close() !!}
+                                </div>
+                            @endif
+                            @include('questions.ans_fields')
+                        </div>
                     </td>
                     <td class="col-xs-2">
                         {!! Form::open(['route' => ['questions.destroy', $question->id], 'method' => 'delete']) !!}
