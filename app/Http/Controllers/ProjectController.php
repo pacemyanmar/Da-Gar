@@ -475,9 +475,8 @@ class ProjectController extends AppBaseController
 
         // check if table has already created
         foreach ($project->sections as $key => $section) {
-            $section_key = $key + 1;
 
-            $fields = $section->inputs->unique('inputid');
+            $fields = $section->inputs->sortByDesc('other')->unique('inputid');
 
             $section_code = 's'.$section->sort;
 
@@ -500,7 +499,7 @@ class ProjectController extends AppBaseController
             }
         }
 
-        $project_fields = $project->inputs->unique('inputid');
+        $project_fields = $project->inputs->sortByDesc('other')->unique('inputid');
 
         //if ($project->training) {
         // check if table has already created
@@ -577,6 +576,8 @@ class ProjectController extends AppBaseController
 
                         switch ($input->type) {
                             case 'radio':
+                                $inputType = 'unsignedTinyInteger';
+                                break;
                             case 'checkbox':
                                 $inputType = 'unsignedTinyInteger';
                                 break;
@@ -625,6 +626,8 @@ class ProjectController extends AppBaseController
                     Schema::table($dbname, function ($table) use ($input, $project) {
                         switch ($input->type) {
                             case 'radio':
+                                $inputType = 'unsignedTinyInteger';
+                                break;
                             case 'checkbox':
                                 $inputType = 'unsignedTinyInteger';
                                 break;
@@ -703,7 +706,7 @@ class ProjectController extends AppBaseController
             if ($type != 'main' && $type != 'double') {
                 // get unique collection of inputs
                 foreach ($project->sections as $key => $section) {
-                    $section_num = $key + 1;
+                    $section_num = $section->sort;
                     $table->unsignedSmallInteger('section' . $section_num . 'status')->index()->default(0); // 0 => missing, 1 => complete, 2 => incomplete, 3 => error
                     //$table->json('section' . $key)->nullable();
                     $table->timestamp('section' . $section_num . 'updated')->nullable();
@@ -718,6 +721,9 @@ class ProjectController extends AppBaseController
 
                 switch ($input->type) {
                     case 'radio':
+                        $inputType = 'unsignedTinyInteger';
+                        break;
+
                     case 'checkbox':
                         $inputType = 'unsignedTinyInteger';
                         break;

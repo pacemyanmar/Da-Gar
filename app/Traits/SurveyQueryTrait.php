@@ -351,8 +351,9 @@ trait SurveyQueryTrait {
                 if($input->other) {
                     $input_columns[$column.'_other'] = [
                         'name' => $base_dbname. '.' . $column.'_other',
-                        'data' => $column, 'title' => $title. ' Other',
+                        'data' => $column.'_other', 'title' => $title. ' Other',
                         'class' => 'result', 'orderable' => false,
+                        'visible' => false,
                         'width' => '80px', 'type' => $input->type
                     ];
                 }
