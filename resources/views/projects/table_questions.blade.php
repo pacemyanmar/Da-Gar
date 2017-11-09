@@ -6,7 +6,7 @@
     </thead>
     <tbody data-section="{!! $section->id !!}">
         @foreach($section->questions as $question)
-            @if($question->layout == 'description')
+            @if(in_array($question->layout,['description','household']))
                 <tr id="sort-{!! $question->id !!}">
                     <td class="col-xs-10" colspan="2">
                         <div class="">
@@ -16,7 +16,7 @@
                             @if(Auth::user()->role->level >= 8)
                                 <div class="btn-group form-inline" style="margin-bottom:20px;">
                                     {!! Form::open(['route' => ['translate', $question->id], 'method' => 'post', 'class' => 'translation']) !!}
-                                    
+
                                     <div class="input-group">
                                         <span class="input-group-addon">{!! trans('messages.question') !!}</span>
                                         <input type="text" name="columns[question]" class="form-control" placeholder="{!! trans('messages.add_translation') !!}" @if(!empty($question->question_trans) )

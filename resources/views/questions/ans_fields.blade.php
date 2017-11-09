@@ -39,7 +39,7 @@ $ans_in_col = round($anscount / $col_group_count);
  * $k => current input field index     *
  */
 ?>
-@if($question->layout == 'matrix')
+@if(in_array($question->layout,['matrix', 'household']))
 	@include('questions.'.$prefix.'radio-group')
 @elseif($question->layout == 'form16')
 	@include('questions.'.$prefix.'form16-table')

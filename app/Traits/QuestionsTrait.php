@@ -109,7 +109,7 @@ trait QuestionsTrait
              * assign unique id attribute.
              * all inputs from radio-group get same name attributes so no need to set manually again.
              */
-            if ($a['type'] == 'radio-group' && $layout != 'matrix') {
+            if ($a['type'] == 'radio-group' && !in_array($layout, ['matrix','household'])) {
                 /**
                  * $a['values'] is radio options in radio group
                  * loop through $a['values'] and remove $a['values'] from $a array
@@ -147,13 +147,13 @@ trait QuestionsTrait
                 }
 
                 continue; // this is require to remove 'checkbox-group' from input type
-            } elseif ($a['type'] == 'radio-group' && $layout == 'matrix') {
+            } elseif ($a['type'] == 'radio-group' && in_array($layout, ['matrix','household'])) {
                 /**
                  * if input type is radio-group and layout is matrix, add input type "radio" to each options and
                  * assign unique id attribute.
                  */
                 $av = [];
-                $a['type'] = 'matrix';
+                $a['type'] = $layout;
                 foreach ($a['values'] as $j => $option) {
                     $av['type'] = 'radio';
                     $av['id'] = $param . 'o' . $j;
@@ -213,7 +213,8 @@ trait QuestionsTrait
 
         foreach ($render as $k => $input) {
 
-            if ($input['type'] == 'matrix') {
+            if ( in_array($input['type'], ['matrix','household']) ) {
+
                 foreach ($input['values'] as $i => $value) {
                     if ($k == false) {
                         $label[$i] = $value['label'];
@@ -227,13 +228,16 @@ trait QuestionsTrait
                     $value['sort'] = $k . $i;
                     $value['extras']['group'] = $input['label'];
                     $value = array_merge($input, $value);
-                    if (str_contains(strtolower($value['label']), 'textonly')) {
+                    //if (str_contains(strtolower($value['value']), 'text')) {
+                    if (in_array(strtolower($value['value']), ['text', 'count', 'other'])) {
                         $value['type'] = 'text';
-                        $value['inputid'] = $value['inputid'] . $i;
+                        $value['inputid'] = $value['inputid'] . strtolower($value['value']);
                     }
                     //$input['label_trans'] = json_encode([$lang => $value['label']]);
+                    $value['status'] = 'new';
                     $inputs[] = new SurveyInput($value);
                 }
+
             } elseif ($input['type'] == 'form16') {
                 $i = 0;
                 $project = $input['project'];
@@ -274,6 +278,7 @@ trait QuestionsTrait
                     $remark['inputid'] = $remark['className'] = 'rem' . $j;
                     $remark['label'] = 'Remark ' . $j;
                     $remark['value'] = '';
+                    $remark['status'] = 'new';
                     $inputs[] = new SurveyInput($remark);
                     $i++;
                 }
@@ -294,6 +299,7 @@ trait QuestionsTrait
                     $advanced['inputid'] = $advanced['className'] = strtolower($party) . '_advanced';
                     $advanced['label'] = ucwords($party) . 'Station';
                     $advanced['value'] = '';
+                    $advanced['status'] = 'new';
                     $inputs[] = new SurveyInput($advanced);
                     $i++;
                 }
@@ -309,6 +315,7 @@ trait QuestionsTrait
                     $remark['inputid'] = $remark['className'] = 'rem' . $j;
                     $remark['label'] = 'Remark ' . $j;
                     $remark['value'] = '';
+                    $remark['status'] = 'new';
                     $inputs[] = new SurveyInput($remark);
                     $i++;
                 }
@@ -333,7 +340,7 @@ trait QuestionsTrait
                 }
 
                 //$input['label_trans'] = json_encode([$lang => $input['label']]);
-
+                $input['status'] = 'new';
                 $inputs[] = new SurveyInput($input);
             }
         }

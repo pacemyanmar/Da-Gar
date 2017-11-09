@@ -17,7 +17,9 @@
             @if(empty($question->observation_type) || in_array($sample->data->observer_field,$question->observation_type))
                 <tr id="{!! $question->css_id !!}">
                     <td class="col-xs-1">
+                        @if(!in_array($question->layout, ['household']))
                         <label>{!! $question->qnum !!}</label>
+                        @endif
                         @if($question->report)
                             <span class="badge">In report</span>
                         @endif
@@ -26,10 +28,14 @@
                         @endif
                     </td>
                     <td class="col-xs-11">
-                        <div class="row"><label>{!! $question->question !!}
+                        <div class="row">
+                            <label>
+                                {!! $question->question !!}
                                 @if($question->party && array_key_exists(str_slug($sample->data->observer_field), $question->party))
                                     {!! $question->party[str_slug($sample->data->observer_field)] !!}
-                                @endif</label></div>
+                                @endif
+                            </label>
+                        </div>
                         <div class="row">
 
                             @include('questions.ans_fields')
