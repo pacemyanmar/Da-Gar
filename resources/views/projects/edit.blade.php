@@ -463,7 +463,7 @@
                         }
                         resetForm($("#qModalForm"))
                         setTimeout(function () {
-                            //window.location.reload();
+                            window.location.reload();
                         }, 1800);
                     }
                 });
