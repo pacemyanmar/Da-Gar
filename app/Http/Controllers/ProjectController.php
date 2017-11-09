@@ -480,7 +480,7 @@ class ProjectController extends AppBaseController
 
             $section_code = 's'.$section->sort;
 
-            $section_dbname = $project->dbname.'_'.$section_code;
+            $section_dbname = $this->dbname.'_'.$section_code;
 
             if (Schema::hasTable($section_dbname)) {
                 $this->updateTable('main', $fields, $section);
@@ -495,7 +495,14 @@ class ProjectController extends AppBaseController
                     $this->createTable('double', $fields, $section);
                 }
 
-                $this->createDoubleStatusView($section);
+                $viewName = $this->dbname . '_' . $section_code.'_view';
+
+                if (!Schema::hasTable($viewName)) {
+                    $this->createDoubleStatusView($section);
+                } else {
+                    DB::statement("DROP VIEW ".$viewName);
+                    $this->createDoubleStatusView($section);
+                }
             }
         }
 
@@ -616,10 +623,6 @@ class ProjectController extends AppBaseController
                             $table->index($input->inputid);
 
                         }
-                        if ($input->other) {
-                            $table->string($input->inputid.'_other', 100)
-                                ->nullable();
-                        }
                     });
                 } else {
                     // if column has not been created, creat now
@@ -658,11 +661,23 @@ class ProjectController extends AppBaseController
                             }
                         }
 
-                        if ($input->other) {
+                    });
+                }
+
+                if ($input->other) {
+                    if (Schema::hasColumn($dbname, $input->inputid)) {
+
+                        Schema::table($dbname, function ($table) use ($input, $dbname) {
+                            $table->string($input->inputid.'_other', 100)->change()
+                                ->nullable();
+                        });
+                    } else {
+                        // if column has not been created, creat now
+                        Schema::table($dbname, function ($table) use ($input, $project) {
                             $table->string($input->inputid.'_other', 100)
                                 ->nullable();
-                        }
-                    });
+                        });
+                    }
                 }
             }
         }
@@ -1061,13 +1076,12 @@ class ProjectController extends AppBaseController
 
         $selectColumns = implode(',', $selectColumns);
 
-        if (!Schema::hasTable($viewName)) {
+
             $viewStatement = "CREATE VIEW ".$viewName." AS (SELECT ".$selectColumns. " FROM ";
             $viewStatement .= $dbName." LEFT JOIN ".$dbDblName. " ON ";
             $viewStatement .= $dbName.".sample_id = ".$dbDblName.".sample_id)";
 
             DB::statement($viewStatement);
-        }
 
     }
 
