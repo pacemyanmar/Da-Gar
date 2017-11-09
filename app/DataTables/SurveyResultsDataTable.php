@@ -82,16 +82,17 @@ class SurveyResultsDataTable extends DataTable
         if ($this->project->status != 'new') {
             $query->select(DB::raw($selectColumns));
             // join with samplable database (voters, enumerators)
-            $query->leftjoin('sample_datas_view', function ($join) use ($project) {
-                $join->on('samples.sample_data_id', 'sample_datas_view.id')->where('samples.project_id', $project->id);
+            $query->leftjoin('sample_datas_view AS sdv', function ($join) use ($project) {
+                $join->on('samples.sample_data_id', 'sdv.id')->where('samples.project_id', $project->id);
             });
 
             // loop sections
             foreach ($project->sections as $k => $section) {
                 if (config('sms.double_entry')) {
                     $dbl_section_table = $childTable . '_s' . $section->sort . '_dbl';
-                    $query->leftjoin($dbl_section_table, function ($join) use ($dbl_section_table) {
-                        $join->on('samples.id', '=', $dbl_section_table . '.sample_id');
+                    $dbl_short = 'pj_s'.$section->sort.'_dbl';
+                    $query->leftjoin($dbl_section_table. ' AS '.$dbl_short, function ($join) use ($dbl_short) {
+                        $join->on('samples.id', '=', $dbl_short . '.sample_id');
                     });
 
                     if ($auth->role->role_name == 'doublechecker') {
@@ -102,8 +103,9 @@ class SurveyResultsDataTable extends DataTable
                 // join with result database
 
                 $section_table = $childTable . '_s' . $section->sort;
-                $query->{$joinMethod}($section_table, function ($join) use ($section_table) {
-                    $join->on('samples.id', '=', $section_table . '.sample_id');
+                $sect_short = 'pj_s'.$section->sort;
+                $query->{$joinMethod}($section_table.' AS '.$sect_short, function ($join) use ($sect_short) {
+                    $join->on('samples.id', '=', $sect_short . '.sample_id');
                 });
 
 
@@ -115,6 +117,7 @@ class SurveyResultsDataTable extends DataTable
         $filterColumns = Request::get('columns', []);
 
         $sectionColumns = $this->makeSectionColumns();
+
 
         foreach ($filterColumns as $index => $column) {
             if (in_array($filterColumns[$index]['name'], $sectionColumns) && $filterColumns[$index]['search']['value'] != '') {
@@ -172,69 +175,13 @@ class SurveyResultsDataTable extends DataTable
             });
         }
 
-        $section = Request::input('section');
-
-        $status = Request::input('status');
-
-        $totalstatus = Request::input('totalstatus');
-
-        if ($totalstatus) {
-            $tsvar = explode('_', $totalstatus);
-            if (count($tsvar) == 2) {
-                foreach ($tsvar as $var) {
-                    switch ($var) {
-                        case 'missing':
-                            $status = 0;
-                            break;
-                        case 'complete':
-                            $status = 1;
-                            break;
-                        case 'incomplete':
-                            $status = 2;
-                            break;
-                        case 'error':
-                            $status = 3;
-                            break;
-
-                        default:
-                            $section = $var;
-                            break;
-                    }
-                }
-            }
-        }
-
-        if (!empty($section)) {
-            // if (!isset($resultdbname)) {
-            //     $resultdbname = $childTable;
-            // }
-            if ($status) {
-                $query->where($childTable . '.' . $section, $status);
-            } else {
-                $query->where(function ($q) use ($childTable, $section, $status) {
-                    $q->whereNull($childTable . '.' . $section)->orWhere($childTable . '.' . $section, $status);
-                });
-            }
-
-        }
 
         $nosample = Request::input('nosample');
         if ($nosample) {
-            $query->where('sample_datas_view.sample', '<>', '0');
+            $query->where('sdv.sample', '<>', '0');
         }
 
-        $inputcolumn = Request::input('column');
-        $inputvalue = Request::input('value');
-        if ($inputcolumn && $inputvalue) {
-            if ($inputvalue == 'NULL') {
-                $query->whereNull($childTable . '.' . $inputcolumn);
-            } else {
-                $query->where($childTable . '.' . $inputcolumn, $inputvalue);
-            }
-
-        }
-
-        $query->orderBy('sample_datas_view.location_code', 'asc');
+        $query->orderBy('sdv.location_code', 'asc');
         return $this->applyScopes($query);
     }
 

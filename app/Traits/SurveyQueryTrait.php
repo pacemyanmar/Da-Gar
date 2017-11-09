@@ -9,25 +9,25 @@ trait SurveyQueryTrait {
     protected $sample_select = [
         'samples_id' => 'samples.id as samples_id',
         'form_id' => 'samples.form_id',
-        'location_code' => 'sample_datas_view.location_code',
-        'ps_code' => 'sample_datas_view.ps_code',
-        'type' => 'sample_datas_view.type',
-        'dbgroup' => 'sample_datas_view.dbgroup',
-        'sample' => 'sample_datas_view.sample',
-        'area_type' => 'sample_datas_view.area_type',
-        'level1' => 'sample_datas_view.level1',
-        'level1_trans' => 'sample_datas_view.level1_trans',
-        'level2' => 'sample_datas_view.level2',
-        'level2_trans' => 'sample_datas_view.level2_trans',
-        'level3' => 'sample_datas_view.level3',
-        'level3_trans' => 'sample_datas_view.level3_trans',
-        'level4' => 'sample_datas_view.level4',
-        'level4_trans' => 'sample_datas_view.level4_trans',
-        'level5' => 'sample_datas_view.level5',
-        'level5_trans' => 'sample_datas_view.level5_trans',
-        'parties' => 'sample_datas_view.parties',
+        'location_code' => 'sdv.location_code',
+        'ps_code' => 'sdv.ps_code',
+        'type' => 'sdv.type',
+        'dbgroup' => 'sdv.dbgroup',
+        'sample' => 'sdv.sample',
+        'area_type' => 'sdv.area_type',
+        'level1' => 'sdv.level1',
+        'level1_trans' => 'sdv.level1_trans',
+        'level2' => 'sdv.level2',
+        'level2_trans' => 'sdv.level2_trans',
+        'level3' => 'sdv.level3',
+        'level3_trans' => 'sdv.level3_trans',
+        'level4' => 'sdv.level4',
+        'level4_trans' => 'sdv.level4_trans',
+        'level5' => 'sdv.level5',
+        'level5_trans' => 'sdv.level5_trans',
+        'parties' => 'sdv.parties',
         'user_id' => 'user.name',
-        'observer_name' => 'sample_datas_view.full_name',
+        'observer_name' => 'sdv.full_name',
 
 
     ];
@@ -121,7 +121,7 @@ trait SurveyQueryTrait {
         $section_columns = [];
         foreach ($sections as $k => $section) {
             $section_num = $section->sort;
-            $base_dbname = $this->dbname .'_s'.$section_num;
+            $base_dbname = 'pj_s'.$section_num;
             $sectionColumn = 'section' . $section_num . 'status';
             $sectionname = $section['sectionname'];
             $sectionshort = 'R' . ($section_num + 1) . '';
@@ -135,7 +135,7 @@ trait SurveyQueryTrait {
                 'name' => $base_dbname . '.' . $sectionColumn,
                 'data' => $sectionColumn,
                 'orderable' => false,
-                'searchable' => false,
+                'searchable' => true,
                 'width' => '40px',
                 'render' => function () {
                     return "function(data,type,full,meta){
@@ -185,7 +185,7 @@ trait SurveyQueryTrait {
                     break;
                 case 'observer_name':
                     $columns['full_name'] = [
-                        'name' => 'sample_datas_view.full_name',
+                        'name' => 'sdv.full_name',
                         'data' => 'full_name',
                         'title' => trans('sample.observer_id'),
                         'orderable' => false,
@@ -213,12 +213,12 @@ trait SurveyQueryTrait {
                     break;
                 case 'location_code':
                     $columns[$column] = [
-                        'name' => 'sample_datas_view.'.$column,
+                        'name' => 'sdv.'.$column,
                         'data' => $column,
                         'title' => trans('sample.'.$column),
                         'orderable' => false,
                         'defaultContent' => 'N/A',
-                        'visible' => false,
+                        'visible' => true,
                         'width' => '90px',
                     ];
                     break;
@@ -227,7 +227,7 @@ trait SurveyQueryTrait {
                 case 'sms_time':
                 case 'observer_field':
                     $columns[$column] = [
-                        'name' => 'sample_datas_view.'.$column,
+                        'name' => 'sdv.'.$column,
                         'data' => $column,
                         'title' => trans('sample.'.$column),
                         'orderable' => false,
@@ -237,7 +237,7 @@ trait SurveyQueryTrait {
                     break;
                 case 'mobile':
                     $columns['phone_1'] = [
-                        'name' => 'sample_datas_view.phone_1',
+                        'name' => 'sdv.phone_1',
                         'data' => 'phone_1',
                         'title' => trans('messages.mobile'),
                         'orderable' => false,
@@ -247,7 +247,7 @@ trait SurveyQueryTrait {
                     break;
                 case 'sms_primary':
                     $columns[$column] = [
-                        'name' => 'sample_datas_view.'.$column,
+                        'name' => 'sdv.'.$column,
                         'data' => $column,
                         'title' => trans('sample.'.$column),
                         'orderable' => false,
@@ -259,7 +259,7 @@ trait SurveyQueryTrait {
                 case 'level1':
                 case 'level3':
                     $columns[$column] = [
-                        'name' => 'sample_datas_view.'.$column,
+                        'name' => 'sdv.'.$column,
                         'data' => $column,
                         'title' => trans('sample.'.$column),
                         'orderable' => false,
@@ -339,7 +339,7 @@ trait SurveyQueryTrait {
                         break;
                 }
 
-                $base_dbname = $this->dbname .'_s'.$section_num;
+                $base_dbname = 'pj_s'.$section_num;
 
                 $input_columns[$column] = [
                     'name' => $base_dbname. '.' . $column,
