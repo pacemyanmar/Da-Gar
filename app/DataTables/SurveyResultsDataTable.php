@@ -14,6 +14,8 @@ class SurveyResultsDataTable extends DataTable
 {
     use SurveyQueryTrait;
 
+    protected $filterColumns;
+
     /**
      * Display ajax response.
      *
@@ -30,6 +32,25 @@ class SurveyResultsDataTable extends DataTable
             ->addColumn('project_id', $this->project->id)
             ->addColumn('action', 'projects.sample_datatables_actions');
         $table->escapeColumns(['action']);
+
+        $filterColumns = $this->filterColumns;
+        $sectionColumns = $this->makeSectionColumns();
+
+        foreach ($filterColumns as $index => $column) {
+            $columnName = $column['name'];
+            $value = $column['search']['value'];
+
+            if (in_array($column['data'], array_keys($sectionColumns)) && $value != '') {
+
+                $table->filterColumn($columnName, function($query, $keyword) use ($columnName) {
+                    if($keyword) {
+                        $query->where($columnName, '=', $keyword);
+                    } else {
+                        $query->where($columnName, '=', $keyword)->orWhereNull($columnName);
+                    }
+                });
+            }
+        }
 
         //$table->orderColumn($orderBy, DB::raw('LENGTH(' . $orderBy . ')') . " $1");
 
@@ -114,26 +135,8 @@ class SurveyResultsDataTable extends DataTable
 
         }
 
-        $filterColumns = Request::get('columns', []);
+        $this->filterColumns = Request::get('columns', []);
 
-        $sectionColumns = $this->makeSectionColumns();
-
-
-        foreach ($filterColumns as $index => $column) {
-            if (in_array($filterColumns[$index]['name'], $sectionColumns) && $filterColumns[$index]['search']['value'] != '') {
-
-                $columnName = $filterColumns[$index]['name'];
-                $value = $filterColumns[$index]['search']['value'];
-
-                if ($value) {
-                    $query->where($columnName, '=', $value);
-                } else {
-                    $query->where(function ($where) use ($columnName, $value) {
-                        $where->where($columnName, '=', $value)->orWhereNull($columnName);
-                    });
-                }
-            }
-        }
 
         $query->where('project_id', $project->id);
         $dataclerk = Request::input('user');
