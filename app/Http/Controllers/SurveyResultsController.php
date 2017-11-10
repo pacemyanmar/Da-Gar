@@ -362,8 +362,9 @@ class SurveyResultsController extends AppBaseController
 
                 }
                 if($input->other) {
-                    $result_arr[$qid][$inputid.'_other'] = $results[$inputid.'_other'];
+                    $result_arr[$qid][$inputid.'_other'] = (array_key_exists($inputid.'_other', $results))?$results[$inputid.'_other']:null;
                 }
+
                 $this->logicalCheck($input, $result_arr[$qid][$inputid]);
             }
 
@@ -371,6 +372,7 @@ class SurveyResultsController extends AppBaseController
 
             $allResults += $result_arr[$qid];
         }
+
 
         $section_table = $dbName . '_s' . $section->sort;
 

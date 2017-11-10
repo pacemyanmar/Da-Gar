@@ -92,8 +92,7 @@
                                 {!! Form::text("result[".$radio->inputid."_other]", (isset($results) && !empty($results['section'.$section->sort]) && $radio->value == $results['section'.$section->sort]->{$radio->inputid})?$results['section'.$section->sort]->{$radio->inputid.'_other'}:null, ['class' => $radio->className.' form-control input-sm', 'autocomplete' => 'off', 'id' => $radio->id.'other', 'style' => 'width:80%']) !!}
                                 @push('document-ready')
                                     $("input[name='result[{!! $radio->inputid !!}]']").change(function(e){
-                                    var other_val = $("input[name='result[{!! $radio->inputid !!}
-                                    _other]']:checked").val();
+                                    var other_val = $("input[name='result[{!! $radio->inputid !!}_other]']:checked").val();
                                     if( !other_val ) {
                                     $("#{!! $radio->id.'other' !!}").prop('disabled', false).prop('required',
                                     true).addClass('has-error');
