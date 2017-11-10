@@ -79,7 +79,10 @@
                             {!! Form::input($radio->type,"result[".$radio->inputid."]", (isset($results)&& !empty($results['section'.$section->sort]))?Kanaung\Facades\Converter::convert($results['section'.$section->sort]->{$radio->inputid},'unicode','zawgyi'):null, $options) !!}
                         @else
                             {!!
-                             Form::radio("result[".$radio->inputid."]", $radio->value, (isset($results) && !empty($results['section'.$section->sort]) && $radio->value == $results['section'.$section->sort]->{$radio->inputid}), ['id' => $radio->id,'class' => ' magic-radio '.$radio->className.' '.$sectionClass,
+                             Form::radio("result[".$radio->inputid."]",
+                             $radio->value, (isset($results) && !empty($results['section'.$section->sort]) && $radio->value == $results['section'.$section->sort]->{$radio->inputid}),
+                             ['id' => $radio->id,
+                             'class' => ' magic-radio '.$radio->className.' '.$sectionClass,
                                     'autocomplete' => 'off',
                                     'data-selected' => (isset($results) && array_key_exists('section'.$section->sort, $results) && !empty($results['section'.$section->sort]) && $radio->value == $results['section'.$section->sort]->{$radio->inputid})])
                              !!}
@@ -89,27 +92,12 @@
                                 <span class="label label-primary badge">{!! $radio->value !!}</span>
                             @endif
                             @if($radio->other)
-                                {!! Form::text("result[".$radio->inputid."_other]", (isset($results) && !empty($results['section'.$section->sort]) && $radio->value == $results['section'.$section->sort]->{$radio->inputid})?$results['section'.$section->sort]->{$radio->inputid.'_other'}:null, ['class' => $radio->className.' form-control input-sm', 'autocomplete' => 'off', 'id' => $radio->id.'other', 'style' => 'width:80%']) !!}
-                                @push('document-ready')
-                                    $("input[name='result[{!! $radio->inputid !!}]']").change(function(e){
-                                    var other_val = $("input[name='result[{!! $radio->inputid !!}_other]']:checked").val();
-                                    if( !other_val ) {
-                                    $("#{!! $radio->id.'other' !!}").prop('disabled', false).prop('required',
-                                    true).addClass('has-error');
-                                    } else {
-                                    $("#{!! $radio->id.'other' !!}").prop('disabled', true).prop('required',
-                                    false).removeClass('has-error');
-                                    }
-                                    });
-
-                                    if($("#{!! $radio->id.'other' !!}").val() != "") {
-                                    $("#{!! $radio->id.'other' !!}").prop('required', true).addClass('has-error');
-                                    $("#{!! $radio->id !!}").prop('checked', true);
-                                    } else {
-                                    $("#{!! $radio->id.'other' !!}").prop('disabled', true).prop('required',
-                                    false).removeClass('has-error');
-                                    }
-                                @endpush
+                                {!! Form::text("result[".$radio->inputid."_other]",
+                                (isset($results) && !empty($results['section'.$section->sort]) && $radio->value == $results['section'.$section->sort]->{$radio->inputid})?$results['section'.$section->sort]->{$radio->inputid.'_other'}:null,
+                                ['class' => $radio->className.' form-control input-sm',
+                                'autocomplete' => 'off',
+                                'id' => $radio->id.'other',
+                                'style' => 'width:80%']) !!}
                             @endif
                         </label>
                     </td>

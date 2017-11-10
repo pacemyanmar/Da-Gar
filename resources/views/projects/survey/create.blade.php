@@ -162,6 +162,14 @@
     </style>
     <script type='text/javascript'>
         (function ($) {
+
+            var other_text = $('.other').closest("div.form-group").find("input[type='text'].othertext");
+            if($('.other').is(':checked')){
+                other_text.focus().addClass('has-error').prop('disabled', false).prop('required', true);
+            } else {
+                other_text.removeClass('has-error').prop('disabled', true).prop('required', false);
+            }
+
             $('.other').on('change click',function(){
                 var other_text = $(this).closest("div.form-group").find("input[type='text'].othertext");
                 if($(this).is(':checked')){
@@ -175,41 +183,60 @@
                 if($(this).is(':checked')){
                     var toskip = $(this).data('skip');
                     var goto = $(this).data('goto');
-                    if(!empty(toskip)) {
+                    if(toskip) {
                         $(toskip).prop("disabled", true);
                     }
-                    if(!empty(goto)) {
+                    if(goto) {
                         $("body, html").animate({
                             scrollTop: $(goto).offset().top
                         }, 600);
                     }
 
                 } else {
+                    var toskip = $(this).data('skip');
+
+                    if(toskip) {
+                        $(toskip).prop("disabled", false);
+                    }
+                }
+            });
+            $.each($('.skippable'), function(i, elm){
+                if(elm.checked){
+
+                    if(elm.dataset.skip) {
+                        $(elm.dataset.skip).prop("disabled", true);
+                    }
 
                 }
             });
 
+
+            $('input:radio').on('change', function(e){
+                if(!$(this).data('skip')) {
+                    var siblings = $(this).closest('tr').find('input');
+                    $.each(siblings, function(i, elm){
+                        console.log(elm);
+                        $(elm.dataset.skip).prop("disabled", false);
+                    });
+                } else {
+                    $($(this).data('skip')).prop("disabled", true);
+                }
+            });
+
+
             //$( ".date" ).datetimepicker();
 
-            if ($(".none").is(':checked')) {
-                $(".none:checked").closest('.row').children().children().children().children('input').each(function (i, obj) {
-                    obj.disabled = true;
-                });
-                $(".none").prop("disabled", false);
+            if ($("input.none").is(':checked')) {
+                $("input.none:checked").closest('tr').find('input').prop("disabled", true);
+                $("input.none").prop("disabled", false);
             }
+
             $("input.none").change(function (e) {
                 if ($(this).is(':checked')) {
-                    $(this).closest('.row').children().children().children().children('input').each(function (i, obj) {
-                        obj.disabled = true;
-                    });
+                    $(this).closest('tr').find('input').prop("disabled", true);
                     $(this).prop("disabled", false);
                 } else {
-                    $(this).closest('.row').children().children().children().children('input').each(function (i, obj) {
-                        if (obj.type != 'text') {
-                            obj.checked = false;
-                            obj.disabled = false;
-                        }
-                    });
+                    $(this).closest('tr').find('input').prop("disabled", false);
                 }
             });
 

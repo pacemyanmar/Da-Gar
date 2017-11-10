@@ -4,7 +4,7 @@
         (isset($results) && !empty($results['section'.$section->sort]) && $element->value == $results['section'.$section->sort]->{$element->inputid}),
         [
         'id' => $element->id,
-        'class' => ((!empty($element->skip))?'skippable':null).(($element->other)?'other':null).' magic-radio '.$element->className.' '.$sectionClass,
+        'class' => ((!empty($element->skip))?' skippable ':null).(($element->other)?' other ':null).' magic-radio '.$element->className.' '.$sectionClass,
         'autocomplete' => 'off',
         'data-skip' => $element->skip,
         'data-goto' => $element->goto,
@@ -39,24 +39,4 @@
     @endif
 
 </div>
-@if(!empty($element->skip) && !isset($editing))
-    @push('document-ready')
-        if($("input[name='result[{!! $element->inputid !!}]']:checked").val() == {!! $element->value !!}) {
-        $("{!! $element->skip !!}").prop("disabled", true);
-        } else {
-        $("{!! $element->skip !!}").prop("disabled", false);
-        }
-        $("#{!! $element->id !!}").click(function(){
-        if($("input[name='result[{!! $element->inputid !!}]']:checked").val() == {!! $element->value !!}) {
-        $("{!! $element->skip !!}").prop("disabled", true);
-        @if(isset($element->extras['goto']))
-            $("body, html").animate({
-            scrollTop: $("{!! $element->extras['goto'] !!}").offset().top
-            }, 600);
-        @endif
-        } else {
-        $("{!! $element->skip !!}").prop("disabled", false);
-        }
-        });
-    @endpush
-@endif
+

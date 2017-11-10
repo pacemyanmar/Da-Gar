@@ -6,8 +6,10 @@
     'data-class'=>$element->inputid,
     'data-origin'=>(isset($results['section'.$section->sort]->{$element->inputid}))? $results['section'.$section->sort]->{$element->inputid}:null,
     'id' => $element->id,
-    'class' => 'magic-radio '.$element->className.' '.$sectionClass,
+    'class' => ((!empty($element->skip))?'skippable':null).(($element->other)?' other ':null).' magic-radio '.$element->className.' '.$sectionClass,
     'autocomplete' => 'off',
+    'data-skip' => $element->skip,
+    'data-goto' => $element->goto,
     'data-selected' => (isset($double_results['section'.$section->sort]->{$element->inputid}) && $element->value == $double_results['section'.$section->sort]->{$element->inputid})])
     !!}
     <label class="normal-text" for="{!! $element->id !!}">
@@ -56,24 +58,4 @@
         {!! Form::text("result[".$element->inputid."_other]", (isset($results)&& !empty($results['section'.$section->sort]))?Kanaung\Facades\Converter::convert($results['section'.$section->sort]->{$element->inputid.'_other'},'unicode','zawgyi'):null, $options) !!}
     @endif
 </div>
-@if(!empty($element->skip) && !isset($editing))
-    @push('document-ready')
-        if($("input[name='result[{!! $element->inputid !!}]']:checked").val() == {!! $element->value !!}) {
-        $("{!! $element->skip !!}").prop("disabled", true);
-        } else {
-        $("{!! $element->skip !!}").prop("disabled", false);
-        }
-        $("input[name='result[{!! $element->inputid !!}]']").change(function(){
-        if($("input[name='result[{!! $element->inputid !!}]']:checked").val() == {!! $element->value !!}) {
-        $("{!! $element->skip !!}").prop("disabled", true);
-        @if(isset($element->extras['goto']))
-            $("body, html").animate({
-            scrollTop: $("{!! $element->extras['goto'] !!}").offset().top
-            }, 600);
-        @endif
-        } else {
-        $("{!! $element->skip !!}").prop("disabled", false);
-        }
-        });
-    @endpush
-@endif
+
