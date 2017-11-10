@@ -222,6 +222,17 @@ trait SurveyQueryTrait {
                         'width' => '90px',
                     ];
                     break;
+                case 'form_id':
+                    $columns[$column] = [
+                        'name' => 'samples.form_id',
+                        'data' => $column,
+                        'title' => trans('sample.'.$column),
+                        'orderable' => false,
+                        'defaultContent' => 'N/A',
+                        'visible' => true,
+                        'width' => '90px',
+                    ];
+                    break;
                 case 'call_primary':
                 case 'incident_center':
                 case 'sms_time':

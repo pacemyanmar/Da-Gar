@@ -79,6 +79,8 @@ class DoubleResponseDataTable extends DataTable
                 ->groupBy('samples.id')
                 ->groupBy('sample_datas.location_code')
                 ->groupBy('samples.form_id');
+            $sample->orderBy('sample_datas.location_code', 'asc');
+            $sample->orderBy('samples.form_id', 'asc');
 
         return $this->applyScopes($sample);
     }
