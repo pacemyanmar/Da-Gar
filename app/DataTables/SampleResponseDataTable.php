@@ -3,12 +3,15 @@
 namespace App\DataTables;
 
 use App\Models\Sample;
+use App\Traits\SurveyQueryTrait;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\Services\DataTable;
 
 class SampleResponseDataTable extends DataTable
 {
-    private $project;
+    use SurveyQueryTrait;
+
 
     private $filter;
 
@@ -53,18 +56,16 @@ class SampleResponseDataTable extends DataTable
         $query = Sample::query();
         $project = $this->project;
         $childTable = $project->dbname;
+        $auth = Auth::user();
 
-        $sectionColumns = [];
-        foreach ($project->sections as $k => $section) {
-            $sectionColumns[] = 'section' . ($k + 1) . 'status';
-        }
+        $sectionColumns = $this->makeSectionColumns();
 
         // modify column name to use in sql query TABLE.COLUMN format
-        array_walk($sectionColumns, function (&$column, $index) use ($childTable) {
-            $columnStr = 'SUM(IF((' . $childTable . '.' . $column . ' = 0 OR ' . $childTable . '.' . $column . ' IS NULL), 1, 0)) AS ' . $column . '_missing';
-            $columnStr .= ', SUM(IF(' . $childTable . '.' . $column . ' = 1, 1, 0)) AS ' . $column . '_complete';
-            $columnStr .= ', SUM(IF(' . $childTable . '.' . $column . ' = 2, 1, 0)) AS ' . $column . '_incomplete';
-            $columnStr .= ', SUM(IF(' . $childTable . '.' . $column . ' = 3, 1, 0)) AS ' . $column . '_error';
+        array_walk($sectionColumns, function (&$column, $index) {
+            $columnStr = 'SUM(IF(' . $column['name'] . ' = 0 OR '. $column['name'] . ' IS NULL, 1, 0)) AS ' . $column['data'] . '_missing';
+            $columnStr .= ', SUM(IF(' . $column['name'] . ' = 1, 1, 0)) AS ' . $column['data'] . '_complete';
+            $columnStr .= ', SUM(IF(' . $column['name'] . ' = 2, 1, 0)) AS ' . $column['data'] . '_incomplete';
+            $columnStr .= ', SUM(IF(' . $column['name'] . ' = 3, 1, 0)) AS ' . $column['data'] . '_error';
             $column = $columnStr;
         });
 
@@ -74,31 +75,52 @@ class SampleResponseDataTable extends DataTable
             if($this->section) {
                 $total = 'section'.$this->section.'status';
             } else {
-                $total = 'id';
+                $total = 'sdv.id';
             }
             switch ($this->filter) {
                 case 'user':
                     # code...
                     $filter = 'user';
-                    $query->select('user.name AS ' . $filter, DB::raw('SUM(IF(sample_datas.id,1,0)) AS alltotal, SUM(IF(' . $childTable . '.'.$total.', 1, 0)) AS total'), DB::raw($sectionColumnsStr));
+                    $query->select('user.name AS ' . $filter, DB::raw('SUM(IF(sample_datas.id,1,0)) AS alltotal, SUM(IF(' .$total.', 1, 0)) AS total'), DB::raw($sectionColumnsStr));
                     $query->groupBy($filter);
                     break;
 
                 default:
                     # code...
                     $filter = $this->filter;
-                    $query->select('sample_datas.' . $filter, DB::raw('SUM(IF(sample_datas.id,1,0)) AS alltotal, SUM(IF(' . $childTable . '.'.$total.', 1, 0)) AS total'), DB::raw('GROUP_CONCAT(DISTINCT user.name) as user_name', 'GROUP_CONCAT(DISTINCT update_user.name) as update_user', 'GROUP_CONCAT(DISTINCT qc_user.name) as qc_user'), DB::raw($sectionColumnsStr));
-                    $query->groupBy('sample_datas.' . $filter);
+                    $query->select('sdv.' . $filter, DB::raw('SUM(IF(samples.id,1,0)) AS alltotal, SUM(IF(' .$total.', 1, 0)) AS total'), DB::raw('GROUP_CONCAT(DISTINCT user.name) as user_name', 'GROUP_CONCAT(DISTINCT update_user.name) as update_user', 'GROUP_CONCAT(DISTINCT qc_user.name) as qc_user'), DB::raw($sectionColumnsStr));
+                    $query->groupBy('sdv.' . $filter);
                     break;
             }
 
-            $query->leftjoin('sample_datas', function ($join) {
-                $join->on('samples.sample_data_id', 'sample_datas.id');
+            $query->leftjoin('sample_datas_view as sdv', function ($join) {
+                $join->on('samples.sample_data_id', 'sdv.id');
             });
 
-            $query->leftjoin($childTable, function ($join) use ($childTable) {
-                $join->on('samples.id', '=', $childTable . '.sample_id');
-            });
+            foreach ($project->sections as $k => $section) {
+//                if (config('sms.double_entry')) {
+//                    $dbl_section_table = $childTable . '_s' . $section->sort . '_dbl';
+//                    $dbl_short = 'pj_s'.$section->sort.'_dbl';
+//                    $query->leftjoin($dbl_section_table. ' AS '.$dbl_short, function ($join) use ($dbl_short) {
+//                        $join->on('samples.id', '=', $dbl_short . '.sample_id');
+//                    });
+//
+//                    if ($auth->role->role_name == 'doublechecker') {
+//                        $joinMethod = 'leftjoin';
+//                    }
+//
+//                }
+                // join with result database
+
+                $section_table = $childTable . '_s' . $section->sort;
+                $sect_short = 'pj_s'.$section->sort;
+                $query->leftjoin($section_table.' AS '.$sect_short, function ($join) use ($sect_short) {
+                    $join->on('samples.id', '=', $sect_short . '.sample_id');
+                });
+
+
+
+            }
         }
 
         $query->leftjoin('users as user', function ($join) {
@@ -111,7 +133,7 @@ class SampleResponseDataTable extends DataTable
             $join->on('qc_user.id', 'samples.qc_user_id');
         });
         $query->where('project_id', $project->id);
-        $query->where('sample_datas.sample', '<>', '0');
+        $query->where('sdv.sample', '<>', '0');
 
         return $this->applyScopes($query);
     }
