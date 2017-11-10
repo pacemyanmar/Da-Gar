@@ -531,6 +531,9 @@ class ProjectController extends AppBaseController
         $project->questions()->update(['qstatus' => 'published']);
 
         $project->status = 'published';
+        // change input status to published
+        $project->inputs()->withoutGlobalScope(OrderByScope::class)
+            ->update(['status' => 'published']);
         $project->save();
         if ($project->type != 'sample2db') {
             dispatch(new \App\Jobs\GenerateSample($project)); // need to decide this to run once or every time project update
@@ -681,9 +684,6 @@ class ProjectController extends AppBaseController
                 }
             }
         }
-        // change input status to published
-        $project->inputs()->withoutGlobalScope(OrderByScope::class)
-            ->update(['status' => 'published']);
     }
 
     private function createTable($type = 'main', $fields, $section = null)
@@ -777,9 +777,6 @@ class ProjectController extends AppBaseController
             }
         });
 
-        // change input status to published
-        $project->inputs()->withoutGlobalScope(OrderByScope::class)
-            ->update(['status' => 'published']);
     }
 
     public function search($project_id, Request $request)

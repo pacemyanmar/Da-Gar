@@ -344,6 +344,7 @@ trait QuestionsTrait
                 $inputs[] = new SurveyInput($input);
             }
         }
+
         return $inputs;
     }
 
