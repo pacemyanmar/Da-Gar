@@ -668,7 +668,7 @@ class ProjectController extends AppBaseController
                 }
 
                 if ($input->other) {
-                    if (Schema::hasColumn($dbname, $input->inputid)) {
+                    if (Schema::hasColumn($dbname, $input->inputid.'_other')) {
 
                         Schema::table($dbname, function ($table) use ($input, $dbname) {
                             $table->string($input->inputid.'_other', 100)->change()
