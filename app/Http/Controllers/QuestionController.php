@@ -128,8 +128,8 @@ class QuestionController extends AppBaseController
             $form_input['double_entry'] = (isset($section['double'])) ? $section['double'] : $double_entry;
         }
 
-        $unique = uniqid();
-        $short_unique = substr($unique, 0, 3);
+
+        $short_unique = time();
 
         if(!$request->input('qnum') && $request->input('layout') == 'description') {
             $form_input['qnum'] = 'desc_'.$short_unique;
