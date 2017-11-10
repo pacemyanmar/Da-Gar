@@ -10,6 +10,7 @@ use App\Models\Section;
 trait LogicalCheckTrait
 {
     protected $errorBag;
+    protected $skipBag;
     private $sectionErrorBag;
 
     protected function logicalCheck($input, $value)
@@ -18,12 +19,23 @@ trait LogicalCheckTrait
 
         if($value === 0 || $value || $input->optional) {
             // if value not empty, set status as complete
-            $this->errorBag[$input->question->qnum][] = 1;
+            $this->errorBag[$input->question->qnum][$input->id] = 1;
+            if($input->skip) {
+                $qnums = array_filter(explode('.qnum', $input->skip));
+                array_walk($qnums, function(&$qnum, $key) {
+                    $qnum = preg_replace('/[^a-zA-Z0-9]+/','', $qnum);
+                });
+                $this->skipBag = $qnums;
+            }
         }
 
         if(!$input->optional && $value !== 0 && !$value) {
             // if value is null and input is required, set status as missing
-            $this->errorBag[$input->question->qnum][] = 2;
+            $this->errorBag[$input->question->qnum][$input->id] = 2;
+        }
+
+        if(!empty($this->skipBag) && in_array(strtolower($input->question->qnum), $this->skipBag)) {
+            $this->errorBag[$input->question->qnum][$input->id] = 1;
         }
     }
 
@@ -65,7 +77,7 @@ trait LogicalCheckTrait
             if($error_code == 2) {
                 return 0;
             } else {
-                $error_code;
+                return $error_code;
             }
         }
         // if questions have different status
