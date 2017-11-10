@@ -372,7 +372,9 @@ class SurveyResultsController extends AppBaseController
                 $this->getQuestionStatus($this->errorBag[$question->qnum], $question->qnum);
             }
 
-            $allResults += $result_arr[$qid];
+            if(array_key_exists($qid, $result_arr)) {
+                $allResults += $result_arr[$qid];
+            }
         }
 
 
