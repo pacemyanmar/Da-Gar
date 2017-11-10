@@ -368,7 +368,9 @@ class SurveyResultsController extends AppBaseController
                 $this->logicalCheck($input, $result_arr[$qid][$inputid]);
             }
 
-            $this->getQuestionStatus($this->errorBag[$question->qnum], $question->qnum);
+            if(array_key_exists($question->qnum, $this->errorBag)) {
+                $this->getQuestionStatus($this->errorBag[$question->qnum], $question->qnum);
+            }
 
             $allResults += $result_arr[$qid];
         }
