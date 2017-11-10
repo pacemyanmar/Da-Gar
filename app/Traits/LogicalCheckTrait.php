@@ -22,7 +22,7 @@ trait LogicalCheckTrait
         }
 
         if(!$input->optional && $value !== 0 && !$value) {
-            // if value is null and input is required, set status as incomplete
+            // if value is null and input is required, set status as missing
             $this->errorBag[$input->question->qnum][] = 2;
         }
     }
@@ -61,7 +61,12 @@ trait LogicalCheckTrait
         // if all questions have same status, set that status to section
         // section must be set as complete only after all questions complete
         if (1 == $error_count) {
-            return array_shift($this->sectionErrorBag); //this can be any of 1,2,3
+            $error_code = array_shift($this->sectionErrorBag); //this can be any of 1,2,3
+            if($error_code == 2) {
+                return 0;
+            } else {
+                $error_code;
+            }
         }
         // if questions have different status
         if ($error_count > 1) {
