@@ -159,119 +159,76 @@ class SampleDataController extends AppBaseController
         $group = $request->only('dbgroup');
         Excel::load($file, function ($reader) use ($type, $group) {
             $reader->each(function ($row) use ($type, $group) {
-
-
-
-                $row_array = [
-                    "location_code" => ($row->location_code) ? (string)$row->location_code : null,
-                    "ps_code" => ($row->ps_code) ? (string)$row->ps_code : null, // official polling station number
-
-                    "sample" => ($row->sample) ? $row->sample : 1,
-                    "area_type" => strtolower($row->area_type), // rural or urban
-
-                    "level1" => ($row->level1) ? $row->level1 : null, // state or province
-                    //"level1_id" => ($row->level1_id) ? $row->level1_id : null,
-                    "level2" => ($row->level2) ? $row->level2 : null, // district
-                    "level3" => ($row->level3) ? $row->level3 : null, // township
-                    "level4" => ($row->level4) ? $row->level4 : null, // village tract, ward, or commune
-
-                    "level5" => ($row->level5) ? $row->level5 : null, // village
-                    "level6" => ($row->level6) ? $row->level6 : null,
-
-                    "level1_trans" => ($row->level1_trans) ? $row->level1_trans : null, // state or province
-                    "level2_trans" => ($row->level2_trans) ? $row->level2_trans : null, // district
-                    "level3_trans" => ($row->level3_trans) ? $row->level3_trans : null, // township
-                    "level4_trans" => ($row->level4_trans) ? $row->level4_trans : null, // village tract, ward, or commune
-
-                    "level5_trans" => ($row->level5_trans) ? $row->level5_trans : null, // village
-                    "level6_trans" => ($row->level6_trans) ? $row->level6_trans : null,
-
-                    "parties" => ($row->parties) ? $row->parties : null,
-
-                    "observer_field" => ($row->observer_field) ? $row->observer_field : null,
-
-                    "supervisor_field" => ($row->supervisor_field) ? $row->supervisor_field : null,
-                    "supervisor_name" => ($row->supervisor_name) ? $row->supervisor_title.' '.$row->supervisor_name : null,
-                    "supervisor_name_trans" => ($row->supervisor_name_trans) ? $row->supervisor_name_trans : null,
-                    "supervisor_gender" => ($row->supervisor_gender) ? $row->supervisor_gender : null,
-                    "supervisor_dob" => ($row->supervisor_dob) ? date("Y-m-d", strtotime($row->supervisor_dob)) : null,
-                    "supervisor_mobile" => ($row->supervisor_mobile) ? $row->supervisor_mobile : null,
-                    "supervisor_email1" => ($row->supervisor_email1) ? $row->supervisor_email1 : null,
-                    "supervisor_email2" => ($row->supervisor_email2) ? $row->supervisor_email2 : null,
-                    "supervisor_address" => ($row->supervisor_address) ? $row->supervisor_address : null,
-                    "sms_primary" => ($row->sms_primary) ? $row->sms_primary : null,
-                    "sms_backup" => ($row->sms_backup) ? $row->sms_backup : null,
-                    "call_primary" => ($row->call_primary) ? $row->call_primary : null,
-                    "call_backup" => ($row->call_backup) ? $row->call_backup : null,
-                    "hotline1" => ($row->hotline_1) ? $row->hotline_1 : null,
-                    "hotline2" => ($row->hotline_2) ? $row->hotline_2 : null,
-                    "sms_time" => ($row->sms_time) ? $row->sms_time : null,
-
-                    //"incident_center" => ($row->incident_center) ? $row->incident_center : null,
-                    //"obs_type" => ($row->obs_type) ? $row->obs_type : null,
-//                    "registered_voters" => ($row->registered_voters) ? $row->registered_voters : null,
-//                    "sbo" => ($row->sbo) ? $row->sbo : false,
-//                    "pvt1" => ($row->pvt1) ? $row->pvt1 : false,
-//                    "pvt2" => ($row->pvt2) ? $row->pvt2 : false,
-//                    "pvt3" => ($row->pvt3) ? $row->pvt3 : false,
-//                    "pvt4" => ($row->pvt4) ? $row->pvt4 : false,
-
+                $location_default = [
+                    'location_code' => [
+                        'title' => 'Location Code',
+                        'primary' => true,
+                        'foreign' => false // foreign key
+                    ]
                 ];
-                $attr = [
-                    "location_code" => ($row->location_code) ? $row->location_code : null,
-                    "sample" => ($row->sample) ? $row->sample : 1,
-                ];
-                $row_array = array_merge($type, $group, $row_array);
-                $row_attr = array_merge($type, $group, $attr);
+                $locations = array_merge($location_default, config('samples.locations'));
+
+                $locations_rows = [];
+                $locations_attrs = [];
+                $observers_attrs = [];
+                foreach($locations as $location => $options) {
+                    $locations_rows[$location] = (string) ($row->{$location}) ? $row->{$location} : null;
+                    if($location && array_key_exists('primary', $options) && $options['primary']) {
+                        $locations_attrs[$location] = (string) $row->{$location};
+                    }
+
+                    if($location && array_key_exists('foreign', $options) && $options['foreign']) {
+                        $observers_attrs[$location] = (string) $row->{$location};
+                    }
+                }
 
                 if ($row->location_code) {
-                    $location_data = SampleData::updateOrCreate($row_attr, $row_array);
 
-                    $given_name = ($row->given_name) ? $row->given_name : null;
-                    $family_name = ($row->family_name) ? $row->family_name : null;
-                    $full_name = ($row->name) ? $row->name : $given_name . ' ' . $family_name;
+                    $location_data = SampleData::updateOrCreate($locations_attrs, $locations_rows);
+                    if($location_data->id) {
+                        $observer_default = [
+                            'code' => [
+                                'title' => 'Observer Code',
+                                'primary' => true
+                            ]
+                        ];
 
-                    $observer_arr = [
-                        "code" => ($row->observer_code) ? $row->location_code.'-'.$row->observer_code : null,
-                        "observer_field" => ($row->observer_field) ? $row->observer_field : null,
+                        $observers = array_merge($observer_default, config('samples.observers'));
 
-                        'given_name' => $given_name,
-                        'family_name' => $family_name,
-                        "full_name" => (!empty($full_name)) ? $full_name : 'No Name',
-                        "full_name_trans" => ($row->full_name_trans) ? $row->full_name_trans : null,
-                        "father" => ($row->father) ? $row->father : null,
-                        "mother" => ($row->mother) ? $row->mother : null,
-                        "occupation" => ($row->current_occupation) ? $row->current_occupation : null,
-                        "phone_1" => ($row->phone_1) ? $row->phone_1 : null,
-                        "phone_2" => ($row->phone_2) ? $row->phone_2 : null,
-                        "national_id" => ($row->national_id) ? $row->national_id : null,
-                        "gender" => ($row->gender_) ? $row->gender_ : null,
-                        "ethnicity" => ($row->ethnicity) ? $row->ethnicity : null,
-                        "dob" => ($row->date_of_birth) ? date("Y-m-d", strtotime($row->date_of_birth)) : null,
-                        "education" => ($row->edu_background_) ? $row->edu_background_ : null,
-                        "email1" => ($row->email1) ? $row->email1 : null,
-                        "email2" => ($row->email2) ? $row->email2 : null,
-                        "address" => ($row->mailing_address) ? $row->mailing_address : null,
-                        "language" => ($row->language) ? $row->language : null,
-                        "bank_information" => ($row->bank_information) ? $row->bank_information : null,
-                        "mobile_provider" => ($row->mobile_provider) ? $row->mobile_provider : null,
+                        $observers_rows = [];
 
-                    ];
-                    $observer_attr = [
-                        'sample_id' => $location_data->id,
-                        'code' => ($row->observer_code) ? $row->observer_code : null,
-                    ];
-                    $observer = Observer::updateOrCreate($observer_attr, $observer_arr);
+                        $observers_attrs['sample_id'] = ($location_data->id) ? $location_data->id : null;
 
-                    if(empty($location_data->observer1_id)) {
-                        $location_data->observer1_id = ($row->observer_code) ? $row->observer_code : null;
-                    } else {
-                        $location_data->observer2_id = ($row->observer_code) ? $row->observer_code : null;
+                        foreach ($observers as $observer => $options) {
+                            if($observer && array_key_exists('type', $options) && $options['type']) {
+                                switch($options['type']) {
+                                    case 'date':
+                                        $observers_rows[$observer] = ($row->{$observer}) ? date('Y-m-d', strtotime($row->{$observer})) : null;
+                                        break;
+                                    default:
+                                        $observers_rows[$observer] = ($row->{$observer}) ? $row->{$observer} : null;
+                                        break;
+                                }
+
+                            } elseif($observer && array_key_exists('notnull', $options) && $options['notnull']) {
+                                $observers_rows[$observer] = ($row->{$observer}) ? $row->{$observer} : 'N/A';
+                            } else {
+                                $observers_rows[$observer] = ($row->{$observer}) ? $row->{$observer} : null;
+                            }
+
+                            if (config('samples.unique') == 'observer') {
+                                $observers_rows['code'] = $row->location_code . '-' . $row->observer_code;
+                            }
+                        }
+
+                        $observer = Observer::updateOrCreate($observers_attrs, $observers_rows);
+
+                        $location_data->save();
                     }
-                    $location_data->save();
                 }
             });
         });
+
         Flash::success($file . ' Data imported successfully.');
         return redirect()->back();
     }
