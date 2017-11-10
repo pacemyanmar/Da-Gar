@@ -373,10 +373,10 @@
                 });
 
             });
-
-            function removeItem(e) {
-                e.parentNode.parentNode.parentNode.removeChild(e.parentNode.parentNode);
-            }
         })(jQuery);
+
+        function removeItem(e) {
+            e.parentNode.parentNode.parentNode.removeChild(e.parentNode.parentNode);
+        }
     </script>
 @endpush
