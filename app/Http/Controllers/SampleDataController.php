@@ -217,7 +217,7 @@ class SampleDataController extends AppBaseController
                             }
 
                             if (config('samples.unique') == 'observer') {
-                                $observers_rows['code'] = $row->location_code . '-' . $row->observer_code;
+                                $observers_rows['code'] = $row->location_code . '-' . $row->code;
                             }
                         }
 
