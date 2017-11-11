@@ -213,6 +213,12 @@
                 value:'12:00'
             });
 
+            $('.timeampm').datetimepicker({
+                datepicker:false,
+                format:'h:i A',
+                value:'12:00'
+            });
+
             $('.datetime').datetimepicker();
 
             $('.date').datetimepicker({
