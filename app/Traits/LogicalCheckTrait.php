@@ -12,6 +12,7 @@ trait LogicalCheckTrait
     protected $errorBag;
     protected $skipBag;
     private $sectionErrorBag;
+    protected $sectionStatus;
 
     protected function logicalCheck($input, $value)
     {

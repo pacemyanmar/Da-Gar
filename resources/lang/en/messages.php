@@ -132,7 +132,7 @@ return [
     'error' => 'Error',
     'saveall' => 'Save All',
     'savesection' => 'Save this Section',
-    'back' => 'Back to List',
+    'back' => 'Back',
     'smslog' => 'SMS Log',
     'export_project' => 'Export Form',
 ];

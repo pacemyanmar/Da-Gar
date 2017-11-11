@@ -101,6 +101,29 @@ text-decoration: none;
 
 }
 
+.verticaltext {
+  position:fixed;
+  top: 0px;
+  right: -20px;
+  -webkit-transform:rotate(-90deg) translateX(-100%);
+}
+
+.verticalreverse {
+  -webkit-transform:rotate(-270deg) translateX(0%);
+}
+
+.btn-float-show {
+
+  margin: 0;
+
+  z-index: 100;
+
+  display: inline;
+
+  text-decoration: none;
+
+}
+
 .btn-float-bottom {
 	bottom: 0;
 }

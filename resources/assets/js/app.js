@@ -1,4 +1,3 @@
-
 /**
  * First we will load all of this project's JavaScript dependencies which
  * include Vue and Vue Resource. This gives a great starting point for
@@ -7,12 +6,12 @@
 
 require('./bootstrap');
 require('./settings');
-require( './plugins/buttons.server-side');
+require('./plugins/buttons.server-side');
 require('./buttons.server-side-post');
 hyperform = hyperform.default;
-hyperform.addTranslation("mm",{
+hyperform.addTranslation("mm", {
     TextTooLong: 'စာလုံးအေရအတွက်အား %l အောက်သို့ လျှော့ချပါ (လောလောဆယ် %l စာလုံးအား အသုံးပြုထားသည်).',
-    TextTooShort:"စာလုံးအေရအတွက်အား %l ထက်ပိုသုံးပါ (လောလောဆယ် %l စာလုံးအား အသုံးပြုထားသည်).",
+    TextTooShort: "စာလုံးအေရအတွက်အား %l ထက်ပိုသုံးပါ (လောလောဆယ် %l စာလုံးအား အသုံးပြုထားသည်).",
     ValueMissing: 'ဒီအကွက်ကို ဖြည့်ပေးပါ။',
     CheckboxMissing: 'ဆက်လုပ်လိုလျှင် ဒီအကွက်အား အမှန်ခြစ်ပါ။',
     RadioMissing: 'ဒီထဲက တစ်ခုခုကို ရွေးပါ။',
@@ -48,50 +47,54 @@ hyperform.addTranslation("mm",{
 global.resetForm = function (form) {
     form.find('input:text, input:password, input:file, select, textarea').val('');
     form.find('input:radio, input:checkbox')
-         .removeAttr('checked').removeAttr('selected');
+        .removeAttr('checked').removeAttr('selected');
 }
 
-global.sendAjax = function (url,data) {
-	var request = $.ajax({
-		  url: url,
-		  method: "POST",
-		  data: data
-		});
-		return request;
+global.sendAjax = function (url, data) {
+    var request = $.ajax({
+        url: url,
+        method: "POST",
+        data: data
+    });
+    return request;
 }
 
-jQuery(document).ready(function() {
- 		jQuery.ajaxSetup({
-			headers:
-			{ 'X-CSRF-TOKEN': Laravel.csrfToken }
-		});
-	var offset = 150;
+jQuery(document).ready(function () {
+    jQuery.ajaxSetup({
+        headers:
+            {'X-CSRF-TOKEN': Laravel.csrfToken}
+    });
+    var offset = 150;
 
-	var duration = 300;
+    var duration = 300;
 
-	jQuery(window).scroll(function() {
+    jQuery(window).scroll(function () {
 
-	if (jQuery(this).scrollTop() > offset) {
+        if (jQuery(this).scrollTop() > offset) {
 
-	jQuery('.btn-float').fadeIn(duration);
+            jQuery('.btn-float').fadeIn(duration);
+            jQuery('.btn-float-show').addClass('verticaltext').fadeIn(duration);
+            jQuery('#tolist-icon').addClass('verticalreverse');
 
-	} else {
+        } else {
 
-	jQuery('.btn-float').fadeOut(duration);
+            jQuery('.btn-float').fadeOut(duration);
+            jQuery('.btn-float-show').removeClass('verticaltext');
+            jQuery('#tolist-icon').removeClass('verticalreverse');
 
-	}
+        }
 
-	});
+    });
 
 
-	jQuery('.btn-float-to-up').click(function(event) {
+    jQuery('.btn-float-to-up').click(function (event) {
 
-	event.preventDefault();
+        event.preventDefault();
 
-	jQuery('html, body').animate({scrollTop: 0}, duration);
+        jQuery('html, body').animate({scrollTop: 0}, duration);
 
-	return false;
+        return false;
 
-	})
+    })
 
 });

@@ -19,10 +19,12 @@
             @endif
             <h1 class="pull-left">{!! Form::label('name', $project->project) !!}</h1>
 
-        <!--h1 class="pull-right">
-            <a class="btn btn-default pull-right" style="display:inline;margin-top: -10px;margin-bottom: 5" href="{!! route('projects.surveys.index', $project->id) !!}" data-id="survey-form"> {{ trans('messages.back') }}</a>
-           <a class="btn btn-primary pull-right save" style="display:inline;margin-top: -10px;margin-bottom: 5" href="#" data-id="survey-form"> {{ trans('messages.saveall') }}</a>
-        </h1-->
+        <h1 class="pull-right">
+            <a class="btn btn-info pull-right btn-float-show btn-float-up" style="display:block;margin-top: -10px;margin-bottom: 5px;" href="{!! route('projects.surveys.index', $project->id) !!}">
+                <i class="fa fa-reply text-warning" id="tolist-icon"></i>
+                {{ trans('messages.back') }}</a>
+            <a class="pull-right btn-float btn-float-bottom btn-float-to-up" style="display:inline;font-size: 40px;" href="#"><i class="fa fa-arrow-circle-up"></i></a>
+        </h1>
         </section>
         <div class="content">
             <div class="clearfix"></div>
@@ -31,6 +33,24 @@
             <div class="clearfix"></div>
 
             @include('projects.survey.info_table')
+
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <div class="panel-title">
+                        Sections List
+                    </div>
+                </div>
+                <div class="panel-body">
+                    <div class="btn-toolbar">
+                    @foreach($project->sections as $section_key => $section)
+                        <a style="margin-bottom: 3px" href="#section{!! $section->sort !!}" class="btn btn-info btn-sm" role="button">
+                            {!! $section->sectionname !!}
+                        </a>
+                    @endforeach
+                    </div>
+                </div>
+            </div>
+
 
             <div id="survey-form">
                 @foreach($project->sections as $section_key => $section)
@@ -72,7 +92,7 @@
                                 @if( isset($results) )
                                     <span class="pull-right">
                         <span class="badge">
-                            <span class="glyphicon glyphicon-{{ $icon }}"></span>
+                            <span  id="icon-{!! $sectionClass !!}" class="glyphicon glyphicon-{{ $icon }}"></span>
                         </span>
                         </span>
                                 @else
@@ -129,6 +149,30 @@
         </div>
     </div>
     <style type="text/css">
+
+        .verticaltext {
+            position:fixed;
+            top: 0px;
+            right: -20px;
+            -webkit-transform:rotate(-90deg) translateX(-100%);
+        }
+
+        .verticalreverse {
+            -webkit-transform:rotate(-270deg) translateX(0%);
+        }
+
+        .btn-float-show {
+
+            margin: 0;
+
+            z-index: 100;
+
+            display: inline;
+
+            text-decoration: none;
+
+        }
+
         .zawgyi {
             font-family: "Zawgyi-One" !important;
         }
@@ -215,7 +259,6 @@
                 if(!$(this).data('skip')) {
                     var siblings = $(this).closest('tr').find('input');
                     $.each(siblings, function(i, elm){
-                        console.log(elm);
                         $(elm.dataset.skip).prop("disabled", false);
                     });
                 } else {
@@ -279,6 +322,36 @@
                 //console.log(request);
 
                 request.done(function (msg) {
+                    $.each(msg.data.status, function(id, status){
+                        $("#"+id).removeClass (function (index, className) {
+                            return (className.match (/\bpanel\S+/g) || []).join(' ');
+                        });
+
+                        $("#icon-"+id).removeClass (function (index, className) {
+                            return (className.match (/\bglyphicon\S+/g) || []).join(' ');
+                        });
+
+                        if(!status) {
+                            $("#"+id).addClass('panel panel-danger');
+                            $("#icon-"+id).addClass('glyphicon glyphicon-remove');
+                        }
+
+                        if(status === 1) {
+                            $("#"+id).addClass('panel panel-success');
+                            $("#icon-"+id).addClass('glyphicon glyphicon-ok');
+                        }
+
+                        if(status === 2) {
+                            $("#"+id).addClass('panel panel-warning');
+                            $("#icon-"+id).addClass('glyphicon glyphicon-ban-circle');
+                        }
+
+                        if(status === 3) {
+                            $("#"+id).addClass('panel panel-info');
+                            $("#icon-"+id).addClass('glyphicon glyphicon-alert');
+                        }
+                    });
+
                     $('#submitted').html(msg.message);
 
                     $('#alert').modal('show');
@@ -298,9 +371,9 @@
                 });
                 $('#alert').on('hidden.bs.modal', function () {
                     if (id == 'survey-form') {
-                        window.location.href = "{{ route('projects.surveys.index', $project->id) }}";
+                        //window.location.href = "{{ route('projects.surveys.index', $project->id) }}";
                     } else {
-                        window.location.reload();
+                        //window.location.reload();
                     }
                 })
                 $('#' + id).find(":input").filter(function () {
@@ -367,6 +440,24 @@
                     }
 
                 @endif
+            });
+
+            var offset = 150;
+
+            var duration = 300;
+
+            jQuery(window).scroll(function () {
+
+                if (jQuery(this).scrollTop() > offset) {
+
+                    jQuery('.btn-float-show').addClass('verticaltext').fadeIn(duration);
+                    jQuery('#tolist-icon').addClass('verticalreverse');
+
+                } else {
+                    jQuery('.btn-float-show').removeClass('verticaltext');
+                    jQuery('#tolist-icon').removeClass('verticalreverse');
+                }
+
             });
 
         })(jQuery);

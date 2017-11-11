@@ -388,18 +388,19 @@ class SurveyResultsController extends AppBaseController
 
         $doubleTable = $section_table . '_dbl';
 
-        $this->saveSection = 'section' . $section->sort . 'status';
+        $this->saveSection = $saveSection = 'section' . $section->sort . 'status';
 
 
         if (Auth::user()->role->role_name == 'doublechecker') {
-            $this->saveResults($doubleTable);
+            $saved_result = $this->saveResults($doubleTable);
         } else {
-            $this->saveResults($originTable);
+            $saved_result = $this->saveResults($originTable);
             if ($request->has('double')) {
-                $this->saveResults($doubleTable);
+                $saved_dbl_result = $this->saveResults($doubleTable);
             }
         }
 
+        $allResults['status'] = ['section'.$section->sort => $this->sectionStatus];
         return $this->sendResponse($allResults, trans('messages.saved'));
     }
 
@@ -431,7 +432,7 @@ class SurveyResultsController extends AppBaseController
 
         $surveyResult->sample()->associate($this->saveSample);
 
-        $surveyResult->{$this->saveSection} = $this->getSectionStatus();
+        $surveyResult->{$this->saveSection} = $this->sectionStatus = $this->getSectionStatus();
 
         $surveyResult->sample_type = $this->saveSampleType;
 
@@ -439,7 +440,7 @@ class SurveyResultsController extends AppBaseController
 
         $surveyResult->forceFill($this->saveResults);
 
-        $result = $surveyResult->save();
+        $surveyResult->save();
     }
 
 
