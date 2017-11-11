@@ -66,40 +66,56 @@
                 </td>
                 @foreach($element as $radio)
                     <td>
-                        @if($radio->type == 'text')
+                        <div class="form-group">
+
                             @php
                                 $options = [
-                                    'class' => $radio->className.' form-control zawgyi ',
+                                    'class' => ((!empty($radio->skip))?' skippable ':null).(($radio->other)?' other ':null).(($radio->type == 'radio')?'  magic-radio ':null).$radio->className.' form-control zawgyi ',
                                     'id' => $radio->id,
                                     'placeholder' => Kanaung\Facades\Converter::convert($radio->label,'unicode','zawgyi'),
                                     'aria-describedby'=> $radio->id.'-addons',
-                                    'autocomplete' => 'off'
+                                    'autocomplete' => 'off',
+                                    'data-selected' => (isset($results) && array_key_exists('section'.$section->sort, $results) && !empty($results['section'.$section->sort]) && $radio->value == $results['section'.$section->sort]->{$radio->inputid})
                                     ];
                             @endphp
-                            {!! Form::input($radio->type,"result[".$radio->inputid."]", (isset($results)&& !empty($results['section'.$section->sort]))?Kanaung\Facades\Converter::convert($results['section'.$section->sort]->{$radio->inputid},'unicode','zawgyi'):null, $options) !!}
-                        @else
-                            {!!
-                             Form::radio("result[".$radio->inputid."]",
-                             $radio->value, (isset($results) && !empty($results['section'.$section->sort]) && $radio->value == $results['section'.$section->sort]->{$radio->inputid}),
-                             ['id' => $radio->id,
-                             'class' => ' magic-radio '.$radio->className.' '.$sectionClass,
+
+                            @if($radio->type == 'text')
+
+                                {!! Form::text("result[".$radio->inputid."]", (isset($results)&& !empty($results['section'.$section->sort]))?Kanaung\Facades\Converter::convert($results['section'.$section->sort]->{$radio->inputid},'unicode','zawgyi'):null, $options) !!}
+                            @else
+                                {!!
+                                 Form::radio("result[".$radio->inputid."]",
+                                 $radio->value, (isset($results) && !empty($results['section'.$section->sort]) && $radio->value == $results['section'.$section->sort]->{$radio->inputid}),
+                                 $options ) !!}
+                            @endif
+                            <label class="normal-text" for='{{ $radio->id }}'><!-- dummy for magic radio -->
+                                @if(isset($double))
+                                    @if(isset($results) && !empty($results['section'.$section->sort]) && isset($double_results) && !empty($double_results['section'.$section->sort]))
+                                        @if($double_results['section'.$section->sort]->{$radio->inputid} == $results['section'.$section->sort]->{$radio->inputid})
+                                            <span class="label label-success badge"><i class="fa fa-check"></i></span>
+                                        @else
+                                            <span class="label label-danger badge"><i class="fa fa-close"></i></span>
+                                        @endif
+                                    @elseif( isset($results) && !empty($results['section'.$section->sort]) )
+                                        <span class="label label-warn badge"><i class="fa fa-question"></i> No 2nd</span>
+                                    @elseif( isset($double_results) && !empty($double_results['section'.$section->sort]) )
+                                        <span class="label label-warn badge"><i class="fa fa-question"></i> No 1st</span>
+                                    @endif
+                                @endif
+
+                                @if($radio->value != '')
+                                    <span class="label label-primary badge">{!! $radio->value !!}</span>
+                                @endif
+                                @if($radio->other)
+                                    {!! Form::text("result[".$radio->inputid."_other]",
+                                    (isset($results) && !empty($results['section'.$section->sort]) && $radio->value == $results['section'.$section->sort]->{$radio->inputid})?$results['section'.$section->sort]->{$radio->inputid.'_other'}:null,
+                                    ['class' => $radio->className.' form-control input-sm othertext ',
                                     'autocomplete' => 'off',
-                                    'data-selected' => (isset($results) && array_key_exists('section'.$section->sort, $results) && !empty($results['section'.$section->sort]) && $radio->value == $results['section'.$section->sort]->{$radio->inputid})])
-                             !!}
-                        @endif
-                        <label class="normal-text" for='{{ $radio->id }}'><!-- dummy for magic radio -->
-                            @if($radio->value != '')
-                                <span class="label label-primary badge">{!! $radio->value !!}</span>
-                            @endif
-                            @if($radio->other)
-                                {!! Form::text("result[".$radio->inputid."_other]",
-                                (isset($results) && !empty($results['section'.$section->sort]) && $radio->value == $results['section'.$section->sort]->{$radio->inputid})?$results['section'.$section->sort]->{$radio->inputid.'_other'}:null,
-                                ['class' => $radio->className.' form-control input-sm',
-                                'autocomplete' => 'off',
-                                'id' => $radio->id.'other',
-                                'style' => 'width:80%']) !!}
-                            @endif
-                        </label>
+                                    'id' => $radio->id.'other',
+                                    'style' => 'width:80%']) !!}
+                                @endif
+                            </label>
+                        </div>
                     </td>
                 @endforeach
             @else

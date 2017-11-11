@@ -421,22 +421,19 @@
                     var type = $(this).attr('type');
                     var ischecked= $(this).is(':checked');
 
-                    if(type == 'checkbox' && !ischecked && $(this).val() == $(this).data('origin')) {
-                        $('.'+cssclass).removeClass('hide');
-                        $('.'+cssid).removeClass('hide');
-                    } else if(type == 'checkbox' && !ischecked && $(this).val() != $(this).data('origin')) {
-                        $('.'+cssclass).addClass('hide');
-                        $('.'+cssid).addClass('hide');
-                    } else if(type == 'checkbox' && ischecked && $(this).val() != $(this).data('origin')) {
-                        $('.'+cssclass).removeClass('hide');
-                        $('.'+cssid).removeClass('hide');
-                    } else if($(this).val() != $(this).data('origin')) {
-                        $('.'+cssclass).removeClass('hide');
-                        $('.'+cssid).removeClass('hide');
-                        console.log('data not match ' + cssid + cssclass + $(this).data('origin'));
+                    if( (type == 'checkbox' && !ischecked && $(this).val() == $(this).data('origin') )
+                        || (type == 'checkbox' && !ischecked && $(this).val() != $(this).data('origin'))
+                        || (type == 'checkbox' && ischecked && $(this).val() != $(this).data('origin'))
+                        || ($(this).val() != $(this).data('origin'))
+                    ) {
+                        $('.'+cssclass).addClass('hide')
+                        $('.'+cssid).removeClass('hide').addClass('label-danger');
+                        $('.'+cssid+ ' > i').removeClass('fa-check').addClass('fa-close');
                     } else {
-                        $('.'+cssclass).addClass('hide');
-                        $('.'+cssid).addClass('hide');
+                        //$('.'+cssclass).removeClass('hide').addClass('label-success');
+                        $('.'+cssclass).addClass('hide')
+                        $('.'+cssid).removeClass('hide').addClass('label-success');
+                        $('.'+cssid+ ' > i').removeClass('fa-close').addClass('fa-check');
                     }
 
                 @endif

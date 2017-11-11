@@ -20,7 +20,20 @@
                 @else
                     {!! $element->extras['group'] !!}
                 @endif
-
+                @if($translation)
+                    {!! Form::open(['route' => ['translate', 'group'], 'method' => 'post', 'class' => 'translation']) !!}
+                    <div class="input-group">
+                        <input type="text" name="columns[group]" class="form-control input-sm"
+                               placeholder="{!! trans('messages.add_translation') !!}">
+                        <input type="hidden" name="qid" value="{!! $question->id !!}">
+                        <input type="hidden" name="input" value="{!! $radio->inputid !!}">
+                        <input type="hidden" name="model" value="survey_input">
+                        <span class="input-group-btn">
+				          <button class="btn btn-default input-sm" type="submit">{!! trans('messages.save') !!}</button>
+				        </span>
+                    </div>
+                    {!! Form::close() !!}
+                @endif
             </th>
         @else
             @php
@@ -31,44 +44,69 @@
     </thead>
     @foreach ($question->surveyInputs->groupBy('label') as $label => $element)
         <tr>
-            @if(isset($label))
-                <td>{!! $label !!}</td>
+            @if(!empty($label))
+                <td>
+                    {!! $label !!}
+                    @if($translation)
+                        {!! Form::open(['route' => ['translate', 'group'], 'method' => 'post', 'class' => 'translation']) !!}
+                        @foreach($element->where('label', $label) as $input)
+                            <input type="hidden" name="input[]" value="{!! $input->id !!}">
+                            <input type="hidden" name="group[]" value="{!! $input->extras['group'] !!}">
+                        @endforeach
+                        <div class="input-group">
+                            <input type="text" name="columns[label]" class="form-control input-sm"
+                                   placeholder="{!! trans('messages.add_translation') !!}">
+                            <input type="hidden" name="model" value="survey_input">
+                            <span class="input-group-btn">
+		          <button class="btn btn-default input-sm" type="submit">{!! trans('messages.save') !!}</button>
+		        </span>
+                        </div>
+                        {!! Form::close() !!}
+                    @endif
+                </td>
                 @foreach($element as $radio)
                     <td>
-                        @if($radio->type == 'text')
+                        <div class="form-group">
+
                             @php
                                 $options = [
-                                    'class' => $radio->className.' form-control zawgyi ',
+                                    'class' => ((!empty($radio->skip))?' skippable ':null).(($radio->other)?' other ':null).(($radio->type == 'radio')?'  magic-radio ':null). $radio->className.' form-control zawgyi ',
                                     'id' => $radio->id,
                                     'placeholder' => Kanaung\Facades\Converter::convert($radio->label,'unicode','zawgyi'),
                                     'aria-describedby'=> $radio->id.'-addons',
-                                    'autocomplete' => 'off'
-                                    ];
-                            @endphp
-                            {!! Form::input($radio->type,"result[".$radio->inputid."]", (isset($double_results) && $double_results['section'.$section->sort])?Kanaung\Facades\Converter::convert($double_results['section'.$section->sort]->{$radio->inputid},'unicode','zawgyi'):null, $options) !!}
-                        @else
-                            {!! Form::radio("result[".$radio->inputid."]",
-                            $radio->value, (isset($double_results) && !empty($double_results['section'.$section->sort]) && $radio->value == $double_results['section'.$section->sort]->{$radio->inputid}),
-                            ['data-origin' =>(isset($results) && !empty($results['section'.$section->sort]) && $radio->value == $results['section'.$section->sort]->{$radio->inputid}),
-                            'id' => $radio->id,
-                            'class' => ' magic-radio '.$radio->className.' '.$sectionClass,
-                            'autocomplete' => 'off',
-                            'data-selected' => (isset($double_results) && !empty($double_results['section'.$section->sort]) && $radio->value == $double_results['section'.$section->sort]->{$radio->inputid})]) !!}
-                        @endif
-                        <label class="normal-text" for='{{ $radio->id }}'>
-                            @if($radio->value != '')
-                                <span class="label label-primary badge">{!! $radio->value !!}</span>
-                            @endif
+                                    'autocomplete' => 'off',
+                                    'data-class'=>$radio->inputid,
+                                    'data-origin'=>(isset($results['section'.$section->sort]->{$radio->inputid}))? $results['section'.$section->sort]->{$radio->inputid}:null,
 
-                            @if($radio->other)
-                                {!! Form::text("result[".$radio->inputid."]",
-                                (isset($double_results) && !empty($double_results['section'.$section->sort]) && $radio->value == $double_results['section'.$section->sort]->{$radio->inputid})?$double_results->{$radio->inputid.'_other'}:null,
-                                ['class' => $radio->className.' form-control input-sm',
-                                'autocomplete' => 'off',
-                                'id' => $radio->id.'other',
-                                'style' => 'width:80%']) !!}
+                                    'data-selected' => (isset($double_results) && array_key_exists('section'.$section->sort, $double_results) && !empty($double_results['section'.$section->sort]) && $radio->value == $double_results['section'.$section->sort]->{$radio->inputid})
+                                 ];
+                            @endphp
+
+                            @if($radio->type == 'text')
+                                {!! Form::text("result[".$radio->inputid."]", (isset($double_results)&& !empty($double_results['section'.$section->sort]))?Kanaung\Facades\Converter::convert($double_results['section'.$section->sort]->{$radio->inputid},'unicode','zawgyi'):null, $options) !!}
+                            @else
+                                {!!
+                                 Form::radio("result[".$radio->inputid."]",
+                                 $radio->value, (isset($double_results) && !empty($double_results['section'.$section->sort]) && $radio->value == $double_results['section'.$section->sort]->{$radio->inputid})
+                                 ,$options ); !!}
                             @endif
-                        </label>
+                            <label class="normal-text" for='{{ $radio->id }}'><!-- dummy for magic radio -->
+                                @if($radio->value != '')
+                                    <span class="label label-primary badge">{!! $radio->value !!}</span>
+                                @endif
+                                @if($radio->other)
+                                    {!! Form::text("result[".$radio->inputid."_other]",
+                                    (isset($double_results) && !empty($double_results['section'.$section->sort]) && $radio->value == $double_results['section'.$section->sort]->{$radio->inputid})?$double_results['section'.$section->sort]->{$radio->inputid.'_other'}:null,
+                                    ['class' => $radio->className.' form-control input-sm othertext',
+                                    'autocomplete' => 'off',
+                                    'id' => $radio->id.'other',
+                                    'style' => 'width:80%']) !!}
+                                @endif
+
+                                <span class="hide label label-danger badge {!! $radio->inputid .' '.$radio->id!!}"><i class="fa"></i></span>
+
+                            </label>
+                        </div>
                     </td>
                 @endforeach
             @else
