@@ -44,7 +44,7 @@ mix.extract(['jquery','vue', 'bootstrap-sass', 'moment', 'hyperform',
     'datatables.net-buttons','datatables.net-buttons-bs',
     'datatables.net-buttons/js/buttons.colVis','datatables.net-buttons/js/buttons.print.js',
     'gasparesganga-jquery-loading-overlay',
-    'select2','select2/dist/js/i18n/en','admin-lte','jquery-ui','jquery-ui-sortable'])
+    'select2','select2/dist/js/i18n/en','admin-lte','jquery-ui','jquery-ui-sortable','jquery-datetimepicker'])
     .sass('resources/assets/sass/app.scss', 'public/css')
     .version();
 

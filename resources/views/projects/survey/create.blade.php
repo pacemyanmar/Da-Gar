@@ -207,6 +207,29 @@
     <script type='text/javascript'>
         (function ($) {
 
+            $('.time').datetimepicker({
+                datepicker:false,
+                format:'H:i',
+                value:'12:00'
+            });
+
+            $('.datetime').datetimepicker();
+
+            $('.date').datetimepicker({
+                timepicker:false,
+                format:'d-m-Y'
+            });
+
+            $('.year').datetimepicker({
+                timepicker:false,
+                format:'Y'
+            });
+
+            $('.month').datetimepicker({
+                timepicker:false,
+                format:'m-Y'
+            });
+
             var other_text = $('.other').closest("div.form-group").find("input[type='text'].othertext");
             if($('.other').is(':checked')){
                 other_text.focus().addClass('has-error').prop('disabled', false).prop('required', true);
