@@ -73,22 +73,31 @@ class SampleResponseDataTable extends DataTable
 
         if ($project->status != 'new') {
             if($this->section) {
-                $total = 'section'.$this->section.'status';
+                $total = "SUM(IF(pj_s".$this->section.".section".$this->section."status, 1, 0))";
+
             } else {
-                $total = 'sdv.id';
+
+                $status = [];
+                foreach( $project->sections as $section ) {
+                    $status[] = 'IF( pj_s'.$section->sort.'.section'.$section->sort.'status, 1, 0) ';
+                }
+                $sections_status = implode(' * ', $status);
+
+
+                $total = "SUM( ".$sections_status." )";
             }
             switch ($this->filter) {
                 case 'user':
                     # code...
                     $filter = 'user';
-                    $query->select('user.name AS ' . $filter, DB::raw('SUM(IF(sample_datas.id,1,0)) AS alltotal, SUM(IF(' .$total.', 1, 0)) AS total'), DB::raw($sectionColumnsStr));
+                    $query->select('user.name AS ' . $filter, DB::raw('SUM(IF(samples.id,1,0)) AS alltotal, ' .$total.' AS total'), DB::raw($sectionColumnsStr));
                     $query->groupBy($filter);
                     break;
 
                 default:
                     # code...
                     $filter = $this->filter;
-                    $query->select('sdv.' . $filter, DB::raw('SUM(IF(samples.id,1,0)) AS alltotal, SUM(IF(' .$total.', 1, 0)) AS total'), DB::raw('GROUP_CONCAT(DISTINCT user.name) as user_name', 'GROUP_CONCAT(DISTINCT update_user.name) as update_user', 'GROUP_CONCAT(DISTINCT qc_user.name) as qc_user'), DB::raw($sectionColumnsStr));
+                    $query->select('sdv.' . $filter, DB::raw('SUM(IF(samples.id,1,0)) AS alltotal, ' .$total.' AS total'), DB::raw('GROUP_CONCAT(DISTINCT user.name) as user_name', 'GROUP_CONCAT(DISTINCT update_user.name) as update_user', 'GROUP_CONCAT(DISTINCT qc_user.name) as qc_user'), DB::raw($sectionColumnsStr));
                     $query->groupBy('sdv.' . $filter);
                     break;
             }
@@ -303,10 +312,12 @@ class SampleResponseDataTable extends DataTable
 
         $sectionColumns = [];
         foreach ($project->sections as $k => $section) {
-            $section_key = ($k + 1);
+
+            $section_key = $section->sort;
             if ($this->section && $this->section != $section_key) {
                 continue;
             }
+
             $section_id = 'section' . $section_key . 'status';
             //$sectionname = $section->sectionname;
             //$sectionname = "<span data-toggle='tooltip' data-placement='top' title='$sectionname' data-container='body'> <i class='fa fa-info-circle'></i>Sect$section_key  </span>";
@@ -317,38 +328,61 @@ class SampleResponseDataTable extends DataTable
             $missing_img = "<img data-toggle='tooltip' data-placement='top' title='Missing' data-container='body' src='" . asset('images/missing.png') . "'>";
             $error_img = "<img data-toggle='tooltip' data-placement='top' title='Error' data-container='body' src='" . asset('images/error.png') . "'>";
 
-            $columns[$section_id . '_complete'] = ['data' => $section_id . '_complete', 'name' => $section_id . '_complete', 'defaultContent' => 'N/A', 'title' => $sectionname . $complete_img, 'searchable' => false, 'orderable' => false, "render" => function () use ($project, $filter, $section_id) {
+            $columns[$section_id . '_complete'] = ['data' => $section_id . '_complete',
+                'name' => $section_id . '_complete',
+                'defaultContent' => 'N/A',
+                'title' => $sectionname . $complete_img,
+                'searchable' => false,
+                'orderable' => false,
+                "render" => function () use ($project, $filter, $section_id, $section_key) {
                 return "function ( data, type, full, meta ) {
                                     if(type == 'display') {
-                                      return '<a class=\"text-success\" href=" . route('projects.surveys.index', [$project->id]) . "/?" . $filter . "='+ encodeURI(full." . $filter . ") +'&status=1&section=' + encodeURI('" . $section_id . "') + '>' + data + '<br> (' +parseFloat((parseInt(data, 10) * 100)/ parseInt(full.alltotal, 10)).toFixed(0) + '%) </a>';
+                                      return '<a class=\"text-success\" href=" . route('projects.surveys.index', [$project->id]) . "/?" . $filter . "='+ encodeURI(full." . $filter . ") +'&status=1&section=' + encodeURI('" . $section_key . "') + '>' + data + '<br> (' +parseFloat((parseInt(data, 10) * 100)/ parseInt(full.alltotal, 10)).toFixed(0) + '%) </a>';
                                     } else {
                                       return data;
                                     }
                                   }";
             }];
-            $columns[$section_id . '_incomplete'] = ['data' => $section_id . '_incomplete', 'name' => $section_id . '_incomplete', 'defaultContent' => 'N/A', 'title' => $sectionname . $incomplete_img, 'searchable' => false, 'orderable' => false, "render" => function () use ($project, $filter, $section_id) {
+            $columns[$section_id . '_incomplete'] = ['data' => $section_id . '_incomplete',
+                'name' => $section_id . '_incomplete',
+                'defaultContent' => 'N/A',
+                'title' => $sectionname . $incomplete_img,
+                'searchable' => false,
+                'orderable' => false,
+                "render" => function () use ($project, $filter, $section_id, $section_key) {
                 return "function ( data, type, full, meta ) {
                                     if(type == 'display') {
-                                      return '<a class=\"text-warning\" href=" . route('projects.surveys.index', [$project->id]) . "/?" . $filter . "='+ encodeURI(full." . $filter . ") +'&status=2&section=' + encodeURI('" . $section_id . "') + '>' + data + '<br> (' +parseFloat((parseInt(data, 10) * 100)/ parseInt(full.alltotal, 10)).toFixed(0) + '%) </a>';
+                                      return '<a class=\"text-warning\" href=" . route('projects.surveys.index', [$project->id]) . "/?" . $filter . "='+ encodeURI(full." . $filter . ") +'&status=2&section=' + encodeURI('" . $section_key . "') + '>' + data + '<br> (' +parseFloat((parseInt(data, 10) * 100)/ parseInt(full.alltotal, 10)).toFixed(0) + '%) </a>';
                                     } else {
                                       return data;
                                     }
                                   }";
             }];
 
-            $columns[$section_id . '_error'] = ['data' => $section_id . '_error', 'name' => $section_id . '_error', 'defaultContent' => 'N/A', 'title' => $sectionname . $error_img, 'searchable' => false, 'orderable' => false, "render" => function () use ($project, $filter, $section_id) {
+            $columns[$section_id . '_error'] = ['data' => $section_id . '_error',
+                'name' => $section_id . '_error',
+                'defaultContent' => 'N/A',
+                'title' => $sectionname . $error_img,
+                'searchable' => false,
+                'orderable' => false,
+                "render" => function () use ($project, $filter, $section_id, $section_key) {
                 return "function ( data, type, full, meta ) {
                                     if(type == 'display') {
-                                      return '<a href=" . route('projects.surveys.index', [$project->id]) . "/?" . $filter . "='+ encodeURI(full." . $filter . ") +'&status=3&section=' + encodeURI('" . $section_id . "') + '>' + data + '<br> (' +parseFloat((parseInt(data, 10) * 100)/ parseInt(full.alltotal, 10)).toFixed(0) + '%) </a>';
+                                      return '<a href=" . route('projects.surveys.index', [$project->id]) . "/?" . $filter . "='+ encodeURI(full." . $filter . ") +'&status=3&section=' + encodeURI('" . $section_key . "') + '>' + data + '<br> (' +parseFloat((parseInt(data, 10) * 100)/ parseInt(full.alltotal, 10)).toFixed(0) + '%) </a>';
                                     } else {
                                       return data;
                                     }
                                   }";
             }];
-            $columns[$section_id . '_missing'] = ['data' => $section_id . '_missing', 'name' => $section_id . '_missing', 'defaultContent' => 'N/A', 'title' => $sectionname . $missing_img, 'searchable' => false, 'orderable' => false, "render" => function () use ($project, $filter, $section_id) {
+            $columns[$section_id . '_missing'] = ['data' => $section_id . '_missing',
+                'name' => $section_id . '_missing', 'defaultContent' => 'N/A',
+                'title' => $sectionname . $missing_img,
+                'searchable' => false,
+                'orderable' => false,
+                "render" => function () use ($project, $filter, $section_id, $section_key) {
                 return "function ( data, type, full, meta ) {
                                     if(type == 'display') {
-                                      return '<a class=\"text-danger\" href=" . route('projects.surveys.index', [$project->id]) . "/?" . $filter . "='+ encodeURI(full." . $filter . ") +'&status=0&section=' + encodeURI('" . $section_id . "') + '>' + data + '<br> (' +parseFloat((parseInt(data, 10) * 100)/ parseInt(full.alltotal, 10)).toFixed(0) + '%) </a>';
+                                      return '<a class=\"text-danger\" href=" . route('projects.surveys.index', [$project->id]) . "/?" . $filter . "='+ encodeURI(full." . $filter . ") +'&status=0&section=' + encodeURI('" . $section_key . "') + '>' + data + '<br> (' +parseFloat((parseInt(data, 10) * 100)/ parseInt(full.alltotal, 10)).toFixed(0) + '%) </a>';
                                     } else {
                                       return data;
                                     }

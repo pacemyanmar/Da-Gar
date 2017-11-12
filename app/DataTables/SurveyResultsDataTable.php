@@ -107,6 +107,10 @@ class SurveyResultsDataTable extends DataTable
                 $join->on('samples.sample_data_id', 'sdv.id')->where('samples.project_id', $project->id);
             });
 
+            $section_filter = Request::input('section');
+
+            $status = Request::input('status');
+
             // loop sections
             foreach ($project->sections as $k => $section) {
                 if (config('sms.double_entry')) {
@@ -130,6 +134,17 @@ class SurveyResultsDataTable extends DataTable
                 });
 
 
+                if ($section_filter != '' && $section_filter == $section->sort) {
+                    $section_status = 'section'. $section_filter .'status';
+                    if ($status) {
+                        $query->where($sect_short . '.' . $section_status .'', $status);
+                    } else {
+                        $query->where(function ($q) use ($sect_short, $section_status, $status) {
+                            $q->whereNull($sect_short . '.' . $section_status)
+                                ->orWhere($sect_short . '.' . $section_status, $status);
+                        });
+                    }
+                }
 
             }
 
@@ -170,9 +185,12 @@ class SurveyResultsDataTable extends DataTable
 
         $total = Request::input('total');
         if ($total) {
+            $sectionColumns = $project->sections;
             $query->where(function ($q) use ($sectionColumns) {
                 foreach ($sectionColumns as $section) {
-                    $q->whereNotNull($section)->orWhere($section, '<>', 0);
+                    $sectionStatus = 'section'.$section->sort.'status';
+                    $sect_short = 'pj_s'.$section->sort;
+                    $q->whereNotNull($sect_short.'.'.$sectionStatus)->orWhere($sect_short.'.'.$sectionStatus, '<>', 0);
                 }
 
             });
