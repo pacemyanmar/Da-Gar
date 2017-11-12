@@ -4,6 +4,7 @@ node_modules/
 nbproject/
 resources/assets/vendor/
 public/*/
+public/mix-manifest.json
 .vscode/
 
 *.sublime-project
