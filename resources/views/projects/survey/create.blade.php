@@ -170,7 +170,7 @@
             <div class="modal-content">
 
                 <div class="modal-body">
-                    <p id="submitted">Some text in the modal.</p>
+                    <p id="submitted">Error in form submission.</p>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
@@ -424,24 +424,35 @@
                 });
 
                 request.fail(function (jqXHR, textStatus) {
-                    $('#submitted').html(jqXHR.responseJSON.message);
+                    $.LoadingOverlay("hide");
+
+                    if (typeof jqXHR.responseJSON !== 'undefined') {
+                        $('#submitted').html(jqXHR.responseJSON.message);
+                    } else {
+                        $('#submitted').html('Error in form submission!');
+                    }
 
                     $('#alert').modal('show');
 
+
+
+
                 });
 
-                request.always(function () {
-                    setTimeout(function () {
-                        $('.loading').addClass("hidden");
-                    }, 400);
-                });
+
                 $('#alert').on('hidden.bs.modal', function () {
+                    formSubmitted = true;
                     if (id == 'survey-form') {
                         //window.location.href = "{{ route('projects.surveys.index', $project->id) }}";
                     } else {
                         //window.location.reload();
                     }
                 })
+
+                request.always(function () {
+
+                });
+
                 $('#' + id).find(":input").filter(function () {
                     return !this.value;
                 }).removeAttr("disabled");

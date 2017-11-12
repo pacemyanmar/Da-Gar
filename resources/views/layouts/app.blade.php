@@ -167,15 +167,13 @@
 
     <script type="text/javascript">
     var ajaxoverlay = true;
+
     (function($) {
         @stack('document-ready');
     })(jQuery);
     if(ajaxoverlay) {
         $(document).ajaxStart(function(){
             $.LoadingOverlay("show");
-            setTimeout(function(){
-                $.LoadingOverlay("hide");
-            }, 10000);
         });
         $(document).ajaxError(function(){
             $.LoadingOverlay("hide");
