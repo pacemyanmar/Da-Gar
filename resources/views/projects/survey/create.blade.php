@@ -72,7 +72,7 @@
                                 }
 
                             @endphp
-                        <a style="margin-bottom: 3px" href="#section{!! $section->sort !!}" id="btn-section{!! $section->sort !!}" class="btn btn-{{ $section_status }} btn-sm"   data-toggle="collapse" data-target="#section{!! $section->sort !!}-body" role="button">
+                        <a style="margin-bottom: 3px" href="#section{!! $section->sort !!}" id="btn-section{!! $section->sort !!}" class="btn btn-{{ $section_status }} btn-sm" role="button">
                             {!! $section->sectionname !!}
                         </a>
                     @endforeach
