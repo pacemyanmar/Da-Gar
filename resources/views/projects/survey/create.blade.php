@@ -72,7 +72,7 @@
                                 }
 
                             @endphp
-                        <a style="margin-bottom: 3px" href="#section{!! $section->sort !!}" id="btn-section{!! $section->sort !!}" class="btn btn-{{ $section_status }} btn-sm" role="button">
+                        <a style="margin-bottom: 3px" href="#section{!! $section->sort !!}" id="btn-section{!! $section->sort !!}" class="btn btn-{{ $section_status }} btn-sm"   data-toggle="collapse" data-target="#section{!! $section->sort !!}-body" role="button">
                             {!! $section->sectionname !!}
                         </a>
                     @endforeach
@@ -87,6 +87,7 @@
                         //section as css class name
                         $sectionClass = 'section'.$section->sort;
                         $section_num = $section->sort;
+                        $collapse = 'in';
 
                         if( isset($results) && !empty($results['section'.$section->sort]) ) {
                             $section_status = $results['section'.$section->sort]->{'section'.$section->sort.'status'};
@@ -96,6 +97,7 @@
                             } else if($section_status  == 1) {
                                 $section_status = 'success';
                                 $icon = 'ok';
+                                $collapse = (config('sms.collapse'))?'':'in';
                             } else if($section_status  == 2) {
                                 $section_status = 'warning';
                                 $icon = 'ban-circle';
@@ -113,7 +115,7 @@
 
                     @endphp
                     <div class="panel panel-{{ $section_status }}" id="{!! $sectionClass !!}">
-                        <div class="panel-heading">
+                        <div class="panel-heading"  data-toggle="collapse" data-target="#{!! $sectionClass !!}-body">
                             <div class="panel-title">
                                 {!! $section->sectionname !!}
                                 <small> {!! (!empty($section->descriptions))?" | ".$section->descriptions:"" !!}</small>
@@ -133,7 +135,7 @@
                                 @endif
                             </div>
                         </div>
-                        <div class="panel-body">
+                        <div class="panel-body collapse {{ $collapse }}" id="{!! $sectionClass !!}-body">
 
                             @include('projects.show_fields')
 
