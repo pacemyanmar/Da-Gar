@@ -43,7 +43,36 @@
                 <div class="panel-body">
                     <div class="btn-toolbar">
                     @foreach($project->sections as $section_key => $section)
-                        <a style="margin-bottom: 3px" href="#section{!! $section->sort !!}" class="btn btn-info btn-sm" role="button">
+                            @php
+                                //section as css class name
+                                $sectionClass = 'section'.$section->sort;
+                                $section_num = $section->sort;
+
+                                if( isset($results) && !empty($results['section'.$section->sort]) ) {
+                                    $section_status = $results['section'.$section->sort]->{'section'.$section->sort.'status'};
+                                    if( $section_status == 0) {
+                                        $section_status = 'danger';
+                                        $icon = 'remove';
+                                    } else if($section_status  == 1) {
+                                        $section_status = 'success';
+                                        $icon = 'ok';
+                                    } else if($section_status  == 2) {
+                                        $section_status = 'warning';
+                                        $icon = 'ban-circle';
+                                    } else if($section_status  == 3) {
+                                        $section_status = 'info';
+                                        $icon = 'alert';
+                                    } else {
+                                        $section_status = 'danger';
+                                        $icon = 'remove';
+                                    }
+                                } else {
+                                    $section_status = 'primary';
+                                    $icon = 'question';
+                                }
+
+                            @endphp
+                        <a style="margin-bottom: 3px" href="#section{!! $section->sort !!}" id="btn-section{!! $section->sort !!}" class="btn btn-{{ $section_status }} btn-sm" role="button">
                             {!! $section->sectionname !!}
                         </a>
                     @endforeach
@@ -207,16 +236,14 @@
     <script type='text/javascript'>
         (function ($) {
 
-            $('.time').datetimepicker({
+            $('.time1').datetimepicker({
                 datepicker:false,
-                format:'H:i',
-                value:'12:00'
+                format:'H:i'
             });
 
-            $('.timeampm').datetimepicker({
+            $('.time2').datetimepicker({
                 datepicker:false,
-                format:'h:i A',
-                value:'12:00'
+                format:'h:i A'
             });
 
             $('.datetime').datetimepicker();
@@ -356,27 +383,35 @@
                             return (className.match (/\bpanel\S+/g) || []).join(' ');
                         });
 
+                        $("#btn-"+id).removeClass (function (index, className) {
+                            return (className.match (/\bbtn\S+/g) || []).join(' ');
+                        });
+
                         $("#icon-"+id).removeClass (function (index, className) {
                             return (className.match (/\bglyphicon\S+/g) || []).join(' ');
                         });
 
                         if(!status) {
                             $("#"+id).addClass('panel panel-danger');
+                            $("#btn-"+id).addClass('btn btn-danger btn-sm');
                             $("#icon-"+id).addClass('glyphicon glyphicon-remove');
                         }
 
                         if(status === 1) {
                             $("#"+id).addClass('panel panel-success');
+                            $("#btn-"+id).addClass('btn btn-success btn-sm');
                             $("#icon-"+id).addClass('glyphicon glyphicon-ok');
                         }
 
                         if(status === 2) {
                             $("#"+id).addClass('panel panel-warning');
+                            $("#btn-"+id).addClass('btn btn-warning btn-sm');
                             $("#icon-"+id).addClass('glyphicon glyphicon-ban-circle');
                         }
 
                         if(status === 3) {
                             $("#"+id).addClass('panel panel-info');
+                            $("#btn-"+id).addClass('btn btn-info btn-sm');
                             $("#icon-"+id).addClass('glyphicon glyphicon-alert');
                         }
                     });
