@@ -80,7 +80,13 @@ class SurveyResultsDataTable extends DataTable
 
         $childTable = $project->dbname;
 
-        $selectColumns = implode(',', $this->getSelectColumns());
+        if($auth->role->level >= 5) {
+            $selectColumns = implode(',', $this->getSelectColumns());
+        } else {
+            $selectColumns = implode(',', $this->getSelectColumns(false));
+        }
+
+
 
         //$count = sizeof($unique_inputs);
         // run query
@@ -240,10 +246,17 @@ class SurveyResultsDataTable extends DataTable
      */
     protected function getColumns()
     {
-        if (!empty($this->getDatatablesColumns()) && is_array($this->getDatatablesColumns())) {
+        $auth = Auth::user();
+        if($auth->role->level >= 5) {
+            $datatablesColumns = $this->getDatatablesColumns();
+        } else {
+            $datatablesColumns = $this->getDatatablesColumns(false);
+        }
+
+        if (!empty($datatablesColumns) && is_array($datatablesColumns)) {
             //dd($this->getDatatablesColumns());
             $action = ['action' => ['title' => '', 'orderable' => false, 'searchable' => false, 'width' => '5px', 'order' => [[1, 'asc']]]];
-            $columns = array_merge($action, $this->getDatatablesColumns());
+            $columns = array_merge($action, $datatablesColumns);
 
             return $columns;
         } else {

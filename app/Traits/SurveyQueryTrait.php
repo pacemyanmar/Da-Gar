@@ -77,34 +77,39 @@ trait SurveyQueryTrait {
         return $this;
     }
 
-    public function getSelectColumns() {
+    public function getSelectColumns($inputs = true) {
 
         $sample_columns = array_column($this->makeSampleColumns(), 'name');
 
         $section_columns = array_column($this->makeSectionColumns(),'name');
 
-        $input_columns = $this->makeInputsColumns();
+        if($inputs) {
+            $input_columns = $this->makeInputsColumns();
 
-        array_walk($input_columns, function (&$column, $column_name) {
-            $old_column = $column;
-            if(array_key_exists('type', $old_column)) {
-                switch ($old_column['type']) {
-                    case 'checkbox':
-                        $column = 'IF(' . $old_column['name'] . ',1,IFNULL('.$old_column['name'].',NULL)) AS ' . $column_name;
-                        break;
-                    case 'double_entry':
-                        $column = 'IF(' . $old_column['name']. ' = ' . $old_column['origin_name']. ', 1, 0) AS ' . $column_name;
-                        break;
-                    default:
-                        $column = $old_column['name'];
-                        break;
+            array_walk($input_columns, function (&$column, $column_name) {
+                $old_column = $column;
+                if(array_key_exists('type', $old_column)) {
+                    switch ($old_column['type']) {
+                        case 'checkbox':
+                            $column = 'IF(' . $old_column['name'] . ',1,IFNULL('.$old_column['name'].',NULL)) AS ' . $column_name;
+                            break;
+                        case 'double_entry':
+                            $column = 'IF(' . $old_column['name']. ' = ' . $old_column['origin_name']. ', 1, 0) AS ' . $column_name;
+                            break;
+                        default:
+                            $column = $old_column['name'];
+                            break;
+                    }
+                } else {
+                    $column = $old_column['name'];
                 }
-            } else {
-                $column = $old_column['name'];
-            }
-        });
+            });
 
-        return array_merge($sample_columns, $section_columns, array_values($input_columns));
+            return array_merge($sample_columns, $section_columns, array_values($input_columns));
+        } else {
+            return array_merge($sample_columns, $section_columns);
+        }
+
     }
 
 
@@ -112,8 +117,12 @@ trait SurveyQueryTrait {
 
     }
 
-    public function getDatatablesColumns() {
-        return array_merge($this->makeSampleColumns(), $this->makeSectionColumns(), $this->makeInputsColumns());
+    public function getDatatablesColumns($inputs = true) {
+        if($inputs) {
+            return array_merge($this->makeSampleColumns(), $this->makeSectionColumns(), $this->makeInputsColumns());
+        } else {
+            return array_merge($this->makeSampleColumns(), $this->makeSectionColumns());
+        }
     }
 
     public function makeSectionColumns() {
