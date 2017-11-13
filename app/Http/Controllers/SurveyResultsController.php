@@ -436,7 +436,11 @@ class SurveyResultsController extends AppBaseController
 
         $surveyResult->sample_type = $this->saveSampleType;
 
-        $surveyResult->user_id = Auth()->user()->id;
+        if($surveyResult->user_id) {
+            $surveyResult->update_user_id = Auth()->user()->id;
+        } else {
+            $surveyResult->user_id = Auth()->user()->id;
+        }
 
         $surveyResult->forceFill($this->saveResults);
 
