@@ -228,6 +228,7 @@ class SampleResponseDataTable extends DataTable
             "$filter" => ['data' => "$filter",
                 'name' => 'sdv.' . $filter,
                 'orderable' => false,
+                'defaultContent' => 'N/A',
                 "render" => function () use ($project, $filter) {
                 return "function ( data, type, full, meta ) {
                                     if(type == 'display') {
@@ -257,7 +258,8 @@ class SampleResponseDataTable extends DataTable
             foreach ($project->sections as $k => $section) {
 
                 $section_key = $section->sort;
-                if ($this->section && $this->section != $section_key) {
+                $section_filter = $this->section - 1;
+                if ($section_filter && $section_filter != $section_key) {
                     continue;
                 }
 
@@ -313,7 +315,8 @@ class SampleResponseDataTable extends DataTable
                                   }";
                     }];
                 $columns[$section_id . '_missing'] = ['data' => $section_id . '_missing',
-                    'name' => $section_id . '_missing', 'defaultContent' => 'N/A',
+                    'name' => $section_id . '_missing',
+                    'defaultContent' => 'N/A',
                     'title' => $sectionname . $missing_img,
                     'searchable' => false,
                     'orderable' => false,
