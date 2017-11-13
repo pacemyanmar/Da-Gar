@@ -259,7 +259,7 @@ class SampleResponseDataTable extends DataTable
 
                 $section_key = $section->sort;
                 $section_filter = $this->section - 1;
-                if ($section_filter && $section_filter != $section_key) {
+                if ($this->section && $section_filter != $section_key) {
                     continue;
                 }
 
