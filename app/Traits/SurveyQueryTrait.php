@@ -85,6 +85,8 @@ trait SurveyQueryTrait {
 
         $section_columns = array_column($this->makeSectionColumns(),'name');
 
+        $extras_columns = array_column($this->makeExtrasColumns(), 'name');
+
         if($inputs) {
             $input_columns = $this->makeInputsColumns();
 
@@ -107,9 +109,9 @@ trait SurveyQueryTrait {
                 }
             });
 
-            return array_merge($sample_columns, $section_columns, array_values($input_columns));
+            return array_merge($sample_columns, $section_columns, $extras_columns, array_values($input_columns));
         } else {
-            return array_merge($sample_columns, $section_columns);
+            return array_merge($sample_columns, $section_columns, $extras_columns);
         }
 
     }
@@ -121,13 +123,14 @@ trait SurveyQueryTrait {
 
     public function getDatatablesColumns($inputs = true) {
         if($inputs) {
-            return array_merge($this->makeSampleColumns(), $this->makeSectionColumns(), $this->makeInputsColumns());
+            return array_merge($this->makeSampleColumns(), $this->makeExtrasColumns(), $this->makeSectionColumns(), $this->makeInputsColumns());
         } else {
-            return array_merge($this->makeSampleColumns(), $this->makeSectionColumns());
+            return array_merge($this->makeSampleColumns(), $this->makeExtrasColumns(), $this->makeSectionColumns());
         }
     }
 
-    public function makeSectionColumns() {
+    public function makeSectionColumns()
+    {
         $sections = $this->project->sections->sortBy('sort');
         $section_columns = [];
         foreach ($sections as $k => $section) {
@@ -174,6 +177,29 @@ trait SurveyQueryTrait {
 
         }
         return $section_columns;
+    }
+
+    public function makeExtrasColumns() {
+        $sections = $this->project->sections->sortBy('sort');
+        $extras_columns = [];
+        $update_user = [];
+        foreach ($sections as $k => $section) {
+            $section_num = $section->sort;
+            $base_dbname = 'pj_s'.$section_num;
+            $sectionshort = ' R' . ($section_num + 1) . ' ';
+            $update_user[] = 'IF('.$base_dbname.'.update_user_id, "'.$sectionshort.'","")';
+        }
+
+        $query = 'CONCAT('.implode(',',$update_user).') AS corrected_sections';
+        $extras_columns['corrected_sections'] = [
+            'name' => $query,
+            'data' => 'corrected_sections',
+            'orderable' => false,
+            'searchable' => true,
+            'width' => '40px',
+            'title' => 'Corrected Sections',
+        ];
+        return $extras_columns;
     }
 
     public function makeSampleColumns() {
