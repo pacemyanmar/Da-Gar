@@ -482,7 +482,7 @@ class SurveyResultsController extends AppBaseController
 
         $section_num = $request->input('section');
 
-        if ($section_num) {
+        if ($section_num !== false) {
             $sampleResponse->setSection($section_num);
         }
 

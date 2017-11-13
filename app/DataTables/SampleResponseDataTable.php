@@ -61,7 +61,8 @@ class SampleResponseDataTable extends DataTable
 
         if ($project->status != 'new') {
             if ($this->section) {
-                $total = "SUM(IF(pj_s" . $this->section . ".section" . $this->section . "status, 1, 0))";
+                $filter_section = $this->section - 1;
+                $total = "SUM(IF(pj_s" . $filter_section . ".section" . $filter_section . "status, 1, 0))";
 
                 $sectionColumns = $this->makeSectionColumns();
 
@@ -127,6 +128,7 @@ class SampleResponseDataTable extends DataTable
                     # code...
                     $filter = $this->filter;
                     if ($this->section) {
+
                         $query->select('sdv.' . $filter,
                             DB::raw('SUM(IF(samples.id,1,0)) AS alltotal, ' . $total . ' AS total'),
                             DB::raw('GROUP_CONCAT(DISTINCT user.name) as user_name',
