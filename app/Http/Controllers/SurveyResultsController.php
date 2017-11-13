@@ -277,8 +277,6 @@ class SurveyResultsController extends AppBaseController
         if (!empty($sample->user_id) && $sample->user_id != $auth_user->id) {
             if ($auth_user->role->role_name == 'doublechecker') {
                 $sample->qc_user_id = $auth_user->id;
-            } else {
-                $sample->update_user_id = $auth_user->id;
             }
         } else {
             $sample->user_id = $auth_user->id;
@@ -435,7 +433,7 @@ class SurveyResultsController extends AppBaseController
 
         }
 
-        if($surveyResult->user_id) {
+        if( $surveyResult->user_id && in_array( Auth()->user()->code,[998,999] ) ) {
             $sample->update_user_id = $surveyResult->update_user_id = Auth()->user()->id;
         } else {
             $sample->user_id = $surveyResult->user_id = Auth()->user()->id;
