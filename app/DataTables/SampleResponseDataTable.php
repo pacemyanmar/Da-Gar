@@ -378,13 +378,13 @@ class SampleResponseDataTable extends DataTable
     {
         $project = $this->project;
         if ($this->section) {
-            $dom = 'p';
+            $dom = 'fp';
             $scrollX = false;
         } else {
-            $dom = 'tp';
+            $dom = 'ftp';
             $scrollX = true;
         }
-        return [
+        $builder =  [
             'dom' => $dom,
             'scrollX' => $scrollX,
             'ordering' => false,
@@ -437,8 +437,12 @@ class SampleResponseDataTable extends DataTable
                                     column.search($(this).val(), false, false, true).draw();
                                 });
                             });
-                        }",
-            "footerCallback" => "function ( row, data, start, end, display ) {
+                        }"
+        ];
+
+        if(!$this->section) {
+
+            $builder["footerCallback"] = "function ( row, data, start, end, display ) {
                             var api = this.api();
                             total = api
                                 .column( 1 )
@@ -446,7 +450,16 @@ class SampleResponseDataTable extends DataTable
                                 .reduce( function (a, b) {
                                     return parseInt(a, 10) + parseInt(b, 10);
                                 }, 0 );
-                            api.columns().every(function(){
+                                
+                                
+                            total_location = api
+                                .column( 3 )
+                                .data()
+                                .reduce( function (a, b) {
+                                    return parseInt(a, 10) + parseInt(b, 10);
+                                }, 0 );    
+                                
+                            api.columns([1,2,5,6,7,8]).every(function(){
                                   var column = this;
                                   
                                   var sum = column
@@ -463,10 +476,48 @@ class SampleResponseDataTable extends DataTable
 
                                   $(column.footer()).html('<a href=" . route('projects.surveys.index', [$project->id]) . "/?nosample=1&totalstatus='+column.dataSrc()+'>' + sum + ' (' + parseFloat((sum * 100)/ total).toFixed(1) + '%)</a>');
                               });
+                              
+                            api.columns([3]).every(function(){
+                                  var column = this;
+                                  
+                                  var sum = column
+                                      .data()
+                                      .reduce(function (a, b) {
+                                         a = parseInt(a, 10);
+                                         if(isNaN(a)){ a = 0; }
+
+                                         b = parseInt(b, 10);
+                                         if(isNaN(b)){ b = 0; }
+
+                                         return a + b;
+                                      });
+
+                                  $(column.footer()).html('<a href=" . route('projects.surveys.index', [$project->id]) . "/?nosample=1&totalstatus='+column.dataSrc()+'>' + sum + '</a>');
+                              });
+                              
+                              api.columns([4]).every(function(){
+                                  var column = this;
+                                  
+                                  var sum = column
+                                      .data()
+                                      .reduce(function (a, b) {
+                                         a = parseInt(a, 10);
+                                         if(isNaN(a)){ a = 0; }
+
+                                         b = parseInt(b, 10);
+                                         if(isNaN(b)){ b = 0; }
+
+                                         return a + b;
+                                      });
+
+                                  $(column.footer()).html('<a href=" . route('projects.surveys.index', [$project->id]) . "/?nosample=1&totalstatus='+column.dataSrc()+'>' + sum + ' (' + parseFloat((sum * 100)/ total_location).toFixed(1) + '%)</a>');
+                              });
 
                             $(api.column(0).footer()).html('Total');
-                        }",
-        ];
+                        }";
+        }
+
+        return $builder;
     }
 
     /**

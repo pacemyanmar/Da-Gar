@@ -8,7 +8,7 @@
     </style>
 @endsection
 
-{!! $dataTable->table(['width' => '100%']) !!}
+{!! $dataTable->table(['width' => '100%'], ($filters['type'] === 'level1')) !!}
 
 @section('scripts')
     @include('layouts.datatables_js')
