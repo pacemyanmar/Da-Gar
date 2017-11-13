@@ -430,17 +430,24 @@ class SurveyResultsController extends AppBaseController
 
         $surveyResult->setTable($table);
 
-        $surveyResult->sample()->associate($this->saveSample);
+        if (Auth()->user()->role->role_name == 'doublechecker') {
+            $sample->qc_user_id = $surveyResult->qc_user_id = Auth()->user()->id;
+
+        }
+
+        if($surveyResult->user_id) {
+            $sample->update_user_id = $surveyResult->update_user_id = Auth()->user()->id;
+        } else {
+            $sample->user_id = $surveyResult->user_id = Auth()->user()->id;
+        }
+
+        $sample->save();
+
+        $surveyResult->sample()->associate($sample);
 
         $surveyResult->{$this->saveSection} = $this->sectionStatus = $this->getSectionStatus();
 
         $surveyResult->sample_type = $this->saveSampleType;
-
-        if($surveyResult->user_id) {
-            $surveyResult->update_user_id = Auth()->user()->id;
-        } else {
-            $surveyResult->user_id = Auth()->user()->id;
-        }
 
         $surveyResult->forceFill($this->saveResults);
 
