@@ -9,6 +9,7 @@
 return [
     'location_code' => 'Location Code',
     'uecnec_code' => 'NEC Code',
+    'ps_code' => 'Polling Station Code',
     'registered_voters' => 'Registered Voters',
     'national_id' => 'National ID',
     'level1' => 'State/Region',
@@ -18,6 +19,7 @@ return [
     'level4' => 'Ward/Village Tract',
     'level5' => 'Village',
     'level6' => 'Address',
+    'parties' => 'Parties',
     'mobile' => 'Mobile',
     'user_id' => 'Data Clerk',
     'form_id' => 'Report No.',

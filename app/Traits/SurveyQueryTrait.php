@@ -10,23 +10,25 @@ trait SurveyQueryTrait {
         'samples_id' => 'samples.id as samples_id',
         'form_id' => 'samples.form_id',
         'location_code' => 'sdv.location_code',
-        'ps_code' => 'sdv.ps_code',
+        //'ps_code' => 'sdv.ps_code',
         'type' => 'sdv.type',
         'dbgroup' => 'sdv.dbgroup',
         'sample' => 'sdv.sample',
         'area_type' => 'sdv.area_type',
         'level1' => 'sdv.level1',
-        'level1_trans' => 'sdv.level1_trans',
+        //'level1_trans' => 'sdv.level1_trans',
         'level2' => 'sdv.level2',
-        'level2_trans' => 'sdv.level2_trans',
+        //'level2_trans' => 'sdv.level2_trans',
         'level3' => 'sdv.level3',
-        'level3_trans' => 'sdv.level3_trans',
+        //'level3_trans' => 'sdv.level3_trans',
         'level4' => 'sdv.level4',
-        'level4_trans' => 'sdv.level4_trans',
+        //'level4_trans' => 'sdv.level4_trans',
         'level5' => 'sdv.level5',
-        'level5_trans' => 'sdv.level5_trans',
-        'parties' => 'sdv.parties',
-        'user_id' => 'user.name',
+        //'level5_trans' => 'sdv.level5_trans',
+        //'parties' => 'sdv.parties',
+        'user_id' => 'user.name AS username',
+        'update_user_id' => 'update_user.name AS updateuser',
+        'qc_user_id' => 'qc_user.name AS qcuser',
         'observer_name' => 'sdv.full_name',
 
 
@@ -183,9 +185,31 @@ trait SurveyQueryTrait {
             switch ($column) {
                 case 'user_id':
                     $columns['user_id'] = [
-                        'name' => 'user.name',
-                        'data' => 'username',
+                        'name' => 'user.code AS usercode',
+                        'data' => 'usercode',
                         'title' => trans('messages.user'),
+                        'orderable' => false,
+                        'defaultContent' => 'N/A',
+                        'visible' => false,
+                        'width' => '80px',
+                    ];
+                    break;
+                case 'update_user_id':
+                    $columns['update_user_id'] = [
+                        'name' => 'update_user.code AS updateuser',
+                        'data' => 'updateuser',
+                        'title' => 'Corrector',
+                        'orderable' => false,
+                        'defaultContent' => 'N/A',
+                        'visible' => false,
+                        'width' => '80px',
+                    ];
+                    break;
+                case 'qc_user_id':
+                    $columns['qc_user_id'] = [
+                        'name' => 'qc_user.code AS qcuser',
+                        'data' => 'qcuser',
+                        'title' => 'Double Checker',
                         'orderable' => false,
                         'defaultContent' => 'N/A',
                         'visible' => false,
@@ -221,13 +245,15 @@ trait SurveyQueryTrait {
                     ];
                     break;
                 case 'location_code':
+                case 'ps_code':
+                case 'parties':
                     $columns[$column] = [
                         'name' => 'sdv.'.$column,
                         'data' => $column,
                         'title' => trans('sample.'.$column),
                         'orderable' => false,
                         'defaultContent' => 'N/A',
-                        'visible' => true,
+                        'visible' => (config('samples.locations.'.$column.'.show'))?config('samples.locations.'.$column.'.show'):false,
                         'width' => '90px',
                     ];
                     break;
@@ -277,12 +303,16 @@ trait SurveyQueryTrait {
                     ];
                     break;
                 case 'level1':
+                case 'level2':
                 case 'level3':
+                case 'level4':
+                case 'level5':
                     $columns[$column] = [
                         'name' => 'sdv.'.$column,
                         'data' => $column,
                         'title' => trans('sample.'.$column),
                         'orderable' => false,
+                        'visible' => (config('samples.locations.'.$column.'.show'))?config('samples.locations.'.$column.'.show'):false,
                         'defaultContent' => 'N/A',
                         'width' => '90px',
                         'render' => function () use ($locale, $column) {

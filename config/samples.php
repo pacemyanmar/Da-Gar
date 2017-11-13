@@ -5,28 +5,35 @@ return [
         'location_code' => [
             'title' => 'Location Code',
             'primary' => true,
-            'foreign' => false // foreign key
+            'foreign' => false, // foreign key
+            'show' => true
         ],
         'level1' => [
-            'title' => 'State/Region'
+            'title' => 'State/Region',
+            'show' => true
         ],
         'level2' => [
-            'title' => 'District'
+            'title' => 'District',
         ],
         'level3' => [
-            'title' => 'Township'
+            'title' => 'Township',
+            'show' => true
         ],
         'level4' => [
-            'title' => 'Village Tract/Ward'
+            'title' => 'Village Tract/Ward',
+            'show' => true
         ],
         'level5' => [
-            'title' => 'Village'
+            'title' => 'Village',
         ],
         'area_type' => [
             'title' => 'Rural/Urban'
         ],
         'sample' => [
             'title' => 'Sample Type'
+        ],
+        'parties' => [
+            'title' => 'Parties',
         ]
 
     ],

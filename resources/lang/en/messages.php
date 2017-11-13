@@ -66,6 +66,7 @@ return [
     'form no.' => 'Respondent No.',
     'form_id' => 'Respondent No.',
     'sample' => 'Sample',
+    'samples_id' => 'Sample ID',
     'area_type' => 'Location Type',
     'urban' => 'Urban',
     'rural' => 'Rural',
