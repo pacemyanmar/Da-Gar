@@ -327,7 +327,7 @@ class SurveyResultsDataTable extends DataTable
         }
         $sampleData = DB::table('sample_datas_view')->where('type', $project->dblink)->where('dbgroup', $project->dbgroup);
 
-        if ($auth->role->level > 7) {
+        if ($auth->role->level >= 7) {
             $button = [
                 'extend' => 'collection',
                 'text' => '<i class="fa fa-download"></i> ' . trans('messages.export'),
