@@ -361,6 +361,17 @@ trait SurveyQueryTrait {
                         },
                     ];
                     break;
+                case 'sample_id':
+                    $columns['sample_id'] = [
+                        'name' => $dbcolumn,
+                        'data' => $column,
+                        'title' => trans('messages.' . strtolower($column)),
+                        'orderable' => false,
+                        'visible' => false,
+                        'width' => '120px',
+                        'exportable' => false
+                    ];
+                    break;
                 default:
                     $columns[$column] = [
                         'name' => $dbcolumn,

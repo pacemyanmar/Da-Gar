@@ -3,6 +3,7 @@
 namespace App\DataTables;
 
 use App\Models\Sample;
+use App\Traits\CsvExportTrait;
 use App\Traits\SurveyQueryTrait;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -12,7 +13,7 @@ use Yajra\DataTables\Services\DataTable;
 
 class SurveyResultsDataTable extends DataTable
 {
-    use SurveyQueryTrait;
+    use SurveyQueryTrait, CsvExportTrait;
 
     protected $filterColumns;
 
@@ -255,7 +256,7 @@ class SurveyResultsDataTable extends DataTable
 
         if (!empty($datatablesColumns) && is_array($datatablesColumns)) {
             //dd($this->getDatatablesColumns());
-            $action = ['action' => ['title' => '', 'orderable' => false, 'searchable' => false, 'width' => '5px', 'order' => [[1, 'asc']]]];
+            $action = ['action' => ['title' => '', 'exportable' => false,'orderable' => false, 'searchable' => false, 'width' => '5px', 'order' => [[1, 'asc']]]];
             $columns = array_merge($action, $datatablesColumns);
 
             return $columns;
