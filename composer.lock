@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "27597540db3cdb21a306d8a4d646aa3c",
-    "content-hash": "8e969edc383abbf9b5c20179c30c4e42",
+    "hash": "cbd4d73b787c3fd45b2b93361e9f545b",
+    "content-hash": "b3ca01e565edff69dcadb728f583df63",
     "packages": [
         {
             "name": "barryvdh/laravel-ide-helper",
@@ -893,7 +893,7 @@
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ied3vil/LanguageSwitcher/zipball/b0e6d0bcfa1ecd4e2b910a57d5da0fc7c9585d91",
+                "url": "https://api.github.com/repos/ied3vil/LanguageSwitcher/zipball/42bcc88dfaec378dc0bc13d3dd0c2830fb43f25c",
                 "reference": "b0e6d0bcfa1ecd4e2b910a57d5da0fc7c9585d91",
                 "shasum": ""
             },
@@ -1435,6 +1435,70 @@
             "description": "HTML and Form Builders for the Laravel Framework",
             "homepage": "http://laravelcollective.com",
             "time": "2017-08-31 14:46:03"
+        },
+        {
+            "name": "league/csv",
+            "version": "9.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/thephpleague/csv.git",
+                "reference": "bfa3aa8e755377cd6cc2242cfd074e48c7c300ba"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/thephpleague/csv/zipball/bfa3aa8e755377cd6cc2242cfd074e48c7c300ba",
+                "reference": "bfa3aa8e755377cd6cc2242cfd074e48c7c300ba",
+                "shasum": ""
+            },
+            "require": {
+                "ext-mbstring": "*",
+                "php": ">=7.0.10"
+            },
+            "require-dev": {
+                "ext-curl": "*",
+                "friendsofphp/php-cs-fixer": "^2.0",
+                "phpunit/phpunit": "^6.0"
+            },
+            "suggest": {
+                "ext-iconv": "Needed to ease transcoding CSV using iconv stream filters"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "9.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "League\\Csv\\": "src"
+                },
+                "files": [
+                    "src/functions_include.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Ignace Nyamagana Butera",
+                    "email": "nyamsprod@gmail.com",
+                    "homepage": "https://github.com/nyamsprod/",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Csv data manipulation made easy in PHP",
+            "homepage": "http://csv.thephpleague.com",
+            "keywords": [
+                "csv",
+                "export",
+                "filter",
+                "import",
+                "read",
+                "write"
+            ],
+            "time": "2017-10-20 08:03:26"
         },
         {
             "name": "league/flysystem",
