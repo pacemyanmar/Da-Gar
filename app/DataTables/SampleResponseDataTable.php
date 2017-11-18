@@ -341,7 +341,12 @@ class SampleResponseDataTable extends DataTable
                                     }
                                   }";
             }];
-            $columns["total"] = ['data' => 'total', 'name' => 'total', 'title' => 'Response', 'orderable' => false, "render" => function () use ($project, $filter) {
+            $columns["total"] = [
+                'data' => 'total',
+                'name' => 'total',
+                'title' => 'Response',
+                'orderable' => false,
+                "render" => function () use ($project, $filter) {
                 return "function ( data, type, full, meta ) {
                                     if(type == 'display') {
                                       return '<a href=" . route('projects.surveys.index', [$project->id]) . "/?nosample=1&" . $filter . "='+ encodeURI(full." . $filter . ") +'&total=1>' + data + '<br> (' +parseFloat((parseInt(data, 10) * 100)/ parseInt(full.alltotal, 10)).toFixed(1) + '%) </a>';
@@ -349,7 +354,8 @@ class SampleResponseDataTable extends DataTable
                                       return data;
                                     }
                                   }";
-            }];
+            }
+            ];
             $columns['ltotal'] = [
                 'data' => 'ltotal',
                 'name' => 'ltotal',
@@ -361,10 +367,62 @@ class SampleResponseDataTable extends DataTable
                 'defaultContent' => 'N/A'
                 ];
 
-            $columns['complete'] = ['data' => 'complete', 'name' => 'complete', 'defaultContent' => 'N/A'];
-            $columns['incomplete'] = ['data' => 'incomplete', 'name' => 'incomplete', 'defaultContent' => 'N/A'];
-            $columns['missing'] = ['data' => 'missing', 'name' => 'missing', 'defaultContent' => 'N/A'];
-            $columns['error'] = ['data' => 'error', 'name' => 'error', 'defaultContent' => 'N/A'];
+            $columns['complete'] = [
+                'data' => 'complete',
+                'name' => 'complete',
+                'defaultContent' => 'N/A',
+                "render" => function () use ($project, $filter) {
+                    return "function ( data, type, full, meta ) {
+                                    if(type == 'display') {
+                                      return '<a class=\"text-success\" href=" . route('projects.surveys.index', [$project->id]) . "/?nosample=1&" . $filter . "='+ encodeURI(full." . $filter . ") +'&totalstatus=complete>' + data + '<br> (' +parseFloat((parseInt(data, 10) * 100)/ parseInt(full.alltotal, 10)).toFixed(1) + '%) </a>';
+                                    } else {
+                                      return data;
+                                    }
+                                  }";
+                }
+            ];
+            $columns['incomplete'] = [
+                'data' => 'incomplete',
+                'name' => 'incomplete',
+                'defaultContent' => 'N/A',
+                "render" => function () use ($project, $filter) {
+                    return "function ( data, type, full, meta ) {
+                                    if(type == 'display') {
+                                      return '<a class=\"text-warning\" href=" . route('projects.surveys.index', [$project->id]) . "/?nosample=1&" . $filter . "='+ encodeURI(full." . $filter . ") +'&totalstatus=incomplete>' + data + '<br> (' +parseFloat((parseInt(data, 10) * 100)/ parseInt(full.alltotal, 10)).toFixed(1) + '%) </a>';
+                                    } else {
+                                      return data;
+                                    }
+                                  }";
+                }
+            ];
+            $columns['missing'] = [
+                'data' => 'missing',
+                'name' => 'missing',
+                'defaultContent' => 'N/A',
+                "render" => function () use ($project, $filter) {
+                    return "function ( data, type, full, meta ) {
+                                    if(type == 'display') {
+                                      return '<a class=\"text-danger\" href=" . route('projects.surveys.index', [$project->id]) . "/?nosample=1&" . $filter . "='+ encodeURI(full." . $filter . ") +'&totalstatus=missing>' + data + '<br> (' +parseFloat((parseInt(data, 10) * 100)/ parseInt(full.alltotal, 10)).toFixed(1) + '%) </a>';
+                                    } else {
+                                      return data;
+                                    }
+                                  }";
+                }
+            ];
+            $columns['error'] = [
+                'data' => 'error',
+                'name' => 'error',
+                'defaultContent' => 'N/A',
+                "render" => function () use ($project, $filter) {
+                    return "function ( data, type, full, meta ) {
+                                    if(type == 'display') {
+                                      return '<a href=" . route('projects.surveys.index', [$project->id]) . "/?nosample=1&" . $filter . "='+ encodeURI(full." . $filter . ") +'&totalstatus=incorrect>' + data + '<br> (' +parseFloat((parseInt(data, 10) * 100)/ parseInt(full.alltotal, 10)).toFixed(1) + '%) </a>';
+                                    } else {
+                                      return data;
+                                    }
+                                  }";
+                }
+            ];
         }
 
         return $columns;
