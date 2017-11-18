@@ -10,7 +10,7 @@ use App\Models\Section;
 trait LogicalCheckTrait
 {
     protected $errorBag;
-    protected $skipBag;
+    protected $skipBag = [];
     private $sectionErrorBag;
     protected $sectionStatus;
 
@@ -26,7 +26,13 @@ trait LogicalCheckTrait
                 array_walk($qnums, function(&$qnum, $key) {
                     $qnum = preg_replace('/[^a-zA-Z0-9]+/','', $qnum);
                 });
-                $this->skipBag = $qnums;
+                if(in_array($input->type,['checkbox','radio'])) {
+                    if($value == $input->value) {
+                        $this->skipBag += array_flip($qnums);
+                    }
+                } else {
+                    $this->skipBag += array_flip($qnums);
+                }
             }
         }
 
@@ -35,7 +41,7 @@ trait LogicalCheckTrait
             $this->errorBag[$input->question->qnum][$input->id] = 2;
         }
 
-        if(!empty($this->skipBag) && in_array(strtolower($input->question->qnum), $this->skipBag)) {
+        if(!empty($this->skipBag) && array_key_exists(strtolower($input->question->qnum), $this->skipBag)) {
             $this->errorBag[$input->question->qnum][$input->id] = 1;
         }
     }

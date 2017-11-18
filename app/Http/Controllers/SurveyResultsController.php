@@ -342,7 +342,7 @@ class SurveyResultsController extends AppBaseController
                     if ($input->type == 'checkbox') {
                         $result_arr[$qid][$inputid] = ($results[$inputid]) ? $results[$inputid] : 0;
                     } else {
-                        $result_arr[$qid][$inputid] = ($results[$inputid] !== null && $results[$inputid] !== false && $results[$inputid] !== '') ? $results[$inputid] : null;
+                        $result_arr[$qid][$inputid] = ($results[$inputid]) ? $results[$inputid] : null;
                     }
                 } else {
 
@@ -374,7 +374,6 @@ class SurveyResultsController extends AppBaseController
                 $allResults += $result_arr[$qid];
             }
         }
-
 
         $section_table = $dbName . '_s' . $section->sort;
 
