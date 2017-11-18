@@ -255,7 +255,7 @@ class DoubleResponseDataTable extends DataTable
             $columns['section'.$section->sort] = [
                 'name' => 'section'.$section->sort,
                 'data' => 'section'.$section->sort,
-                'title' => 'R'.$section->sort,
+                'title' => 'R'.($section->sort + 1),
                 'orderable' => false,
                 'visible' => true,
                 'width' => '120px',
