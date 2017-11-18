@@ -190,14 +190,38 @@ class SurveyResultsDataTable extends DataTable
             $query->where('level1', $state);
         }
 
-        $total = Request::input('total');
+        $total = Request::input('totalstatus');
         if ($total) {
             $sectionColumns = $project->sections;
-            $query->where(function ($q) use ($sectionColumns) {
+            switch ($total) {
+                case 'complete':
+                    $status = 1;
+                    break;
+                case 'incomplete':
+                    $status = 2;
+                    break;
+                case 'missing':
+                    $status = 0;
+                    break;
+                case 'incorrect':
+                    $status = 3;
+                    break;
+                default:
+                    $status = null;
+                    break;
+            }
+            $query->where(function ($q) use ($sectionColumns, $status) {
                 foreach ($sectionColumns as $section) {
                     $sectionStatus = 'section'.$section->sort.'status';
                     $sect_short = 'pj_s'.$section->sort;
-                    $q->whereNotNull($sect_short.'.'.$sectionStatus)->orWhere($sect_short.'.'.$sectionStatus, '<>', 0);
+                    if($status === 1) {
+                        $q->where($sect_short.'.'.$sectionStatus, '=', $status);
+                    } elseif($status !== 0 && $status !== null) {
+                        $q->orWhere($sect_short.'.'.$sectionStatus, '=', $status);
+                    } else {
+                        $q->orWhereNull($sect_short.'.'.$sectionStatus)->orWhere($sect_short.'.'.$sectionStatus, '=', 0);
+                    }
+
                 }
 
             });

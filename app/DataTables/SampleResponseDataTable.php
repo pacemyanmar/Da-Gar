@@ -87,30 +87,31 @@ class SampleResponseDataTable extends DataTable
                 $reported = [];
 
                 foreach ($project->sections as $section) {
-                    $status[] = 'IF( pj_s' . $section->sort . '.section' . $section->sort . 'status, 1, 0) ';
+                    $status[] = 'IF( pj_s' . $section->sort . '.section' . $section->sort . 'status IS NOT NULL OR pj_s' . $section->sort . '.section' . $section->sort . 'status != 0, 1, 0) ';
                     $complete[] = 'IF( pj_s' . $section->sort . '.section' . $section->sort . 'status = 1, 1, 0) ';
                     $incomplete[] = 'IF( pj_s' . $section->sort . '.section' . $section->sort . 'status = 2, 1, 0) ';
-                    $missing[] = 'IF( pj_s' . $section->sort . '.section' . $section->sort . 'status = FALSE, 1, 0) ';
+                    $missing[] = 'IF( pj_s' . $section->sort . '.section' . $section->sort . 'status IS NULL OR pj_s' . $section->sort . '.section' . $section->sort . 'status = 0, 1, 0) ';
                     $error[] = 'IF( pj_s' . $section->sort . '.section' . $section->sort . 'status = 3, 1, 0) ';
                     $reported[] = '( pj_s' . $section->sort .'.sample_id is not null AND samples.id = pj_s' . $section->sort .'.sample_id )';
                 }
 
-                $sections_status = implode(' * ', $status);
-                $total = "SUM( " . $sections_status . " )";
+                $sections_status = implode(' + ', $status);
+                $total = "SUM( IF(" . $sections_status . ",1,0) )";
 
                 $complete_status = implode (' * ', $complete);
                 $completed ="SUM( " . $complete_status . " )";
 
-                $incomplete_status = implode (' * ', $incomplete);
-                $incompleted ="SUM( " . $incomplete_status . " )";
+                // if at least one section incomplete, $incomplete_status will be greater than zero
+                $incomplete_status = implode (' + ', $incomplete);
+                $incompleted ="SUM( IF(" . $incomplete_status . ",1,0) )";
 
-                $missing_status = implode (' * ', $missing);
-                $missed ="SUM( " . $missing_status . " )";
+                $missing_status = implode (' + ', $missing);
+                $missed ="SUM( IF(" . $missing_status . ",1,0) )";
 
-                $error_status = implode (' * ', $error);
-                $incorrect ="SUM( " . $error_status . " )";
+                $error_status = implode (' + ', $error);
+                $incorrect ="SUM( IF(" . $error_status . ",1,0) )";
 
-                $reported = implode( ' * ', $reported);
+                $reported = implode( ' AND ', $reported);
 
                 $reported_locations = "COUNT( DISTINCT CASE WHEN ".$reported." THEN sdv.location_code ELSE 0 END )-SUM(DISTINCT CASE WHEN ".$reported." THEN 0 ELSE 1 END)";
             }
