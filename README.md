@@ -30,7 +30,7 @@ Thank you for considering contributing to theSMS!
 
 ## Security Vulnerabilities
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Sithu Thwin at sithu@thwin.net. All security vulnerabilities will be promptly addressed.
+If you discover a security vulnerability within SMS, please send an e-mail to Sithu Thwin at sithu@thwin.net. All security vulnerabilities will be promptly addressed.
 
 ## License
 
