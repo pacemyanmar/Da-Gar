@@ -432,7 +432,7 @@ class SurveyResultsController extends AppBaseController
 
         }
 
-        if( $surveyResult->user_id && in_array( Auth()->user()->code,[998,999] ) ) {
+        if( $surveyResult->user_id && (in_array( Auth()->user()->code,[998,999] ) || Auth()->user()->role->level > 5 ) ) {
             $sample->update_user_id = $surveyResult->update_user_id = Auth()->user()->id;
         } else {
             $sample->user_id = $surveyResult->user_id = Auth()->user()->id;
