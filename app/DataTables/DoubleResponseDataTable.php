@@ -203,6 +203,7 @@ class DoubleResponseDataTable extends DataTable
                             });
                         }",
             'drawCallback' => "function(){
+                $(\"td:contains('OK')\").addClass('greenBg');
                 $('.usethis').on('click', function(e){
                         if(!confirm('" . trans('messages.are_you_sure') . "')) return;
                         var request = $.ajax({
@@ -258,7 +259,23 @@ class DoubleResponseDataTable extends DataTable
                 'title' => 'R'.($section->sort + 1),
                 'orderable' => false,
                 'visible' => true,
-                'width' => '120px',
+                'width' => '20px',
+                "render" => function () {
+                    return "function ( data, type, full, meta ) {
+                                    if(type == 'display') {
+                                        if(data == 0) {
+                                            cell = '<i class=\"glyphicon glyphicon-ok text-success\"></i>';
+                                        } else {
+                                            cell = data + ' <i class=\"glyphicon glyphicon-remove text-danger\"></i>';
+                                        }
+                                        
+                                      return cell;
+                                      
+                                    } else {
+                                      return data;
+                                    }
+                                  }";
+                }
             ];
         }
         return $columns;
