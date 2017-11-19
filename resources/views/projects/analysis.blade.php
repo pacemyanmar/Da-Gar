@@ -52,92 +52,120 @@
                             <tbody data-section="{!! $section->id !!}">
                             @foreach($section->questions as $question)
                                 @if(!in_array($question->layout,['household']))
-                                <tr id="sort-{!! $question->id !!}">
-                                    <td class="col-xs-1" id="{!! $question->css_id !!}">
-                                        <label>{!! $question->qnum !!}</label>
+                                    <tr id="sort-{!! $question->id !!}">
+                                        <td class="col-xs-1" id="{!! $question->css_id !!}">
+                                            <label>{!! $question->qnum !!}</label>
 
-                                        @if($question->report)
-                                            <span class="badge">{!! trans('messages.in_report') !!}</span>
-                                        @endif
-                                        @if($question->double_entry)
-                                            <span class="badge">{!! trans('messages.double_entry') !!}</span>
-                                        @endif
-                                    </td>
-                                    <td class="col-xs-11">
-                                        <div class="row"><label>{!! $question->question !!}</label></div>
-                                        <div class="row">
-                                            @php
-                                                /**
-                                                 * count answers
-                                                 * set array of css class based on column count
-                                                 */
-                                                $surveyInputs = $question->surveyInputs;
-                                                // reindex collection array
-                                                //$surveyInputs = array_values($surveyInputs);
-                                            @endphp
-                                            @if($question->layout == 'ballot')
-                                                Ballot table
-                                            @else
-                                                @push('d3-js')
-                                                var d3{!! $question->id !!}Data=[];
-                                                @endpush
-                                                <div class="col-sm-3">
-                                                    <ul class="list-group">
-                                                        @foreach ($surveyInputs as $k => $element)
-                                                            @if($element->value)
-                                                                <li class="list-group-item"><span class="badge" style="background-color: {{ $colors[$k] }};  min-height:10px;">&nbsp</span> ({{$element->value}}) {{ $element->label }}
-                                                                    <a href="{{ route('projects.surveys.index', $project->id) }}/?column={{ $element->inputid }}&value={{ $element->value }}">
-                                                                        @if($results->{strtolower($question->qnum).'_reported'} && is_numeric($element->value))
-                                                                        ( {{ $results->{$element->inputid.'_'.$element->value} }} - {{ number_format(($results->{$element->inputid.'_'.$element->value} * 100)/ $results->{strtolower($question->qnum).'_reported'}, 2, '.', '') }} % )
+                                            @if($question->report)
+                                                <span class="badge">{!! trans('messages.in_report') !!}</span>
+                                            @endif
+                                            @if($question->double_entry)
+                                                <span class="badge">{!! trans('messages.double_entry') !!}</span>
+                                            @endif
+                                        </td>
+                                        <td class="col-xs-11">
+                                            <div class="row"><label>{!! $question->question !!}</label></div>
+                                            <div class="row">
+                                                @php
+                                                    /**
+                                                     * count answers
+                                                     * set array of css class based on column count
+                                                     */
+                                                    $surveyInputs = $question->surveyInputs;
+                                                    // reindex collection array
+                                                    //$surveyInputs = array_values($surveyInputs);
+                                                @endphp
+                                                @if($question->layout == 'ballot')
+                                                    Ballot table
+                                                @else
+                                                    @push('d3-js')
+                                                        var d3{!! $question->id !!}Data=[];
+                                                    @endpush
+                                                    <div class="col-sm-3">
+                                                        <ul class="list-group">
+                                                            @foreach ($surveyInputs as $k => $element)
+                                                                @if($element->value)
+                                                                    <li class="list-group-item"><span class="badge"
+                                                                                                      style="background-color: {{ $colors[$k] }};  min-height:10px;">&nbsp</span>
+                                                                        ({{$element->value}}) {{ $element->label }}
+                                                                        <a href="{{ route('projects.surveys.index', $project->id) }}/?column={{ $element->inputid }}&value={{ $element->value }}">
+                                                                            @if( $element->type == 'radio' )
+                                                                                @if($results->{strtolower($question->qnum).'_reported'} && is_numeric($element->value))
+                                                                                    ( {{ $results->{$element->inputid.'_'.$element->value} }}
+                                                                                    - {{ number_format(($results->{$element->inputid.'_'.$element->value} * 100)/ $results->{strtolower($question->qnum).'_reported'}, 2, '.', '') }}
+                                                                                    % )
 
-                                                                            @push('d3-js')
-                                                                            var data{!! $element->inputid.'_'.$element->value !!} = {label:"{!! $element->label !!}", color:"{!! $colors[$k] !!}",value: {{ number_format(($results->{$element->inputid.'_'.$element->value} * 100)/ $results->{strtolower($question->qnum).'_reported'}, 2, '.', '') }} }
-                                                                            d3{!! $question->id !!}Data.push(data{!! $element->inputid.'_'.$element->value !!});
-                                                                            @endpush
-                                                                        @else
-                                                                            0 %
-                                                                        @endif
-                                                                    </a>
-                                                                </li>
-                                                                @if( $element->type == 'radio')
-                                                                    @php
-                                                                        ${$question->qnum.'hasradio'} = $question->qnum;
-                                                                    @endphp
+                                                                                    @push('d3-js')
+                                                                                        var data{!! $element->inputid.'_'.$element->value !!} = {
+                                                                                            label:"{!! $element->label !!}",
+                                                                                            color:"{!! $colors[$k] !!}",
+                                                                                            value: {{ number_format(($results->{$element->inputid.'_'.$element->value} * 100)/ $results->{strtolower($question->qnum).'_reported'}, 2, '.', '') }}
+                                                                                        }
+                                                                                        d3{!! $question->id !!}Data.push(data{!! $element->inputid.'_'.$element->value !!});
+                                                                                    @endpush
+                                                                                @else
+                                                                                    0 %
+                                                                                @endif
+                                                                            @else
+                                                                                @if($results->{strtolower($question->qnum).'_reported'} && is_numeric($element->value))
+                                                                                    ( {{ $results->{$element->inputid.'_'.$element->value} }} )
+
+                                                                                    @push('d3-js')
+                                                                                        var data{!! $element->inputid.'_'.$element->value !!} = {
+                                                                                            label:"{!! $element->label !!}",
+                                                                                            color:"{!! $colors[$k] !!}",
+                                                                                            value: {{ number_format($results->{$element->inputid.'_'.$element->value}, 2, '.', '') }}
+                                                                                        }
+                                                                                        d3{!! $question->id !!}Data.push(data{!! $element->inputid.'_'.$element->value !!});
+                                                                                    @endpush
+                                                                                @else
+                                                                                    0 %
+                                                                                @endif
+                                                                            @endif
+                                                                        </a>
+                                                                    </li>
+                                                                    @if( $element->type == 'radio')
+                                                                        @php
+                                                                            ${$question->qnum.'hasradio'} = $question->qnum;
+                                                                        @endphp
+                                                                    @endif
                                                                 @endif
-                                                            @endif
-                                                        @endforeach
-                                                        @if(isset(${$question->qnum.'hasradio'}))
+                                                            @endforeach
+                                                            @if(isset(${$question->qnum.'hasradio'}))
 
-                                                            <li class="list-group-item">
-                                                                Missing <a href="{{ route('projects.surveys.index', $project->id) }}/?column={{ $element->inputid }}&value=NULL">
-                                                                    ( {{ $results->{'q'.$question->qnum.'_none'} }} - {{ number_format(($results->{'q'.$question->qnum.'_none'} * 100)/ $results->total, 2, '.', '') }} % ) </a>
+                                                                <li class="list-group-item">
+                                                                    Missing <a
+                                                                            href="{{ route('projects.surveys.index', $project->id) }}/?column={{ $element->inputid }}&value=NULL">
+                                                                        ( {{ $results->{'q'.$question->qnum.'_none'} }}
+                                                                        - {{ number_format(($results->{'q'.$question->qnum.'_none'} * 100)/ $results->total, 2, '.', '') }}
+                                                                        % ) </a>
 
-                                                                {{--@push('d3-js')--}}
+                                                                    {{--@push('d3-js')--}}
                                                                     {{--var data{!! 'q'.$question->qnum.'_none' !!} = {label:"Missing", color:"#000",value: {{ number_format(($results->{'q'.$question->qnum.'_none'} * 100)/ $results->total, 2, '.', '') }} }--}}
                                                                     {{--d3{!! $question->id !!}Data.push(data{!! 'q'.$question->qnum.'_none' !!});--}}
-                                                                {{--@endpush--}}
-                                                            </li>
-                                                        @endif
-                                                    </ul>
-                                                </div>
-                                                <div class="col-sm-9" id="d3-{!! $question->id !!}">
+                                                                    {{--@endpush--}}
+                                                                </li>
+                                                            @endif
+                                                        </ul>
+                                                    </div>
+                                                    <div class="col-sm-9" id="d3-{!! $question->id !!}">
 
-                                                    @push('d3-js')
-                                                    @if(isset(${$question->qnum.'hasradio'}))
-                                                        var d3{!! $question->id !!}svg = d3.select("#d3-{!! $question->id !!}").append("svg").attr("width",700).attr("height",300);
-                                                        d3{!! $question->id !!}svg.append("g").attr("id","d3{!! $question->id !!}Donut");
+                                                        @push('d3-js')
+                                                            @if(isset(${$question->qnum.'hasradio'}))
+                                                                var d3{!! $question->id !!}svg = d3.select("#d3-{!! $question->id !!}").append("svg").attr("width",700).attr("height",300);
+                                                                d3{!! $question->id !!}svg.append("g").attr("id","d3{!! $question->id !!}Donut");
 
-                                                        Donut3D.draw("d3{!! $question->id !!}Donut", d3{!! $question->id !!}Data, 250, 150, 130, 100, 30, 0);
-                                                    @else
-                                                        D3Bar.draw("#d3-{!! $question->id !!}", d3{!! $question->id !!}Data);
-                                                    @endif
-                                                    @endpush
+                                                                Donut3D.draw("d3{!! $question->id !!}Donut",d3{!! $question->id !!}Data, 250, 150, 130, 100, 30, 0);
+                                                            @else
+                                                                D3Bar.draw("#d3-{!! $question->id !!}",d3{!! $question->id !!}Data);
+                                                            @endif
+                                                        @endpush
 
-                                                </div>
-                                            @endif
-                                        </div>
-                                    </td>
-                                </tr>
+                                                    </div>
+                                                @endif
+                                            </div>
+                                        </td>
+                                    </tr>
                                 @endif
                             @endforeach
                             </tbody>
@@ -384,16 +412,16 @@
     </script>
 @endsection
 @push('before-head-end')
-<style type="text/css">
-    .axis {
-        font: 10px sans-serif;
-    }
+    <style type="text/css">
+        .axis {
+            font: 10px sans-serif;
+        }
 
-    .axis path,
-    .axis line {
-        fill: none;
-        stroke: #000;
-        shape-rendering: crispEdges;
-    }
-</style>
+        .axis path,
+        .axis line {
+            fill: none;
+            stroke: #000;
+            shape-rendering: crispEdges;
+        }
+    </style>
 @endpush
