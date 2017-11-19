@@ -10,11 +10,6 @@ if (mix.inProduction()) {
     mix.version();
 
     mix.webpackConfig({
-        resolve: {
-            alias: {
-                d3: 'd3/build/d3.js'
-            }
-        },
         module: {
             rules: [{
                 test: /\.js?$/,
