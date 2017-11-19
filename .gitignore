@@ -5,7 +5,6 @@ nbproject/
 resources/assets/vendor/
 public/mix-manifest.json
 public/*/
-public/mix-manifest.json
 .vscode/
 
 *.sublime-project
