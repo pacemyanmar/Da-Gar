@@ -1,6 +1,25 @@
 @extends('layouts.app')
 @php
-    $colors = ["#3366CC","#DC3912","#FF9900","#a300e0","#109618","#990099", "#ffe200","#00e0d8","#00edff","#ff00fc","#91ff8e","#ff7225","#aa8bff","#ff00e1","#bc6f51"];
+    $colors = [
+    "#3366CC","#DC3912","#FF9900","#a300e0",
+    "#109618","#990099", "#ffe200","#00e0d8",
+    "#00edff","#ff00fc","#91ff8e","#ff7225",
+    "#aa8bff","#ff00e1","#bc6f51","#fff",
+    "#ddd","#aaa","#888","#444","#111",
+    "#ddd","#aaa","#888","#444","#111",
+    "#ddd","#aaa","#888","#444","#111",
+    "#ddd","#aaa","#888","#444","#111",
+    "#ddd","#aaa","#888","#444","#111",
+    "#ddd","#aaa","#888","#444","#111",
+    "#ddd","#aaa","#888","#444","#111",
+    "#ddd","#aaa","#888","#444","#111",
+    "#ddd","#aaa","#888","#444","#111",
+    "#ddd","#aaa","#888","#444","#111",
+    "#ddd","#aaa","#888","#444","#111",
+    "#ddd","#aaa","#888","#444","#111",
+    "#ddd","#aaa","#888","#444","#111",
+
+    ];
     $hasradio = false;
 @endphp
 @section('content')
@@ -32,7 +51,7 @@
                             </thead>
                             <tbody data-section="{!! $section->id !!}">
                             @foreach($section->questions as $question)
-
+                                @if(!in_array($question->layout,['household']))
                                 <tr id="sort-{!! $question->id !!}">
                                     <td class="col-xs-1" id="{!! $question->css_id !!}">
                                         <label>{!! $question->qnum !!}</label>
@@ -52,9 +71,9 @@
                                                  * count answers
                                                  * set array of css class based on column count
                                                  */
-                                                $surveyInputs = $project->inputs->where('question_id', $question->id)->all();
+                                                $surveyInputs = $question->surveyInputs;
                                                 // reindex collection array
-                                                $surveyInputs = array_values($surveyInputs);
+                                                //$surveyInputs = array_values($surveyInputs);
                                             @endphp
                                             @if($question->layout == 'ballot')
                                                 Ballot table
@@ -66,13 +85,13 @@
                                                     <ul class="list-group">
                                                         @foreach ($surveyInputs as $k => $element)
                                                             @if($element->value)
-                                                                <li class="list-group-item"><span class="badge" style="background-color: {{ $colors[$k] }};  min-height:10px;">&nbsp</span> {{ $element->label }}
+                                                                <li class="list-group-item"><span class="badge" style="background-color: {{ $colors[$k] }};  min-height:10px;">&nbsp</span> ({{$element->value}}) {{ $element->label }}
                                                                     <a href="{{ route('projects.surveys.index', $project->id) }}/?column={{ $element->inputid }}&value={{ $element->value }}">
-                                                                        @if($results->reported)
-                                                                        ( {{ $results->{$element->inputid.'_'.$element->value} }} - {{ number_format(($results->{$element->inputid.'_'.$element->value} * 100)/ $results->reported, 2, '.', '') }} % )
+                                                                        @if($results->{strtolower($question->qnum).'_reported'} && is_numeric($element->value))
+                                                                        ( {{ $results->{$element->inputid.'_'.$element->value} }} - {{ number_format(($results->{$element->inputid.'_'.$element->value} * 100)/ $results->{strtolower($question->qnum).'_reported'}, 2, '.', '') }} % )
 
                                                                             @push('d3-js')
-                                                                            var data{!! $element->inputid.'_'.$element->value !!} = {label:"{!! $element->label !!}", color:"{!! $colors[$k] !!}",value: {{ number_format(($results->{$element->inputid.'_'.$element->value} * 100)/ $results->reported, 2, '.', '') }} }
+                                                                            var data{!! $element->inputid.'_'.$element->value !!} = {label:"{!! $element->label !!}", color:"{!! $colors[$k] !!}",value: {{ number_format(($results->{$element->inputid.'_'.$element->value} * 100)/ $results->{strtolower($question->qnum).'_reported'}, 2, '.', '') }} }
                                                                             d3{!! $question->id !!}Data.push(data{!! $element->inputid.'_'.$element->value !!});
                                                                             @endpush
                                                                         @else
@@ -92,6 +111,11 @@
                                                             <li class="list-group-item">
                                                                 Missing <a href="{{ route('projects.surveys.index', $project->id) }}/?column={{ $element->inputid }}&value=NULL">
                                                                     ( {{ $results->{'q'.$question->qnum.'_none'} }} - {{ number_format(($results->{'q'.$question->qnum.'_none'} * 100)/ $results->total, 2, '.', '') }} % ) </a>
+
+                                                                {{--@push('d3-js')--}}
+                                                                    {{--var data{!! 'q'.$question->qnum.'_none' !!} = {label:"Missing", color:"#000",value: {{ number_format(($results->{'q'.$question->qnum.'_none'} * 100)/ $results->total, 2, '.', '') }} }--}}
+                                                                    {{--d3{!! $question->id !!}Data.push(data{!! 'q'.$question->qnum.'_none' !!});--}}
+                                                                {{--@endpush--}}
                                                             </li>
                                                         @endif
                                                     </ul>
@@ -114,6 +138,7 @@
                                         </div>
                                     </td>
                                 </tr>
+                                @endif
                             @endforeach
                             </tbody>
                         </table>
@@ -168,7 +193,7 @@
 
             function getPercent(d) {
                 return (d.endAngle - d.startAngle > 0.2 ?
-                    Math.round(1000 * (d.endAngle - d.startAngle) / (Math.PI * 2)) / 10 + '%' : '');
+                    Math.round(10000 * (d.endAngle - d.startAngle) / (Math.PI * 2)) / 100 + '%' : '');
             }
 
             Donut3D.transition = function (id, data, rx, ry, h, ir) {

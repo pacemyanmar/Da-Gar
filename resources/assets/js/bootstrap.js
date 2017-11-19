@@ -1,5 +1,6 @@
 
 window._ = global._ = require('lodash');
+let d3 = require("d3");
 
 /**
  * We'll load jQuery and the Bootstrap jQuery plugin which provides support
@@ -55,7 +56,8 @@ try {
     require('jquery-datetimepicker');
 
     require('formBuilder');
-    require('formBuilder/dist/form-render.min')
+    require('formBuilder/dist/form-render.min');
+
 
 } catch (e) {}
 
@@ -68,6 +70,7 @@ try {
 window.axios = require('axios');
 
 window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+
 
 /**
  * Next we will register the CSRF Token as a common header with Axios so that

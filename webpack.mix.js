@@ -10,6 +10,11 @@ if (mix.inProduction()) {
     mix.version();
 
     mix.webpackConfig({
+        resolve: {
+            alias: {
+                d3: 'd3/build/d3.js'
+            }
+        },
         module: {
             rules: [{
                 test: /\.js?$/,
@@ -37,9 +42,10 @@ if (mix.inProduction()) {
 mix.js('resources/assets/js/app.js', 'public/js');
 mix.autoload({
     jquery: ['$', 'window.jQuery', 'jQuery'],
-    hyperform: ['hyperform']
+    hyperform: ['hyperform'],
+    d3: ['d3', 'window.d3', 'global.d3']
 });
-mix.extract(['jquery','vue', 'bootstrap-sass', 'moment', 'hyperform',
+mix.extract(['jquery','vue', 'bootstrap-sass', 'moment', 'd3', 'hyperform',
     'datatables.net','datatables.net-bs',
     'datatables.net-buttons','datatables.net-buttons-bs',
     'datatables.net-buttons/js/buttons.colVis','datatables.net-buttons/js/buttons.print.js',

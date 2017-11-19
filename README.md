@@ -14,14 +14,18 @@ yarn install
 yarn run production
 php artisan migrate
 ```
-open http://localhost/ or your domain
+open http://localhost/ or your domain.
+
 register first admin user account.
-import sample data list
-create project
+
+import sample data list.
+
+create project.
 
 ## Laravel Documentation
 
-Read Laravel documentation for web server setup
+Read Laravel documentation for web server setup.
+
 Documentation for the framework can be found on the [Laravel website](http://laravel.com/docs).
 
 ## Contributing

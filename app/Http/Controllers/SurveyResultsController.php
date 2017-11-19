@@ -613,23 +613,32 @@ class SurveyResultsController extends AppBaseController
         }
         $project->load(['inputs']);
 
-        $sample_query = 'project_id, count(project_id) as total, SUM(IF(' . $project->dbname . '.sample_id IS NOT NULL,1,0)) AS reported';
 
+        $sample_query = 'project_id, count(project_id) as total';
+        $reported = [];
         foreach ($project->inputs as $input) {
-            if ($input->value) {
-                $sample_query .= ' , SUM(IF(' . $input->inputid . '=' . $input->value . ',1,0)) AS ' . $input->inputid . '_' . $input->value . ' , SUM(IF(' . $input->inputid . ' IS NULL,1,0)) AS q' . $input->question->qnum . '_none';
+            if (is_numeric($input->value)) {
+                $sample_query .= ' , SUM(IF(' . $input->inputid . '=' . $input->value . ',1,0)) AS ' . $input->inputid . '_' . $input->value . ' ,';
+                $sample_query .= 'SUM(IF(' . $input->inputid . ' IS NULL OR ' .$input->inputid. ' = 0,1,0)) AS q' . $input->question->qnum . '_none';
+                $reported[$input->inputid] = 'SUM(IF(' . $input->inputid . ',1,0)) AS '.strtolower($input->question->qnum).'_reported';
             }
         }
-        $query = DB::table('samples')->select(DB::raw($sample_query));
+
+        $reported = implode(' , ', $reported);
+
+
+        $query = DB::table('samples')->select(DB::raw($sample_query), DB::raw($reported));
         $query->where('project_id', $project->id);
-        $query->leftjoin($project->dbname, $project->dbname . '.sample_id', '=', 'samples.id');
+        foreach($project->sections as $section) {
+            $query->leftjoin($project->dbname.'_s'.$section->sort. ' AS pj_s'.$section->sort, 'pj_s'.$section->sort.'.sample_id', '=', 'samples.id');
+        }
         $query->groupBy('project_id');
-        $results_count = $query->first();
+        $results = $query->first();
 
         return view('projects.analysis')
             ->with('project', $project)
             ->with('questions', $project->questions)
-            ->with('results', $results_count);
+            ->with('results', $results);
     }
 
     private function zawgyiUnicode(&$value, $key)
