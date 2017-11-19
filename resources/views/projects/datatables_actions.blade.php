@@ -33,7 +33,7 @@
         </div>
     @endif
 
-    @if(Auth::user()->role->level > 8)
+    @if(Auth::user()->role->level >= 7)
         <div class="btn-group">
             {!! Form::open(['route' => ['projects.destroy', $id], 'method' => 'delete']) !!}
 
