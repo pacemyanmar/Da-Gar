@@ -1034,6 +1034,45 @@ class ProjectController extends AppBaseController
 
     }
 
+    public function createAllViews($id)
+    {
+        // get project instance Project::class
+        $project = $this->projectRepository->findWithoutFail($id);
+
+        try {
+            $this->authorize('update', $project);
+        } catch (AuthorizationException $e) {
+            Flash::error($e->getMessage());
+            return redirect()->back();
+        }
+
+        $this->project = $project;
+        $this->dbname = $project->dbname;
+
+        // check if table has already created
+        foreach ($project->sections as $key => $section) {
+
+            $fields = $section->inputs->sortByDesc('other')->unique('inputid');
+
+            $section_code = 's'.$section->sort;
+
+            $section_dbname = $this->dbname.'_'.$section_code;
+
+            if(config('sms.double_entry')) {
+
+                $viewName = $this->dbname . '_' . $section_code.'_view';
+
+                if (!Schema::hasTable($viewName)) {
+                    $this->createDoubleStatusView($section);
+                } else {
+                    DB::statement("DROP VIEW ".$viewName);
+                    $this->createDoubleStatusView($section);
+                }
+            }
+        }
+
+    }
+
     private function makeDoubleStatusColumns($section)
     {
         $section_questions = $section->questions->sortBy('sort');
@@ -1046,7 +1085,7 @@ class ProjectController extends AppBaseController
 
             foreach($inputs as $input) {
                 $column = $input->inputid;
-                $columns[$column] = "IF(".$dbName.".".$column." = ".$dbDblName.".".$column.", 0, 1) AS ".$column;
+                $columns[$column] = "IF((".$dbName.".".$column." IS NULL AND ".$dbDblName.".".$column." IS NULL) OR ".$dbName.".".$column." = ".$dbDblName.".".$column.", 0, 1) AS ".$column;
             }
             unset($inputs);
         }

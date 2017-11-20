@@ -263,9 +263,11 @@ class DoubleResponseDataTable extends DataTable
                 "render" => function () {
                     return "function ( data, type, full, meta ) {
                                     if(type == 'display') {
-                                        if(data == 0) {
+                                        if(data === 0) {
                                             cell = '<i class=\"glyphicon glyphicon-ok text-success\"></i>';
-                                        } else {
+                                        } else if (data === null) {
+                                            cell = '<i title=\"Both Missing\" class=\"glyphicon glyphicon-floppy-remove text-danger text-lg\"></i>';                                        
+                                        }else {
                                             cell = data + ' <i class=\"glyphicon glyphicon-remove text-danger\"></i>';
                                         }
                                         

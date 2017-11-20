@@ -3,6 +3,7 @@ namespace App\Traits;
 
 use App\Models\Project;
 use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Auth;
 
 trait SurveyQueryTrait {
 
@@ -131,11 +132,17 @@ trait SurveyQueryTrait {
 
     public function makeSectionColumns()
     {
+        $auth = Auth::user();
         $sections = $this->project->sections->sortBy('sort');
         $section_columns = [];
         foreach ($sections as $k => $section) {
             $section_num = $section->sort;
-            $base_dbname = 'pj_s'.$section_num;
+            if($auth->role->role_name == 'doublechecker') {
+                $base_dbname = 'pj_s'.$section_num.'_dbl';
+            } else {
+                $base_dbname = 'pj_s'.$section_num;
+            }
+
             $sectionColumn = 'section' . $section_num . 'status';
             $sectionname = $section['sectionname'];
             $sectionshort = 'R' . ($section_num + 1) . '';
@@ -206,6 +213,8 @@ trait SurveyQueryTrait {
         // get application current locale
         $locale = App::getLocale();
 
+        $auth = Auth::user();
+
         $columns = [];
         foreach($this->sample_select as $column => $dbcolumn) {
             switch ($column) {
@@ -238,7 +247,7 @@ trait SurveyQueryTrait {
                         'title' => 'Double Checker',
                         'orderable' => false,
                         'defaultContent' => 'N/A',
-                        'visible' => false,
+                        'visible' => ($auth->role->role_name == 'doublechecker')?true:false,
                         'width' => '80px',
                     ];
                     break;
