@@ -92,9 +92,9 @@ class SurveyResultsDataTable extends DataTable
         //$count = sizeof($unique_inputs);
         // run query
         $query = Sample::query();
-        if ($auth->role->role_name == 'doublechecker') {
-            $query->whereRaw(DB::raw('(samples.qc_user_id is null or samples.qc_user_id = ' . $auth->id . ')'));
-        }
+//        if ($auth->role->role_name == 'doublechecker') {
+//            $query->whereRaw(DB::raw('(samples.qc_user_id is null or samples.qc_user_id = ' . $auth->id . ')'));
+//        }
         // if ($auth->role->role_name == 'entryclerk') {
         //     $query->whereRaw(DB::raw('(samples.user_id is null or samples.user_id = ' . $auth->id . ')'));
         // }
