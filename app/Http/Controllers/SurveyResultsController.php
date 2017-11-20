@@ -428,7 +428,7 @@ class SurveyResultsController extends AppBaseController
         $surveyResult->setTable($table);
 
         if (Auth()->user()->role->role_name == 'doublechecker') {
-            $sample->qc_user_id = $surveyResult->qc_user_id = Auth()->user()->id;
+            $sample->qc_user_id = Auth()->user()->id;
 
         }
 
