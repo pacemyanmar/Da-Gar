@@ -491,29 +491,29 @@
                 }
                 input.reportValidity();
 
-                @if(Auth::user()->role->role_name == 'doublechecker')
+                {{--@if(Auth::user()->role->role_name == 'doublechecker')--}}
 
-                    var cssid = $(this).attr('id');
-                    var cssclass = $(this).data('class');
-                    var type = $(this).attr('type');
-                    var ischecked= $(this).is(':checked');
+                    {{--var cssid = $(this).attr('id');--}}
+                    {{--var cssclass = $(this).data('class');--}}
+                    {{--var type = $(this).attr('type');--}}
+                    {{--var ischecked= $(this).is(':checked');--}}
 
-                    if( (type == 'checkbox' && !ischecked && $(this).val() == $(this).data('origin') )
-                        || (type == 'checkbox' && !ischecked && $(this).val() != $(this).data('origin'))
-                        || (type == 'checkbox' && ischecked && $(this).val() != $(this).data('origin'))
-                        || ($(this).val() != $(this).data('origin'))
-                    ) {
-                        $('.'+cssclass).addClass('hide')
-                        $('.'+cssid).removeClass('hide').addClass('label-danger');
-                        $('.'+cssid+ ' > i').removeClass('fa-check').addClass('fa-close');
-                    } else {
-                        //$('.'+cssclass).removeClass('hide').addClass('label-success');
-                        $('.'+cssclass).addClass('hide')
-                        $('.'+cssid).removeClass('hide').addClass('label-success');
-                        $('.'+cssid+ ' > i').removeClass('fa-close').addClass('fa-check');
-                    }
+                    {{--if( (type == 'checkbox' && !ischecked && $(this).val() == $(this).data('origin') )--}}
+                        {{--|| (type == 'checkbox' && !ischecked && $(this).val() != $(this).data('origin'))--}}
+                        {{--|| (type == 'checkbox' && ischecked && $(this).val() != $(this).data('origin'))--}}
+                        {{--|| ($(this).val() != $(this).data('origin'))--}}
+                    {{--) {--}}
+                        {{--$('.'+cssclass).addClass('hide')--}}
+                        {{--$('.'+cssid).removeClass('hide').addClass('label-danger');--}}
+                        {{--$('.'+cssid+ ' > i').removeClass('fa-check').addClass('fa-close');--}}
+                    {{--} else {--}}
+                        {{--//$('.'+cssclass).removeClass('hide').addClass('label-success');--}}
+                        {{--$('.'+cssclass).addClass('hide')--}}
+                        {{--$('.'+cssid).removeClass('hide').addClass('label-success');--}}
+                        {{--$('.'+cssid+ ' > i').removeClass('fa-close').addClass('fa-check');--}}
+                    {{--}--}}
 
-                @endif
+                {{--@endif--}}
             });
 
             var offset = 150;
