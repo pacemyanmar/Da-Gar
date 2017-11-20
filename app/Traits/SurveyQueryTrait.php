@@ -439,7 +439,7 @@ trait SurveyQueryTrait {
 
                 $input_columns[$column] = [
                     'name' => $base_dbname. '.' . $column,
-                    'data' => $column, 'title' => $title,
+                    'data' => $column, 'title' => strtoupper($title),
                     'class' => 'result', 'orderable' => false,
                     'width' => '80px', 'type' => $input->type
                 ];
@@ -447,7 +447,7 @@ trait SurveyQueryTrait {
                 if($input->other) {
                     $input_columns[$column.'_other'] = [
                         'name' => $base_dbname. '.' . $column.'_other',
-                        'data' => $column.'_other', 'title' => $title. ' Other',
+                        'data' => $column.'_other', 'title' => strtoupper($title). ' Other',
                         'class' => 'result', 'orderable' => false,
                         'visible' => false,
                         'width' => '80px', 'type' => $input->type
@@ -457,7 +457,7 @@ trait SurveyQueryTrait {
                 if(config('sms.double_entry')) {
                     $input_columns[$column . '_dstatus'] = [
                         'name' => $base_dbname. '_dbl' . '.' . $column,
-                        'data' => $column . '_dstatus', 'title' => $title . ' Matched',
+                        'data' => $column . '_dstatus', 'title' => strtoupper($title) . ' Matched',
                         'orderable' => false, 'visible' => false,
                         'type' => 'double_entry',
                         'origin_name' => $base_dbname. '.' . $column
