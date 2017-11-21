@@ -19,8 +19,8 @@ return [
     'create' => 'Add New',
     'add_new' => 'Add New',
     'edit' => 'Edit',
-    'list_samples' => 'List Samples',
-    'list_incidents' => 'List Incidents',
+    'list_samples' => 'Samples List',
+    'list_incidents' => 'Incidents List',
     'response' => 'Response',
     'analysis' => 'Analysis',
     'in_report' => 'In Report',
@@ -136,4 +136,5 @@ return [
     'back' => 'Back',
     'smslog' => 'SMS Log',
     'export_project' => 'Export Form',
+    'check' => 'Check Data Entry Error'
 ];

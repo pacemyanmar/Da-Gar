@@ -4,7 +4,7 @@
 @endsection
 @section('content')
     <section class="content-header">
-        <h1 class="pull-left">Projects Sample Response Rate</h1>
+        <h1 class="pull-left">{!! (request()->is('*double*'))?'Double Entry':'Samples' !!} Response Rate</h1>
         <span class="pull-right">
         <label>Response rate by:
            <select autocomplete="off" id="responseBy" class="form-control input-md">

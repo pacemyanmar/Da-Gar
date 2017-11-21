@@ -452,7 +452,7 @@ class SurveyResultsController extends AppBaseController
     }
 
 
-    public function responseRateSample($project_id, $filter, SampleResponseDataTable $sampleResponse, Request $request)
+    public function responseRateSample($project_id, $filter, $type='first', SampleResponseDataTable $sampleResponse, Request $request)
     {
         $project = $this->projectRepository->findWithoutFail($project_id);
         if (empty($project)) {
@@ -477,6 +477,10 @@ class SurveyResultsController extends AppBaseController
             default:
                 $project_type = 'db2sample';
                 break;
+        }
+
+        if($type != 'first') {
+            $sampleResponse->setType($type);
         }
 
         $section_num = $request->input('section');

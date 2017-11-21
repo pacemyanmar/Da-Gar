@@ -15,6 +15,8 @@ class SampleResponseDataTable extends DataTable
 
     private $filter;
 
+    private $type;
+
     private $section;
 
     public function setProject($project)
@@ -26,6 +28,12 @@ class SampleResponseDataTable extends DataTable
     public function setFilter($filter)
     {
         $this->filter = $filter;
+        return $this;
+    }
+
+    public function setType($type)
+    {
+        $this->type = $type;
         return $this;
     }
 
@@ -62,7 +70,13 @@ class SampleResponseDataTable extends DataTable
         if ($project->status != 'new') {
             if ($this->section) {
                 $filter_section = $this->section - 1;
-                $total = "SUM(IF(pj_s" . $filter_section . ".section" . $filter_section . "status, 1, 0))";
+
+                if($this->type == 'double') {
+                    $dbname = 'pj_s'.$filter_section.'_dbl';
+                } else {
+                    $dbname = 'pj_s'.$filter_section;
+                }
+                $total = "SUM(IF(" . $dbname . ".section" . $filter_section . "status, 1, 0))";
 
                 $sectionColumns = $this->makeSectionColumns();
 
@@ -87,12 +101,17 @@ class SampleResponseDataTable extends DataTable
                 $reported = [];
 
                 foreach ($project->sections as $section) {
-                    $status[] = 'IF( pj_s' . $section->sort . '.section' . $section->sort . 'status IS NOT NULL OR pj_s' . $section->sort . '.section' . $section->sort . 'status != 0, 1, 0) ';
-                    $complete[] = 'IF( pj_s' . $section->sort . '.section' . $section->sort . 'status = 1, 1, 0) ';
-                    $incomplete[] = 'IF( pj_s' . $section->sort . '.section' . $section->sort . 'status = 2, 1, 0) ';
-                    $missing[] = 'IF( pj_s' . $section->sort . '.section' . $section->sort . 'status IS NULL OR pj_s' . $section->sort . '.section' . $section->sort . 'status = 0, 1, 0) ';
-                    $error[] = 'IF( pj_s' . $section->sort . '.section' . $section->sort . 'status = 3, 1, 0) ';
-                    $reported[] = '( pj_s' . $section->sort .'.sample_id is not null AND samples.id = pj_s' . $section->sort .'.sample_id )';
+                    if($this->type == 'double') {
+                        $dbname = 'pj_s'.$section->sort.'_dbl';
+                    } else {
+                        $dbname = 'pj_s'.$section->sort;
+                    }
+                    $status[] = 'IF( ' . $dbname . '.section' . $section->sort . 'status IS NOT NULL OR ' . $dbname . '.section' . $section->sort . 'status != 0, 1, 0) ';
+                    $complete[] = 'IF( ' . $dbname . '.section' . $section->sort . 'status = 1, 1, 0) ';
+                    $incomplete[] = 'IF( ' . $dbname . '.section' . $section->sort . 'status = 2, 1, 0) ';
+                    $missing[] = 'IF( ' . $dbname . '.section' . $section->sort . 'status IS NULL OR ' . $dbname . '.section' . $section->sort . 'status = 0, 1, 0) ';
+                    //$error[] = 'IF( ' . $dbname . '.section' . $section->sort . 'status = 3, 1, 0) ';
+                    $reported[] = '( ' . $dbname .'.sample_id is not null AND samples.id = ' . $dbname .'.sample_id )';
                 }
 
                 $sections_status = implode(' + ', $status);
@@ -108,8 +127,8 @@ class SampleResponseDataTable extends DataTable
                 $missing_status = implode (' + ', $missing);
                 $missed ="SUM( IF(" . $missing_status . ",1,0) )";
 
-                $error_status = implode (' + ', $error);
-                $incorrect ="SUM( IF(" . $error_status . ",1,0) )";
+//                $error_status = implode (' + ', $error);
+//                $incorrect ="SUM( IF(" . $error_status . ",1,0) )";
 
                 $reported = implode( ' AND ', $reported);
 
@@ -142,7 +161,7 @@ class SampleResponseDataTable extends DataTable
                             DB::raw($completed. ' AS complete'),
                             DB::raw($incompleted. ' AS incomplete'),
                             DB::raw($missed. ' AS missing'),
-                            DB::raw($incorrect. ' AS error'),
+                            //DB::raw($incorrect. ' AS error'),
                             DB::raw($reported_locations.' AS rlocations'),
                             DB::raw('SUM(IF(samples.id,1,0)) AS alltotal, ' . $total . ' AS total'),
                             DB::raw('GROUP_CONCAT(DISTINCT user.name) as user_name',
@@ -158,24 +177,18 @@ class SampleResponseDataTable extends DataTable
             });
 
             foreach ($project->sections as $k => $section) {
-//                if (config('sms.double_entry')) {
-//                    $dbl_section_table = $childTable . '_s' . $section->sort . '_dbl';
-//                    $dbl_short = 'pj_s'.$section->sort.'_dbl';
-//                    $query->leftjoin($dbl_section_table. ' AS '.$dbl_short, function ($join) use ($dbl_short) {
-//                        $join->on('samples.id', '=', $dbl_short . '.sample_id');
-//                    });
-//
-//                    if ($auth->role->role_name == 'doublechecker') {
-//                        $joinMethod = 'leftjoin';
-//                    }
-//
-//                }
-                // join with result database
+                if($this->type == 'double') {
+                    $dbname = 'pj_s'.$section->sort.'_dbl';
+                    $section_table = $childTable . '_s' . $section->sort.'_dbl';
+                } else {
+                    $dbname = 'pj_s'.$section->sort;
+                    $section_table = $childTable . '_s' . $section->sort;
+                }
 
-                $section_table = $childTable . '_s' . $section->sort;
-                $sect_short = 'pj_s' . $section->sort;
-                $query->leftjoin($section_table . ' AS ' . $sect_short, function ($join) use ($sect_short) {
-                    $join->on('samples.id', '=', $sect_short . '.sample_id');
+
+
+                $query->leftjoin($section_table . ' AS ' . $dbname, function ($join) use ($dbname) {
+                    $join->on('samples.id', '=', $dbname . '.sample_id');
                 });
 
 
@@ -409,20 +422,20 @@ class SampleResponseDataTable extends DataTable
                                   }";
                 }
             ];
-            $columns['error'] = [
-                'data' => 'error',
-                'name' => 'error',
-                'defaultContent' => 'N/A',
-                "render" => function () use ($project, $filter) {
-                    return "function ( data, type, full, meta ) {
-                                    if(type == 'display') {
-                                      return '<a href=" . route('projects.surveys.index', [$project->id]) . "/?nosample=1&" . $filter . "='+ encodeURI(full." . $filter . ") +'&totalstatus=incorrect>' + data + '<br> (' +parseFloat((parseInt(data, 10) * 100)/ parseInt(full.alltotal, 10)).toFixed(1) + '%) </a>';
-                                    } else {
-                                      return data;
-                                    }
-                                  }";
-                }
-            ];
+//            $columns['error'] = [
+//                'data' => 'error',
+//                'name' => 'error',
+//                'defaultContent' => 'N/A',
+//                "render" => function () use ($project, $filter) {
+//                    return "function ( data, type, full, meta ) {
+//                                    if(type == 'display') {
+//                                      return '<a href=" . route('projects.surveys.index', [$project->id]) . "/?nosample=1&" . $filter . "='+ encodeURI(full." . $filter . ") +'&totalstatus=incorrect>' + data + '<br> (' +parseFloat((parseInt(data, 10) * 100)/ parseInt(full.alltotal, 10)).toFixed(1) + '%) </a>';
+//                                    } else {
+//                                      return data;
+//                                    }
+//                                  }";
+//                }
+//            ];
         }
 
         return $columns;
@@ -437,10 +450,10 @@ class SampleResponseDataTable extends DataTable
     {
         $project = $this->project;
         if ($this->section) {
-            $dom = 'fp';
+            $dom = 'p';
             $scrollX = false;
         } else {
-            $dom = 'ftp';
+            $dom = 'tp';
             $scrollX = true;
         }
         $builder =  [
@@ -518,7 +531,7 @@ class SampleResponseDataTable extends DataTable
                                     return parseInt(a, 10) + parseInt(b, 10);
                                 }, 0 );    
                                 
-                            api.columns([1,2,5,6,7,8]).every(function(){
+                            api.columns([1,2,5,6,7]).every(function(){
                                   var column = this;
                                   
                                   var sum = column

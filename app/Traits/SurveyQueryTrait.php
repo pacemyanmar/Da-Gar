@@ -7,6 +7,8 @@ use Illuminate\Support\Facades\Auth;
 
 trait SurveyQueryTrait {
 
+    private $type;
+
     protected $sample_select = [
         'samples_id' => 'samples.id as samples_id',
         'form_id' => 'samples.form_id',
@@ -137,7 +139,7 @@ trait SurveyQueryTrait {
         $section_columns = [];
         foreach ($sections as $k => $section) {
             $section_num = $section->sort;
-            if($auth->role->role_name == 'doublechecker') {
+            if($auth->role->role_name == 'doublechecker' || $this->type == 'double') {
                 $base_dbname = 'pj_s'.$section_num.'_dbl';
             } else {
                 $base_dbname = 'pj_s'.$section_num;
@@ -414,8 +416,12 @@ trait SurveyQueryTrait {
             foreach($inputs as $input) {
                 $column = $input->inputid;
 
-                //$title = preg_replace('/s[0-9]+|ir/', '', $column);
-                //$title = strtoupper(preg_replace('/i/', '_', $title));
+                if($this->type == 'double') {
+                    $base_dbname = 'pj_s'.$section_num.'_dbl';
+                } else {
+                    $base_dbname = 'pj_s'.$section_num;
+                }
+
                 switch ($input->type) {
                     case 'radio':
                         $title = $question->qnum;
@@ -434,8 +440,6 @@ trait SurveyQueryTrait {
                         }
                         break;
                 }
-
-                $base_dbname = 'pj_s'.$section_num;
 
                 $input_columns[$column] = [
                     'name' => $base_dbname. '.' . $column,
