@@ -312,7 +312,7 @@ trait SurveyQueryTrait {
                 case 'incident_center':
                 case 'sms_time':
                 case 'observer_field':
-                case 'type':
+                //case 'type':
                     $columns[$column] = [
                         'name' => 'sdv.'.$column,
                         'data' => $column,

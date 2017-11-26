@@ -138,5 +138,5 @@ return [
     'export_project' => 'Export Form',
     'check' => 'Check Data Entry Error',
     'sample_area_type' => 'State/Region Sample',
-    'sample_area_name' => 'S/R'
+    'sample_area_name' => 'S/R',
 ];
