@@ -339,13 +339,17 @@ class SurveyResultsDataTable extends DataTable
             DB::statement("CREATE VIEW sample_datas_view AS
                            (
                            SELECT sd.id, sd.location_code, sd.type, sd.dbgroup, sd.sample, sd.ps_code, sd.area_type,
-                           sd.level6, sd.level5, sd.level4, sd.level3, sd.level2, sd.level1, sd.level6_trans,
+                           sd.sample_area_type, sd.sample_area_name,
+                           sd.ward, sd.level6, sd.level5, sd.level4, sd.level3, sd.level2, sd.level1, sd.level6_trans,
                            sd.level5_trans, sd.level4_trans, sd.level3_trans, sd.level2_trans, sd.level1_trans,
                            sd.parties, sd.parent_id, sd.created_at, sd.updated_at, sd.sms_primary, sd.sms_backup, sd.call_primary, 
                            sd.call_backup, sd.hotline1, sd.hotline2, sd.sms_time, sd.incident_center, $observer  
-                           FROM sample_datas AS sd LEFT JOIN observers AS ob ON ob.sample_id = sd.id  GROUP BY sd.id, sd.location_code, sd.type, sd.dbgroup, sd.sample, sd.ps_code, sd.area_type,
-                           sd.level6, sd.level5, sd.level4, sd.level3, sd.level2, sd.level1, sd.level6_trans,
-                           sd.level5_trans, sd.level4_trans, sd.level3_trans, sd.level2_trans, sd.level1_trans,
+                           FROM sample_datas AS sd LEFT JOIN observers AS ob ON ob.sample_id = sd.id  
+                           GROUP BY sd.id, sd.location_code, sd.type, sd.dbgroup, sd.sample, sd.ps_code, sd.area_type,
+                           sd.sample_area_type, sd.sample_area_name,
+                           sd.ward, sd.level6, sd.level5, sd.level4, sd.level3, sd.level2, sd.level1, 
+                           sd.level6_trans, sd.level5_trans, sd.level4_trans, 
+                           sd.level3_trans, sd.level2_trans, sd.level1_trans,
                            sd.parties, sd.parent_id, sd.created_at, sd.updated_at, sd.sms_primary, sd.sms_backup, sd.call_primary, 
                            sd.call_backup, sd.hotline1, sd.hotline2, sd.sms_time, sd.incident_center
                            )");

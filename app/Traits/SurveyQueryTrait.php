@@ -18,6 +18,8 @@ trait SurveyQueryTrait {
         'dbgroup' => 'sdv.dbgroup',
         'sample' => 'sdv.sample',
         'area_type' => 'sdv.area_type',
+        'sample_area_type' => 'sdv.sample_area_type',
+        'sample_area_name' => 'sdv.sample_area_name',
         'level1' => 'sdv.level1',
         //'level1_trans' => 'sdv.level1_trans',
         'level2' => 'sdv.level2',
@@ -25,6 +27,7 @@ trait SurveyQueryTrait {
         'level3' => 'sdv.level3',
         //'level3_trans' => 'sdv.level3_trans',
         'level4' => 'sdv.level4',
+        'ward' => 'sdv.ward',
         //'level4_trans' => 'sdv.level4_trans',
         'level5' => 'sdv.level5',
         //'level5_trans' => 'sdv.level5_trans',
@@ -309,6 +312,7 @@ trait SurveyQueryTrait {
                 case 'incident_center':
                 case 'sms_time':
                 case 'observer_field':
+                case 'type':
                     $columns[$column] = [
                         'name' => 'sdv.'.$column,
                         'data' => $column,

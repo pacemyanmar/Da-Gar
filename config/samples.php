@@ -20,11 +20,14 @@ return [
             'show' => true
         ],
         'level4' => [
-            'title' => 'Village Tract/Ward',
+            'title' => 'Village Tract',
             'show' => true
         ],
         'level5' => [
             'title' => 'Village',
+        ],
+        'ward' => [
+            'title' => 'Ward',
         ],
         'area_type' => [
             'title' => 'Rural/Urban'
@@ -32,9 +35,12 @@ return [
         'sample' => [
             'title' => 'Sample Type'
         ],
-        'parties' => [
-            'title' => 'Parties',
-        ]
+        'sample_area_name' => [
+            'title' => 'S/R',
+        ],
+        'sample_area_type' => [
+            'title' => 'State Sample'
+            ]
 
     ],
     'observers' => [

@@ -136,5 +136,7 @@ return [
     'back' => 'Back',
     'smslog' => 'SMS Log',
     'export_project' => 'Export Form',
-    'check' => 'Check Data Entry Error'
+    'check' => 'Check Data Entry Error',
+    'sample_area_type' => 'State/Region Sample',
+    'sample_area_name' => 'S/R'
 ];
