@@ -320,6 +320,7 @@ trait SurveyQueryTrait {
                         'orderable' => false,
                         'defaultContent' => 'N/A',
                         'width' => '90px',
+                        'visible' => false,
                     ];
                     break;
                 case 'mobile':
