@@ -459,7 +459,7 @@ trait SurveyQueryTrait {
                         'data' => $column.'_other', 'title' => strtoupper($title). ' Other',
                         'class' => 'result', 'orderable' => false,
                         'visible' => false,
-                        'width' => '80px', 'type' => $input->type
+                        'width' => '80px', 'type' => 'text'
                     ];
                 }
 
