@@ -44,7 +44,7 @@
     "jquery-ui": "^1.12.1",
     "jquery-ui-sortable": "^1.0.0",
     "magic-check": "^1.0.3",
-    "marked": "0.3.12",
+    "marked": "^0.3.12",
     "moment": "^2.20.1",
     "select2": "^4.0.6-rc.1",
     "webpack": "^3.10.0"
