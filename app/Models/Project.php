@@ -75,6 +75,11 @@ class Project extends Model
         return $this->hasManyThrough(SurveyInput::class, Question::class, 'project_id', 'question_id');
     }
 
+    public function locationMetas()
+    {
+        return $this->hasMany(LocationMeta::class);
+    }
+
     public function samplesList()
     {
         return $this->hasMany(Sample::class);
