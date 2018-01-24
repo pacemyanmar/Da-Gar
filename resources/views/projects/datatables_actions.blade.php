@@ -89,6 +89,12 @@
                 {!! Form::close() !!}
 
 
+
+                <a href="{{ route('locationMetas.edit', $id) }}" class='btn btn-default btn-sm'>
+                    <i class="glyphicon glyphicon-edit"></i>Edit Locations
+                </a>
+
+
                 {!! Form::open(['route' => ['projects.destroy', $id], 'method' => 'delete', 'class' => 'from-inline']) !!}
 
                 {!! Form::button('<i class="glyphicon glyphicon-trash"></i>', [

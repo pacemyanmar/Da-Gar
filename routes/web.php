@@ -104,3 +104,5 @@ Route::resource('projectPhones', 'ProjectPhoneController');
 Route::resource('observers', 'ObserverController');
 
 Route::resource('logicalChecks', 'LogicalCheckController');
+
+Route::resource('locationMetas', 'LocationMetaController');
