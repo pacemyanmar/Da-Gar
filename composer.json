@@ -43,7 +43,10 @@
         ],
         "psr-4": {
             "App\\": "app/"
-        }
+        },
+        "files": [
+            "app/SmsHelper.php"
+        ]
     },
     "autoload-dev": {
         "classmap": [
