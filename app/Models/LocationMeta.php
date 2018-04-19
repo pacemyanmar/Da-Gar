@@ -23,6 +23,7 @@ class LocationMeta extends Model
     protected $dates = ['deleted_at'];
 
     public $fillable = [
+        'label',
         'field_name',
         'field_type',
         'project_id'
@@ -34,6 +35,7 @@ class LocationMeta extends Model
      * @var array
      */
     protected $casts = [
+        'label' => 'string',
         'field_name' => 'string',
         'field_type' => 'string',
         'project_id' => 'integer'

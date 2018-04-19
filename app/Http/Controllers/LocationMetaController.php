@@ -123,6 +123,8 @@ class LocationMetaController extends AppBaseController
             ->with('locationMetas', $locationMetas);
     }
 
+
+
     /**
      * Update the specified LocationMeta in storage.
      *
@@ -149,26 +151,39 @@ class LocationMetaController extends AppBaseController
 
         $fields = $request->input('fields');
 
+
+        if($fields[0]['field_type'] != 'primary') {
+            return redirect()->back()->withErrors('Primary ID code column has not yet been set.');
+        }
+
         $project->locationMetas()->delete();
+
+        $filled = [];
 
         foreach($fields as $field) {
             if($field['field_name']) {
-                $look_up = array_merge($input, ['field_name' => snake_case($field['field_name'])]);
+                $field_name = str_dbcolumn($field['field_name']);
+                $look_up = array_merge($input, ['field_name' => $field_name]);
                 $fill = array_merge($input, [
-                    'field_name' => snake_case($field['field_name']),
+                    'label' => $field['label'],
+                    'field_name' => $field_name,
                     'field_type' => snake_case($field['field_type'])
                 ]);
-                $locationMeta = $this->locationMeta->withTrashed()->firstOrNew($look_up, $fill);
+                $locationMeta = $this->locationMeta->withTrashed()->firstOrNew($look_up);
+                $locationMeta->fill($fill);
+
+                $filled[] = $locationMeta;
+                $locationMeta->save();
+
                 if ($locationMeta->trashed()) {
                     $locationMeta->restore();
                 }
-                $locationMeta->save();
             }
         }
 
         Flash::success('Location Meta updated successfully.');
 
-        return redirect()->back();
+        return redirect(route('projects.edit', $project->id));
     }
 
     /**

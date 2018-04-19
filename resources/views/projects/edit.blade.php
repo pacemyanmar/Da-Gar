@@ -7,6 +7,10 @@
         <h1 class="pull-left">{!! $project->project !!}</h1>
         <div class="pull-right">
             <a href="#" class='btn btn-success' data-toggle="modal"
+               data-target="#uploadSamples" data-method='POST'>
+                <i class="glyphicon glyphicon-plus"></i> upload samples
+            </a>
+            <a href="#" class='btn btn-success' data-toggle="modal"
                data-target="#logicModal" data-method='POST'>
                 <i class="glyphicon glyphicon-plus"></i> Logic
             </a>
@@ -105,6 +109,7 @@
 @endsection
 @section('scripts')
     @include('projects.logicmodal')
+    @include('projects.upload_modal')
     <script type='text/javascript'>
         (function($) {
         var formData = {'fields': ''};

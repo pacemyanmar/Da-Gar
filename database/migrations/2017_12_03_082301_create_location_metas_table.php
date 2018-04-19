@@ -15,8 +15,14 @@ class CreateLocationMetasTable extends Migration
     {
         Schema::create('location_metas', function (Blueprint $table) {
             $table->increments('id');
+            $table->string('label')->nullable();
             $table->string('field_name');
-            $table->string('field_type');
+            $table->string('field_type'); // primary, code, text or textarea
+            $table->string('sample_type')->default('location'); // location or people
+            $table->unsignedInteger('sort')->nullable();
+            $table->string('status')->default('new'); // new or created
+            $table->boolean('show')->default(1);
+            $table->boolean('export')->default(1);
             $table->unsignedInteger('project_id');
             $table->softDeletes();
             $table->timestamps();
