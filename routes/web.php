@@ -42,6 +42,7 @@ Route::group(['prefix' => 'projects/{project}'], function () {
     Route::get('/create-views', ['as' => 'projects.createviews', 'uses' => 'ProjectController@createAllViews']);
     Route::post('/trainingmode', ['as' => 'projects.trainingmode', 'uses' => 'ProjectController@trainingmode']);
     Route::post('/addlogic', ['as' => 'projects.logic', 'uses' => 'ProjectController@addLogic']);
+    Route::post('/upload', ['as' => 'projects.upload.samples', 'uses' => 'ProjectController@uploadSamples']);
     Route::match(['get','post'],'/getcsv', ['as' => 'projects.getcsv', 'uses' => 'API\SmsAPIController@getcsv']);
 });
 

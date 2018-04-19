@@ -6,6 +6,7 @@ use App\DataTables\ProjectDataTable;
 use App\DataTables\SmsLogDataTable;
 use App\Http\Requests\CreateProjectRequest;
 use App\Http\Requests\UpdateProjectRequest;
+use App\Models\LocationMeta;
 use App\Models\LogicalCheck;
 use App\Models\Observer;
 use App\Models\Project;
@@ -14,6 +15,7 @@ use App\Models\SampleData;
 use App\Models\Section;
 use App\Repositories\ProjectRepository;
 use App\Scopes\OrderByScope;
+use App\SmsHelper;
 use Flash;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\Schema\Blueprint;
@@ -22,10 +24,16 @@ use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use League\Csv\Reader;
+use League\Csv\Statement;
 use Maatwebsite\Excel\Facades\Excel;
 use Ramsey\Uuid\Uuid;
 use Response;
 
+/**
+ * Class ProjectController
+ * @package App\Http\Controllers
+ */
 class ProjectController extends AppBaseController
 {
     /**
@@ -1119,6 +1127,144 @@ class ProjectController extends AppBaseController
 
             DB::statement($viewStatement);
 
+    }
+
+    /**
+     * @param $id Project ID
+     * @param Request $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function uploadSamples($id, Request $request)
+    {
+        $project = $this->projectRepository->findWithoutFail($id);
+
+        if (empty($project))
+            return redirect()->back()->withErrors('Project not found.');
+
+        if ($request->file('samplefile')->isValid()) {
+
+            $idcolumn = $request->input('idcolumn');
+
+            $idcolumn_slug = $project->idcolumn = str_dbcolumn($idcolumn);
+
+            $reader = Reader::createFromPath($request->samplefile->path());
+            $reader->setHeaderOffset(0);
+
+            $records = (new Statement())->process($reader);
+            $headers = $records->getHeader();
+
+            $column_list = [];
+            array_walk($headers, function($slug, $key) use ($idcolumn_slug, &$column_list) {
+                $nkey = str_dbcolumn($slug);
+                if(str_dbcolumn($slug) == $idcolumn_slug) {
+                    $column_list['idcolumn'] = $slug;
+                } else {
+                    $column_list[$nkey] = $slug;
+                }
+            });
+            if(!array_key_exists('idcolumn', $column_list))
+                return redirect()->back()->withErrors('ID column not found in your file');
+
+            $column_list = array_merge(['idcolumn' => $column_list['idcolumn']] + $column_list);
+
+            $file = $request->samplefile->store('tmp');
+            $project->sample_file = $file;
+
+            //$project->save();
+            $storage_path = storage_path('app/'.$file);
+
+            if(empty($project->sample_file) || $request->input('update_structure'))
+                return $this->sampleStructure($project, $column_list, $idcolumn);
+
+            // upload directly here
+            return $this->importSampleData($records, $project, $idcolumn);
+
+        } else {
+            return redirect()->back()->withErrors('Invalid file');
+        }
+    }
+
+    /**
+     * @param $id Project ID
+     * @param Request $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function saveSampleStructure($id, Request $request)
+    {
+        $project = $this->projectRepository->findWithoutFail($id);
+
+        if (empty($project))
+            return redirect()->back()->withErrors('Project not found.');
+
+        if($project->id != $request->input('project_id'))
+            return redirect()->back()->withErrors(['Error with Project. Are you cheating?']);
+
+
+        $input = [
+            'project_id' => $project->id
+        ];
+
+        $fields = $request->input('fields');
+
+        $project->locationMetas()->delete();
+
+        foreach($fields as $field) {
+            if($field['field_name']) {
+                $look_up = array_merge($input, ['field_name' => str_dbcolumn($field['field_name'])]);
+                $fill = array_merge($input, [
+                    'label' => $field['label'],
+                    'field_name' => str_dbcolumn($field['field_name']),
+                    'field_type' => snake_case($field['field_type'])
+                ]);
+                $locationMeta = $this->locationMeta->withTrashed()->firstOrNew($look_up, $fill);
+                if ($locationMeta->trashed()) {
+                    $locationMeta->restore();
+                }
+                $locationMeta->save();
+            }
+        }
+    }
+
+
+    /**
+     * @param $project Project::class
+     * @param $columns array
+     * @return mixed
+     */
+    private function sampleStructure($project, $columns, $idcolumn)
+    {
+        array_walk($columns, function(&$item, $key) {
+            switch ($key) {
+                case 'idcolumn':
+                    $field['field_type'] = 'primary';
+                    break;
+                default:
+                    $field['field_type'] = 'text';
+                    break;
+            }
+
+            $field['label'] = preg_replace('/[\-_]/', ' ',title_case($item));
+            $field['field_name'] = str_dbcolumn($item);
+            $new_loc = new LocationMeta();
+            $item = $new_loc->fill($field);
+        });
+
+        $locationMetas = collect($columns);
+        $projects = Project::pluck('project', 'id');
+
+        return view('location_metas.edit')
+            ->with('project', $project)
+            ->with('projects', $projects)
+            ->with('locationMetas', $locationMetas);
+    }
+
+    /**
+     * @param $records \League\Csv\ResultSet|array
+     * @param $project Project::class
+     */
+    private function importSampleData($records, $project, $idcoumn)
+    {
+        dd('Importing');
     }
 
 }
