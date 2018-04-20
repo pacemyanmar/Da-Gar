@@ -54,7 +54,7 @@ class Project extends Model
      */
     public static $rules = [
         'project' => 'required',
-        'unique_code' => 'unique:projects',
+        'unique_code' => 'unique:projects|required',
     ];
 
     /**
@@ -73,6 +73,11 @@ class Project extends Model
     public function inputs()
     {
         return $this->hasManyThrough(SurveyInput::class, Question::class, 'project_id', 'question_id');
+    }
+
+    public function locationMetas()
+    {
+        return $this->hasMany(LocationMeta::class);
     }
 
     public function samplesList()

@@ -24,12 +24,15 @@ class SampleData extends Model
         'dbgroup',
         'sample',
         'area_type',
+        'sample_area_type',
+        'sample_area_name',
 
         'level1', // state
         'level1_id',
         'level2',
         'level3',
         'level4',
+        'ward',
         'level5',
         'level6',
         'parent_id',

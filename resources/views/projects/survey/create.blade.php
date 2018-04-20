@@ -19,10 +19,12 @@
             @endif
             <h1 class="pull-left">{!! Form::label('name', $project->project) !!}</h1>
 
-        <!--h1 class="pull-right">
-            <a class="btn btn-default pull-right" style="display:inline;margin-top: -10px;margin-bottom: 5" href="{!! route('projects.surveys.index', $project->id) !!}" data-id="survey-form"> {{ trans('messages.back') }}</a>
-           <a class="btn btn-primary pull-right save" style="display:inline;margin-top: -10px;margin-bottom: 5" href="#" data-id="survey-form"> {{ trans('messages.saveall') }}</a>
-        </h1-->
+        <h1 class="pull-right">
+            <a class="btn btn-info pull-right btn-float-show btn-float-up" style="display:block;margin-top: -10px;margin-bottom: 5px;" href="{!! route('projects.surveys.index', $project->id) !!}">
+                <i class="fa fa-reply text-warning" id="tolist-icon"></i>
+                {{ trans('messages.back') }}</a>
+            <a class="pull-right btn-float btn-float-bottom btn-float-to-up" style="display:inline;font-size: 40px;" href="#"><i class="fa fa-arrow-circle-up"></i></a>
+        </h1>
         </section>
         <div class="content">
             <div class="clearfix"></div>
@@ -32,12 +34,60 @@
 
             @include('projects.survey.info_table')
 
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <div class="panel-title">
+                        Sections List
+                    </div>
+                </div>
+                <div class="panel-body">
+                    <div class="btn-toolbar">
+                    @foreach($project->sections as $section_key => $section)
+                            @php
+                                //section as css class name
+                                $sectionClass = 'section'.$section->sort;
+                                $section_num = $section->sort;
+
+                                if( isset($results) && !empty($results['section'.$section->sort]) ) {
+                                    $section_status = $results['section'.$section->sort]->{'section'.$section->sort.'status'};
+                                    if( $section_status == 0) {
+                                        $section_status = 'danger';
+                                        $icon = 'remove';
+                                    } else if($section_status  == 1) {
+                                        $section_status = 'success';
+                                        $icon = 'ok';
+                                    } else if($section_status  == 2) {
+                                        $section_status = 'warning';
+                                        $icon = 'ban-circle';
+                                    } else if($section_status  == 3) {
+                                        $section_status = 'info';
+                                        $icon = 'alert';
+                                    } else {
+                                        $section_status = 'danger';
+                                        $icon = 'remove';
+                                    }
+                                } else {
+                                    $section_status = 'primary';
+                                    $icon = 'question';
+                                }
+
+                            @endphp
+                        <a style="margin-bottom: 3px" href="#section{!! $section->sort !!}" id="btn-section{!! $section->sort !!}" class="btn btn-{{ $section_status }} btn-sm" role="button">
+                            {!! $section->sectionname !!}
+                        </a>
+                    @endforeach
+                    </div>
+                </div>
+            </div>
+
+
             <div id="survey-form">
                 @foreach($project->sections as $section_key => $section)
                     @php
                         //section as css class name
                         $sectionClass = 'section'.$section->sort;
                         $section_num = $section->sort;
+                        $collapse = 'in';
 
                         if( isset($results) && !empty($results['section'.$section->sort]) ) {
                             $section_status = $results['section'.$section->sort]->{'section'.$section->sort.'status'};
@@ -47,6 +97,7 @@
                             } else if($section_status  == 1) {
                                 $section_status = 'success';
                                 $icon = 'ok';
+                                $collapse = (config('sms.collapse'))?'':'in';
                             } else if($section_status  == 2) {
                                 $section_status = 'warning';
                                 $icon = 'ban-circle';
@@ -64,7 +115,7 @@
 
                     @endphp
                     <div class="panel panel-{{ $section_status }}" id="{!! $sectionClass !!}">
-                        <div class="panel-heading">
+                        <div class="panel-heading"  data-toggle="collapse" data-target="#{!! $sectionClass !!}-body">
                             <div class="panel-title">
                                 {!! $section->sectionname !!}
                                 <small> {!! (!empty($section->descriptions))?" | ".$section->descriptions:"" !!}</small>
@@ -72,7 +123,7 @@
                                 @if( isset($results) )
                                     <span class="pull-right">
                         <span class="badge">
-                            <span class="glyphicon glyphicon-{{ $icon }}"></span>
+                            <span  id="icon-{!! $sectionClass !!}" class="glyphicon glyphicon-{{ $icon }}"></span>
                         </span>
                         </span>
                                 @else
@@ -84,7 +135,7 @@
                                 @endif
                             </div>
                         </div>
-                        <div class="panel-body">
+                        <div class="panel-body collapse {{ $collapse }}" id="{!! $sectionClass !!}-body">
 
                             @include('projects.show_fields')
 
@@ -119,7 +170,7 @@
             <div class="modal-content">
 
                 <div class="modal-body">
-                    <p id="submitted">Some text in the modal.</p>
+                    <p id="submitted">Error in form submission.</p>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
@@ -129,6 +180,30 @@
         </div>
     </div>
     <style type="text/css">
+
+        .verticaltext {
+            position:fixed;
+            top: 0px;
+            right: -20px;
+            -webkit-transform:rotate(-90deg) translateX(-100%);
+        }
+
+        .verticalreverse {
+            -webkit-transform:rotate(-270deg) translateX(0%);
+        }
+
+        .btn-float-show {
+
+            margin: 0;
+
+            z-index: 100;
+
+            display: inline;
+
+            text-decoration: none;
+
+        }
+
         .zawgyi {
             font-family: "Zawgyi-One" !important;
         }
@@ -163,25 +238,106 @@
     <script type='text/javascript'>
         (function ($) {
 
-            if ($(".none").is(':checked')) {
-                $(".none:checked").closest('.row').children().children().children().children('input').each(function (i, obj) {
-                    obj.disabled = true;
-                });
-                $(".none").prop("disabled", false);
+            $('.time1').datetimepicker({
+                datepicker:false,
+                format:'H:i'
+            });
+
+            $('.time2').datetimepicker({
+                datepicker:false,
+                format:'h:i A'
+            });
+
+            $('.datetime').datetimepicker();
+
+            $('.date').datetimepicker({
+                timepicker:false,
+                format:'d-m-Y'
+            });
+
+            $('.year').datetimepicker({
+                timepicker:false,
+                format:'Y'
+            });
+
+            $('.month').datetimepicker({
+                timepicker:false,
+                format:'m-Y'
+            });
+
+            var other_text = $('.other').closest("div.form-group").find("input[type='text'].othertext");
+            if($('.other').is(':checked')){
+                other_text.focus().addClass('has-error').prop('disabled', false).prop('required', true);
+            } else {
+                other_text.removeClass('has-error').prop('disabled', true).prop('required', false);
             }
+
+            $('.other').on('change click',function(){
+                var other_text = $(this).closest("div.form-group").find("input[type='text'].othertext");
+                if($(this).is(':checked')){
+                    other_text.focus().addClass('has-error').prop('disabled', false).prop('required', true);
+                } else {
+                    other_text.removeClass('has-error').prop('disabled', true).prop('required', false);
+                }
+            });
+
+            $('.skippable').on('change click',function(){
+                if($(this).is(':checked')){
+                    var toskip = $(this).data('skip');
+                    var goto = $(this).data('goto');
+                    if(toskip) {
+                        $(toskip).prop("disabled", true);
+                    }
+                    if(goto) {
+                        $("body, html").animate({
+                            scrollTop: $(goto).offset().top
+                        }, 600);
+                    }
+
+                } else {
+                    var toskip = $(this).data('skip');
+
+                    if(toskip) {
+                        $(toskip).prop("disabled", false);
+                    }
+                }
+            });
+            $.each($('.skippable'), function(i, elm){
+                if(elm.checked){
+
+                    if(elm.dataset.skip) {
+                        $(elm.dataset.skip).prop("disabled", true);
+                    }
+
+                }
+            });
+
+
+            $('input:radio').on('change', function(e){
+                if(!$(this).data('skip')) {
+                    var siblings = $(this).closest('tr').find('input');
+                    $.each(siblings, function(i, elm){
+                        $(elm.dataset.skip).prop("disabled", false);
+                    });
+                } else {
+                    $($(this).data('skip')).prop("disabled", true);
+                }
+            });
+
+
+            //$( ".date" ).datetimepicker();
+
+            if ($("input.none").is(':checked')) {
+                $("input.none:checked").closest('tr').find('input').prop("disabled", true);
+                $("input.none").prop("disabled", false);
+            }
+
             $("input.none").change(function (e) {
                 if ($(this).is(':checked')) {
-                    $(this).closest('.row').children().children().children().children('input').each(function (i, obj) {
-                        obj.disabled = true;
-                    });
+                    $(this).closest('tr').find('input').prop("disabled", true);
                     $(this).prop("disabled", false);
                 } else {
-                    $(this).closest('.row').children().children().children().children('input').each(function (i, obj) {
-                        if (obj.type != 'text') {
-                            obj.checked = false;
-                            obj.disabled = false;
-                        }
-                    });
+                    $(this).closest('tr').find('input').prop("disabled", false);
                 }
             });
 
@@ -224,30 +380,79 @@
                 //console.log(request);
 
                 request.done(function (msg) {
+                    $.each(msg.data.status, function(id, status){
+                        $("#"+id).removeClass (function (index, className) {
+                            return (className.match (/\bpanel\S+/g) || []).join(' ');
+                        });
+
+                        $("#btn-"+id).removeClass (function (index, className) {
+                            return (className.match (/\bbtn\S+/g) || []).join(' ');
+                        });
+
+                        $("#icon-"+id).removeClass (function (index, className) {
+                            return (className.match (/\bglyphicon\S+/g) || []).join(' ');
+                        });
+
+                        if(!status) {
+                            $("#"+id).addClass('panel panel-danger');
+                            $("#btn-"+id).addClass('btn btn-danger btn-sm');
+                            $("#icon-"+id).addClass('glyphicon glyphicon-remove');
+                        }
+
+                        if(status === 1) {
+                            $("#"+id).addClass('panel panel-success');
+                            $("#btn-"+id).addClass('btn btn-success btn-sm');
+                            $("#icon-"+id).addClass('glyphicon glyphicon-ok');
+                        }
+
+                        if(status === 2) {
+                            $("#"+id).addClass('panel panel-warning');
+                            $("#btn-"+id).addClass('btn btn-warning btn-sm');
+                            $("#icon-"+id).addClass('glyphicon glyphicon-ban-circle');
+                        }
+
+                        if(status === 3) {
+                            $("#"+id).addClass('panel panel-info');
+                            $("#btn-"+id).addClass('btn btn-info btn-sm');
+                            $("#icon-"+id).addClass('glyphicon glyphicon-alert');
+                        }
+                    });
+
                     $('#submitted').html(msg.message);
 
                     $('#alert').modal('show');
                 });
 
                 request.fail(function (jqXHR, textStatus) {
-                    $('#submitted').html(jqXHR.responseJSON.message);
+                    $.LoadingOverlay("hide");
+
+                    if (typeof jqXHR.responseJSON !== 'undefined') {
+                        $('#submitted').html(jqXHR.responseJSON.message);
+                    } else {
+                        $('#submitted').html('Error in form submission!');
+                    }
 
                     $('#alert').modal('show');
 
+
+
+
                 });
 
-                request.always(function () {
-                    setTimeout(function () {
-                        $('.loading').addClass("hidden");
-                    }, 400);
-                });
+
                 $('#alert').on('hidden.bs.modal', function () {
+                    formSubmitted = true;
                     if (id == 'survey-form') {
-                        window.location.href = "{{ route('projects.surveys.index', $project->id) }}";
+                        //window.location.href = "{{ route('projects.surveys.index', $project->id) }}";
                     } else {
-                        window.location.reload();
+                        //window.location.reload();
                     }
                 })
+
+                request.always(function () {
+
+                });
+
                 $('#' + id).find(":input").filter(function () {
                     return !this.value;
                 }).removeAttr("disabled");
@@ -286,32 +491,47 @@
                 }
                 input.reportValidity();
 
-                @if(Auth::user()->role->role_name == 'doublechecker')
+                {{--@if(Auth::user()->role->role_name == 'doublechecker')--}}
 
-                    var cssid = $(this).attr('id');
-                    var cssclass = $(this).data('class');
-                    var type = $(this).attr('type');
-                    var ischecked= $(this).is(':checked');
+                    {{--var cssid = $(this).attr('id');--}}
+                    {{--var cssclass = $(this).data('class');--}}
+                    {{--var type = $(this).attr('type');--}}
+                    {{--var ischecked= $(this).is(':checked');--}}
 
-                    if(type == 'checkbox' && !ischecked && $(this).val() == $(this).data('origin')) {
-                        $('.'+cssclass).removeClass('hide');
-                        $('.'+cssid).removeClass('hide');
-                    } else if(type == 'checkbox' && !ischecked && $(this).val() != $(this).data('origin')) {
-                        $('.'+cssclass).addClass('hide');
-                        $('.'+cssid).addClass('hide');
-                    } else if(type == 'checkbox' && ischecked && $(this).val() != $(this).data('origin')) {
-                        $('.'+cssclass).removeClass('hide');
-                        $('.'+cssid).removeClass('hide');
-                    } else if($(this).val() != $(this).data('origin')) {
-                        $('.'+cssclass).removeClass('hide');
-                        $('.'+cssid).removeClass('hide');
-                        console.log('data not match ' + cssid + cssclass + $(this).data('origin'));
-                    } else {
-                        $('.'+cssclass).addClass('hide');
-                        $('.'+cssid).addClass('hide');
-                    }
+                    {{--if( (type == 'checkbox' && !ischecked && $(this).val() == $(this).data('origin') )--}}
+                        {{--|| (type == 'checkbox' && !ischecked && $(this).val() != $(this).data('origin'))--}}
+                        {{--|| (type == 'checkbox' && ischecked && $(this).val() != $(this).data('origin'))--}}
+                        {{--|| ($(this).val() != $(this).data('origin'))--}}
+                    {{--) {--}}
+                        {{--$('.'+cssclass).addClass('hide')--}}
+                        {{--$('.'+cssid).removeClass('hide').addClass('label-danger');--}}
+                        {{--$('.'+cssid+ ' > i').removeClass('fa-check').addClass('fa-close');--}}
+                    {{--} else {--}}
+                        {{--//$('.'+cssclass).removeClass('hide').addClass('label-success');--}}
+                        {{--$('.'+cssclass).addClass('hide')--}}
+                        {{--$('.'+cssid).removeClass('hide').addClass('label-success');--}}
+                        {{--$('.'+cssid+ ' > i').removeClass('fa-close').addClass('fa-check');--}}
+                    {{--}--}}
 
-                @endif
+                {{--@endif--}}
+            });
+
+            var offset = 150;
+
+            var duration = 300;
+
+            jQuery(window).scroll(function () {
+
+                if (jQuery(this).scrollTop() > offset) {
+
+                    jQuery('.btn-float-show').addClass('verticaltext').fadeIn(duration);
+                    jQuery('#tolist-icon').addClass('verticalreverse');
+
+                } else {
+                    jQuery('.btn-float-show').removeClass('verticaltext');
+                    jQuery('#tolist-icon').removeClass('verticalreverse');
+                }
+
             });
 
         })(jQuery);

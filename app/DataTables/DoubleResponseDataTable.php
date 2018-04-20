@@ -79,6 +79,8 @@ class DoubleResponseDataTable extends DataTable
                 ->groupBy('samples.id')
                 ->groupBy('sample_datas.location_code')
                 ->groupBy('samples.form_id');
+            $sample->orderBy('sample_datas.location_code', 'asc');
+            $sample->orderBy('samples.form_id', 'asc');
 
         return $this->applyScopes($sample);
     }
@@ -201,6 +203,7 @@ class DoubleResponseDataTable extends DataTable
                             });
                         }",
             'drawCallback' => "function(){
+                $(\"td:contains('OK')\").addClass('greenBg');
                 $('.usethis').on('click', function(e){
                         if(!confirm('" . trans('messages.are_you_sure') . "')) return;
                         var request = $.ajax({
@@ -253,10 +256,28 @@ class DoubleResponseDataTable extends DataTable
             $columns['section'.$section->sort] = [
                 'name' => 'section'.$section->sort,
                 'data' => 'section'.$section->sort,
-                'title' => 'R'.$section->sort,
+                'title' => 'R'.($section->sort + 1),
                 'orderable' => false,
                 'visible' => true,
-                'width' => '120px',
+                'width' => '20px',
+                "render" => function () {
+                    return "function ( data, type, full, meta ) {
+                                    if(type == 'display') {
+                                        if(data == 0) {
+                                            cell = '<i class=\"glyphicon glyphicon-ok text-success\"></i>';
+                                        } else if (data === null) {
+                                            cell = '<i title=\"Both Missing\" class=\"glyphicon glyphicon-floppy-remove text-danger text-lg\"></i>';                                        
+                                        }else {
+                                            cell = data + ' <i class=\"glyphicon glyphicon-remove text-danger\"></i>';
+                                        }
+                                        
+                                      return cell;
+                                      
+                                    } else {
+                                      return data;
+                                    }
+                                  }";
+                }
             ];
         }
         return $columns;

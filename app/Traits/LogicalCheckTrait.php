@@ -10,7 +10,9 @@ use App\Models\Section;
 trait LogicalCheckTrait
 {
     protected $errorBag;
+    protected $skipBag = [];
     private $sectionErrorBag;
+    protected $sectionStatus;
 
     protected function logicalCheck($input, $value)
     {
@@ -18,12 +20,29 @@ trait LogicalCheckTrait
 
         if($value === 0 || $value || $input->optional) {
             // if value not empty, set status as complete
-            $this->errorBag[$input->question->qnum][] = 1;
+            $this->errorBag[$input->question->qnum][$input->id] = 1;
+            if($input->skip) {
+                $qnums = array_filter(explode('.qnum', $input->skip));
+                array_walk($qnums, function(&$qnum, $key) {
+                    $qnum = preg_replace('/[^a-zA-Z0-9]+/','', $qnum);
+                });
+                if(in_array($input->type,['checkbox','radio'])) {
+                    if($value == $input->value) {
+                        $this->skipBag += array_flip($qnums);
+                    }
+                } else {
+                    $this->skipBag += array_flip($qnums);
+                }
+            }
         }
 
         if(!$input->optional && $value !== 0 && !$value) {
-            // if value is null and input is required, set status as incomplete
-            $this->errorBag[$input->question->qnum][] = 2;
+            // if value is null and input is required, set status as missing
+            $this->errorBag[$input->question->qnum][$input->id] = 2;
+        }
+
+        if(!empty($this->skipBag) && array_key_exists(strtolower($input->question->qnum), $this->skipBag)) {
+            $this->errorBag[$input->question->qnum][$input->id] = 1;
         }
     }
 
@@ -61,7 +80,12 @@ trait LogicalCheckTrait
         // if all questions have same status, set that status to section
         // section must be set as complete only after all questions complete
         if (1 == $error_count) {
-            return array_shift($this->sectionErrorBag); //this can be any of 1,2,3
+            $error_code = array_shift($this->sectionErrorBag); //this can be any of 1,2,3
+            if($error_code == 2) {
+                return 0;
+            } else {
+                return $error_code;
+            }
         }
         // if questions have different status
         if ($error_count > 1) {

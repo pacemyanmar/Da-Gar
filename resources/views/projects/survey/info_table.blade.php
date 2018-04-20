@@ -11,14 +11,11 @@
                     <thead>
                     <tr>
 
-                        <th>{!! trans('sample.uecnec_code') !!}</th>
+                        <th>{!! trans('sample.location_code') !!}</th>
                         <th>{!! trans('sample.level1') !!}</th>
                         <th>{!! trans('sample.level3') !!}</th>
-                        <th>{!! trans('messages.polling_station') !!}</th>
-                        <th>{!! trans('sample.supervisor_name') !!}</th>
-                        <th>{!! trans('sample.supervisor_phone') !!}</th>
-                        <th>{!! trans('sample.registered_voters') !!}</th>
-                        <th>{!! trans('sample.supervisor_field') !!}</th>
+                        <th>{!! trans('sample.level4') !!}</th>
+                        <th>{!! trans('sample.level5') !!}</th>
 
                         @if(count($project->samples) > 1)
                             <th>{!! trans('messages.sample') !!}</th>
@@ -31,14 +28,12 @@
                     <tbody>
                     <tr>
 
-                        <td>{!! ucwords($sample->data->ps_code) !!}</td>
+                        <td>{!! ucwords($sample->data->location_code) !!}</td>
                         <td>{!! ucwords($sample->data->level1) !!}</td>
                         <td>{!! ucwords($sample->data->level3) !!}</td>
-                        <td>{!! ucwords($sample->data->level6) !!}</td>
-                        <td>{!! ucwords($sample->data->supervisor_name) !!}</td>
-                        <td>{!! ucwords($sample->data->supervisor_mobile) !!}</td>
-                        <td>{!! $sample->data->registered_voters !!}</td>
-                        <td>{!! ucwords($sample->data->supervisor_field) !!}</td>
+                        <td>{!! ucwords($sample->data->level4) !!}</td>
+                        <td>{!! ucwords($sample->data->level5) !!}</td>
+
 
                         @if(count($project->samples) > 1)
                             <td>

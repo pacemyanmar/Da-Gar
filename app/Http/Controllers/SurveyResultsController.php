@@ -207,7 +207,7 @@ class SurveyResultsController extends AppBaseController
         $double_results = [];
 
         foreach ($project->sections as $k => $section) {
-            $section_table = $dbname . '_section' . $section->sort;
+            $section_table = $dbname . '_s' . $section->sort;
             $results['section' . $section->sort] = $sample->resultWithTable($section_table)->first();
 
             $section_dbl_table = $section_table . '_dbl';
@@ -277,8 +277,6 @@ class SurveyResultsController extends AppBaseController
         if (!empty($sample->user_id) && $sample->user_id != $auth_user->id) {
             if ($auth_user->role->role_name == 'doublechecker') {
                 $sample->qc_user_id = $auth_user->id;
-            } else {
-                $sample->update_user_id = $auth_user->id;
             }
         } else {
             $sample->user_id = $auth_user->id;
@@ -344,7 +342,7 @@ class SurveyResultsController extends AppBaseController
                     if ($input->type == 'checkbox') {
                         $result_arr[$qid][$inputid] = ($results[$inputid]) ? $results[$inputid] : 0;
                     } else {
-                        $result_arr[$qid][$inputid] = ($results[$inputid] !== null && $results[$inputid] !== false && $results[$inputid] !== '') ? $results[$inputid] : null;
+                        $result_arr[$qid][$inputid] = ($results[$inputid]) ? $results[$inputid] : null;
                     }
                 } else {
 
@@ -361,15 +359,23 @@ class SurveyResultsController extends AppBaseController
                     }
 
                 }
+                if($input->other) {
+                    $result_arr[$qid][$inputid.'_other'] = (array_key_exists($inputid.'_other', $results))?$results[$inputid.'_other']:null;
+                }
+
                 $this->logicalCheck($input, $result_arr[$qid][$inputid]);
             }
 
-            $this->getQuestionStatus($this->errorBag[$question->qnum], $question->qnum);
+            if(array_key_exists($question->qnum, $this->errorBag)) {
+                $this->getQuestionStatus($this->errorBag[$question->qnum], $question->qnum);
+            }
 
-            $allResults += $result_arr[$qid];
+            if(array_key_exists($qid, $result_arr)) {
+                $allResults += $result_arr[$qid];
+            }
         }
 
-        $section_table = $dbName . '_section' . $section->sort;
+        $section_table = $dbName . '_s' . $section->sort;
 
         $this->saveSampleType = (isset($sample_type)) ? $sample_type : 1;
 
@@ -379,18 +385,19 @@ class SurveyResultsController extends AppBaseController
 
         $doubleTable = $section_table . '_dbl';
 
-        $this->saveSection = 'section' . $section->sort . 'status';
+        $this->saveSection = $saveSection = 'section' . $section->sort . 'status';
 
 
         if (Auth::user()->role->role_name == 'doublechecker') {
-            $this->saveResults($doubleTable);
+            $saved_result = $this->saveResults($doubleTable);
         } else {
-            $this->saveResults($originTable);
+            $saved_result = $this->saveResults($originTable);
             if ($request->has('double')) {
-                $this->saveResults($doubleTable);
+                $saved_dbl_result = $this->saveResults($doubleTable);
             }
         }
 
+        $allResults['status'] = ['section'.$section->sort => $this->sectionStatus];
         return $this->sendResponse($allResults, trans('messages.saved'));
     }
 
@@ -420,21 +427,32 @@ class SurveyResultsController extends AppBaseController
 
         $surveyResult->setTable($table);
 
-        $surveyResult->sample()->associate($this->saveSample);
+        if (Auth()->user()->role->role_name == 'doublechecker') {
+            $sample->qc_user_id = Auth()->user()->id;
 
-        $surveyResult->{$this->saveSection} = $this->getSectionStatus();
+        }
+
+        if( $surveyResult->user_id && (in_array( Auth()->user()->code,[998,999] ) || Auth()->user()->role->level > 5 ) ) {
+            $sample->update_user_id = $surveyResult->update_user_id = Auth()->user()->id;
+        } else {
+            $sample->user_id = $surveyResult->user_id = Auth()->user()->id;
+        }
+
+        $sample->save();
+
+        $surveyResult->sample()->associate($sample);
+
+        $surveyResult->{$this->saveSection} = $this->sectionStatus = $this->getSectionStatus();
 
         $surveyResult->sample_type = $this->saveSampleType;
 
-        $surveyResult->user_id = Auth()->user()->id;
-
         $surveyResult->forceFill($this->saveResults);
 
-        $result = $surveyResult->save();
+        $surveyResult->save();
     }
 
 
-    public function responseRateSample($project_id, $filter, SampleResponseDataTable $sampleResponse, Request $request)
+    public function responseRateSample($project_id, $filter, $type='first', SampleResponseDataTable $sampleResponse, Request $request)
     {
         $project = $this->projectRepository->findWithoutFail($project_id);
         if (empty($project)) {
@@ -461,9 +479,13 @@ class SurveyResultsController extends AppBaseController
                 break;
         }
 
+        if($type != 'first') {
+            $sampleResponse->setType($type);
+        }
+
         $section_num = $request->input('section');
 
-        if ($section_num) {
+        if ($section_num !== false) {
             $sampleResponse->setSection($section_num);
         }
 
@@ -595,23 +617,32 @@ class SurveyResultsController extends AppBaseController
         }
         $project->load(['inputs']);
 
-        $sample_query = 'project_id, count(project_id) as total, SUM(IF(' . $project->dbname . '.sample_id IS NOT NULL,1,0)) AS reported';
 
+        $sample_query = 'project_id, count(project_id) as total';
+        $reported = [];
         foreach ($project->inputs as $input) {
-            if ($input->value) {
-                $sample_query .= ' , SUM(IF(' . $input->inputid . '=' . $input->value . ',1,0)) AS ' . $input->inputid . '_' . $input->value . ' , SUM(IF(' . $input->inputid . ' IS NULL,1,0)) AS q' . $input->question->qnum . '_none';
+            if (is_numeric($input->value)) {
+                $sample_query .= ' , SUM(IF(' . $input->inputid . '=' . $input->value . ',1,0)) AS ' . $input->inputid . '_' . $input->value . ' ,';
+                $sample_query .= 'SUM(IF(' . $input->inputid . ' IS NULL OR ' .$input->inputid. ' = 0,1,0)) AS q' . $input->question->qnum . '_none';
+                $reported[$input->inputid] = 'SUM(IF(' . $input->inputid . ',1,0)) AS '.strtolower($input->question->qnum).'_reported';
             }
         }
-        $query = DB::table('samples')->select(DB::raw($sample_query));
+
+        $reported = implode(' , ', $reported);
+
+
+        $query = DB::table('samples')->select(DB::raw($sample_query), DB::raw($reported));
         $query->where('project_id', $project->id);
-        $query->leftjoin($project->dbname, $project->dbname . '.sample_id', '=', 'samples.id');
+        foreach($project->sections as $section) {
+            $query->leftjoin($project->dbname.'_s'.$section->sort. ' AS pj_s'.$section->sort, 'pj_s'.$section->sort.'.sample_id', '=', 'samples.id');
+        }
         $query->groupBy('project_id');
-        $results_count = $query->first();
+        $results = $query->first();
 
         return view('projects.analysis')
             ->with('project', $project)
             ->with('questions', $project->questions)
-            ->with('results', $results_count);
+            ->with('results', $results);
     }
 
     private function zawgyiUnicode(&$value, $key)

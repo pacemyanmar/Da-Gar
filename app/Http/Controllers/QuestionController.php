@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\AppBaseController;
 use App\Http\Requests\CreateQuestionRequest;
 use App\Http\Requests\UpdateQuestionRequest;
+use App\Models\Question;
 use App\Repositories\ProjectRepository;
 use App\Repositories\QuestionRepository;
 use App\Repositories\SurveyInputRepository;
@@ -54,6 +55,15 @@ class QuestionController extends AppBaseController
         if (!empty($section)) {
             $input['double_entry'] = (isset($section['double'])) ? $section['double'] : false;
         }
+
+        $unique = uniqid();
+        $short_unique = substr($unique, 0, 3);
+
+        if(!$request->input('qnum') && $request->input('layout') == 'description') {
+            $input['qnum'] = 'desc_'.$short_unique;
+        }
+
+
         $input['css_id'] = str_slug('qnum' . $input['qnum']);
 
         // $lang = config('app.fallback_locale');
@@ -62,7 +72,7 @@ class QuestionController extends AppBaseController
 
         // $input['question_trans'] = json_encode([$lang => $input['question']]);
 
-        $question = $this->questionRepository->create($input);
+        $question = Question::create($input);
 
         $args = [
             'project' => $project,
@@ -77,7 +87,7 @@ class QuestionController extends AppBaseController
 
         $question->surveyInputs()->saveMany($inputs);
 
-        if (Schema::hasTable($project->dbname)) {
+        if ($request->input('qnum') && $project->status == 'published') {
             $project->status = 'modified';
             $project->save();
         }
@@ -117,6 +127,14 @@ class QuestionController extends AppBaseController
         if (!empty($section)) {
             $form_input['double_entry'] = (isset($section['double'])) ? $section['double'] : $double_entry;
         }
+
+
+        $short_unique = time();
+
+        if(!$request->input('qnum') && $request->input('layout') == 'description') {
+            $form_input['qnum'] = 'desc_'.$short_unique;
+        }
+
         $form_input['css_id'] = str_slug('qnum' . $form_input['qnum']);
 
         $form_input['raw_ans'] = str_replace("'", "&#39;", $form_input['raw_ans']);
@@ -157,7 +175,7 @@ class QuestionController extends AppBaseController
             $new_question->surveyInputs()->saveMany($inputs);
 
             $project = $new_question->project;
-            if (Schema::hasTable($project->dbname)) {
+            if ($request->input('qnum') && $project->status == 'published') {
                 $project->status = 'modified';
                 $project->save();
             }

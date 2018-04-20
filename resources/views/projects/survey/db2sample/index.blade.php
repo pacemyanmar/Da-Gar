@@ -59,8 +59,8 @@
     <script type="text/javascript">
         (function($) {
             table = window.LaravelDataTables["dataTableBuilder"];
-            window.locations = {!! json_encode($locations) !!};
-            console.log(locations);
+            window.locations = '';
+
             table.columns([{!! $selectCols !!}]).every( function ( colIdx ) {
                 var column = this;
                 var columnName = {!! json_encode(array_flip($columnName)) !!};

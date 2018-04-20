@@ -1,16 +1,19 @@
 
-window._ = require('lodash');
+window._ = global._ = require('lodash');
+let d3 = require("d3");
 
 /**
  * We'll load jQuery and the Bootstrap jQuery plugin which provides support
  * for JavaScript based Bootstrap features such as modals and tabs. This
  * code may be modified to fit the specific needs of your application.
  */
-import $ from 'jquery';
+window.$ = window.jQuery = global.jQuery = global.$ = require('jquery');
 try {
-    window.jQuery = $;
-    window.$ = $;
-    global.jQuery = $;
+
+    require('jquery-ui');
+    require('jquery-ui-sortable');
+
+    require('./tooltip-conflict');
 
     require('bootstrap-sass');
 
@@ -20,34 +23,41 @@ try {
      * and simple, leaving you to focus on building your next great project.
      */
 
-    window.Vue = require('vue');
 
-
-    require('select2');
-    require('select2/dist/js/i18n/en');
-
-    require('formBuilder');
-    require('formBuilder/dist/form-render.min')
 
     /**
      * Require datatables library
      */
     require('datatables.net');
     require('datatables.net-bs');
+
     require('datatables.net-buttons');
-    require('datatables.net-buttons-bs');
-    require( 'datatables.net-buttons/js/buttons.colVis' );
-    require( './plugins/buttons.server-side');
-    require('./buttons.server-side-post');
-
-
-    window.moment = require('moment');
 
     require('gasparesganga-jquery-loading-overlay');
-    window.hyperform = require('hyperform').default;
+    //require( './plugins/buttons.server-side');
+    // require('./buttons.server-side-post');
+    require('datatables.net-buttons-bs');
+    require( 'datatables.net-buttons/js/buttons.colVis' );
+    require( 'datatables.net-responsive' );
+
+
+
+    window.moment = global.moment = require('moment');
+
+
+
+    require('select2');
+    require('select2/dist/js/i18n/en');
+
     require('admin-lte');
-    require('jquery-ui');
-    require('jquery-ui-sortable')
+
+    global.hyperform = window.hyperform = require('hyperform');
+
+    require('jquery-datetimepicker');
+
+    require('formBuilder');
+    require('formBuilder/dist/form-render.min');
+
 
 } catch (e) {}
 
@@ -60,6 +70,7 @@ try {
 window.axios = require('axios');
 
 window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+
 
 /**
  * Next we will register the CSRF Token as a common header with Axios so that

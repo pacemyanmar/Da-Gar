@@ -4,7 +4,8 @@
     <section class="content-header">
         <h1 class="pull-left">Questions</h1>
         <h1 class="pull-right">
-           <a class="btn btn-primary pull-right" style="margin-top: -10px;margin-bottom: 5px" href="{!! route('questions.create') !!}">{!! trans('messages.add_new') !!}</a>
+            <a class="btn btn-primary pull-right" style="margin-top: -10px;margin-bottom: 5px"
+               href="{!! route('questions.create') !!}">{!! trans('messages.add_new') !!}</a>
         </h1>
     </section>
     <div class="content">
@@ -15,7 +16,7 @@
         <div class="clearfix"></div>
         <div class="box box-primary">
             <div class="box-body">
-                    @include('questions.table')
+                @include('questions.table')
             </div>
         </div>
     </div>
