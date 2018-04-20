@@ -39,3 +39,7 @@
 
 
 
+<li class="{{ Request::is('locationMetas*') ? 'active' : '' }}">
+    <a href="{!! route('locationMetas.index') !!}"><i class="fa fa-edit"></i><span>Location Metas</span></a>
+</li>
+

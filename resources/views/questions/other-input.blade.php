@@ -18,13 +18,7 @@
             $options['placeholder'] .= $element->extras['min'].' - '. $element->extras['max'];
     }
 @endphp
-@push("before-head-end")
-    <style>
-        input[type=date]::-webkit-inner-spin-button, input[type=date]::-webkit-calendar-picker-indicator {
-            display: none;
-        }
-    </style>
-@endpush
+
 <div class="form-group">
     <div class="input-group">
         <!-- if string long to show in label show as tooltip -->
@@ -41,13 +35,19 @@
             @endif
             @if($element->status != 'published') <span
                     class="label label-warning badge">{!! $element->status !!}</span> @endif
-            @if(isset($double) && $double && isset($results) && !empty($results['section'.$section->sort]) && isset($double_results) && !empty($double_results['section'.$section->sort]))
-                @if($double_results['section'.$section->sort]->{$element->inputid} == $results['section'.$section->sort]->{$element->inputid})
-                    <span class="label label-success badge"><i class="fa fa-check"></i></span>
-                @else
-                    <span class="label label-danger badge"><i class="fa fa-close"></i></span>
+                @if(isset($double))
+                    @if(isset($results) && !empty($results['section'.$section->sort]) && isset($double_results) && !empty($double_results['section'.$section->sort]))
+                        @if($double_results['section'.$section->sort]->{$element->inputid} == $results['section'.$section->sort]->{$element->inputid})
+                            <span class="label label-success badge"><i class="fa fa-check"></i></span>
+                        @else
+                            <span class="label label-danger badge"><i class="fa fa-close"></i></span>
+                        @endif
+                    @elseif( isset($results) && !empty($results['section'.$section->sort]) )
+                        <span class="label label-warn badge"><i class="fa fa-question"></i> No 2nd</span>
+                    @elseif( isset($double_results) && !empty($double_results['section'.$section->sort]) )
+                        <span class="label label-warn badge"><i class="fa fa-question"></i> No 1st</span>
+                    @endif
                 @endif
-            @endif
     		</span>
         {!! Form::input($element->type,"result[".$element->inputid."]", (isset($results) && !empty($results['section'.$section->sort]))?Kanaung\Facades\Converter::convert($results['section'.$section->sort]->{$element->inputid},'unicode','zawgyi'):null, $options) !!}
     </div>

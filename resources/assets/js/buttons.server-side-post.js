@@ -72,7 +72,7 @@
     };
 
     // Export post excel button
-    DataTable.ext.buttons.exportPostExcel = {
+    DataTable.ext.buttons.excelp = {
         className: 'buttons-excel',
 
         text: function (dt) {
@@ -89,7 +89,7 @@
 
 
     // Export post csv button
-    DataTable.ext.buttons.exportPostCsv = {
+    DataTable.ext.buttons.csvp = {
         className: 'buttons-csv',
 
         text: function (dt) {
@@ -106,7 +106,7 @@
 
 
     // Export post pdf button
-    DataTable.ext.buttons.exportPostPdf = {
+    DataTable.ext.buttons.pdfp = {
         className: 'buttons-pdf',
 
         text: function (dt) {
@@ -120,6 +120,6 @@
             _downloadFromUrl(url, params);
         }
     };
-
+    return DataTable.Buttons;
 
 })(jQuery, jQuery.fn.dataTable);

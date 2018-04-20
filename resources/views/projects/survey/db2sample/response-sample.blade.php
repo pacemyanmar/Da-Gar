@@ -4,7 +4,7 @@
 @endsection
 @section('content')
     <section class="content-header">
-        <h1 class="pull-left">Projects Sample Response Rate</h1>
+        <h1 class="pull-left">{!! (request()->is('*double*'))?'Double Entry':'Samples' !!} Response Rate</h1>
         <span class="pull-right">
         <label>Response rate by:
            <select autocomplete="off" id="responseBy" class="form-control input-md">
@@ -30,7 +30,7 @@
             <div class="box-body">
                <a href="{{ url()->current() }}" class="btn btn-default">All</a>
               @foreach($project->sections as $key => $section)
-                <a href="{{ url()->current() }}/?section={{ $key + 1 }}" class="btn btn-default">{{$section->sectionname}}</a>
+                <a href="{{ url()->current() }}/?section={{ $section->sort + 1 }}" class="btn btn-default">{{$section->sectionname}}</a>
               @endforeach
             </div>
         </div>

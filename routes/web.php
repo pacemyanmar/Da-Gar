@@ -29,7 +29,7 @@ Auth::routes();
 Route::get('/home', 'HomeController@index');
 
 Route::group(['prefix' => 'projects/{project}'], function () {
-    Route::match(['get', 'post'], '/response/{filter}', ['as' => 'projects.response.filter', 'uses' => 'SurveyResultsController@responseRateSample']);
+    Route::match(['get', 'post'], '/response/{filter}/{type?}', ['as' => 'projects.response.filter', 'uses' => 'SurveyResultsController@responseRateSample']);
     Route::match(['get', 'post'], '/double', ['as' => 'projects.response.double', 'uses' => 'SurveyResultsController@responseRateDouble']);
     Route::match(['get', 'post'], '/useorigin/{survey_id}/{column}', ['as' => 'projects.response.origin.use', 'uses' => 'SurveyResultsController@originUse']);
     Route::match(['get', 'post'], '/usedouble/{survey_id}/{column}', ['as' => 'projects.response.double.use', 'uses' => 'SurveyResultsController@doubleUse']);
@@ -39,8 +39,10 @@ Route::group(['prefix' => 'projects/{project}'], function () {
     Route::get('/smslog', ['as' => 'projects.smslog', 'uses' => 'ProjectController@smslog']);
     Route::get('/export', ['as' => 'projects.export', 'uses' => 'ProjectController@export']);
     Route::post('/import', ['as' => 'projects.import', 'uses' => 'ProjectController@import']);
+    Route::get('/create-views', ['as' => 'projects.createviews', 'uses' => 'ProjectController@createAllViews']);
     Route::post('/trainingmode', ['as' => 'projects.trainingmode', 'uses' => 'ProjectController@trainingmode']);
     Route::post('/addlogic', ['as' => 'projects.logic', 'uses' => 'ProjectController@addLogic']);
+    Route::post('/upload', ['as' => 'projects.upload.samples', 'uses' => 'ProjectController@uploadSamples']);
     Route::match(['get','post'],'/getcsv', ['as' => 'projects.getcsv', 'uses' => 'API\SmsAPIController@getcsv']);
 });
 
@@ -103,3 +105,5 @@ Route::resource('projectPhones', 'ProjectPhoneController');
 Route::resource('observers', 'ObserverController');
 
 Route::resource('logicalChecks', 'LogicalCheckController');
+
+Route::resource('locationMetas', 'LocationMetaController');

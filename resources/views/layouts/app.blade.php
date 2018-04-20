@@ -34,7 +34,7 @@
             <!-- Header Navbar -->
             <nav class="navbar navbar-static-top" role="navigation">
                 <!-- Sidebar toggle button-->
-                <a href="#" class="sidebar-toggle" data-toggle="offcanvas" role="button">
+                <a href="#" class="sidebar-toggle" data-toggle="push-menu" role="button">
                     <span class="sr-only">Toggle navigation</span>
                 </a>
                 <!-- Navbar Right Menu -->
@@ -148,6 +148,7 @@
     <!-- Combined vendor js -->
     <script src="{{ mix('/js/manifest.js') }}"></script>
     <script src="{{ mix('/js/vendor.js') }}"></script>
+
     <script type="text/javascript">
         @if(\App::getLocale() == 'mm')
 
@@ -166,12 +167,16 @@
 
     <script type="text/javascript">
     var ajaxoverlay = true;
+
     (function($) {
         @stack('document-ready');
     })(jQuery);
     if(ajaxoverlay) {
         $(document).ajaxStart(function(){
             $.LoadingOverlay("show");
+        });
+        $(document).ajaxError(function(){
+            $.LoadingOverlay("hide");
         });
         $(document).ajaxStop(function(){
             $.LoadingOverlay("hide");
@@ -182,5 +187,7 @@
      @stack('d3-js')
     </script>
      @stack('before-body-end')
+    <script src="{{ mix('/js/formbuilder.js') }}"></script>
+    @yield('formbuilder')
 </body>
 </html>

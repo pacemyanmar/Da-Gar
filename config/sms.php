@@ -13,6 +13,7 @@ return [
         'locale' => 'my'
     ],
     'double_entry' => true,
+    'collapse' => true,
     'allowedip' => [
         '172.20.0.1',
         '172.16.16.61',

@@ -3,31 +3,39 @@ namespace App\Traits;
 
 use App\Models\Project;
 use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Auth;
 
 trait SurveyQueryTrait {
+
+    private $type;
 
     protected $sample_select = [
         'samples_id' => 'samples.id as samples_id',
         'form_id' => 'samples.form_id',
-        'location_code' => 'sample_datas_view.location_code',
-        'ps_code' => 'sample_datas_view.ps_code',
-        'type' => 'sample_datas_view.type',
-        'dbgroup' => 'sample_datas_view.dbgroup',
-        'sample' => 'sample_datas_view.sample',
-        'area_type' => 'sample_datas_view.area_type',
-        'level1' => 'sample_datas_view.level1',
-        'level1_trans' => 'sample_datas_view.level1_trans',
-        'level2' => 'sample_datas_view.level2',
-        'level2_trans' => 'sample_datas_view.level2_trans',
-        'level3' => 'sample_datas_view.level3',
-        'level3_trans' => 'sample_datas_view.level3_trans',
-        'level4' => 'sample_datas_view.level4',
-        'level4_trans' => 'sample_datas_view.level4_trans',
-        'level5' => 'sample_datas_view.level5',
-        'level5_trans' => 'sample_datas_view.level5_trans',
-        'parties' => 'sample_datas_view.parties',
-        'user_id' => 'user.name',
-        'observer_name' => 'sample_datas_view.full_name',
+        'location_code' => 'sdv.location_code',
+        //'ps_code' => 'sdv.ps_code',
+        'type' => 'sdv.type',
+        'dbgroup' => 'sdv.dbgroup',
+        'sample' => 'sdv.sample',
+        'area_type' => 'sdv.area_type',
+        'sample_area_type' => 'sdv.sample_area_type',
+        'sample_area_name' => 'sdv.sample_area_name',
+        'level1' => 'sdv.level1',
+        //'level1_trans' => 'sdv.level1_trans',
+        'level2' => 'sdv.level2',
+        //'level2_trans' => 'sdv.level2_trans',
+        'level3' => 'sdv.level3',
+        //'level3_trans' => 'sdv.level3_trans',
+        'level4' => 'sdv.level4',
+        'ward' => 'sdv.ward',
+        //'level4_trans' => 'sdv.level4_trans',
+        'level5' => 'sdv.level5',
+        //'level5_trans' => 'sdv.level5_trans',
+        //'parties' => 'sdv.parties',
+        'user_id' => 'user.name AS username',
+        'update_user_id' => 'update_user.name AS updateuser',
+        'qc_user_id' => 'qc_user.name AS qcuser',
+        'observer_name' => 'sdv.full_name',
 
 
     ];
@@ -77,34 +85,41 @@ trait SurveyQueryTrait {
         return $this;
     }
 
-    public function getSelectColumns() {
+    public function getSelectColumns($inputs = true) {
 
         $sample_columns = array_column($this->makeSampleColumns(), 'name');
 
         $section_columns = array_column($this->makeSectionColumns(),'name');
 
-        $input_columns = $this->makeInputsColumns();
+        $extras_columns = array_column($this->makeExtrasColumns(), 'name');
 
-        array_walk($input_columns, function (&$column, $column_name) {
-            $old_column = $column;
-            if(array_key_exists('type', $old_column)) {
-                switch ($old_column['type']) {
-                    case 'checkbox':
-                        $column = 'IF(' . $old_column['name'] . ',1,IFNULL('.$old_column['name'].',NULL)) AS ' . $column_name;
-                        break;
-                    case 'double_entry':
-                        $column = 'IF(' . $old_column['name']. ' = ' . $old_column['origin_name']. ', 1, 0) AS ' . $column_name;
-                        break;
-                    default:
-                        $column = $old_column['name'];
-                        break;
+        if($inputs) {
+            $input_columns = $this->makeInputsColumns();
+
+            array_walk($input_columns, function (&$column, $column_name) {
+                $old_column = $column;
+                if(array_key_exists('type', $old_column)) {
+                    switch ($old_column['type']) {
+                        case 'checkbox':
+                            $column = 'IF(' . $old_column['name'] . ',1,IFNULL('.$old_column['name'].',NULL)) AS ' . $column_name;
+                            break;
+                        case 'double_entry':
+                            $column = 'IF(' . $old_column['name']. ' = ' . $old_column['origin_name']. ', 1, 0) AS ' . $column_name;
+                            break;
+                        default:
+                            $column = $old_column['name'];
+                            break;
+                    }
+                } else {
+                    $column = $old_column['name'];
                 }
-            } else {
-                $column = $old_column['name'];
-            }
-        });
+            });
 
-        return array_merge($sample_columns, $section_columns, array_values($input_columns));
+            return array_merge($sample_columns, $section_columns, $extras_columns, array_values($input_columns));
+        } else {
+            return array_merge($sample_columns, $section_columns, $extras_columns);
+        }
+
     }
 
 
@@ -112,16 +127,27 @@ trait SurveyQueryTrait {
 
     }
 
-    public function getDatatablesColumns() {
-        return array_merge($this->makeSampleColumns(), $this->makeSectionColumns(), $this->makeInputsColumns());
+    public function getDatatablesColumns($inputs = true) {
+        if($inputs) {
+            return array_merge($this->makeSampleColumns(), $this->makeExtrasColumns(), $this->makeSectionColumns(), $this->makeInputsColumns());
+        } else {
+            return array_merge($this->makeSampleColumns(), $this->makeExtrasColumns(), $this->makeSectionColumns());
+        }
     }
 
-    public function makeSectionColumns() {
+    public function makeSectionColumns()
+    {
+        $auth = Auth::user();
         $sections = $this->project->sections->sortBy('sort');
         $section_columns = [];
         foreach ($sections as $k => $section) {
             $section_num = $section->sort;
-            $base_dbname = $this->dbname .'_section'.$section_num;
+            if($auth->role->role_name == 'doublechecker' || $this->type == 'double') {
+                $base_dbname = 'pj_s'.$section_num.'_dbl';
+            } else {
+                $base_dbname = 'pj_s'.$section_num;
+            }
+
             $sectionColumn = 'section' . $section_num . 'status';
             $sectionname = $section['sectionname'];
             $sectionshort = 'R' . ($section_num + 1) . '';
@@ -135,7 +161,7 @@ trait SurveyQueryTrait {
                 'name' => $base_dbname . '.' . $sectionColumn,
                 'data' => $sectionColumn,
                 'orderable' => false,
-                'searchable' => false,
+                'searchable' => true,
                 'width' => '40px',
                 'render' => function () {
                     return "function(data,type,full,meta){
@@ -165,17 +191,42 @@ trait SurveyQueryTrait {
         return $section_columns;
     }
 
+    public function makeExtrasColumns() {
+        $sections = $this->project->sections->sortBy('sort');
+        $extras_columns = [];
+        $update_user = [];
+        foreach ($sections as $k => $section) {
+            $section_num = $section->sort;
+            $base_dbname = 'pj_s'.$section_num;
+            $sectionshort = ' R' . ($section_num + 1) . ' ';
+            $update_user[] = 'IF('.$base_dbname.'.update_user_id, "'.$sectionshort.'","")';
+        }
+
+        $query = 'CONCAT('.implode(',',$update_user).') AS corrected_sections';
+        $extras_columns['corrected_sections'] = [
+            'name' => $query,
+            'data' => 'corrected_sections',
+            'orderable' => false,
+            'searchable' => true,
+            'width' => '40px',
+            'title' => 'Corrected Sections',
+        ];
+        return $extras_columns;
+    }
+
     public function makeSampleColumns() {
         // get application current locale
         $locale = App::getLocale();
+
+        $auth = Auth::user();
 
         $columns = [];
         foreach($this->sample_select as $column => $dbcolumn) {
             switch ($column) {
                 case 'user_id':
                     $columns['user_id'] = [
-                        'name' => 'user.name',
-                        'data' => 'username',
+                        'name' => 'user.code AS usercode',
+                        'data' => 'usercode',
                         'title' => trans('messages.user'),
                         'orderable' => false,
                         'defaultContent' => 'N/A',
@@ -183,9 +234,31 @@ trait SurveyQueryTrait {
                         'width' => '80px',
                     ];
                     break;
+                case 'update_user_id':
+                    $columns['update_user_id'] = [
+                        'name' => 'update_user.code AS updateuser',
+                        'data' => 'updateuser',
+                        'title' => 'Corrector',
+                        'orderable' => false,
+                        'defaultContent' => 'N/A',
+                        'visible' => false,
+                        'width' => '80px',
+                    ];
+                    break;
+                case 'qc_user_id':
+                    $columns['qc_user_id'] = [
+                        'name' => 'qc_user.code AS qcuser',
+                        'data' => 'qcuser',
+                        'title' => 'Double Checker',
+                        'orderable' => false,
+                        'defaultContent' => 'N/A',
+                        'visible' => ($auth->role->role_name == 'doublechecker')?true:false,
+                        'width' => '80px',
+                    ];
+                    break;
                 case 'observer_name':
                     $columns['full_name'] = [
-                        'name' => 'sample_datas_view.full_name',
+                        'name' => 'sdv.full_name',
                         'data' => 'full_name',
                         'title' => trans('sample.observer_id'),
                         'orderable' => false,
@@ -212,13 +285,26 @@ trait SurveyQueryTrait {
                     ];
                     break;
                 case 'location_code':
+                case 'ps_code':
+                case 'parties':
                     $columns[$column] = [
-                        'name' => 'sample_datas_view.'.$column,
+                        'name' => 'sdv.'.$column,
                         'data' => $column,
                         'title' => trans('sample.'.$column),
                         'orderable' => false,
                         'defaultContent' => 'N/A',
-                        'visible' => false,
+                        'visible' => (config('samples.locations.'.$column.'.show'))?config('samples.locations.'.$column.'.show'):false,
+                        'width' => '90px',
+                    ];
+                    break;
+                case 'form_id':
+                    $columns[$column] = [
+                        'name' => 'samples.form_id',
+                        'data' => $column,
+                        'title' => trans('sample.'.$column),
+                        'orderable' => false,
+                        'defaultContent' => 'N/A',
+                        'visible' => true,
                         'width' => '90px',
                     ];
                     break;
@@ -226,18 +312,20 @@ trait SurveyQueryTrait {
                 case 'incident_center':
                 case 'sms_time':
                 case 'observer_field':
+                //case 'type':
                     $columns[$column] = [
-                        'name' => 'sample_datas_view.'.$column,
+                        'name' => 'sdv.'.$column,
                         'data' => $column,
                         'title' => trans('sample.'.$column),
                         'orderable' => false,
                         'defaultContent' => 'N/A',
                         'width' => '90px',
+                        'visible' => false,
                     ];
                     break;
                 case 'mobile':
                     $columns['phone_1'] = [
-                        'name' => 'sample_datas_view.phone_1',
+                        'name' => 'sdv.phone_1',
                         'data' => 'phone_1',
                         'title' => trans('messages.mobile'),
                         'orderable' => false,
@@ -247,7 +335,7 @@ trait SurveyQueryTrait {
                     break;
                 case 'sms_primary':
                     $columns[$column] = [
-                        'name' => 'sample_datas_view.'.$column,
+                        'name' => 'sdv.'.$column,
                         'data' => $column,
                         'title' => trans('sample.'.$column),
                         'orderable' => false,
@@ -257,12 +345,16 @@ trait SurveyQueryTrait {
                     ];
                     break;
                 case 'level1':
+                case 'level2':
                 case 'level3':
+                case 'level4':
+                case 'level5':
                     $columns[$column] = [
-                        'name' => 'sample_datas_view.'.$column,
+                        'name' => 'sdv.'.$column,
                         'data' => $column,
                         'title' => trans('sample.'.$column),
                         'orderable' => false,
+                        'visible' => (config('samples.locations.'.$column.'.show'))?config('samples.locations.'.$column.'.show'):false,
                         'defaultContent' => 'N/A',
                         'width' => '90px',
                         'render' => function () use ($locale, $column) {
@@ -283,6 +375,17 @@ trait SurveyQueryTrait {
                                     return html;
                                 }";
                         },
+                    ];
+                    break;
+                case 'sample_id':
+                    $columns['sample_id'] = [
+                        'name' => $dbcolumn,
+                        'data' => $column,
+                        'title' => trans('messages.' . strtolower($column)),
+                        'orderable' => false,
+                        'visible' => false,
+                        'width' => '120px',
+                        'exportable' => false
                     ];
                     break;
                 default:
@@ -318,8 +421,12 @@ trait SurveyQueryTrait {
             foreach($inputs as $input) {
                 $column = $input->inputid;
 
-                //$title = preg_replace('/s[0-9]+|ir/', '', $column);
-                //$title = strtoupper(preg_replace('/i/', '_', $title));
+                if($this->type == 'double') {
+                    $base_dbname = 'pj_s'.$section_num.'_dbl';
+                } else {
+                    $base_dbname = 'pj_s'.$section_num;
+                }
+
                 switch ($input->type) {
                     case 'radio':
                         $title = $question->qnum;
@@ -339,18 +446,27 @@ trait SurveyQueryTrait {
                         break;
                 }
 
-                $base_dbname = $this->dbname .'_section'.$section_num;
-
                 $input_columns[$column] = [
                     'name' => $base_dbname. '.' . $column,
-                    'data' => $column, 'title' => $title,
+                    'data' => $column, 'title' => strtoupper($title),
                     'class' => 'result', 'orderable' => false,
                     'width' => '80px', 'type' => $input->type
                 ];
+
+                if($input->other) {
+                    $input_columns[$column.'_other'] = [
+                        'name' => $base_dbname. '.' . $column.'_other',
+                        'data' => $column.'_other', 'title' => strtoupper($title). ' Other',
+                        'class' => 'result', 'orderable' => false,
+                        'visible' => false,
+                        'width' => '80px', 'type' => 'text'
+                    ];
+                }
+
                 if(config('sms.double_entry')) {
-                    $input_columns[$column . '_status'] = [
+                    $input_columns[$column . '_dstatus'] = [
                         'name' => $base_dbname. '_dbl' . '.' . $column,
-                        'data' => $column . '_status', 'title' => $title . '_status',
+                        'data' => $column . '_dstatus', 'title' => strtoupper($title) . ' Matched',
                         'orderable' => false, 'visible' => false,
                         'type' => 'double_entry',
                         'origin_name' => $base_dbname. '.' . $column

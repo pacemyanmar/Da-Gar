@@ -3,6 +3,7 @@
 namespace App\DataTables;
 
 use App\Models\Sample;
+use App\Traits\CsvExportTrait;
 use App\Traits\SurveyQueryTrait;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -12,7 +13,9 @@ use Yajra\DataTables\Services\DataTable;
 
 class SurveyResultsDataTable extends DataTable
 {
-    use SurveyQueryTrait;
+    use SurveyQueryTrait, CsvExportTrait;
+
+    protected $filterColumns;
 
     /**
      * Display ajax response.
@@ -30,6 +33,25 @@ class SurveyResultsDataTable extends DataTable
             ->addColumn('project_id', $this->project->id)
             ->addColumn('action', 'projects.sample_datatables_actions');
         $table->escapeColumns(['action']);
+
+        $filterColumns = $this->filterColumns;
+        $sectionColumns = $this->makeSectionColumns();
+
+        foreach ($filterColumns as $index => $column) {
+            $columnName = $column['name'];
+            $value = $column['search']['value'];
+
+            if (in_array($column['data'], array_keys($sectionColumns)) && $value != '') {
+
+                $table->filterColumn($columnName, function($query, $keyword) use ($columnName) {
+                    if($keyword) {
+                        $query->where($columnName, '=', $keyword);
+                    } else {
+                        $query->where($columnName, '=', $keyword)->orWhereNull($columnName);
+                    }
+                });
+            }
+        }
 
         //$table->orderColumn($orderBy, DB::raw('LENGTH(' . $orderBy . ')') . " $1");
 
@@ -59,14 +81,20 @@ class SurveyResultsDataTable extends DataTable
 
         $childTable = $project->dbname;
 
-        $selectColumns = implode(',', $this->getSelectColumns());
+        if($auth->role->level >= 5) {
+            $selectColumns = implode(',', $this->getSelectColumns());
+        } else {
+            $selectColumns = implode(',', $this->getSelectColumns(false));
+        }
+
+
 
         //$count = sizeof($unique_inputs);
         // run query
         $query = Sample::query();
-        if ($auth->role->role_name == 'doublechecker') {
-            $query->whereRaw(DB::raw('(samples.qc_user_id is null or samples.qc_user_id = ' . $auth->id . ')'));
-        }
+//        if ($auth->role->role_name == 'doublechecker') {
+//            $query->whereRaw(DB::raw('(samples.qc_user_id is null or samples.qc_user_id = ' . $auth->id . ')'));
+//        }
         // if ($auth->role->role_name == 'entryclerk') {
         //     $query->whereRaw(DB::raw('(samples.user_id is null or samples.user_id = ' . $auth->id . ')'));
         // }
@@ -82,16 +110,21 @@ class SurveyResultsDataTable extends DataTable
         if ($this->project->status != 'new') {
             $query->select(DB::raw($selectColumns));
             // join with samplable database (voters, enumerators)
-            $query->leftjoin('sample_datas_view', function ($join) use ($project) {
-                $join->on('samples.sample_data_id', 'sample_datas_view.id')->where('samples.project_id', $project->id);
+            $query->leftjoin('sample_datas_view AS sdv', function ($join) use ($project) {
+                $join->on('samples.sample_data_id', 'sdv.id')->where('samples.project_id', $project->id);
             });
+
+            $section_filter = Request::input('section');
+
+            $status = Request::input('status');
 
             // loop sections
             foreach ($project->sections as $k => $section) {
                 if (config('sms.double_entry')) {
-                    $dbl_section_table = $childTable . '_section' . $section->sort . '_dbl';
-                    $query->leftjoin($dbl_section_table, function ($join) use ($dbl_section_table) {
-                        $join->on('samples.id', '=', $dbl_section_table . '.sample_id');
+                    $dbl_section_table = $childTable . '_s' . $section->sort . '_dbl';
+                    $dbl_short = 'pj_s'.$section->sort.'_dbl';
+                    $query->leftjoin($dbl_section_table. ' AS '.$dbl_short, function ($join) use ($dbl_short) {
+                        $join->on('samples.id', '=', $dbl_short . '.sample_id');
                     });
 
                     if ($auth->role->role_name == 'doublechecker') {
@@ -101,36 +134,31 @@ class SurveyResultsDataTable extends DataTable
                 }
                 // join with result database
 
-                $section_table = $childTable . '_section' . $section->sort;
-                $query->{$joinMethod}($section_table, function ($join) use ($section_table) {
-                    $join->on('samples.id', '=', $section_table . '.sample_id');
+                $section_table = $childTable . '_s' . $section->sort;
+                $sect_short = 'pj_s'.$section->sort;
+                $query->{$joinMethod}($section_table.' AS '.$sect_short, function ($join) use ($sect_short) {
+                    $join->on('samples.id', '=', $sect_short . '.sample_id');
                 });
 
 
-
-            }
-
-        }
-
-        $filterColumns = Request::get('columns', []);
-
-        $sectionColumns = $this->makeSectionColumns();
-
-        foreach ($filterColumns as $index => $column) {
-            if (in_array($filterColumns[$index]['name'], $sectionColumns) && $filterColumns[$index]['search']['value'] != '') {
-
-                $columnName = $filterColumns[$index]['name'];
-                $value = $filterColumns[$index]['search']['value'];
-
-                if ($value) {
-                    $query->where($columnName, '=', $value);
-                } else {
-                    $query->where(function ($where) use ($columnName, $value) {
-                        $where->where($columnName, '=', $value)->orWhereNull($columnName);
-                    });
+                if ($section_filter != '' && $section_filter == $section->sort) {
+                    $section_status = 'section'. $section_filter .'status';
+                    if ($status) {
+                        $query->where($sect_short . '.' . $section_status .'', $status);
+                    } else {
+                        $query->where(function ($q) use ($sect_short, $section_status, $status) {
+                            $q->whereNull($sect_short . '.' . $section_status)
+                                ->orWhere($sect_short . '.' . $section_status, $status);
+                        });
+                    }
                 }
+
             }
+
         }
+
+        $this->filterColumns = Request::get('columns', []);
+
 
         $query->where('project_id', $project->id);
         $dataclerk = Request::input('user');
@@ -162,79 +190,50 @@ class SurveyResultsDataTable extends DataTable
             $query->where('level1', $state);
         }
 
-        $total = Request::input('total');
+        $total = Request::input('totalstatus');
         if ($total) {
-            $query->where(function ($q) use ($sectionColumns) {
+            $sectionColumns = $project->sections;
+            switch ($total) {
+                case 'complete':
+                    $status = 1;
+                    break;
+                case 'incomplete':
+                    $status = 2;
+                    break;
+                case 'missing':
+                    $status = 0;
+                    break;
+                case 'incorrect':
+                    $status = 3;
+                    break;
+                default:
+                    $status = null;
+                    break;
+            }
+            $query->where(function ($q) use ($sectionColumns, $status) {
                 foreach ($sectionColumns as $section) {
-                    $q->whereNotNull($section)->orWhere($section, '<>', 0);
+                    $sectionStatus = 'section'.$section->sort.'status';
+                    $sect_short = 'pj_s'.$section->sort;
+                    if($status === 1) {
+                        $q->where($sect_short.'.'.$sectionStatus, '=', $status);
+                    } elseif($status !== 0 && $status !== null) {
+                        $q->orWhere($sect_short.'.'.$sectionStatus, '=', $status);
+                    } else {
+                        $q->orWhereNull($sect_short.'.'.$sectionStatus)->orWhere($sect_short.'.'.$sectionStatus, '=', 0);
+                    }
+
                 }
 
             });
         }
 
-        $section = Request::input('section');
-
-        $status = Request::input('status');
-
-        $totalstatus = Request::input('totalstatus');
-
-        if ($totalstatus) {
-            $tsvar = explode('_', $totalstatus);
-            if (count($tsvar) == 2) {
-                foreach ($tsvar as $var) {
-                    switch ($var) {
-                        case 'missing':
-                            $status = 0;
-                            break;
-                        case 'complete':
-                            $status = 1;
-                            break;
-                        case 'incomplete':
-                            $status = 2;
-                            break;
-                        case 'error':
-                            $status = 3;
-                            break;
-
-                        default:
-                            $section = $var;
-                            break;
-                    }
-                }
-            }
-        }
-
-        if (!empty($section)) {
-            // if (!isset($resultdbname)) {
-            //     $resultdbname = $childTable;
-            // }
-            if ($status) {
-                $query->where($childTable . '.' . $section, $status);
-            } else {
-                $query->where(function ($q) use ($childTable, $section, $status) {
-                    $q->whereNull($childTable . '.' . $section)->orWhere($childTable . '.' . $section, $status);
-                });
-            }
-
-        }
 
         $nosample = Request::input('nosample');
         if ($nosample) {
-            $query->where('sample_datas_view.sample', '<>', '0');
+            $query->where('sdv.sample', '<>', '0');
         }
 
-        $inputcolumn = Request::input('column');
-        $inputvalue = Request::input('value');
-        if ($inputcolumn && $inputvalue) {
-            if ($inputvalue == 'NULL') {
-                $query->whereNull($childTable . '.' . $inputcolumn);
-            } else {
-                $query->where($childTable . '.' . $inputcolumn, $inputvalue);
-            }
-
-        }
-
-        $query->orderBy('sample_datas_view.location_code', 'asc');
+        $query->orderBy('sdv.location_code', 'asc');
         return $this->applyScopes($query);
     }
 
@@ -272,10 +271,17 @@ class SurveyResultsDataTable extends DataTable
      */
     protected function getColumns()
     {
-        if (!empty($this->getDatatablesColumns()) && is_array($this->getDatatablesColumns())) {
+        $auth = Auth::user();
+        if($auth->role->level >= 5) {
+            $datatablesColumns = $this->getDatatablesColumns();
+        } else {
+            $datatablesColumns = $this->getDatatablesColumns(false);
+        }
+
+        if (!empty($datatablesColumns) && is_array($datatablesColumns)) {
             //dd($this->getDatatablesColumns());
-            $action = ['action' => ['title' => '', 'orderable' => false, 'searchable' => false, 'width' => '5px', 'order' => [[1, 'asc']]]];
-            $columns = array_merge($action, $this->getDatatablesColumns());
+            $action = ['action' => ['title' => '', 'exportable' => false,'orderable' => false, 'searchable' => false, 'width' => '5px', 'order' => [[1, 'asc']]]];
+            $columns = array_merge($action, $datatablesColumns);
 
             return $columns;
         } else {
@@ -333,26 +339,30 @@ class SurveyResultsDataTable extends DataTable
             DB::statement("CREATE VIEW sample_datas_view AS
                            (
                            SELECT sd.id, sd.location_code, sd.type, sd.dbgroup, sd.sample, sd.ps_code, sd.area_type,
-                           sd.level6, sd.level5, sd.level4, sd.level3, sd.level2, sd.level1, sd.level6_trans,
+                           sd.sample_area_type, sd.sample_area_name,
+                           sd.ward, sd.level6, sd.level5, sd.level4, sd.level3, sd.level2, sd.level1, sd.level6_trans,
                            sd.level5_trans, sd.level4_trans, sd.level3_trans, sd.level2_trans, sd.level1_trans,
                            sd.parties, sd.parent_id, sd.created_at, sd.updated_at, sd.sms_primary, sd.sms_backup, sd.call_primary, 
                            sd.call_backup, sd.hotline1, sd.hotline2, sd.sms_time, sd.incident_center, $observer  
-                           FROM sample_datas AS sd LEFT JOIN observers AS ob ON ob.sample_id = sd.id  GROUP BY sd.id, sd.location_code, sd.type, sd.dbgroup, sd.sample, sd.ps_code, sd.area_type,
-                           sd.level6, sd.level5, sd.level4, sd.level3, sd.level2, sd.level1, sd.level6_trans,
-                           sd.level5_trans, sd.level4_trans, sd.level3_trans, sd.level2_trans, sd.level1_trans,
+                           FROM sample_datas AS sd LEFT JOIN observers AS ob ON ob.sample_id = sd.id  
+                           GROUP BY sd.id, sd.location_code, sd.type, sd.dbgroup, sd.sample, sd.ps_code, sd.area_type,
+                           sd.sample_area_type, sd.sample_area_name,
+                           sd.ward, sd.level6, sd.level5, sd.level4, sd.level3, sd.level2, sd.level1, 
+                           sd.level6_trans, sd.level5_trans, sd.level4_trans, 
+                           sd.level3_trans, sd.level2_trans, sd.level1_trans,
                            sd.parties, sd.parent_id, sd.created_at, sd.updated_at, sd.sms_primary, sd.sms_backup, sd.call_primary, 
                            sd.call_backup, sd.hotline1, sd.hotline2, sd.sms_time, sd.incident_center
                            )");
         }
         $sampleData = DB::table('sample_datas_view')->where('type', $project->dblink)->where('dbgroup', $project->dbgroup);
 
-        if ($auth->role->level > 7) {
+        if ($auth->role->level >= 7) {
             $button = [
                 'extend' => 'collection',
                 'text' => '<i class="fa fa-download"></i> ' . trans('messages.export'),
                 'buttons' => [
-                    'exportPostCsv',
-                    'exportPostExcel',
+                    'csvp',
+                    'excelp',
                 ],
             ];
         } else {
@@ -455,7 +465,7 @@ class SurveyResultsDataTable extends DataTable
         $columnName = array_keys($this->getDatatablesColumns());
 
         //$textColumns = ['location_code', 'spotchecker', 'spotchecker_code', 'name', 'nrc_id', 'form_id', 'mobile'];
-        $textColumns = ['location_code', 'user_id', 'full_name', 'phone_1'];
+        $textColumns = ['location_code', 'user_id','update_user_id','qc_user_id', 'full_name', 'phone_1'];
         $textColumns = array_intersect($columnName, $textColumns);
 
 

@@ -36,7 +36,7 @@
             @endif
             @if($element->status != 'published') <span
                     class="label label-warning badge">{!! $element->status !!}</span> @endif
-            <span class="hide label label-danger badge {!! $element->inputid .' '.$element->id!!}">{!! "Data not match!" !!}</span>
+            <span class="hide label label-danger badge {!! $element->inputid .' '.$element->id!!}"><i class="fa"></i></span>
             </span>
         {!! Form::input($element->type,"result[".$element->inputid."]", (isset($double_results) && !empty($double_results['section'.$section->sort]))?Kanaung\Facades\Converter::convert($double_results['section'.$section->sort]->{$element->inputid},'unicode','zawgyi'):null, $options) !!}
     </div>

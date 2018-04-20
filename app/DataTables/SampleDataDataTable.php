@@ -166,9 +166,9 @@ class SampleDataDataTable extends DataTable
                     return "function(data,type,full,meta){
                                         var html;
                                         if(type === 'display') {
-                                            if(data == 'urban') {
+                                            if(data.toLowerCase() == 'urban') {
                                                 html = '" . trans('messages.urban') . "';
-                                            } else if(data == 'rural') {
+                                            } else if(data.toLowerCase() == 'rural') {
                                                 html = '" . trans('messages.rural') . "';
                                             }  else {
                                                 html = '" . trans('messages.unknown') . "';

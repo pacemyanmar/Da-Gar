@@ -6,6 +6,7 @@ use App\DataTables\ProjectDataTable;
 use App\DataTables\SmsLogDataTable;
 use App\Http\Requests\CreateProjectRequest;
 use App\Http\Requests\UpdateProjectRequest;
+use App\Models\LocationMeta;
 use App\Models\LogicalCheck;
 use App\Models\Observer;
 use App\Models\Project;
@@ -14,6 +15,7 @@ use App\Models\SampleData;
 use App\Models\Section;
 use App\Repositories\ProjectRepository;
 use App\Scopes\OrderByScope;
+use App\SmsHelper;
 use Flash;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\Schema\Blueprint;
@@ -22,10 +24,16 @@ use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use League\Csv\Reader;
+use League\Csv\Statement;
 use Maatwebsite\Excel\Facades\Excel;
 use Ramsey\Uuid\Uuid;
 use Response;
 
+/**
+ * Class ProjectController
+ * @package App\Http\Controllers
+ */
 class ProjectController extends AppBaseController
 {
     /**
@@ -138,7 +146,7 @@ class ProjectController extends AppBaseController
 
         // $input['project_trans'] = json_encode([$lang => $input['project']]);
 
-        $project = $this->projectRepository->create($input);
+        $project = Project::create($input);
 
         $sections = $input['sections'];
 
@@ -475,13 +483,12 @@ class ProjectController extends AppBaseController
 
         // check if table has already created
         foreach ($project->sections as $key => $section) {
-            $section_key = $key + 1;
 
-            $fields = $section->inputs->unique('inputid');
+            $fields = $section->inputs->sortByDesc('other')->unique('inputid');
 
-            $section_code = 'section'.$section->sort;
+            $section_code = 's'.$section->sort;
 
-            $section_dbname = $project->dbname.'_'.$section_code;
+            $section_dbname = $this->dbname.'_'.$section_code;
 
             if (Schema::hasTable($section_dbname)) {
                 $this->updateTable('main', $fields, $section);
@@ -496,11 +503,18 @@ class ProjectController extends AppBaseController
                     $this->createTable('double', $fields, $section);
                 }
 
-                $this->createDoubleStatusView($section);
+                $viewName = $this->dbname . '_' . $section_code.'_view';
+
+                if (!Schema::hasTable($viewName)) {
+                    $this->createDoubleStatusView($section);
+                } else {
+                    DB::statement("DROP VIEW ".$viewName);
+                    $this->createDoubleStatusView($section);
+                }
             }
         }
 
-        $project_fields = $project->inputs->unique('inputid');
+        $project_fields = $project->inputs->sortByDesc('other')->unique('inputid');
 
         //if ($project->training) {
         // check if table has already created
@@ -525,6 +539,9 @@ class ProjectController extends AppBaseController
         $project->questions()->update(['qstatus' => 'published']);
 
         $project->status = 'published';
+        // change input status to published
+        $project->inputs()->withoutGlobalScope(OrderByScope::class)
+            ->update(['status' => 'published']);
         $project->save();
         if ($project->type != 'sample2db') {
             dispatch(new \App\Jobs\GenerateSample($project)); // need to decide this to run once or every time project update
@@ -577,12 +594,10 @@ class ProjectController extends AppBaseController
 
                         switch ($input->type) {
                             case 'radio':
+                                $inputType = 'unsignedTinyInteger';
+                                break;
                             case 'checkbox':
-                                if ($input->other) {
-                                    $inputType = 'string';
-                                } else {
-                                    $inputType = 'unsignedTinyInteger';
-                                }
+                                $inputType = 'unsignedTinyInteger';
                                 break;
 
                             case 'number':
@@ -625,12 +640,10 @@ class ProjectController extends AppBaseController
                     Schema::table($dbname, function ($table) use ($input, $project) {
                         switch ($input->type) {
                             case 'radio':
+                                $inputType = 'unsignedTinyInteger';
+                                break;
                             case 'checkbox':
-                                if ($input->other) {
-                                    $inputType = 'string';
-                                } else {
-                                    $inputType = 'unsignedTinyInteger';
-                                }
+                                $inputType = 'unsignedTinyInteger';
                                 break;
 
                             case 'number':
@@ -658,13 +671,27 @@ class ProjectController extends AppBaseController
                                     ->nullable();
                             }
                         }
+
                     });
+                }
+
+                if ($input->other) {
+                    if (Schema::hasColumn($dbname, $input->inputid.'_other')) {
+
+                        Schema::table($dbname, function ($table) use ($input, $dbname) {
+                            $table->string($input->inputid.'_other', 100)->change()
+                                ->nullable();
+                        });
+                    } else {
+                        // if column has not been created, creat now
+                        Schema::table($dbname, function ($table) use ($input, $project) {
+                            $table->string($input->inputid.'_other', 100)
+                                ->nullable();
+                        });
+                    }
                 }
             }
         }
-        // change input status to published
-        $project->inputs()->withoutGlobalScope(OrderByScope::class)
-            ->update(['status' => 'published']);
     }
 
     private function createTable($type = 'main', $fields, $section = null)
@@ -702,7 +729,7 @@ class ProjectController extends AppBaseController
             if ($type != 'main' && $type != 'double') {
                 // get unique collection of inputs
                 foreach ($project->sections as $key => $section) {
-                    $section_num = $key + 1;
+                    $section_num = $section->sort;
                     $table->unsignedSmallInteger('section' . $section_num . 'status')->index()->default(0); // 0 => missing, 1 => complete, 2 => incomplete, 3 => error
                     //$table->json('section' . $key)->nullable();
                     $table->timestamp('section' . $section_num . 'updated')->nullable();
@@ -717,12 +744,11 @@ class ProjectController extends AppBaseController
 
                 switch ($input->type) {
                     case 'radio':
+                        $inputType = 'unsignedTinyInteger';
+                        break;
+
                     case 'checkbox':
-                        if ($input->other) {
-                            $inputType = 'string';
-                        } else {
-                            $inputType = 'unsignedTinyInteger';
-                        }
+                        $inputType = 'unsignedTinyInteger';
                         break;
 
                     case 'number':
@@ -737,6 +763,7 @@ class ProjectController extends AppBaseController
                         $inputType = 'string';
                         break;
                 }
+
                 if ($input->in_index && $inputType != 'text') {
                     $table->$inputType($input->inputid)
                         ->index()
@@ -750,12 +777,14 @@ class ProjectController extends AppBaseController
                             ->nullable();
                     }
                 }
+
+                if ($input->other) {
+                    $table->string($input->inputid.'_other', 100)
+                        ->nullable();
+                }
             }
         });
 
-        // change input status to published
-        $project->inputs()->withoutGlobalScope(OrderByScope::class)
-            ->update(['status' => 'published']);
     }
 
     public function search($project_id, Request $request)
@@ -1013,24 +1042,63 @@ class ProjectController extends AppBaseController
 
     }
 
+    public function createAllViews($id)
+    {
+        // get project instance Project::class
+        $project = $this->projectRepository->findWithoutFail($id);
+
+        try {
+            $this->authorize('update', $project);
+        } catch (AuthorizationException $e) {
+            Flash::error($e->getMessage());
+            return redirect()->back();
+        }
+
+        $this->project = $project;
+        $this->dbname = $project->dbname;
+
+        // check if table has already created
+        foreach ($project->sections as $key => $section) {
+
+            $fields = $section->inputs->sortByDesc('other')->unique('inputid');
+
+            $section_code = 's'.$section->sort;
+
+            $section_dbname = $this->dbname.'_'.$section_code;
+
+            if(config('sms.double_entry')) {
+
+                $viewName = $this->dbname . '_' . $section_code.'_view';
+
+                if (!Schema::hasTable($viewName)) {
+                    $this->createDoubleStatusView($section);
+                } else {
+                    DB::statement("DROP VIEW ".$viewName);
+                    $this->createDoubleStatusView($section);
+                }
+            }
+        }
+
+    }
+
     private function makeDoubleStatusColumns($section)
     {
         $section_questions = $section->questions->sortBy('sort');
         $section_num = $section->sort;
-        $dbName = $this->dbname .'_section'.$section_num;
-        $dbDblName = $this->dbname .'_section'.$section_num.'_dbl';
+        $dbName = $this->dbname .'_s'.$section_num;
+        $dbDblName = $this->dbname .'_s'.$section_num.'_dbl';
         $columns = [];
         foreach($section_questions as $question) {
             $inputs = $question->surveyInputs->sortBy('sort');
 
             foreach($inputs as $input) {
                 $column = $input->inputid;
-                $columns[$column] = "IF(".$dbName.".".$column." = ".$dbDblName.".".$column.", 0, 1) AS ".$column;
+                $columns[$column] = "IF((".$dbName.".".$column." IS NULL AND ".$dbDblName.".".$column." IS NULL) OR ".$dbName.".".$column." = ".$dbDblName.".".$column.", 0, 1) AS ".$column;
             }
             unset($inputs);
         }
 
-        return implode(',', $columns);
+        return $columns;
     }
 
     private function createDoubleStatusView($section)
@@ -1042,18 +1110,161 @@ class ProjectController extends AppBaseController
 
         $viewName = $this->dbname . '_s' . $section_num.'_view';
 
-        $dbName = $this->dbname .'_section'.$section_num;
+        $dbName = $this->dbname .'_s'.$section_num;
 
-        $dbDblName = $this->dbname .'_section'.$section_num.'_dbl';
+        $dbDblName = $this->dbname .'_s'.$section_num.'_dbl';
 
-        if (!Schema::hasTable($viewName)) {
-            $viewStatement = "CREATE VIEW ".$viewName." AS (SELECT ".$dbName.".sample_id, ".$select. " FROM ";
+        $baseColumns = [$dbName.".sample_id"];
+
+        $selectColumns = array_merge($baseColumns, $select);
+
+        $selectColumns = implode(',', $selectColumns);
+
+
+            $viewStatement = "CREATE VIEW ".$viewName." AS (SELECT ".$selectColumns. " FROM ";
             $viewStatement .= $dbName." LEFT JOIN ".$dbDblName. " ON ";
             $viewStatement .= $dbName.".sample_id = ".$dbDblName.".sample_id)";
 
             DB::statement($viewStatement);
-        }
 
+    }
+
+    /**
+     * @param $id Project ID
+     * @param Request $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function uploadSamples($id, Request $request)
+    {
+        $project = $this->projectRepository->findWithoutFail($id);
+
+        if (empty($project))
+            return redirect()->back()->withErrors('Project not found.');
+
+        if ($request->file('samplefile')->isValid()) {
+
+            $idcolumn = $request->input('idcolumn');
+
+            $idcolumn_slug = $project->idcolumn = str_dbcolumn($idcolumn);
+
+            $reader = Reader::createFromPath($request->samplefile->path());
+            $reader->setHeaderOffset(0);
+
+            $records = (new Statement())->process($reader);
+            $headers = $records->getHeader();
+
+            $column_list = [];
+            array_walk($headers, function($slug, $key) use ($idcolumn_slug, &$column_list) {
+                $nkey = str_dbcolumn($slug);
+                if(str_dbcolumn($slug) == $idcolumn_slug) {
+                    $column_list['idcolumn'] = $slug;
+                } else {
+                    $column_list[$nkey] = $slug;
+                }
+            });
+            if(!array_key_exists('idcolumn', $column_list))
+                return redirect()->back()->withErrors('ID column not found in your file');
+
+            $column_list = array_merge(['idcolumn' => $column_list['idcolumn']] + $column_list);
+
+            $file = $request->samplefile->store('tmp');
+            $project->sample_file = $file;
+
+            //$project->save();
+            $storage_path = storage_path('app/'.$file);
+
+            if(empty($project->sample_file) || $request->input('update_structure'))
+                return $this->sampleStructure($project, $column_list, $idcolumn);
+
+            // upload directly here
+            return $this->importSampleData($records, $project, $idcolumn);
+
+        } else {
+            return redirect()->back()->withErrors('Invalid file');
+        }
+    }
+
+    /**
+     * @param $id Project ID
+     * @param Request $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function saveSampleStructure($id, Request $request)
+    {
+        $project = $this->projectRepository->findWithoutFail($id);
+
+        if (empty($project))
+            return redirect()->back()->withErrors('Project not found.');
+
+        if($project->id != $request->input('project_id'))
+            return redirect()->back()->withErrors(['Error with Project. Are you cheating?']);
+
+
+        $input = [
+            'project_id' => $project->id
+        ];
+
+        $fields = $request->input('fields');
+
+        $project->locationMetas()->delete();
+
+        foreach($fields as $field) {
+            if($field['field_name']) {
+                $look_up = array_merge($input, ['field_name' => str_dbcolumn($field['field_name'])]);
+                $fill = array_merge($input, [
+                    'label' => $field['label'],
+                    'field_name' => str_dbcolumn($field['field_name']),
+                    'field_type' => snake_case($field['field_type'])
+                ]);
+                $locationMeta = $this->locationMeta->withTrashed()->firstOrNew($look_up, $fill);
+                if ($locationMeta->trashed()) {
+                    $locationMeta->restore();
+                }
+                $locationMeta->save();
+            }
+        }
+    }
+
+
+    /**
+     * @param $project Project::class
+     * @param $columns array
+     * @return mixed
+     */
+    private function sampleStructure($project, $columns, $idcolumn)
+    {
+        array_walk($columns, function(&$item, $key) {
+            switch ($key) {
+                case 'idcolumn':
+                    $field['field_type'] = 'primary';
+                    break;
+                default:
+                    $field['field_type'] = 'text';
+                    break;
+            }
+
+            $field['label'] = preg_replace('/[\-_]/', ' ',title_case($item));
+            $field['field_name'] = str_dbcolumn($item);
+            $new_loc = new LocationMeta();
+            $item = $new_loc->fill($field);
+        });
+
+        $locationMetas = collect($columns);
+        $projects = Project::pluck('project', 'id');
+
+        return view('location_metas.edit')
+            ->with('project', $project)
+            ->with('projects', $projects)
+            ->with('locationMetas', $locationMetas);
+    }
+
+    /**
+     * @param $records \League\Csv\ResultSet|array
+     * @param $project Project::class
+     */
+    private function importSampleData($records, $project, $idcoumn)
+    {
+        dd('Importing');
     }
 
 }
