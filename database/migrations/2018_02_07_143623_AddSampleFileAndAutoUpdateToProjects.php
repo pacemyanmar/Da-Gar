@@ -19,7 +19,7 @@ class AddSampleFileAndAutoUpdateToProjects extends Migration
             $table->string('auto_update')->default(0);
             $table->string('report_by')->default('location'); // location or people
             $table->string('store_by')->default('location'); // location or people
-            $table->string('idcolumn')->default(null);
+            $table->string('idcolumn')->nullable();
         });
     }
 
