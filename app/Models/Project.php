@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Eloquent as Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
  * Class Project
@@ -11,6 +12,7 @@ use Eloquent as Model;
  */
 class Project extends Model
 {
+
     public $table = 'projects';
 
     public $fillable = [

@@ -151,7 +151,6 @@ class LocationMetaController extends AppBaseController
 
         $fields = $request->input('fields');
 
-
         if($fields[0]['field_type'] != 'primary') {
             return redirect()->back()->withErrors('Primary ID code column has not yet been set.');
         }
@@ -181,6 +180,10 @@ class LocationMetaController extends AppBaseController
             }
         }
 
+        if ($request->submit == "Update Structure") $this->updateStructure($project);
+
+        if ($request->submit == "Import Data") $this->importData($project);
+
         Flash::success('Location Meta updated successfully.');
 
         return redirect(route('projects.edit', $project->id));
@@ -208,5 +211,34 @@ class LocationMetaController extends AppBaseController
         Flash::success('Location Meta deleted successfully.');
 
         return redirect(route('locationMetas.index'));
+    }
+
+    public function updateStructure($project)
+    {
+        $table_name = $project->dbname;
+
+        Schema::create($table_name , function (Blueprint $table) use ($project) {
+
+            foreach ($project->locationMetas as $location){
+                
+                switch ($location->field_type) {
+                    case 'primary';
+                        $table->primary($location->field_name);
+                        break;
+                    default;
+                        $table->string($location->field_name);
+                }
+
+            }
+
+        });
+
+
+        dd($project->id." UpdateData");
+    }
+
+    public function importData($project)
+    {
+        dd($project->id ." importData");
     }
 }
