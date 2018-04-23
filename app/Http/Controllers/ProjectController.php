@@ -1157,7 +1157,7 @@ class ProjectController extends AppBaseController
             array_walk($headers, function($slug, $key) use ($idcolumn_slug, &$column_list) {
                 $nkey = str_dbcolumn($slug);
                 if(str_dbcolumn($slug) == $idcolumn_slug) {
-                    $column_list['idcolumn'] = $slug;
+                    $column_list['idcolumn'] = 'id';
                 } else {
                     $column_list[$nkey] = $slug;
                 }
