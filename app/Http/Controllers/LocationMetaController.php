@@ -11,6 +11,7 @@ use App\Models\Project;
 use App\Repositories\LocationMetaRepository;
 use App\Repositories\ProjectRepository;
 use App\Http\Controllers\AppBaseController;
+use Illuminate\Support\Facades\Schema;
 use Laracasts\Flash\Flash;
 use Response;
 
@@ -217,13 +218,14 @@ class LocationMetaController extends AppBaseController
     {
         $table_name = $project->dbname;
 
-        Schema::create($table_name , function (Blueprint $table) use ($project) {
+        Schema::create($table_name , function ($table) use ($project) {
 
             foreach ($project->locationMetas as $location){
-                
+
                 switch ($location->field_type) {
                     case 'primary';
-                        $table->primary($location->field_name);
+                        $table->string($location->field_name)
+                            ->primary($location->field_name);
                         break;
                     default;
                         $table->string($location->field_name);
