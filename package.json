@@ -37,6 +37,7 @@
     "font-awesome": "^4.7.0",
     "formBuilder": "^2.9.8",
     "gasparesganga-jquery-loading-overlay": "^1.5.4",
+    "gulp": "^3.9.1",
     "hyperform": "^0.9.9",
     "hyperform-l10n": "^0.9.4",
     "ionicons": "^3.0.0",
