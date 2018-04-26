@@ -33,7 +33,8 @@
                     {!! Form::text("field_name", null, ["class" => "form-control field_name field"]) !!}
                 </td>
                 <td>
-                    {!! Form::text("field_type", 'primary', ["class" => "form-control field_type field", "readonly"]) !!}                </td>
+                    {!! Form::text("field_type", 'primary', ["class" => "form-control field_type field", "readonly"]) !!}
+                </td>
                 <td>
                     Required <i class="fa fa-star text-danger"></i>
                 </td>
@@ -88,7 +89,11 @@
 </div>
 <!-- Submit Field -->
 <div class="form-group col-sm-12">
-    {!! Form::submit('Continue', ['class' => 'btn btn-primary']) !!}
+
+    {!! Form::submit('Save Only', ['class' => 'btn btn-primary','name'=> 'submit']) !!}
+    {!! Form::submit('Update Structure', ['class' => 'btn btn-primary','name'=> 'submit']) !!}
+    {!! Form::submit('Import Data', ['class' => 'btn btn-primary','name'=> 'submit']) !!}
+
     <a href="{!! route('locationMetas.index') !!}" class="btn btn-default">Cancel</a>
 </div>
 
@@ -102,7 +107,7 @@
             '            {!! Form::text("field_name", null, ["class" => "form-control field_name field"]) !!}\n' +
             '        </td>\n' +
             '        <td>\n' +
-            '            {!! Form::select("field_type", ["code" => "Code","text" => "Text","textarea" => "Paragraph","integer" => "Number"],null, ["class" => "form-control field_type field"]) !!}\n' +
+            '            {!! Form::select("field_type", ["text" => "Text","textarea" => "Paragraph","integer" => "Number","code" => "Code"],null, ["class" => "form-control field_type field"]) !!}\n' +
             '        </td>\n' +
             '        <td>\n' +
             '            <i onclick="addItem()" class="add-new fa fa-plus btn btn-sm btn-success"\n' +
