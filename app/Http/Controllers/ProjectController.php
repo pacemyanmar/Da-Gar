@@ -24,6 +24,7 @@ use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\Storage;
 use League\Csv\Reader;
 use League\Csv\Statement;
 use Maatwebsite\Excel\Facades\Excel;
@@ -1136,10 +1137,22 @@ class ProjectController extends AppBaseController
      */
     public function uploadSamples($id, Request $request)
     {
+
         $project = $this->projectRepository->findWithoutFail($id);
 
         if (empty($project))
             return redirect()->back()->withErrors('Project not found.');
+
+        if ($request->input('fileurl'))
+        {
+            $url = $request->input('fileurl');
+
+            $file = file_get_contents($url);
+
+            dd($file);
+
+        }
+
 
         if ($request->file('samplefile')->isValid()) {
 
