@@ -27,10 +27,10 @@ class GenerateSample
      *
      * @return void
      */
-    public function handle(Sample $sampleInstance)
+    public function handle(Sample $sampleInstance, SampleData $sampleData)
     {
         // SampleData is detail informations about sample
-        $samplables = SampleData::where('type', $this->project->dblink)->where('dbgroup', $this->project->dbgroup)->get();
+        $samplables = $sampleData->setTable($this->project->dbname.'_samples')->get();
         foreach ($samplables as $sampleData) {
             $samples = [];
             for ($i = 1; $i <= $this->project->copies; $i++) {
