@@ -11,8 +11,11 @@ use App\Models\Project;
 use App\Repositories\LocationMetaRepository;
 use App\Repositories\ProjectRepository;
 use App\Http\Controllers\AppBaseController;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Laracasts\Flash\Flash;
+use League\Csv\Reader;
+use League\Csv\Statement;
 use Response;
 
 class LocationMetaController extends AppBaseController
@@ -181,11 +184,21 @@ class LocationMetaController extends AppBaseController
             }
         }
 
-        if ($request->submit == "Update Structure") $this->updateStructure($project);
+        if ($request->submit == "Update Structure") {
 
-        if ($request->submit == "Import Data") $this->importData($project);
+            $this->updateStructure($project);
 
-        Flash::success('Location Meta updated successfully.');
+            $message = 'Sample Structure created sccessfully.';
+        }
+
+
+
+        if ($request->submit == "Import Data") {
+            $this->importData($project);
+            $message = 'Data imported';
+        }
+
+        Flash::success($message);
 
         return redirect(route('projects.edit', $project->id));
     }
@@ -216,31 +229,80 @@ class LocationMetaController extends AppBaseController
 
     public function updateStructure($project)
     {
-        $table_name = $project->dbname;
+        $table_name = $project->dbname.'_samples';
 
-        Schema::create($table_name , function ($table) use ($project) {
+        if (Schema::hasTable($table_name)) {
 
-            foreach ($project->locationMetas as $location){
+            Schema::table($table_name, function ($table) use ($project, $table_name) {
 
-                switch ($location->field_type) {
-                    case 'primary';
-                        $table->string($location->field_name)
-                            ->primary($location->field_name);
-                        break;
-                    default;
-                        $table->string($location->field_name);
+                foreach ($project->locationMetas as $location) {
+                    if (Schema::hasColumn($table_name, $location->field_name)) {
+                        switch ($location->field_type) {
+                            case 'primary';
+                                // do nothing for now
+                                //$table->string($location->field_name)->primary()->change();
+                                break;
+                            default;
+                                $table->string($location->field_name)->change();
+                        }
+                    } else {
+                        switch ($location->field_type) {
+                            case 'primary';
+                                // do nothing for now
+                                //$table->string($location->field_name)->primary();
+                                break;
+                            default;
+                                $table->string($location->field_name);
+                        }
+                    }
+
                 }
 
-            }
+            });
+        } else {
+            Schema::create($table_name, function ($table) use ($project) {
 
-        });
+                foreach ($project->locationMetas as $location) {
 
+                    switch ($location->field_type) {
+                        case 'primary';
+                            $table->string($location->field_name)
+                                ->primary($location->field_name);
+                            break;
+                        default;
+                            $table->string($location->field_name);
+                    }
 
-        dd($project->id." UpdateData");
+                }
+
+            });
+        }
+
     }
 
     public function importData($project)
     {
-        dd($project->id ." importData");
+        $this->updateStructure($project);
+        $storage_path = storage_path('app/'.$project->sample_file);
+
+        $reader = Reader::createFromPath($storage_path, 'r');
+        $reader->setHeaderOffset(0);
+
+        $stmt = (new Statement());
+        $records = $stmt->process($reader);
+
+        $data_array = iterator_to_array($records,true);
+
+        array_walk($data_array, function(&$data, $key) use ($project) {
+            $newdata = [];
+            foreach($data as $dk => $dv) {
+                if(str_dbcolumn($dk) == $project->idcolumn) {
+                    $newdata['id'] = filter_var($dv, FILTER_SANITIZE_STRING);
+                } else {
+                    $newdata[str_dbcolumn($dk)] = filter_var($dv, FILTER_SANITIZE_STRING);
+                }
+            }
+            $data = $newdata;
+        });
     }
 }

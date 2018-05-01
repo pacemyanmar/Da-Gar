@@ -1158,23 +1158,36 @@ class ProjectController extends AppBaseController
 
             $idcolumn = $request->input('idcolumn');
 
-            $idcolumn_slug = $project->idcolumn = str_dbcolumn($idcolumn);
+            if(empty($project->idcolumn)) {
+                $idcolumn_slug = str_dbcolumn($idcolumn);
+                $project->idcolumn = $idcolumn_slug;
+            } else {
+                $idcolumn_slug = $project->idcolumn;
+            }
 
+            if (!ini_get("auto_detect_line_endings")) {
+                ini_set("auto_detect_line_endings", '1');
+            }
             $reader = Reader::createFromPath($request->samplefile->path());
             $reader->setHeaderOffset(0);
 
-            $records = (new Statement())->process($reader);
+            $stmt = (new Statement());
+            $records = $stmt->process($reader);
+
             $headers = $records->getHeader();
 
             $column_list = [];
+
             array_walk($headers, function($slug, $key) use ($idcolumn_slug, &$column_list) {
                 $nkey = str_dbcolumn($slug);
-                if(str_dbcolumn($slug) == $idcolumn_slug) {
+
+                if($nkey == $idcolumn_slug) {
                     $column_list['idcolumn'] = 'id';
                 } else {
                     $column_list[$nkey] = $slug;
                 }
             });
+
             if(!array_key_exists('idcolumn', $column_list))
                 return redirect()->back()->withErrors('ID column not found in your file');
 
@@ -1183,7 +1196,7 @@ class ProjectController extends AppBaseController
             $file = $request->samplefile->store('tmp');
             $project->sample_file = $file;
 
-            //$project->save();
+            $project->save();
             $storage_path = storage_path('app/'.$file);
 
             if(empty($project->sample_file) || $request->input('update_structure'))
@@ -1246,17 +1259,19 @@ class ProjectController extends AppBaseController
      */
     private function sampleStructure($project, $columns, $idcolumn)
     {
-        array_walk($columns, function(&$item, $key) {
+        array_walk($columns, function(&$item, $key) use ($idcolumn) {
             switch ($key) {
                 case 'idcolumn':
                     $field['field_type'] = 'primary';
+                    $field['label'] = preg_replace('/[\-_]/', ' ',title_case($idcolumn));
                     break;
                 default:
                     $field['field_type'] = 'text';
+                    $field['label'] = preg_replace('/[\-_]/', ' ',title_case($item));
                     break;
             }
 
-            $field['label'] = preg_replace('/[\-_]/', ' ',title_case($item));
+
             $field['field_name'] = str_dbcolumn($item);
             $new_loc = new LocationMeta();
             $item = $new_loc->fill($field);
