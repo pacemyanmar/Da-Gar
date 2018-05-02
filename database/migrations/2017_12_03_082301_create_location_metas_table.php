@@ -21,9 +21,10 @@ class CreateLocationMetasTable extends Migration
             $table->string('sample_type')->default('location'); // location or people
             $table->unsignedInteger('sort')->nullable();
             $table->string('status')->default('new'); // new or created
-            $table->boolean('show')->default(1);
+            $table->boolean('show_index')->default(1);
             $table->boolean('export')->default(1);
             $table->unsignedInteger('project_id');
+            $table->string('filter_type')->nullable();
             $table->softDeletes();
             $table->timestamps();
         });

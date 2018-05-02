@@ -117,7 +117,10 @@ class LocationMetaController extends AppBaseController
             return redirect(route('projects.index'));
         }
 
-        $locationMetas = $project->locationMetas;
+        $locationMetas = $project->load(['locationMetas' => function($q){
+            $q->withTrashed();
+            $q->orderBy('sort','ASC');
+        }])->locationMetas;
 
         $projects = Project::pluck('project', 'id');
 
@@ -155,7 +158,11 @@ class LocationMetaController extends AppBaseController
 
         $fields = $request->input('fields');
 
-        if($fields[0]['field_type'] != 'primary') {
+        $primary_fields = array_where($fields,function($value, $key){
+            return ($value['field_type'] == 'primary');
+        });
+
+        if(count($primary_fields) !== 1) {
             return redirect()->back()->withErrors('Primary ID code column has not yet been set.');
         }
 
@@ -163,14 +170,18 @@ class LocationMetaController extends AppBaseController
 
         $filled = [];
 
-        foreach($fields as $field) {
+        foreach($fields as $k => $field) {
             if($field['field_name']) {
                 $field_name = str_dbcolumn($field['field_name']);
                 $look_up = array_merge($input, ['field_name' => $field_name]);
                 $fill = array_merge($input, [
+                    'sort' => $k,
                     'label' => $field['label'],
                     'field_name' => $field_name,
-                    'field_type' => snake_case($field['field_type'])
+                    'field_type' => snake_case($field['field_type']),
+                    'filter_type' => $field['filter_type'],
+                    'show_index' => array_key_exists('show', $field)? $field['show']:0,
+                    'export' => array_key_exists('export', $field)?$field['export']:0
                 ]);
                 $locationMeta = $this->locationMeta->withTrashed()->firstOrNew($look_up);
                 $locationMeta->fill($fill);
@@ -183,6 +194,8 @@ class LocationMetaController extends AppBaseController
                 }
             }
         }
+
+        $message = "Sample column structure saved";
 
         if ($request->submit == "Update Structure") {
 
