@@ -191,6 +191,8 @@ class SurveyResultsController extends AppBaseController
 
         $sample = $this->sampleRepository->findWithoutFail($samplable);
 
+        $sample_data = $this->sampleDataModel->setTable($project->dbname.'_samples')->find($sample->sample_data_id);
+
         $this->sampleId = $sample->id;
 
         if (empty($sample)) {
@@ -200,7 +202,8 @@ class SurveyResultsController extends AppBaseController
 
         $view = view('projects.survey.create')
             ->with('project', $project)
-            ->with('sample', $sample);
+            ->with('sample', $sample)
+            ->with('sample_data', $sample_data);
 
         $dbname = $project->dbname;
         $results = [];
@@ -225,6 +228,10 @@ class SurveyResultsController extends AppBaseController
                 ->orderBy('sort', 'ASC');
         }]);
 
+        $project->load(['locationMetas' => function($q){
+            //$q->withTrashed();
+            $q->orderBy('sort','ASC');
+        }]);
 
         if (!empty($results)) {
             $view->with('results', $results);

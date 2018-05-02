@@ -1,6 +1,7 @@
 <?php
 namespace App\Traits;
 
+use App\Models\LocationMeta;
 use App\Models\Project;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
@@ -9,36 +10,7 @@ trait SurveyQueryTrait {
 
     private $type;
 
-    protected $sample_select = [
-        'samples_id' => 'samples.id as samples_id',
-        'form_id' => 'samples.form_id',
-        'location_code' => 'sdv.location_code',
-        //'ps_code' => 'sdv.ps_code',
-        'type' => 'sdv.type',
-        'dbgroup' => 'sdv.dbgroup',
-        'sample' => 'sdv.sample',
-        'area_type' => 'sdv.area_type',
-        'sample_area_type' => 'sdv.sample_area_type',
-        'sample_area_name' => 'sdv.sample_area_name',
-        'level1' => 'sdv.level1',
-        //'level1_trans' => 'sdv.level1_trans',
-        'level2' => 'sdv.level2',
-        //'level2_trans' => 'sdv.level2_trans',
-        'level3' => 'sdv.level3',
-        //'level3_trans' => 'sdv.level3_trans',
-        'level4' => 'sdv.level4',
-        'ward' => 'sdv.ward',
-        //'level4_trans' => 'sdv.level4_trans',
-        'level5' => 'sdv.level5',
-        //'level5_trans' => 'sdv.level5_trans',
-        //'parties' => 'sdv.parties',
-        'user_id' => 'user.name AS username',
-        'update_user_id' => 'update_user.name AS updateuser',
-        'qc_user_id' => 'qc_user.name AS qcuser',
-        'observer_name' => 'sdv.full_name',
-
-
-    ];
+    protected $sample_select = [];
 
     protected $columns_select = [];
 
@@ -220,186 +192,61 @@ trait SurveyQueryTrait {
 
         $auth = Auth::user();
 
+        $locationMetas = $this->project->load(['locationMetas' => function($q){
+            //$q->withTrashed();
+            $q->orderBy('sort','ASC');
+        }])->locationMetas;
+
         $columns = [];
-        foreach($this->sample_select as $column => $dbcolumn) {
-            switch ($column) {
-                case 'user_id':
-                    $columns['user_id'] = [
-                        'name' => 'user.code AS usercode',
-                        'data' => 'usercode',
-                        'title' => trans('messages.user'),
-                        'orderable' => false,
-                        'defaultContent' => 'N/A',
-                        'visible' => false,
-                        'width' => '80px',
-                    ];
-                    break;
-                case 'update_user_id':
-                    $columns['update_user_id'] = [
-                        'name' => 'update_user.code AS updateuser',
-                        'data' => 'updateuser',
-                        'title' => 'Corrector',
-                        'orderable' => false,
-                        'defaultContent' => 'N/A',
-                        'visible' => false,
-                        'width' => '80px',
-                    ];
-                    break;
-                case 'qc_user_id':
-                    $columns['qc_user_id'] = [
-                        'name' => 'qc_user.code AS qcuser',
-                        'data' => 'qcuser',
-                        'title' => 'Double Checker',
-                        'orderable' => false,
-                        'defaultContent' => 'N/A',
-                        'visible' => ($auth->role->role_name == 'doublechecker')?true:false,
-                        'width' => '80px',
-                    ];
-                    break;
-                case 'observer_name':
-                    $columns['full_name'] = [
-                        'name' => 'sdv.full_name',
-                        'data' => 'full_name',
-                        'title' => trans('sample.observer_id'),
-                        'orderable' => false,
-                        'defaultContent' => 'N/A',
-                        'width' => '90px',
-                        'render' => function () use ($locale) {
-                            $data = ($locale == config('app.fallback_locale'))? 'data':'full.full_name_trans';
-                            return "function(data,type,full,meta){
-                                    var html;
-                                    if(type === 'display') {
+        $columns['samples_id'] = [
+            'name' => 'samples.id as samples_id',
+            'data' => 'samples_id',
+            'title' => trans('samples.samples_id'),
+            'orderable' => false,
+            'defaultContent' => 'N/A',
+            'visible' => false,
+            'width' => '80px',
+        ];
+        foreach ($locationMetas as $location) {
 
-                                        if(full.full_name_trans) {
-                                            html = $data;
-                                        } else {
-                                            html =data;
-                                        }
-                                    } else {
-                                        html = data;
-                                    }
-
-                                    return html;
-                                }";
-                        },
-                    ];
-                    break;
-                case 'location_code':
-                case 'ps_code':
-                case 'parties':
-                    $columns[$column] = [
-                        'name' => 'sdv.'.$column,
-                        'data' => $column,
-                        'title' => trans('sample.'.$column),
-                        'orderable' => false,
-                        'defaultContent' => 'N/A',
-                        'visible' => (config('samples.locations.'.$column.'.show'))?config('samples.locations.'.$column.'.show'):false,
-                        'width' => '90px',
-                    ];
-                    break;
-                case 'form_id':
-                    $columns[$column] = [
+            if($location->field_type == 'primary') {
+                $primaryKey = str_dbcolumn($location->label);
+                $columns[$location->field_name] = [
+                    'name' => 'sdv.id as '.$primaryKey,
+                    'data' => $primaryKey,
+                    'className' => $location->filter_type.' '.$primaryKey,
+                    'title' => trans('samples.'.$location->field_name),
+                    'orderable' => false,
+                    'defaultContent' => 'N/A',
+                    'visible' => $location->show_index,
+                    'width' => '80px',
+                ];
+                if($this->project->copies > 1) {
+                    $columns['form_id'] = [
                         'name' => 'samples.form_id',
-                        'data' => $column,
-                        'title' => trans('sample.'.$column),
+                        'data' => 'form_id',
+                        'className' => $location->filter_type.' form_id',
+                        'title' => trans('samples.form_id'),
                         'orderable' => false,
                         'defaultContent' => 'N/A',
                         'visible' => true,
-                        'width' => '90px',
+                        'width' => '80px',
                     ];
-                    break;
-                case 'call_primary':
-                case 'incident_center':
-                case 'sms_time':
-                case 'observer_field':
-                //case 'type':
-                    $columns[$column] = [
-                        'name' => 'sdv.'.$column,
-                        'data' => $column,
-                        'title' => trans('sample.'.$column),
-                        'orderable' => false,
-                        'defaultContent' => 'N/A',
-                        'width' => '90px',
-                        'visible' => false,
-                    ];
-                    break;
-                case 'mobile':
-                    $columns['phone_1'] = [
-                        'name' => 'sdv.phone_1',
-                        'data' => 'phone_1',
-                        'title' => trans('messages.mobile'),
-                        'orderable' => false,
-                        'defaultContent' => 'N/A',
-                        'width' => '90px',
-                    ];
-                    break;
-                case 'sms_primary':
-                    $columns[$column] = [
-                        'name' => 'sdv.'.$column,
-                        'data' => $column,
-                        'title' => trans('sample.'.$column),
-                        'orderable' => false,
-                        'defaultContent' => 'N/A',
-                        'width' => '90px',
-                        'visible' => false
-                    ];
-                    break;
-                case 'level1':
-                case 'level2':
-                case 'level3':
-                case 'level4':
-                case 'level5':
-                    $columns[$column] = [
-                        'name' => 'sdv.'.$column,
-                        'data' => $column,
-                        'title' => trans('sample.'.$column),
-                        'orderable' => false,
-                        'visible' => (config('samples.locations.'.$column.'.show'))?config('samples.locations.'.$column.'.show'):false,
-                        'defaultContent' => 'N/A',
-                        'width' => '90px',
-                        'render' => function () use ($locale, $column) {
-                            $data = ($locale == config('app.fallback_locale'))? 'data':'full.'.$column.'_trans';
-                            return "function(data,type,full,meta){
-                                    var html;
-                                    if(type === 'display') {
-
-                                        if(full.".$column."_trans) {
-                                            html = $data;
-                                        } else {
-                                            html =data;
-                                        }
-                                    } else {
-                                        html = data;
-                                    }
-
-                                    return html;
-                                }";
-                        },
-                    ];
-                    break;
-                case 'sample_id':
-                    $columns['sample_id'] = [
-                        'name' => $dbcolumn,
-                        'data' => $column,
-                        'title' => trans('messages.' . strtolower($column)),
-                        'orderable' => false,
-                        'visible' => false,
-                        'width' => '120px',
-                        'exportable' => false
-                    ];
-                    break;
-                default:
-                    $columns[$column] = [
-                        'name' => $dbcolumn,
-                        'data' => $column,
-                        'title' => trans('messages.' . strtolower($column)),
-                        'orderable' => false,
-                        'visible' => false,
-                        'width' => '120px',
-                    ];
-                    break;
+                }
+            } else {
+                $columns[$location->field_name] = [
+                    'name' => 'sdv.'.$location->field_name,
+                    'data' => $location->field_name,
+                    'className' => $location->filter_type.' '.$location->field_name,
+                    'title' => trans('samples.'.$location->field_name),
+                    'orderable' => false,
+                    'defaultContent' => 'N/A',
+                    'visible' => $location->show_index,
+                    'width' => '80px',
+                ];
             }
         }
+
         return $columns;
     }
 
