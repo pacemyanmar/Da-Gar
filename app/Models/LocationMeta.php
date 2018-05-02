@@ -26,7 +26,11 @@ class LocationMeta extends Model
         'label',
         'field_name',
         'field_type',
-        'project_id'
+        'filter_type',
+        'project_id',
+        'show_index',
+        'export',
+        'sort'
     ];
 
     /**
@@ -38,7 +42,10 @@ class LocationMeta extends Model
         'label' => 'string',
         'field_name' => 'string',
         'field_type' => 'string',
-        'project_id' => 'integer'
+        'filter_type' => 'string',
+        'project_id' => 'integer',
+        'show_index' => 'boolean',
+        'export' => 'boolean'
     ];
 
     /**
@@ -48,8 +55,8 @@ class LocationMeta extends Model
      */
     public static $rules = [
         'project_id' => 'required',
-        'fields.*.field_name' => 'required|alpha_dash',
-        'fields.*.field_type' => 'required'
+        //'fields.*.field_name' => 'required|alpha_dash',
+        //'fields.*.field_type' => 'required'
     ];
 
     
