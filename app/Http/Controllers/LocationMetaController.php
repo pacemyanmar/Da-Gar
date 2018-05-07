@@ -8,6 +8,7 @@ use App\Http\Requests\CreateLocationMetaRequest;
 use App\Http\Requests\UpdateLocationMetaRequest;
 use App\Models\LocationMeta;
 use App\Models\Project;
+use App\Models\SampleData;
 use App\Repositories\LocationMetaRepository;
 use App\Repositories\ProjectRepository;
 use App\Http\Controllers\AppBaseController;
@@ -317,5 +318,8 @@ class LocationMetaController extends AppBaseController
             }
             $data = $newdata;
         });
+        $sample_data = new SampleData();
+        $sample_data->setTable($project->dbname.'_samples');
+        $sample_data->insert($data_array);
     }
 }
