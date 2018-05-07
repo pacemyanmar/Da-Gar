@@ -8,6 +8,10 @@
 
 return [
     'type' => 'observer', // location or observer
+    'primary_locale' => [
+        'country' => 'us',
+        'locale' => 'en'
+    ],
     'second_locale' => [
         'country' => 'mm',
         'locale' => 'my'

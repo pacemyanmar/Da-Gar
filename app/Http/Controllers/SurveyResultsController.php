@@ -105,55 +105,7 @@ class SurveyResultsController extends AppBaseController
             $table->setSampleType($samplable);
         }
 
-        // To Do: all following codes need to remove
-        $statesCollections = $project->samplesData->groupBy('level1');
-        $locations['allStates'] = $project->samplesData->pluck('level1')->unique();
-        $locations['allDistricts'] = $project->samplesData->pluck('level2')->unique();
-        $locations['allTownships'] = $project->samplesData->pluck('level3')->unique();
-        $locations['allVillageTracts'] = $project->samplesData->pluck('level4')->unique();
-        $locations['allVillages'] = $project->samplesData->pluck('level5')->unique();
 
-        $districtsByState = [];
-        $townshipByState = [];
-        $vtractByState = [];
-        $villageByState = [];
-
-        foreach ($statesCollections as $state => $samplesData) {
-            $locations['state'][$state]['district'] = $districtsByState[$state] = $samplesData->pluck('level2', 'level2')->toArray();
-            $locations['state'][$state]['township'] = $townshipByState[$state] = $samplesData->pluck('level3', 'level3')->toArray();
-            $locations['state'][$state]['village_tract'] = $vtractByState[$state] = $samplesData->pluck('level4', 'level4')->toArray();
-            $locations['state'][$state]['village'] = $villageByState[$state] = $samplesData->pluck('level5', 'level5')->toArray();
-        }
-
-        $districtsCollections = $project->samplesData->groupBy('level2');
-
-        $townshipByDistrict = [];
-        $vtractByDistrict = [];
-        $villageByDistrict = [];
-
-        foreach ($districtsCollections as $district => $samplesData) {
-            $locations['district'][$district]['township'] = $townshipByDistrict[$district] = $samplesData->pluck('level3', 'level3')->toArray();
-            $locations['district'][$district]['village_tract'] = $vtractByDistrict[$district] = $samplesData->pluck('level4', 'level4')->toArray();
-            $locations['district'][$district]['village'] = $villageByDistrict[$district] = $samplesData->pluck('level5', 'level5')->toArray();
-        }
-
-        $townshipsCollections = $project->samplesData->groupBy('level3');
-
-        $vtractBytownship = [];
-        $villageBytownship = [];
-
-        foreach ($townshipsCollections as $township => $samplesData) {
-            $locations['township'][$township]['village_tract'] = $vtractBytownship[$township] = $samplesData->pluck('level4', 'level4')->toArray();
-            $locations['township'][$township]['village'] = $villageBytownship[$township] = $samplesData->pluck('level5', 'level5')->toArray();
-        }
-
-        $village_tractsCollections = $project->samplesData->groupBy('level4');
-
-        $villageByvillage_tract = [];
-
-        foreach ($village_tractsCollections as $village_tract => $samplesData) {
-            $locations['village_tract'][$village_tract]['village'] = $villageByvillage_tract[$village_tract] = $samplesData->pluck('level4', 'level4')->toArray();
-        }
 
         switch ($project->type) {
             case 'sample2db':
