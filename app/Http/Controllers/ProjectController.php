@@ -1149,9 +1149,15 @@ class ProjectController extends AppBaseController
         {
             $url = $request->input('fileurl');
 
-            $file = file_get_contents($url);
+            $fileName = 'formurl_'.date('m-d-Y_hia').'.csv';
 
-            dd($file);
+            $csvData = file_get_contents($url);
+
+            $path = storage_path('app/public');
+
+            file_put_contents($path.'/'.$fileName,$csvData);
+
+            dd('Done');
 
         }
 
