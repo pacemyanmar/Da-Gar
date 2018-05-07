@@ -31,17 +31,21 @@ class GenerateSample
     {
         // SampleData is detail informations about sample
         $samplables = $sampleData->setTable($this->project->dbname.'_samples')->get();
-        foreach ($samplables as $sampleData) {
+
+        foreach ($samplables as $data) {
             $samples = [];
             for ($i = 1; $i <= $this->project->copies; $i++) {
                 //$form_id = sprintf("%02d", $i);
                 //$samples[] = new Sample(['form_id' => $i, 'project_id' => $this->project->id, 'sample_data_type' => $this->project->dblink]);
-                $samples[] = $sampleInstance->firstOrNew(['sample_data_id' => $sampleData->id, 'form_id' => $i, 'project_id' => $this->project->id, 'sample_data_type' => $this->project->dblink]);
+                if(!empty($data->id))
+                    $sample = $sampleInstance->firstOrNew(['sample_data_id' => (int) $data->id, 'form_id' => $i, 'project_id' => $this->project->id, 'sample_data_type' => $this->project->dblink]);
+                    $samples[] = $sample;
             }
+
             // samples() is link between project and sampleData
-            // $sample is single row from sampleData
-            //$sample->samples()->delete();
-            $sampleData->samples()->saveMany($samples);
+            // $data is single row from sampleData
+            //$data->samples()->delete();
+            $data->setTable($this->project->dbname.'_samples')->samples()->saveMany($samples);
         }
 
     }
