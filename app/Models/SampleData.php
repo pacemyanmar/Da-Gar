@@ -16,6 +16,8 @@ class SampleData extends Model
 
     public $timestamps = false;
 
+    public $incrementing = false;
+
     public $fillable = [
 
     ];
@@ -78,7 +80,11 @@ class SampleData extends Model
         }
 
         if(preg_match('/get(.*)Attribute/', $method, $matches)) {
-            return trans('location.'.str_dbcolumn($parameters[0]));
+            if (\App::isLocale(config('app.locale'))) {
+                return $parameters[0];
+            } else {
+                return trans('location.' . str_dbcolumn($parameters[0]));
+            }
         }
 
         return $this->newQuery()->$method(...$parameters);
