@@ -28,7 +28,6 @@ class SurveyResultsDataTable extends DataTable
         $orderTable = str_plural($this->project->dblink);
         $orderBy = (isset($this->orderBy)) ? $orderTable . '.' . $this->orderBy : 'sample_datas_view.location_code';
         $order = (isset($this->order)) ? $this->order : 'asc';
-
         $table = datatables()
             ->eloquent($this->query())
             ->addColumn('project_id', $this->project->id)
@@ -38,21 +37,21 @@ class SurveyResultsDataTable extends DataTable
         $filterColumns = $this->filterColumns;
         $sectionColumns = $this->makeSectionColumns();
 
-        foreach ($filterColumns as $index => $column) {
-            $columnName = $column['name'];
-            $value = $column['search']['value'];
-
-            if (in_array($column['data'], array_keys($sectionColumns)) && $value != '') {
-
-                $table->filterColumn($columnName, function($query, $keyword) use ($columnName) {
-                    if($keyword) {
-                        $query->where($columnName, '=', $keyword);
-                    } else {
-                        $query->where($columnName, '=', $keyword)->orWhereNull($columnName);
-                    }
-                });
-            }
-        }
+//        foreach ($filterColumns as $index => $column) {
+//            $columnName = $column['name'];
+//            $value = $column['search']['value'];
+//
+//            if (in_array($column['data'], array_keys($sectionColumns)) && $value != '') {
+//
+//                $table->filterColumn($columnName, function($query, $keyword) use ($columnName) {
+//                    if($keyword) {
+//                        $query->where($columnName, '=', $keyword);
+//                    } else {
+//                        $query->where($columnName, '=', $keyword)->orWhereNull($columnName);
+//                    }
+//                });
+//            }
+//        }
 
         //$table->orderColumn($orderBy, DB::raw('LENGTH(' . $orderBy . ')') . " $1");
 
@@ -92,7 +91,9 @@ class SurveyResultsDataTable extends DataTable
 
         //$count = sizeof($unique_inputs);
         // run query
+
         $query = Sample::query();
+
 //        if ($auth->role->role_name == 'doublechecker') {
 //            $query->whereRaw(DB::raw('(samples.qc_user_id is null or samples.qc_user_id = ' . $auth->id . ')'));
 //        }
@@ -173,23 +174,6 @@ class SurveyResultsDataTable extends DataTable
 
         }
 
-        $township = Request::input('level3');
-
-        if (!empty($township)) {
-            $query->where('level3', $township);
-        }
-
-        $district = Request::input('level2');
-
-        if (!empty($district)) {
-            $query->where('level2', $district);
-        }
-
-        $state = Request::input('level1');
-
-        if (!empty($state)) {
-            $query->where('level1', $state);
-        }
 
         $total = Request::input('totalstatus');
         if ($total) {
