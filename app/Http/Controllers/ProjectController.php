@@ -24,6 +24,7 @@ use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Storage;
 use League\Csv\Reader;
 use League\Csv\Statement;
@@ -464,6 +465,7 @@ class ProjectController extends AppBaseController
 
     public function dbcreate($id)
     {
+        app()->setLocale('en');
         // get project instance Project::class
         $project = $this->projectRepository->findWithoutFail($id);
 
@@ -547,7 +549,7 @@ class ProjectController extends AppBaseController
         if ($project->type != 'sample2db') {
             dispatch(new \App\Jobs\GenerateSample($project)); // need to decide this to run once or every time project update
         }
-
+        //app()->setLocale(Session::get('locale'));
         Flash::success('Form built successfully.');
 
         return redirect()->back();
