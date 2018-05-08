@@ -132,6 +132,7 @@ trait SurveyQueryTrait {
             $section_columns[$sectionColumn] = [
                 'name' => $base_dbname . '.' . $sectionColumn,
                 'data' => $sectionColumn,
+                'className' => 'statuscolumns',
                 'orderable' => false,
                 'searchable' => true,
                 'width' => '40px',

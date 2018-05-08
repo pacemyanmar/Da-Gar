@@ -37,21 +37,21 @@ class SurveyResultsDataTable extends DataTable
         $filterColumns = $this->filterColumns;
         $sectionColumns = $this->makeSectionColumns();
 
-//        foreach ($filterColumns as $index => $column) {
-//            $columnName = $column['name'];
-//            $value = $column['search']['value'];
-//
-//            if (in_array($column['data'], array_keys($sectionColumns)) && $value != '') {
-//
-//                $table->filterColumn($columnName, function($query, $keyword) use ($columnName) {
-//                    if($keyword) {
-//                        $query->where($columnName, '=', $keyword);
-//                    } else {
-//                        $query->where($columnName, '=', $keyword)->orWhereNull($columnName);
-//                    }
-//                });
-//            }
-//        }
+        foreach ($filterColumns as $index => $column) {
+            $columnName = $column['name'];
+            $value = $column['search']['value'];
+
+            if (in_array($column['data'], array_keys($sectionColumns)) && $value != '') {
+
+                $table->filterColumn($columnName, function($query, $keyword) use ($columnName) {
+                    if($keyword) {
+                        $query->where($columnName, '=', $keyword);
+                    } else {
+                        $query->where($columnName, '=', $keyword)->orWhereNull($columnName);
+                    }
+                });
+            }
+        }
 
         //$table->orderColumn($orderBy, DB::raw('LENGTH(' . $orderBy . ')') . " $1");
 
@@ -337,15 +337,6 @@ class SurveyResultsDataTable extends DataTable
                               location.addClass('form-control input-sm');
                               } );\n";
         }
-
-
-        $statusColumns = array_intersect_key($this->getDatatablesColumns(), $this->makeSectionColumns());
-
-//        $statusColsArr = [];
-//        foreach ($statusColumns as $key => $value) {
-//            $statusColsArr[] = $flippedColumnName[$key] + 1;
-//        }
-
 
         return [
             'dom' => 'Brtip',
