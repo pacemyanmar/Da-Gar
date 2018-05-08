@@ -44,7 +44,7 @@
         </tr>
     </table>
 </div>
-@if($observation_type->isEmpty()))
+@if($observation_type->isEmpty())
 <div class="form-group col-sm-12">
     <table class="table">
         <tr>
