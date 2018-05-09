@@ -213,10 +213,10 @@ class SurveyResultsDataTable extends DataTable
         }
 
 
-        $nosample = Request::input('nosample');
-        if ($nosample) {
-            $query->where('sdv.sample', '<>', '0');
-        }
+//        $nosample = Request::input('nosample');
+//        if ($nosample) {
+//            $query->where('sdv.sample', '<>', '0');
+//        }
 
         $query->orderBy('sdv.id', 'asc');
         return $this->applyScopes($query);
