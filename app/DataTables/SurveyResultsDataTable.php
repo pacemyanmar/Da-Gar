@@ -212,6 +212,15 @@ class SurveyResultsDataTable extends DataTable
             });
         }
 
+        $select_filters = $project->locationMetas->where('filter_type', 'selectbox')->pluck('field_name');
+
+        foreach ($select_filters as $filter) {
+            $sample_filter = Request::input($filter);
+            if (!empty($sample_filter)) {
+                $query->where($filter, $sample_filter);
+            }
+        }
+
 
 //        $nosample = Request::input('nosample');
 //        if ($nosample) {
