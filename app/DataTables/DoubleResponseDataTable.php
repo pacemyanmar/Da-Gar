@@ -51,6 +51,7 @@ class DoubleResponseDataTable extends DataTable
         $section = $this->section;
         $sample = Sample::query();
         $section_status_query = [];
+        $project_sample_db = $project->dbname.'_samples';
         foreach($this->project->sections as $section) {
             $inputs = $section->inputs->pluck('inputid','inputid')->toArray();
 
@@ -63,10 +64,10 @@ class DoubleResponseDataTable extends DataTable
 
         $select_columns = implode(',', array_values($section_status_query));
 
-        $sample->select('samples.id as samples_id', 'sample_datas.location_code', 'samples.form_id', DB::raw($select_columns));
+        $sample->select('samples.id as samples_id', $project_sample_db.'.id', 'samples.form_id', DB::raw($select_columns));
 
-        $sample->leftjoin('sample_datas', function ($join) {
-            $join->on('samples.sample_data_id', 'sample_datas.id');
+        $sample->leftjoin($project_sample_db, function ($join) use ($project_sample_db) {
+            $join->on('samples.sample_data_id', $project_sample_db.'.id');
         });
 
         foreach ($project->sections as $k => $section) {
@@ -77,9 +78,9 @@ class DoubleResponseDataTable extends DataTable
         }
             $sample->where('samples.project_id', $project->id)
                 ->groupBy('samples.id')
-                ->groupBy('sample_datas.location_code')
+                ->groupBy($project_sample_db.'.id')
                 ->groupBy('samples.form_id');
-            $sample->orderBy('sample_datas.location_code', 'asc');
+            $sample->orderBy($project_sample_db.'.id', 'asc');
             $sample->orderBy('samples.form_id', 'asc');
 
         return $this->applyScopes($sample);
@@ -234,12 +235,14 @@ class DoubleResponseDataTable extends DataTable
     protected function getColumns()
     {
         $project = $this->project;
+        $project_sample_db = $project->dbname.'_samples';
+
         $columns['action'] = ['title' => '', 'orderable' => false, 'searchable' => false, 'width' => '5px', 'order' => [[1, 'asc']]];
 
-        $columns['location_code'] = [
-            'name' => 'sample_datas.location_code',
-            'data' => 'location_code',
-            'title' => trans('sample.location_code'),
+        $columns['id_code'] = [
+            'name' => $project_sample_db.'.id',
+            'data' => 'id',
+            'title' => trans('samples.id'),
             'orderable' => false,
             'visible' => true,
             'width' => '80px'

@@ -15,6 +15,9 @@ class ProjectDataTable extends DataTable
     {
         return datatables()
             ->eloquent($this->query())
+            ->addColumn('response_filter', function($project){
+                return $project->locationMetas->where('filter_type', 'selectbox')->first()->field_name;
+            })
             ->addColumn('action', 'projects.datatables_actions')
             ->make(true);
     }
