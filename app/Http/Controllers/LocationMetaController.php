@@ -257,7 +257,7 @@ class LocationMetaController extends AppBaseController
                                 //$table->string($location->field_name)->primary()->change();
                                 break;
                             default;
-                                $table->string($location->field_name)->change();
+                                $table->string($location->field_name)->nullable()->index()->change();
                         }
                     } else {
                         switch ($location->field_type) {
@@ -266,7 +266,7 @@ class LocationMetaController extends AppBaseController
                                 //$table->string($location->field_name)->primary();
                                 break;
                             default;
-                                $table->string($location->field_name);
+                                $table->string($location->field_name)->nullable()->index();
                         }
                     }
 
@@ -284,7 +284,7 @@ class LocationMetaController extends AppBaseController
                                 ->primary($location->field_name);
                             break;
                         default;
-                            $table->string($location->field_name);
+                            $table->string($location->field_name)->nullable()->index();
                     }
 
                 }
