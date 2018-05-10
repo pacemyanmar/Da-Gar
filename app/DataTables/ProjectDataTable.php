@@ -16,10 +16,14 @@ class ProjectDataTable extends DataTable
         return datatables()
             ->eloquent($this->query())
             ->addColumn('response_filter', function($project){
-                if(!$project->locationMetas->isEmpty())
-                    return $project->locationMetas->where('filter_type', 'selectbox')->first()->field_name;
-                else
+                if(!$project->locationMetas->isEmpty()) {
+                    if(!$project->locationMetas->where('filter_type', 'selectbox')->isEmpty()) {
+                        return $project->locationMetas->where('filter_type', 'selectbox')->first()->field_name;
+                    }
+                }
+                else {
                     return '';
+                }
             })
             ->addColumn('action', 'projects.datatables_actions')
             ->make(true);
