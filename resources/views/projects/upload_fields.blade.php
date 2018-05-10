@@ -58,15 +58,16 @@
                    class="form-control required" type="text" name="idcolumn"
                    id="idcolumn" required>
         </div>
-
-        <div class="input-group">
-            <input value="1" class="magic-checkbox optional" type="checkbox" name="update_structure"
-                   id="structure">
-            <label class="normal-text form-label" for="structure">Update Column Structure
-                <small>( Check if you need to add new column.)</small>
-            </label>
-
-        </div>
     @endif
+
+
+    <div class="input-group">
+        <input value="1" class="magic-checkbox optional" type="checkbox" name="update_structure"
+               id="structure">
+        <label class="normal-text form-label" for="structure">Update Column Structure
+            <small>( Check if you need to add new column.)</small>
+        </label>
+
+    </div>
 
 </div>
