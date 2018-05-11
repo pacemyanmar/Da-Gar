@@ -173,14 +173,19 @@
     })(jQuery);
     if(ajaxoverlay) {
         $(document).ajaxStart(function(){
-            $.LoadingOverlay("show");
+            $.LoadingOverlay("show",{
+                image       : "",
+                fontawesome : "fa fa-cog fa-spin"
+            });
         });
         $(document).ajaxError(function(){
             $.LoadingOverlay("hide");
         });
+
         $(document).ajaxStop(function(){
             $.LoadingOverlay("hide");
         });
+
     }
 
 
