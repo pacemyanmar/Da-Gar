@@ -250,7 +250,7 @@ class DoubleResponseDataTable extends DataTable
         $columns['form_id'] = [
             'name' => 'samples.form_id',
             'data' => 'form_id',
-            'title' => trans('sample.form_id'),
+            'title' => trans('samples.form_id'),
             'orderable' => false,
             'visible' => true,
             'width' => '80px'
