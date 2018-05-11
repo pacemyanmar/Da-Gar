@@ -301,7 +301,8 @@ class SurveyResultsController extends AppBaseController
                     if ($input->type == 'checkbox') {
                         $result_arr[$qid][$inputid] = ($results[$inputid]) ? $results[$inputid] : 0;
                     } else {
-                        $result_arr[$qid][$inputid] = ($results[$inputid]) ? $results[$inputid] : null;
+                        // if value is string 0 or some value not false
+                        $result_arr[$qid][$inputid] = ($results[$inputid] === '0' || $results[$inputid]) ? $results[$inputid] : null;
                     }
                 } else {
 
