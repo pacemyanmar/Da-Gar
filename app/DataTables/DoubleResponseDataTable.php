@@ -269,7 +269,7 @@ class DoubleResponseDataTable extends DataTable
                                         if(data == 0) {
                                             cell = '<i class=\"glyphicon glyphicon-ok text-success\"></i>';
                                         } else if (data === null) {
-                                            cell = '<i title=\"Both Missing\" class=\"glyphicon glyphicon-floppy-remove text-danger text-lg\"></i>';                                        
+                                            cell = '<i title=\"Both Missing\" class=\"glyphicon glyphicon-floppy-remove text-warning text-lg\"></i>';                                        
                                         }else {
                                             cell = data + ' <i class=\"glyphicon glyphicon-remove text-danger\"></i>';
                                         }
