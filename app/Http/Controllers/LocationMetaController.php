@@ -328,7 +328,7 @@ class LocationMetaController extends AppBaseController
             $data = $newdata;
         });
         $sample_data = new SampleData();
-        $sample_data->setTable($project->dbname.'_samples');
-        $sample_data->insert($data_array);
+
+        $sample_data->insertOrUpdate($data_array, $project->dbname.'_samples');
     }
 }
