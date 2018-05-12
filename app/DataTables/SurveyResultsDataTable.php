@@ -175,10 +175,24 @@ class SurveyResultsDataTable extends DataTable
         }
 
 
-        $total = Request::input('totalstatus');
+        // Total resopnse any section
+        $total = Request::input('total');
         if ($total) {
             $sectionColumns = $project->sections;
-            switch ($total) {
+            $query->where(function ($q) use ($sectionColumns) {
+                foreach ($sectionColumns as $section) {
+                    $sectionStatus = 'section'.$section->sort.'status';
+                    $sect_short = 'pj_s'.$section->sort;
+                    $q->orWhereNotNull($sect_short.'.'.$sectionStatus)->orWhere($sect_short.'.'.$sectionStatus, '<>', 0);
+                }
+            });
+        }
+
+        // Total response by section status
+        $totalstatus = Request::input('totalstatus');
+        if ($totalstatus) {
+            $sectionColumns = $project->sections;
+            switch ($totalstatus) {
                 case 'complete':
                     $status = 1;
                     break;
