@@ -30,7 +30,7 @@ _ide_helper_models.php
 npm-debug.log
 yarn-error.log
 yarn.lock
-app/DataTables/Scopes/
+
 resources/views/enumerators/
 resources/views/locations/
 resources/views/voters/
