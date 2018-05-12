@@ -209,6 +209,9 @@ class SampleResponseDataTable extends DataTable
         });
         $query->where('project_id', $project->id);
         //$query->where('sdv.sample', '<>', '0');
+        $query->orderBy('samples.sample_data_id', 'ASC');
+//        $query->orderBy('samples.form_id', 'ASC');
+//
 
         return $this->applyScopes($query);
     }
