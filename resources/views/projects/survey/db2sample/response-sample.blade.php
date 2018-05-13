@@ -2,15 +2,21 @@
 @section('meta')
 <meta name="csrf-token" content="{{ csrf_token() }}">
 @endsection
+@php
+    $select_filters = $project->locationMetas->where('filter_type', 'selectbox')->pluck('field_name');
+
+@endphp
 @section('content')
     <section class="content-header">
         <h1 class="pull-left">{!! (request()->is('*double*'))?'Double Entry':'Samples' !!} Response Rate</h1>
         <span class="pull-right">
         <label>Response rate by:
            <select autocomplete="off" id="responseBy" class="form-control input-md">
-               <option value="{!! route('projects.response.filter', [$project->id, 'level1']) !!}" @if($filters['type'] === 'level1') selected="selected" @endif>{!! trans('sample.level1') !!}</option>
-               <option value="{!! route('projects.response.filter', [$project->id, 'level2']) !!}" @if($filters['type'] === 'level2') selected="selected" @endif>{!! trans('sample.level2') !!}</option>
-               <option value="{!! route('projects.response.filter', [$project->id, 'level3']) !!}" @if($filters['type'] === 'level3') selected="selected" @endif>{!! trans('sample.level3') !!}</option>
+               @foreach($select_filters as $filter)
+
+                   <option value="{!! route('projects.response.filter', [$project->id, $filter]) !!}" @if($filters['type'] === $filter) selected="selected" @endif>{!! trans('samples.'.$filter) !!}</option>
+
+               @endforeach
            </select>
            </label>
         </span>

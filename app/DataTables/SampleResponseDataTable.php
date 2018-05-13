@@ -64,6 +64,9 @@ class SampleResponseDataTable extends DataTable
     {
         $query = Sample::query();
         $project = $this->project;
+
+        $project_sample_db = $project->dbname.'_samples';
+
         $childTable = $project->dbname;
         $auth = Auth::user();
 
@@ -132,7 +135,7 @@ class SampleResponseDataTable extends DataTable
 
                 $reported = implode( ' AND ', $reported);
 
-                $reported_locations = "COUNT( DISTINCT CASE WHEN ".$reported." THEN sdv.location_code ELSE 0 END )-SUM(DISTINCT CASE WHEN ".$reported." THEN 0 ELSE 1 END)";
+                $reported_locations = "COUNT( DISTINCT CASE WHEN ".$reported." THEN sdv.id ELSE 0 END )-SUM(DISTINCT CASE WHEN ".$reported." THEN 0 ELSE 1 END)";
             }
             switch ($this->filter) {
                 case 'user':
@@ -157,7 +160,7 @@ class SampleResponseDataTable extends DataTable
                             DB::raw($sectionColumnsStr));
                     } else {
                         $query->select('sdv.' . $filter,
-                            DB::raw('count(DISTINCT(sdv.location_code)) AS ltotal'),
+                            DB::raw('count(DISTINCT(sdv.id)) AS ltotal'),
                             DB::raw($completed. ' AS complete'),
                             DB::raw($incompleted. ' AS incomplete'),
                             DB::raw($missed. ' AS missing'),
@@ -172,7 +175,7 @@ class SampleResponseDataTable extends DataTable
                     break;
             }
 
-            $query->leftjoin('sample_datas_view as sdv', function ($join) {
+            $query->leftjoin($project_sample_db.' as sdv', function ($join) {
                 $join->on('samples.sample_data_id', 'sdv.id');
             });
 
@@ -205,7 +208,10 @@ class SampleResponseDataTable extends DataTable
             $join->on('qc_user.id', 'samples.qc_user_id');
         });
         $query->where('project_id', $project->id);
-        $query->where('sdv.sample', '<>', '0');
+        //$query->where('sdv.sample', '<>', '0');
+        $query->orderBy('samples.sample_data_id', 'ASC');
+//        $query->orderBy('samples.form_id', 'ASC');
+//
 
         return $this->applyScopes($query);
     }

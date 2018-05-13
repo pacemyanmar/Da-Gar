@@ -54,3 +54,7 @@ mix.scripts([
     'node_modules/formBuilder/dist/form-render.min.js'
 ],'public/js/formbuilder.js');
 
+mix.copyDirectory('resources/assets/images', 'public/images');
+
+
+

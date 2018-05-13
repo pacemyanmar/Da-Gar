@@ -18,7 +18,7 @@ trait LogicalCheckTrait
     {
         // $status => 1 : complete, 2 : missing, 3 : error, 0 :unknown or empty
 
-        if($value === 0 || $value || $input->optional) {
+        if($value === '0' || $value || $input->optional) {
             // if value not empty, set status as complete
             $this->errorBag[$input->question->qnum][$input->id] = 1;
             if($input->skip) {
@@ -36,7 +36,7 @@ trait LogicalCheckTrait
             }
         }
 
-        if(!$input->optional && $value !== 0 && !$value) {
+        if(!$input->optional && $value !== '0' && !$value) {
             // if value is null and input is required, set status as missing
             $this->errorBag[$input->question->qnum][$input->id] = 2;
         }

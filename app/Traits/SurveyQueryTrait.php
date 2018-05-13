@@ -132,6 +132,7 @@ trait SurveyQueryTrait {
             $section_columns[$sectionColumn] = [
                 'name' => $base_dbname . '.' . $sectionColumn,
                 'data' => $sectionColumn,
+                'className' => 'statuscolumns',
                 'orderable' => false,
                 'searchable' => true,
                 'width' => '40px',
@@ -218,7 +219,7 @@ trait SurveyQueryTrait {
                     'title' => trans('samples.'.$location->field_name),
                     'orderable' => false,
                     'defaultContent' => 'N/A',
-                    'visible' => $location->show_index,
+                    'visible' => true,
                     'width' => '80px',
                 ];
                 if($this->project->copies > 1) {
@@ -234,16 +235,18 @@ trait SurveyQueryTrait {
                     ];
                 }
             } else {
-                $columns[$location->field_name] = [
-                    'name' => 'sdv.'.$location->field_name,
-                    'data' => $location->field_name,
-                    'className' => $location->filter_type.' '.$location->field_name,
-                    'title' => trans('samples.'.$location->field_name),
-                    'orderable' => false,
-                    'defaultContent' => 'N/A',
-                    'visible' => $location->show_index,
-                    'width' => '80px',
-                ];
+                if($location->export) {
+                    $columns[$location->field_name] = [
+                        'name' => 'sdv.' . $location->field_name,
+                        'data' => $location->field_name,
+                        'className' => $location->filter_type . ' ' . $location->field_name,
+                        'title' => trans('samples.' . $location->field_name),
+                        'orderable' => false,
+                        'defaultContent' => 'N/A',
+                        'visible' => $location->show_index,
+                        'width' => '80px',
+                    ];
+                }
             }
         }
 

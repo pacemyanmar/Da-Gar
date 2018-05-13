@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\DataTables\DoubleResponseDataTable;
 use App\DataTables\SampleResponseDataTable;
+use App\DataTables\Scopes\OrderByCode;
+use App\DataTables\Scopes\OrderByFormId;
 use App\DataTables\SurveyResultsDataTable;
 use App\Models\SampleData;
 use App\Models\Section;
@@ -117,7 +119,7 @@ class SurveyResultsController extends AppBaseController
                 break;
         }
 
-        return $table->render('projects.survey.' . $project_type . '.index', compact('project'), compact('locations'));
+        return $table->addScope(new OrderByCode())->addScope(new OrderByFormId())->render('projects.survey.' . $project_type . '.index', compact('project'), compact('locations'));
     }
 
     /**
@@ -301,7 +303,8 @@ class SurveyResultsController extends AppBaseController
                     if ($input->type == 'checkbox') {
                         $result_arr[$qid][$inputid] = ($results[$inputid]) ? $results[$inputid] : 0;
                     } else {
-                        $result_arr[$qid][$inputid] = ($results[$inputid]) ? $results[$inputid] : null;
+                        // if value is string 0 or some value not false
+                        $result_arr[$qid][$inputid] = ($results[$inputid] === '0' || $results[$inputid]) ? $results[$inputid] : null;
                     }
                 } else {
 

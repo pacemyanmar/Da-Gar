@@ -37,21 +37,21 @@ class SurveyResultsDataTable extends DataTable
         $filterColumns = $this->filterColumns;
         $sectionColumns = $this->makeSectionColumns();
 
-//        foreach ($filterColumns as $index => $column) {
-//            $columnName = $column['name'];
-//            $value = $column['search']['value'];
-//
-//            if (in_array($column['data'], array_keys($sectionColumns)) && $value != '') {
-//
-//                $table->filterColumn($columnName, function($query, $keyword) use ($columnName) {
-//                    if($keyword) {
-//                        $query->where($columnName, '=', $keyword);
-//                    } else {
-//                        $query->where($columnName, '=', $keyword)->orWhereNull($columnName);
-//                    }
-//                });
-//            }
-//        }
+        foreach ($filterColumns as $index => $column) {
+            $columnName = $column['name'];
+            $value = $column['search']['value'];
+
+            if (in_array($column['data'], array_keys($sectionColumns)) && $value != '') {
+
+                $table->filterColumn($columnName, function($query, $keyword) use ($columnName) {
+                    if($keyword) {
+                        $query->where($columnName, '=', $keyword);
+                    } else {
+                        $query->where($columnName, '=', $keyword)->orWhereNull($columnName);
+                    }
+                });
+            }
+        }
 
         //$table->orderColumn($orderBy, DB::raw('LENGTH(' . $orderBy . ')') . " $1");
 
@@ -175,10 +175,24 @@ class SurveyResultsDataTable extends DataTable
         }
 
 
-        $total = Request::input('totalstatus');
+        // Total resopnse any section
+        $total = Request::input('total');
         if ($total) {
             $sectionColumns = $project->sections;
-            switch ($total) {
+            $query->where(function ($q) use ($sectionColumns) {
+                foreach ($sectionColumns as $section) {
+                    $sectionStatus = 'section'.$section->sort.'status';
+                    $sect_short = 'pj_s'.$section->sort;
+                    $q->orWhereNotNull($sect_short.'.'.$sectionStatus)->orWhere($sect_short.'.'.$sectionStatus, '<>', 0);
+                }
+            });
+        }
+
+        // Total response by section status
+        $totalstatus = Request::input('totalstatus');
+        if ($totalstatus) {
+            $sectionColumns = $project->sections;
+            switch ($totalstatus) {
                 case 'complete':
                     $status = 1;
                     break;
@@ -212,11 +226,20 @@ class SurveyResultsDataTable extends DataTable
             });
         }
 
+        $select_filters = $project->locationMetas->where('filter_type', 'selectbox')->pluck('field_name');
 
-        $nosample = Request::input('nosample');
-        if ($nosample) {
-            $query->where('sdv.sample', '<>', '0');
+        foreach ($select_filters as $filter) {
+            $sample_filter = Request::input($filter);
+            if (!empty($sample_filter)) {
+                $query->where($filter, $sample_filter);
+            }
         }
+
+
+//        $nosample = Request::input('nosample');
+//        if ($nosample) {
+//            $query->where('sdv.sample', '<>', '0');
+//        }
 
         $query->orderBy('sdv.id', 'asc');
         return $this->applyScopes($query);
@@ -337,15 +360,6 @@ class SurveyResultsDataTable extends DataTable
                               location.addClass('form-control input-sm');
                               } );\n";
         }
-
-
-        $statusColumns = array_intersect_key($this->getDatatablesColumns(), $this->makeSectionColumns());
-
-//        $statusColsArr = [];
-//        foreach ($statusColumns as $key => $value) {
-//            $statusColsArr[] = $flippedColumnName[$key] + 1;
-//        }
-
 
         return [
             'dom' => 'Brtip',
