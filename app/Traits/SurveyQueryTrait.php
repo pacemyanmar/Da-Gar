@@ -199,6 +199,8 @@ trait SurveyQueryTrait {
         }])->locationMetas;
 
         $columns = [];
+
+
         $columns['samples_id'] = [
             'name' => 'samples.id as samples_id',
             'data' => 'samples_id',
@@ -250,6 +252,33 @@ trait SurveyQueryTrait {
             }
         }
 
+        $columns['user_id'] = [
+            'name' => 'user.name AS username',
+            'data' => 'username',
+            'title' => trans('messages.user'),
+            'orderable' => false,
+            'defaultContent' => 'N/A',
+            'visible' => false,
+            'width' => '80px',
+        ];
+        $columns['update_user_id'] = [
+            'name' => 'update_user.code AS updatename',
+            'data' => 'updateuser',
+            'title' => 'Corrector',
+            'orderable' => false,
+            'defaultContent' => 'N/A',
+            'visible' => false,
+            'width' => '80px',
+        ];
+        $columns['qc_user_id'] = [
+            'name' => 'qc_user.name AS qcuser',
+            'data' => 'qcuser',
+            'title' => 'Double Checker',
+            'orderable' => false,
+            'defaultContent' => 'N/A',
+            'visible' => ($auth->role->role_name == 'doublechecker')?true:false,
+            'width' => '80px',
+        ];
         return $columns;
     }
 
