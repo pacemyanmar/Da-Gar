@@ -235,6 +235,17 @@ class SurveyResultsDataTable extends DataTable
             }
         }
 
+        $inputcolumn = Request::input('column');
+        $inputvalue = Request::input('value');
+        $sect = Request::input('sect');
+        if ($inputcolumn && $inputvalue && $sect) {
+            if ($inputvalue == 'NULL') {
+                $query->whereNull($sect.'.'.$inputcolumn);
+            } else {
+                $query->where($sect.'.'.$inputcolumn, $inputvalue);
+            }
+        }
+
 
 //        $nosample = Request::input('nosample');
 //        if ($nosample) {
