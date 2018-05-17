@@ -359,6 +359,9 @@ class SurveyResultsController extends AppBaseController
             }
         }
 
+        // save sample to update latest input user
+        $sample->save();
+
         $allResults['status'] = ['section'.$section->sort => $this->sectionStatus];
         return $this->sendResponse($allResults, trans('messages.saved'));
     }
