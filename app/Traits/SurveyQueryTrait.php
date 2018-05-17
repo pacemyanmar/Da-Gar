@@ -289,7 +289,12 @@ trait SurveyQueryTrait {
                         break;
                     default:
                         if($inputs->count() > 1) {
-                            $title = $question->qnum . ' ' . $input->value;
+                            if($input->type == 'text') {
+                                $title = title_case($input->inputid);
+                            } else {
+                                $title = $question->qnum . ' ' . $input->value;
+                            }
+
                         } else {
                             $title = $question->qnum;
                         }
