@@ -51,6 +51,13 @@
     		</span>
         {!! Form::input($element->type,"result[".$element->inputid."]", (isset($results) && !empty($results['section'.$section->sort]))?Kanaung\Facades\Converter::convert($results['section'.$section->sort]->{$element->inputid},'unicode','zawgyi'):null, $options) !!}
     </div>
+    @if(isset($double))
+        @if(isset($results) && !empty($results['section'.$section->sort]) && isset($double_results) && !empty($double_results['section'.$section->sort]))
+            @if($double_results['section'.$section->sort]->{$element->inputid} != $results['section'.$section->sort]->{$element->inputid})
+                {!! $double_results['section'.$section->sort]->{$element->inputid} !!}
+            @endif
+        @endif
+    @endif
 
 </div>
 
