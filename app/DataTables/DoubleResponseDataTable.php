@@ -5,7 +5,6 @@ namespace App\DataTables;
 use App\Models\Sample;
 use App\Traits\SurveyQueryTrait;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Schema;
 use Yajra\DataTables\Services\DataTable;
 
 class DoubleResponseDataTable extends DataTable
@@ -51,37 +50,44 @@ class DoubleResponseDataTable extends DataTable
         $section = $this->section;
         $sample = Sample::query();
         $section_status_query = [];
-        $project_sample_db = $project->dbname.'_samples';
-        foreach($this->project->sections as $section) {
-            $inputs = $section->inputs->pluck('inputid','inputid')->toArray();
+        $project_sample_db = $project->dbname . '_samples';
 
-            array_walk($inputs, function(&$input, $key){
-                $input = "SUM(".$input.")";
+        $total_status = [];
+
+        foreach ($this->project->sections as $section) {
+            $inputs = $section->inputs->pluck('inputid', 'inputid')->toArray();
+
+            array_walk($inputs, function (&$input, $key) {
+                $input = "SUM(" . $input . ")";
             });
-            $section_status_query[$section->id] = implode("+", array_values($inputs)). ' AS section'.$section->sort;
+            $section_status_query[$section->id] = implode("+", array_values($inputs)) . ' AS section' . $section->sort;
+
+            $total_status[] = implode("+", array_values($inputs));
             unset($inputs);
         }
 
+        $total_status_column = implode('+', array_values($total_status)) . ' AS totalstatus';
+
         $select_columns = implode(',', array_values($section_status_query));
 
-        $sample->select('samples.id as samples_id', $project_sample_db.'.id', 'samples.form_id', DB::raw($select_columns));
+        $sample->select('samples.id as samples_id', DB::raw($total_status_column), $project_sample_db . '.id', 'samples.form_id', DB::raw($select_columns));
 
         $sample->leftjoin($project_sample_db, function ($join) use ($project_sample_db) {
-            $join->on('samples.sample_data_id', $project_sample_db.'.id');
+            $join->on('samples.sample_data_id', $project_sample_db . '.id');
         });
 
         foreach ($project->sections as $k => $section) {
-            $viewName = $this->dbname . '_s' . $section->sort.'_view';
+            $viewName = $this->dbname . '_s' . $section->sort . '_view';
             $sample->leftjoin($viewName, function ($join) use ($viewName) {
                 $join->on('samples.id', '=', $viewName . '.sample_id');
             });
         }
-            $sample->where('samples.project_id', $project->id)
-                ->groupBy('samples.id')
-                ->groupBy($project_sample_db.'.id')
-                ->groupBy('samples.form_id');
-            $sample->orderBy($project_sample_db.'.id', 'asc');
-            $sample->orderBy('samples.form_id', 'asc');
+        $sample->where('samples.project_id', $project->id)
+            ->groupBy('samples.id')
+            ->groupBy($project_sample_db . '.id')
+            ->groupBy('samples.form_id');
+        $sample->orderBy($project_sample_db . '.id', 'asc');
+        $sample->orderBy('samples.form_id', 'asc');
 
         return $this->applyScopes($sample);
     }
@@ -106,8 +112,76 @@ class DoubleResponseDataTable extends DataTable
                     'X-CSRF-TOKEN' => csrf_token(),
                 ],
             ])
-        //->addAction(['width' => '80px'])
+            //->addAction(['width' => '80px'])
             ->parameters($this->getBuilderParameters());
+    }
+
+    /**
+     * Get columns.
+     *
+     * @return array
+     */
+    protected function getColumns()
+    {
+        $project = $this->project;
+        $project_sample_db = $project->dbname . '_samples';
+
+        $columns['action'] = ['title' => '', 'orderable' => false, 'searchable' => false, 'width' => '5px', 'order' => [[1, 'asc']]];
+
+        $columns['id_code'] = [
+            'name' => $project_sample_db . '.id',
+            'data' => 'id',
+            'title' => trans('samples.id'),
+            'orderable' => false,
+            'visible' => true,
+            'width' => '80px'
+        ];
+        $columns['form_id'] = [
+            'name' => 'samples.form_id',
+            'data' => 'form_id',
+            'title' => trans('samples.form_id'),
+            'orderable' => false,
+            'visible' => true,
+            'width' => '80px'
+        ];
+        $columns['totalstatus'] = [
+            'name' => 'totalstatus',
+            'data' => 'totalstatus',
+            'title' => trans('samples.totalstatus'),
+            'orderable' => false,
+            'visible' => true,
+            'width' => '80px'
+        ];
+        foreach ($project->sections as $section) {
+            $columns['section' . $section->sort] = [
+                'name' => 'section' . $section->sort,
+                'data' => 'section' . $section->sort,
+                'title' => 'R' . ($section->sort + 1),
+                'className' => 'statuscolumns',
+                'orderable' => false,
+                'visible' => true,
+                'width' => '20px',
+                "render" => function () {
+                    return "function ( data, type, full, meta ) {
+                                    if(type == 'display') {
+                                        if(data == 0) {
+                                            cell = '<i class=\"glyphicon glyphicon-ok text-success\"></i>';
+                                        } else if (data === null) {
+                                            cell = '<i title=\"Both Missing\" class=\"glyphicon glyphicon-floppy-remove text-warning text-lg\"></i>';                                        
+                                        }else {
+                                            cell = data + ' <i class=\"glyphicon glyphicon-remove text-danger\"></i>';
+                                        }
+                                        
+                                      return cell;
+                                      
+                                    } else {
+                                      return data;
+                                    }
+                                  }";
+                }
+            ];
+        }
+        return $columns;
     }
 
     protected function getBuilderParameters()
@@ -202,6 +276,21 @@ class DoubleResponseDataTable extends DataTable
                                     column.search($(this).val(), false, false, true).draw();
                                 });
                             });
+//                            this.api().columns(['.statuscolumns']).every( function () {
+//                              var column = this;
+//                              var select = $('<select style=\"width:80% !important\"><option value=\"\">" . trans('messages.all') . "</option><option value=\"0\">" . trans('messages.complete') . "</option><option value=\"1\">" . trans('messages.mismatch') . "</option></select>')
+//                              .appendTo( $(column.header()) )
+//                              .on( 'change', function () {
+//                              var val = $.fn.dataTable.util.escapeRegex(
+//                                          $(this).val()
+//                                          );
+//
+//                                  column
+//                                  .search( val ? val : '', false, false )
+//                                  .draw();
+//                              } );
+//                              select.addClass('form-control input-sm');
+//                              } );
                         }",
             'drawCallback' => "function(){
                 $(\"td:contains('OK')\").addClass('greenBg');
@@ -225,65 +314,6 @@ class DoubleResponseDataTable extends DataTable
             // /'createdRow' => function () use ($rowCallBack) {return $rowCallBack;},
         ];
 
-    }
-
-    /**
-     * Get columns.
-     *
-     * @return array
-     */
-    protected function getColumns()
-    {
-        $project = $this->project;
-        $project_sample_db = $project->dbname.'_samples';
-
-        $columns['action'] = ['title' => '', 'orderable' => false, 'searchable' => false, 'width' => '5px', 'order' => [[1, 'asc']]];
-
-        $columns['id_code'] = [
-            'name' => $project_sample_db.'.id',
-            'data' => 'id',
-            'title' => trans('samples.id'),
-            'orderable' => false,
-            'visible' => true,
-            'width' => '80px'
-        ];
-        $columns['form_id'] = [
-            'name' => 'samples.form_id',
-            'data' => 'form_id',
-            'title' => trans('samples.form_id'),
-            'orderable' => false,
-            'visible' => true,
-            'width' => '80px'
-        ];
-        foreach($project->sections as $section) {
-            $columns['section'.$section->sort] = [
-                'name' => 'section'.$section->sort,
-                'data' => 'section'.$section->sort,
-                'title' => 'R'.($section->sort + 1),
-                'orderable' => false,
-                'visible' => true,
-                'width' => '20px',
-                "render" => function () {
-                    return "function ( data, type, full, meta ) {
-                                    if(type == 'display') {
-                                        if(data == 0) {
-                                            cell = '<i class=\"glyphicon glyphicon-ok text-success\"></i>';
-                                        } else if (data === null) {
-                                            cell = '<i title=\"Both Missing\" class=\"glyphicon glyphicon-floppy-remove text-warning text-lg\"></i>';                                        
-                                        }else {
-                                            cell = data + ' <i class=\"glyphicon glyphicon-remove text-danger\"></i>';
-                                        }
-                                        
-                                      return cell;
-                                      
-                                    } else {
-                                      return data;
-                                    }
-                                  }";
-                }
-            ];
-        }
-        return $columns;
     }
 
     /**
