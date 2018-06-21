@@ -1149,9 +1149,15 @@ class ProjectController extends AppBaseController
         {
             $url = $request->input('fileurl');
 
-            $file = file_get_contents($url);
+            $fileName = 'formurl_'.date('m-d-Y_hia').'.csv';
 
-            dd($file);
+            $csvData = file_get_contents($url);
+
+            $path = storage_path('app/public');
+
+            file_put_contents($path.'/'.$fileName,$csvData);
+
+            dd('Done');
 
         }
 
@@ -1294,7 +1300,26 @@ class ProjectController extends AppBaseController
      */
     private function importSampleData($records, $project, $idcoumn)
     {
-        dd('Importing');
+
+        $data_array = iterator_to_array($records,true);
+
+        array_walk($data_array, function(&$data, $key) use ($project) {
+            $newdata = [];
+            foreach($data as $dk => $dv) {
+                if(str_dbcolumn($dk) == $project->idcolumn) {
+                    $newdata['id'] = filter_var($dv, FILTER_SANITIZE_STRING);
+                } else {
+                    // this will throw error if column not exist, need to check first
+                    $newdata[str_dbcolumn($dk)] = filter_var($dv, FILTER_SANITIZE_STRING);
+                }
+            }
+            $data = $newdata;
+        });
+        $sample_data = new SampleData();
+        $sample_data->setTable($project->dbname.'_samples');
+        $sample_data->insertOrUpdate($data_array, $project->dbname.'_samples');
+
+        return;
     }
 
 }

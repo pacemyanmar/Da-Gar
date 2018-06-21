@@ -35,6 +35,7 @@
                     //section as css class name
                     $sectionClass = str_slug($section['sectionname'], $separator = "-");
                     $editing = true;
+                    $section_table = 'pj_s' . $section->sort;
                 @endphp
                 <div class="panel panel-primary">
                     <div class="panel-heading">
@@ -88,7 +89,7 @@
                                                                     <li class="list-group-item"><span class="badge"
                                                                                                       style="background-color: {{ $colors[$k] }};  min-height:10px;">&nbsp</span>
                                                                         ({{$element->value}}) {{ $element->label }}
-                                                                        <a href="{{ route('projects.surveys.index', $project->id) }}/?column={{ $element->inputid }}&value={{ $element->value }}">
+                                                                        <a href="{{ route('projects.surveys.index', $project->id) }}/?column={{ $element->inputid }}&value={{ $element->value }}&sect={{ $section_table }}">
                                                                             @if( $element->type == 'radio' )
                                                                                 @if($results->{strtolower($question->qnum).'_reported'} && is_numeric($element->value))
                                                                                     ( {{ $results->{$element->inputid.'_'.$element->value} }}
@@ -135,7 +136,7 @@
 
                                                                 <li class="list-group-item">
                                                                     Missing <a
-                                                                            href="{{ route('projects.surveys.index', $project->id) }}/?column={{ $element->inputid }}&value=NULL">
+                                                                            href="{{ route('projects.surveys.index', $project->id) }}/?column={{ $element->inputid }}&sect={{ $section_table }}&value=NULL">
                                                                         ( {{ $results->{'q'.$question->qnum.'_none'} }}
                                                                         - {{ number_format(($results->{'q'.$question->qnum.'_none'} * 100)/ $results->total, 2, '.', '') }}
                                                                         % ) </a>

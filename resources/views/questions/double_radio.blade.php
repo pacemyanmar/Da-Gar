@@ -17,15 +17,7 @@
         @if($element->value != '') <span class="label label-primary badge">{!! $element->value !!}</span> @endif
         @if($element->status != 'published') <span
                 class="label label-warning badge">{!! $element->status !!}</span> @endif
-        @if(str_contains(strtolower($element->label), 'other'))
-            {!! Form::text("result[".$element->inputid."]",
-            (isset($double_results)
-            && !empty($double_results['section'.$section->sort]))?$double_results['section'.$section->sort]->{$element->inputid}:null,
-            ['class' => $element->className.' form-control input-sm zawgyi',
-            'autocomplete' => 'off',
-            'id' => $element->id.'other']) !!}
 
-        @endif
         <span class="hide label label-danger badge {!! $element->inputid .' '.$element->id!!}"><i class="fa"></i></span>
     </label>
     @if($element->other)

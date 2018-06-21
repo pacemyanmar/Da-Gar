@@ -249,6 +249,10 @@ class LocationMetaController extends AppBaseController
 
             Schema::table($table_name, function ($table) use ($project, $table_name) {
 
+                $conn = Schema::getConnection();
+                $dbSchemaManager = $conn->getDoctrineSchemaManager();
+                $doctrineTable = $dbSchemaManager->listTableDetails($table_name);
+
                 foreach ($project->locationMetas as $location) {
                     if (Schema::hasColumn($table_name, $location->field_name)) {
                         switch ($location->field_type) {
@@ -257,7 +261,7 @@ class LocationMetaController extends AppBaseController
                                 //$table->string($location->field_name)->primary()->change();
                                 break;
                             default;
-                                $table->string($location->field_name)->change();
+                                $table->string($location->field_name)->nullable()->change();
                         }
                     } else {
                         switch ($location->field_type) {
@@ -266,8 +270,13 @@ class LocationMetaController extends AppBaseController
                                 //$table->string($location->field_name)->primary();
                                 break;
                             default;
-                                $table->string($location->field_name);
+                                $table->string($location->field_name)->nullable();
                         }
+                    }
+
+                    if (! $doctrineTable->hasIndex($table_name.'_'.$location->field_name.'_index'))
+                    {
+                        $table->index($location->field_name);
                     }
 
                 }
@@ -284,7 +293,7 @@ class LocationMetaController extends AppBaseController
                                 ->primary($location->field_name);
                             break;
                         default;
-                            $table->string($location->field_name);
+                            $table->string($location->field_name)->nullable()->index();
                     }
 
                 }
@@ -319,7 +328,7 @@ class LocationMetaController extends AppBaseController
             $data = $newdata;
         });
         $sample_data = new SampleData();
-        $sample_data->setTable($project->dbname.'_samples');
-        $sample_data->insert($data_array);
+
+        $sample_data->insertOrUpdate($data_array, $project->dbname.'_samples');
     }
 }

@@ -132,6 +132,7 @@ trait SurveyQueryTrait {
             $section_columns[$sectionColumn] = [
                 'name' => $base_dbname . '.' . $sectionColumn,
                 'data' => $sectionColumn,
+                'className' => 'statuscolumns',
                 'orderable' => false,
                 'searchable' => true,
                 'width' => '40px',
@@ -198,6 +199,8 @@ trait SurveyQueryTrait {
         }])->locationMetas;
 
         $columns = [];
+
+
         $columns['samples_id'] = [
             'name' => 'samples.id as samples_id',
             'data' => 'samples_id',
@@ -218,7 +221,7 @@ trait SurveyQueryTrait {
                     'title' => trans('samples.'.$location->field_name),
                     'orderable' => false,
                     'defaultContent' => 'N/A',
-                    'visible' => $location->show_index,
+                    'visible' => true,
                     'width' => '80px',
                 ];
                 if($this->project->copies > 1) {
@@ -234,19 +237,48 @@ trait SurveyQueryTrait {
                     ];
                 }
             } else {
-                $columns[$location->field_name] = [
-                    'name' => 'sdv.'.$location->field_name,
-                    'data' => $location->field_name,
-                    'className' => $location->filter_type.' '.$location->field_name,
-                    'title' => trans('samples.'.$location->field_name),
-                    'orderable' => false,
-                    'defaultContent' => 'N/A',
-                    'visible' => $location->show_index,
-                    'width' => '80px',
-                ];
+                if($location->export) {
+                    $columns[$location->field_name] = [
+                        'name' => 'sdv.' . $location->field_name,
+                        'data' => $location->field_name,
+                        'className' => $location->filter_type . ' ' . $location->field_name,
+                        'title' => trans('samples.' . $location->field_name),
+                        'orderable' => false,
+                        'defaultContent' => 'N/A',
+                        'visible' => $location->show_index,
+                        'width' => '80px',
+                    ];
+                }
             }
         }
 
+        $columns['user_id'] = [
+            'name' => 'user.name AS username',
+            'data' => 'username',
+            'title' => trans('messages.user'),
+            'orderable' => false,
+            'defaultContent' => 'N/A',
+            'visible' => false,
+            'width' => '80px',
+        ];
+        $columns['update_user_id'] = [
+            'name' => 'update_user.code AS updatename',
+            'data' => 'updateuser',
+            'title' => 'Corrector',
+            'orderable' => false,
+            'defaultContent' => 'N/A',
+            'visible' => false,
+            'width' => '80px',
+        ];
+        $columns['qc_user_id'] = [
+            'name' => 'qc_user.name AS qcuser',
+            'data' => 'qcuser',
+            'title' => 'Double Checker',
+            'orderable' => false,
+            'defaultContent' => 'N/A',
+            'visible' => ($auth->role->role_name == 'doublechecker')?true:false,
+            'width' => '80px',
+        ];
         return $columns;
     }
 
@@ -286,7 +318,12 @@ trait SurveyQueryTrait {
                         break;
                     default:
                         if($inputs->count() > 1) {
-                            $title = $question->qnum . ' ' . $input->value;
+                            if($input->type == 'text') {
+                                $title = title_case($input->inputid);
+                            } else {
+                                $title = $question->qnum . ' ' . $input->value;
+                            }
+
                         } else {
                             $title = $question->qnum;
                         }
