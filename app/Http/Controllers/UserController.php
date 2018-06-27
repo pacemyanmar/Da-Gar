@@ -96,7 +96,7 @@ class UserController extends AppBaseController
         $input = $request->all();
 
         $input['password'] = bcrypt($input['password']);
-
+        $user = $this->userRepository->create($input);
         Flash::success('User saved successfully.');
 
         return redirect(route('users.index'));
