@@ -14,6 +14,7 @@ use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Laracasts\Flash\Flash;
+use League\Csv\Reader;
 use Response;
 
 class UserController extends AppBaseController
@@ -83,11 +84,18 @@ class UserController extends AppBaseController
             return redirect()->back();
         }
 
+        if ($request->submit == 'Import CSV'){
+
+            $this->importUser($request);
+
+            Flash::success('User Uploaded successfully.');
+
+            return redirect(route('users.index'));
+        }
+
         $input = $request->all();
 
         $input['password'] = bcrypt($input['password']);
-
-        $user = $this->userRepository->create($input);
 
         Flash::success('User saved successfully.');
 
@@ -226,5 +234,45 @@ class UserController extends AppBaseController
         Flash::success('User deleted successfully.');
 
         return redirect(route('users.index'));
+    }
+
+    /**
+     * import from csv
+     * @param string $request
+     */
+    public function importUser($request)
+    {
+
+        if ( $request->file('usercsv'))
+        {
+
+            $file = $request->file('usercsv');
+
+            $fileName = $file->getClientOriginalName();
+
+            $saveFile    = $file->storeAs('user',$fileName);
+
+            $path = storage_path('app/'.$saveFile );
+
+            $csv = Reader::createFromPath($path, 'r')
+                ->setHeaderOffset(0);
+
+            foreach($csv as $row){
+
+
+                User::firstOrcreate([
+                    'name' => $row['name'],
+                    'code' => $row['code'],
+                    'username' => $row['username'],
+                    'password' => bcrypt($row['password']),
+                    'email' => $row['email'],
+                    'role_id'   => 5 //Data Entry Clerk Role_Id 5
+                ]);
+
+            }
+        }
+
+
+
     }
 }
