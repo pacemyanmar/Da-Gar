@@ -25,6 +25,13 @@ class CreateUserRequest extends FormRequest
      */
     public function rules()
     {
-        return User::$rules;
+        if(request()->submit == 'Save')
+            return User::$rules;
+
+        $csv = [
+            'usercsv' => 'required|mimes:csv,txt'
+        ];
+
+        return $csv;
     }
 }
