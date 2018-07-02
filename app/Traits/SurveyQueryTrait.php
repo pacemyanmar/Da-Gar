@@ -69,21 +69,21 @@ trait SurveyQueryTrait {
             $input_columns = $this->makeInputsColumns();
 
             array_walk($input_columns, function (&$column, $column_name) {
-                $old_column = $column;
-                if(array_key_exists('type', $old_column)) {
-                    switch ($old_column['type']) {
+                $ori_column = $column;
+                if(array_key_exists('type', $ori_column)) {
+                    switch ($ori_column['type']) {
                         case 'checkbox':
-                            $column = 'IF(' . $old_column['name'] . ',1,IFNULL('.$old_column['name'].',NULL)) AS ' . $column_name;
+                            $column = 'IF(' . $ori_column['name'] . ',1,IFNULL('.$ori_column['name'].',NULL)) AS ' . $column_name;
                             break;
                         case 'double_entry':
-                            $column = 'IF(' . $old_column['name']. ' = ' . $old_column['origin_name']. ', 1, 0) AS ' . $column_name;
+                            $column = 'IF(' . $ori_column['name']. ' = ' . $ori_column['origin_name']. ', 1, 0) AS ' . $column_name;
                             break;
                         default:
-                            $column = $old_column['name'];
+                            $column = $ori_column['name'];
                             break;
                     }
                 } else {
-                    $column = $old_column['name'];
+                    $column = $ori_column['name'];
                 }
             });
 
@@ -312,6 +312,12 @@ trait SurveyQueryTrait {
                         break;
                     case 'checkbox':
                         $title = $question->qnum . ' ' . $input->value;
+                        $input_columns[strtolower($question->qnum)] = [
+                            'name' => $base_dbname. '.' . strtolower($question->qnum),
+                            'data' => strtolower($question->qnum), 'title' => strtoupper(strtolower($question->qnum)),
+                            'class' => 'result', 'orderable' => false,
+                            'width' => '80px', 'type' => $input->type
+                        ];
                         break;
                     case 'template':
                         $title = $input->label;
