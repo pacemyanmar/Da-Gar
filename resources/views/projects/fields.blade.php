@@ -2,16 +2,8 @@
     /**
      *  db value to name array
      */
-     $dblink = [
-        'enumerator' => 'Enumerator',
-        'spotchecker' => 'Spot Checker',
-        'voter' => 'Voter List',
-     ];
-
-     $dbgroup = ['1' => 'Group 1','2' => 'Group 2','3' => 'Group 3','4' => 'Group 4','5' => 'Group 5'];
      $type = [
-        'db2sample' => 'SBO Survey',
-        'tabulation' => 'Tabulation Survey',
+        'db2sample' => 'Survey',
         'sample2db' => 'Incident',
      ]
 
@@ -39,24 +31,6 @@
 @if(!isset($project) || (isset($project) && $project->status == 'new'))
     <div class="col-sm-12">
         <div class="row">
-            <!-- DB Link Field -->
-            <div class="col-sm-3">
-                <div class="form-group has-error">
-                    {!! Form::label('dblink', 'Sample list to link: ', ['class' => 'toggle']) !!}
-                    {!! Form::select('dblink', $dblink,(isset($project))?$project->dblink:null, ['class' => 'form-control toggle']) !!}
-                    <span class="text-red toggle">* Red fields cannot change after form built.</span>
-                </div>
-            </div>
-
-            <!-- DB Link Group -->
-            <div class="col-sm-3">
-                <div class="form-group has-error">
-                    {!! Form::label('dbgroup', 'Sample list group: ', ['class' => 'toggle']) !!}
-                    {!! Form::select('dbgroup', $dbgroup,(isset($project))?$project->dbgroup:null, ['class' => 'form-control toggle']) !!}
-                    <span class="text-red toggle">* Red fields cannot change after form built.</span>
-                </div>
-            </div>
-
             <!-- Type Field -->
             <div class="col-sm-3"
             '>
@@ -76,129 +50,6 @@
     </div>
     </div>
 @endif
-<div class="form-group col-sm-12">
-    {!! Form::label('parties', 'Parties:', ['class' => 'toggle']) !!}
-    @if(isset($project))
-        <h3 class="toggle" style="display:initial">{!! $project->parties !!}</h3>
-    @endif
-    {!! Form::text('parties', null, ['class' => 'form-control toggle', 'placeholder' => 'Commas seperates list of parties']) !!}
-</div>
-<!-- Type Field -->
-<div class="form-group col-sm-12">
-    {!! Form::label('index_columns', 'Columns to show in list (Choose appropriate columns): ',['class' => 'toggle']) !!}
-    <table class="table toggle">
-        <tr>
-            <td>
-                {!! Form::checkbox("index_columns[location_code]", trans('sample.location_code'), null, ['class' => 'magic-checkbox ', 'id' => 'idcode']) !!}
-                <label class="normal-text" for="idcode">{!! trans('sample.location_code') !!}
-                </label>
-            </td>
-            <td>
-                {!! Form::checkbox("index_columns[form_id]", 'Form No.', null, ['class' => 'magic-checkbox ', 'id' => 'form_id']) !!}
-                <label class="normal-text" for="form_id">Form ID
-                </label>
-            </td>
-            <td>
-                {!! Form::checkbox("index_columns[user_id]", 'user', null, ['class' => 'magic-checkbox ', 'id' => 'user']) !!}
-                <label class="normal-text" for="user">Data Clerk
-                </label>
-            </td>
-            <td>
-                {!! Form::checkbox("index_columns[observer_name]", 'Observer', null, ['class' => 'magic-checkbox ', 'id' => 'observer']) !!}
-                <label class="normal-text" for="observer">Observer
-                </label>
-            </td>
-            <td>
-                {!! Form::checkbox("index_columns[national_id]", trans('sample.national_id'), null, ['class' => 'magic-checkbox ', 'id' => 'nrc_id']) !!}
-                <label class="normal-text" for="nrc_id">{!! trans('sample.national_id') !!}
-                </label>
-            </td>
-            <td>
-                {!! Form::checkbox("index_columns[mobile]", 'Phone', null, ['class' => 'magic-checkbox ', 'id' => 'phone']) !!}
-                <label class="normal-text" for="phone">Phone
-                </label>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                {!! Form::checkbox("index_columns[level1]", trans('sample.level1'), null, ['class' => 'magic-checkbox ', 'id' => 'level1']) !!}
-                <label class="normal-text" for="level1">{!! trans('sample.level1') !!}
-                </label>
-            </td>
-            <td>
-                {!! Form::checkbox("index_columns[level2]", trans('sample.level2'), null, ['class' => 'magic-checkbox ', 'id' => 'level2']) !!}
-                <label class="normal-text" for="level2">{!! trans('sample.level2') !!}
-                </label>
-            </td>
-            <td>
-                {!! Form::checkbox("index_columns[level3]", trans('sample.level3'), null, ['class' => 'magic-checkbox ', 'id' => 'level3']) !!}
-                <label class="normal-text" for="level3">{!! trans('sample.level3') !!}
-                </label>
-            </td>
-            <td>
-                {!! Form::checkbox("index_columns[level4]", trans('sample.level4'), null, ['class' => 'magic-checkbox ', 'id' => 'level4']) !!}
-                <label class="normal-text" for="level4">{!! trans('sample.level4') !!}
-                </label>
-            </td>
-            <td>
-                {!! Form::checkbox("index_columns[level5]", trans('sample.level5'), null, ['class' => 'magic-checkbox ', 'id' => 'level5']) !!}
-                <label class="normal-text" for="level5">{!! trans('sample.level5') !!}
-                </label>
-            </td>
-        </tr>
-        <tr></tr>
-    </table>
-</div>
-
-<!-- sections Field -->
-<div class="form-group col-sm-12 col-lg-12">
-
-    <table class="table table-striped table-bordered" id="table">
-        <thead class="no-border">
-        <tr>
-            <th>Sample Label</th>
-            <th>Sample ID</th>
-            <th class=" toggle"><i class=" fa fa-plus btn btn-sm btn-success btn-flat btn-green toggle" id="btnAddSample"></i></th>
-        </tr>
-        </thead>
-        <tbody id="samples" class="no-border-x no-border-y ui-sortable">
-        @if(isset($project))
-            @if(isset($project->samples) && is_array($project->samples))
-                @foreach($project->samples as $sample_key => $sample)
-                    <tr class="sample" style="display: table-row;">
-                        <td style="vertical-align: middle">
-                            <p class="toggle" style="display:initial">{!! $sample_key !!}</p>
-                            <input value="{!! $sample_key !!}" class="form-control samplename  toggle" type="text">
-                        </td>
-                        <td style="vertical-align: middle">
-                            <p class="toggle" style="display:initial">{!! $sample !!}</p>
-                            <input value="{!! $sample !!}" class="form-control sampleid  toggle" type="text">
-                        </td>
-                        <td style="vertical-align: middle" class=" toggle">
-                            <i onclick="removeItem(this)" class="remove fa fa-trash-o  toggle"
-                               style="cursor: pointer;font-size: 20px;color: red;"></i>
-                        </td>
-                    </tr>
-                @endforeach
-
-            @endif
-        @else
-            <tr class="sample" style="display: table-row;">
-                <td style="vertical-align: middle">
-                    <input class="form-control samplename  toggle" type="text">
-                </td>
-                <td style="vertical-align: middle">
-                    <input class="form-control sampleid  toggle" type="text" placeholder="Unique number or word">
-                </td>
-                <td style="vertical-align: middle" class=" toggle">
-                    <i onclick="removeItem(this)" class="remove fa fa-trash-o toggle"
-                       style="cursor: pointer;font-size: 20px;color: red;"></i>
-                </td>
-            </tr>
-        @endif
-        </tbody>
-    </table>
-</div>
 
 <!-- sections Field -->
 <div class="form-group col-sm-12 col-lg-12">
@@ -274,6 +125,12 @@
                     <div class="toggle">
                         <input value="1" class="magic-checkbox double" type="checkbox" id="double0">
                         <label class="normal-text" for="double0"></label>
+                    </div>
+                </td>
+                <td style="">
+                    <div class="toggle">
+                        <input value="1" class="magic-checkbox disablesms" type="checkbox" id="disablesms0">
+                        <label class="normal-text" for="disablesms0"></label>
                     </div>
                 </td>
                 <td style="vertical-align: middle">

@@ -127,17 +127,6 @@ class ProjectController extends AppBaseController
             ];
         }
 
-        $samples = $request->input('samples');
-        if (!empty($samples)) {
-            foreach ($samples as $sample) {
-                $key = $sample['name'];
-                $val = $sample['id'];
-                $input['samples'][$key] = $val;
-            }
-        } else {
-            $input['samples']['Default'] = 1;
-        }
-
         $short_project_name = substr($input['project'], 0, 10);
         $short_project_name = preg_replace('/[^a-zA-Z0-9]/', '_', $short_project_name);
         $unique = uniqid();
@@ -268,15 +257,7 @@ class ProjectController extends AppBaseController
         }
 
         $input = $request->except('samples','sections');
-        if (!array_key_exists('parties', $input)) {
-            $input['parties'] = null;
-        }
-        $samples = $request->input('samples');
-        foreach ($samples as $sample) {
-            $key = $sample['name'];
-            $val = $sample['id'];
-            $input['samples'][$key] = $val;
-        }
+
         if (Schema::hasTable($project->dbname)) {
             $input['status'] = 'modified';
         }
