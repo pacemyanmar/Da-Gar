@@ -106,7 +106,7 @@ Route::resource('observers', 'ObserverController');
 
 Route::resource('logicalChecks', 'LogicalCheckController');
 
-Route::resource('locationMetas', 'LocationMetaController');
+Route::resource('location-metas', 'LocationMetaController');
 
 
 
