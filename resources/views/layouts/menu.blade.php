@@ -36,15 +36,6 @@
     </li>
 @endcan
 
-
-
-
-<li class="{{ Request::is('locationMetas*') ? 'active' : '' }}">
-    <a href="{!! route('locationMetas.index') !!}"><i class="fa fa-map-marker"></i><span>Location Metas</span></a>
-</li>
-
-
 <li class="{{ Request::is('translations*') ? 'active' : '' }}">
     <a href="{!! route('translations.index') !!}"><i class="fa fa-edit"></i><span>Translations</span></a>
 </li>
-
