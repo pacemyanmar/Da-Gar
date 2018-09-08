@@ -97,21 +97,37 @@
                             @endif
                         </td>
                         <td>
-                            {!! Form::select("filter_type", ["" => "None", "typein" => "Type In","selectbox" => "Select Box"],$location->filter_type, ["class" => "form-control filter_type field"]) !!}
+                            @if($location->field_type == 'primary')
+                                {!! Form::select("filter_type", ["typein" => "Type In"],'typein', ["class" => "form-control filter_type field", "readonly"]) !!}
+                            @else
+                                {!! Form::select("filter_type", ["" => "None", "typein" => "Type In","selectbox" => "Select Box"],$location->filter_type, ["class" => "form-control filter_type field"]) !!}
+                            @endif
                         </td>
                         <td>
-                            {!! Form::checkbox("show", 1, $location->show_index,["class" => "magic-checkbox field_show field", "id" => "show".$k]) !!}
-                            {!! Form::label("show".$k, " ") !!}
+                            @if($location->field_type == 'primary')
+                                {!! Form::checkbox("show", 1, 1,["class" => "magic-checkbox field_show field", "id" => "show".$k, "onclick"=>"return false;"]) !!}
+                                {!! Form::label("show".$k, " ") !!}
+                            @else
+                                {!! Form::checkbox("show", 1, $location->show_index,["class" => "magic-checkbox field_show field", "id" => "show".$k]) !!}
+                                {!! Form::label("show".$k, " ") !!}
+                            @endif
                         </td>
                         <td>
-                            {!! Form::checkbox("export", 1, $location->export, ["class" => "magic-checkbox field_export field", "id" => "export".$k]) !!}
-                            {!! Form::label("export".$k, " ") !!}
+                            @if($location->field_type == 'primary')
+                                {!! Form::checkbox("export", 1, 1, ["class" => "magic-checkbox field_export field", "id" => "export".$k, "onclick"=>"return false;"]) !!}
+                                {!! Form::label("export".$k, " ") !!}
+                            @else
+                                {!! Form::checkbox("export", 1, $location->export, ["class" => "magic-checkbox field_export field", "id" => "export".$k]) !!}
+                                {!! Form::label("export".$k, " ") !!}
+                            @endif
                         </td>
                         <td>
                             <i onclick="addItem()" class="add-new fa fa-plus btn btn-sm btn-success"
                                style="cursor: pointer;"></i>
-                            <i onclick="removeItem(this)" class="remove fa fa-trash-o"
-                               style="cursor: pointer;font-size: 20px;color: red;"></i>
+                            @if($location->field_type != 'primary')
+                                <i onclick="removeItem(this)" class="remove fa fa-trash-o"
+                                   style="cursor: pointer;font-size: 20px;color: red;"></i>
+                            @endif
                         </td>
                     </tr>
                 @endif
@@ -175,7 +191,8 @@
             $(document).ready(function () {
                 $('tbody').sortable({
                     cursor: 'move',
-                    axis: 'y'});
+                    axis: 'y'
+                });
                 $("form").on("submit", function (e) {
                     $('.field_label').each(function (index, value) {
                         $(this).attr('name', 'fields[' + index + '][label]');
