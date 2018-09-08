@@ -15,10 +15,8 @@
         @include('flash::message')
 
         <div class="clearfix"></div>
-        <div class="box box-primary">
-            <div class="box-body">
-                    @include('projects.table')
-            </div>
+        <div class="row">
+        @include('projects.boxes')
         </div>
     </div>
 @endsection
