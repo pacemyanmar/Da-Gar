@@ -39,17 +39,19 @@ class SurveyResultsDataTable extends DataTable
 
         foreach ($filterColumns as $index => $column) {
             $columnName = $column['name'];
-            $value = $column['search']['value'];
+            if(array_key_exists('search', $column)) {
+                $value = $column['search']['value'];
 
-            if (in_array($column['data'], array_keys($sectionColumns)) && $value != '') {
+                if (in_array($column['data'], array_keys($sectionColumns)) && $value != '') {
 
-                $table->filterColumn($columnName, function($query, $keyword) use ($columnName) {
-                    if($keyword) {
-                        $query->where($columnName, '=', $keyword);
-                    } else {
-                        $query->where($columnName, '=', $keyword)->orWhereNull($columnName);
-                    }
-                });
+                    $table->filterColumn($columnName, function ($query, $keyword) use ($columnName) {
+                        if ($keyword) {
+                            $query->where($columnName, '=', $keyword);
+                        } else {
+                            $query->where($columnName, '=', $keyword)->orWhereNull($columnName);
+                        }
+                    });
+                }
             }
         }
 
@@ -252,7 +254,7 @@ class SurveyResultsDataTable extends DataTable
 //            $query->where('sdv.sample', '<>', '0');
 //        }
 
-        $query->orderBy('sdv.id', 'asc');
+        $query->orderBy(DB::raw('LENGTH(sdv.id),sdv.id'), 'asc');
         return $this->applyScopes($query);
     }
 
