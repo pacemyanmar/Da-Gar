@@ -6,6 +6,7 @@ use App\DataTables\SampleDetailsDataTable;
 use App\Http\Requests;
 use App\Http\Requests\CreateSampleDetailsRequest;
 use App\Http\Requests\UpdateSampleDetailsRequest;
+use App\Models\SampleData;
 use App\Models\SampleDetails;
 use App\Repositories\ProjectRepository;
 use App\Repositories\SampleDetailsRepository;
@@ -39,6 +40,25 @@ class SampleDetailsController extends AppBaseController
     public function index(SampleDetailsDataTable $sampleDetailsDataTable, Request $request)
     {
         $project_id = $request->input('project_id');
+
+        $project = $this->projectRepository->findWithoutFail($project_id);
+
+        if (empty($project)) {
+            Flash::error('Project not found');
+
+            return redirect(route('projects.index'));
+        }
+
+        if ($project->locationMetas->isEmpty()) {
+            Flash::error('Sample Data not uploaded. Please upload now.');
+            $observation_type = SampleData::pluck('observer_field','observer_field')->unique();
+
+            return view('projects.edit')
+                ->with('project', $project)
+                ->with('questions', $project->questions)
+                ->with('observation_type', $observation_type);
+        }
+
         $sampleDetailsDataTable->setProject($project_id);
         return $sampleDetailsDataTable->render('sample_details.index', ['project_id', $request->input('project_id')]);
     }

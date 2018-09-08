@@ -2,7 +2,6 @@
 
 namespace App\DataTables;
 
-use App\Models\Project;
 use App\Models\SampleDetails;
 use Yajra\DataTables\Services\DataTable;
 use Yajra\DataTables\EloquentDataTable;
@@ -10,9 +9,9 @@ use Yajra\DataTables\EloquentDataTable;
 class SampleDetailsDataTable extends DataTable
 {
     private $project;
-    public function setProject($project_id)
+    public function setProject($project)
     {
-        $this->project = Project::find($project_id);
+        $this->project = $project;
     }
     /**
      * Build DataTable class.
