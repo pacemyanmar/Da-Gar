@@ -3,15 +3,6 @@
     <a href="{!! route('projects.index') !!}"><i class="fa fa-briefcase"></i><span>{!! trans_choice('messages.projects', 2) !!}</span></a>
 </li>
 @endcan
-@can('index', \App\Models\SampleData::class)
-<li class="{{ Request::is('sampleDatas*') ? 'active' : '' }}">
-    <a href="{!! route('sampleDatas.index') !!}"><i class="fa fa-database"></i><span>{!! trans_choice('messages.sample_datas', 2) !!}</span></a>
-</li>
-
-<li class="{{ Request::is('observers*') ? 'active' : '' }}">
-    <a href="{!! route('observers.index') !!}"><i class="fa fa-users"></i><span>Observers</span></a>
-</li>
-@endcan
 @can('index', \App\Models\SmsLog::class)
 <li class="{{ Request::is('smsLogs*') ? 'active' : '' }}">
     <a href="{!! route('smsLogs.index') !!}"><i class="fa fa-comment"></i><span>{!! trans_choice('messages.sms_logs', 2) !!}</span></a>
