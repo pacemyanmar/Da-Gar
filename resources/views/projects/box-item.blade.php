@@ -1,3 +1,11 @@
+@php
+    $response_filter =  '';
+    if(!$project->locationMetas->isEmpty()) {
+        if(!$project->locationMetas->where('filter_type', 'selectbox')->isEmpty()) {
+            $response_filter = $project->locationMetas->where('filter_type', 'selectbox')->first()->field_name;
+        }
+    }
+@endphp
 <div class="box box-primary">
     <div class="box-body">
         <h4>{{ $project->project }}</h4>
