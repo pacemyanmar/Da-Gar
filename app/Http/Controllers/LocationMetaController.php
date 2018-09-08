@@ -18,6 +18,7 @@ use Laracasts\Flash\Flash;
 use League\Csv\Reader;
 use League\Csv\Statement;
 use Response;
+use Spatie\TranslationLoader\LanguageLine;
 
 class LocationMetaController extends AppBaseController
 {
@@ -120,6 +121,16 @@ class LocationMetaController extends AppBaseController
 
                 $filled[] = $locationMeta;
                 $locationMeta->save();
+
+                $primary_locale = config('sms.primary_locale.locale');
+                $second_locale = config('sms.second_locale.locale');
+                $language_line = LanguageLine::firstOrNew([
+                    'group' => 'samples',
+                    'key' => $locationMeta->field_name
+                ]);
+
+                $language_line->text = [$primary_locale => $locationMeta->label, $second_locale => $locationMeta->label];
+                $language_line->save();
 
                 if ($locationMeta->trashed()) {
                     $locationMeta->restore();
