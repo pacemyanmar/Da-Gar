@@ -106,8 +106,16 @@ Route::resource('observers', 'ObserverController');
 
 Route::resource('logicalChecks', 'LogicalCheckController');
 
+Route::get('location-metas/edit-structure/{project_id}', ['as' => 'location-metas.edit-structure', 'uses' => 'LocationMetaController@editStructure']);
+
+Route::get('location-metas/list-sample-data/{project_id}', ['as' => 'location-metas.list-sample-data', 'uses' => 'LocationMetaController@index']);
+
+Route::match(['post','patch'],'location-metas/edit-structure/{project_id}', ['as' => 'location-metas.edit-structure', 'uses' => 'LocationMetaController@createOrUpdateStructure']);
+
 Route::resource('location-metas', 'LocationMetaController');
 
 
 
 Route::resource('translations', 'TranslationController');
+
+Route::resource('sample-details', 'SampleDetailsController');
