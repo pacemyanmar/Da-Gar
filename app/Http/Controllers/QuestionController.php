@@ -13,6 +13,7 @@ use App\Traits\QuestionsTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Schema;
 use Response;
+use Spatie\TranslationLoader\LanguageLine;
 
 class QuestionController extends AppBaseController
 {
@@ -73,6 +74,16 @@ class QuestionController extends AppBaseController
         // $input['question_trans'] = json_encode([$lang => $input['question']]);
 
         $question = Question::create($input);
+
+        $primary_locale = config('sms.primary_locale.locale');
+        $second_locale = config('sms.second_locale.locale');
+        $language_line = LanguageLine::firstOrNew([
+            'group' => 'questions',
+            'key' => $question->id.$question->qnum
+        ]);
+
+        $language_line->text = [$primary_locale => $question->question, $second_locale => $question->question];
+        $language_line->save();
 
         $args = [
             'project' => $project,
@@ -160,6 +171,17 @@ class QuestionController extends AppBaseController
         // $form_input['question_trans'] = json_encode([$lang => $form_input['question']]);
 
         $new_question = $this->questionRepository->update($form_input, $id);
+
+        $primary_locale = config('sms.primary_locale.locale');
+        $second_locale = config('sms.second_locale.locale');
+        $language_line = LanguageLine::firstOrNew([
+            'group' => 'questions',
+            'key' => $new_question->id.$new_question->qnum
+        ]);
+
+        $language_line->text = [$primary_locale => $new_question->question, $second_locale => $new_question->question];
+        $language_line->save();
+
         if ($need_rebuild) {
             $args = [
                 'question' => $new_question,

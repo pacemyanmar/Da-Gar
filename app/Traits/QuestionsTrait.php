@@ -2,6 +2,7 @@
 namespace App\Traits;
 
 use App\Models\SurveyInput;
+use Spatie\TranslationLoader\LanguageLine;
 
 trait QuestionsTrait
 {
@@ -211,6 +212,9 @@ trait QuestionsTrait
         $label = [];
         $lang = config('app.fallback_locale');
 
+        $primary_locale = config('sms.primary_locale.locale');
+        $second_locale = config('sms.second_locale.locale');
+
         foreach ($render as $k => $input) {
 
             if ( in_array($input['type'], ['matrix','household']) ) {
@@ -236,6 +240,15 @@ trait QuestionsTrait
                     //$input['label_trans'] = json_encode([$lang => $value['label']]);
                     $value['status'] = 'new';
                     $inputs[] = new SurveyInput($value);
+
+                    $language_line = LanguageLine::firstOrNew([
+                        'group' => 'options',
+                        'key' => $value['inputid']
+                    ]);
+
+                    $language_line->text = [$primary_locale => $value['label'], $second_locale => $value['label']];
+                    $language_line->save();
+
                 }
 
             } elseif ($input['type'] == 'form16') {
@@ -264,6 +277,15 @@ trait QuestionsTrait
                     $advanced['label'] = ucwords($party) . 'Station';
                     $advanced['value'] = '';
                     $inputs[] = new SurveyInput($advanced);
+
+                    $language_line = LanguageLine::firstOrNew([
+                        'group' => 'options',
+                        'key' => $advanced['inputid']
+                    ]);
+
+                    $language_line->text = [$primary_locale => $advanced['label'], $second_locale => $advanced['label']];
+                    $language_line->save();
+
                     $i++;
                 }
 
@@ -280,6 +302,15 @@ trait QuestionsTrait
                     $remark['value'] = '';
                     $remark['status'] = 'new';
                     $inputs[] = new SurveyInput($remark);
+
+                    $language_line = LanguageLine::firstOrNew([
+                        'group' => 'options',
+                        'key' => $remark['inputid']
+                    ]);
+
+                    $language_line->text = [$primary_locale => $remark['label'], $second_locale => $remark['label']];
+                    $language_line->save();
+
                     $i++;
                 }
 
@@ -301,6 +332,15 @@ trait QuestionsTrait
                     $advanced['value'] = '';
                     $advanced['status'] = 'new';
                     $inputs[] = new SurveyInput($advanced);
+
+                    $language_line = LanguageLine::firstOrNew([
+                        'group' => 'options',
+                        'key' => $advanced['inputid']
+                    ]);
+
+                    $language_line->text = [$primary_locale => $advanced['label'], $second_locale => $advanced['label']];
+                    $language_line->save();
+
                     $i++;
                 }
 
@@ -317,6 +357,15 @@ trait QuestionsTrait
                     $remark['value'] = '';
                     $remark['status'] = 'new';
                     $inputs[] = new SurveyInput($remark);
+
+                    $language_line = LanguageLine::firstOrNew([
+                        'group' => 'options',
+                        'key' => $remark['inputid']
+                    ]);
+
+                    $language_line->text = [$primary_locale => $remark['label'], $second_locale => $remark['label']];
+                    $language_line->save();
+
                     $i++;
                 }
 
@@ -341,6 +390,15 @@ trait QuestionsTrait
 
                 //$input['label_trans'] = json_encode([$lang => $input['label']]);
                 $input['status'] = 'new';
+
+                $language_line = LanguageLine::firstOrNew([
+                    'group' => 'options',
+                    'key' => $input['inputid']
+                ]);
+
+                $language_line->text = [$primary_locale => $input['label'], $second_locale => $input['label']];
+                $language_line->save();
+
                 $inputs[] = new SurveyInput($input);
             }
         }

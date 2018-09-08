@@ -10,6 +10,7 @@ use Flash;
 use Illuminate\Http\Request;
 use Krucas\Settings\Facades\Settings;
 use Response;
+use Spatie\TranslationLoader\LanguageLine;
 
 class SettingController extends AppBaseController
 {
@@ -140,7 +141,26 @@ class SettingController extends AppBaseController
         Flash::success('Setting deleted successfully.');
         return redirect(route('settings.index'));
     }
+
     public function translate($id, Request $request)
+    {
+        $group = $request->input('group');
+        $key = $request->input('key');
+        $origin = $request->input('origin');
+        $translation = $request->input('translation');
+
+        $primary_locale = config('sms.primary_locale.locale');
+        $second_locale = config('sms.second_locale.locale');
+        $language_line = LanguageLine::firstOrNew([
+            'group' => $group,
+            'key' => $key
+        ]);
+
+        $language_line->text = [$primary_locale => $origin, $second_locale => $translation];
+        $language_line->save();
+    }
+
+    public function translateBak($id, Request $request)
     {
         $model = $request->input('model');
         $locale = config('sms.second_locale.locale');

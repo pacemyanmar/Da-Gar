@@ -90,12 +90,14 @@ $ans_in_col = round($anscount / $col_group_count);
                                 <div class="btn-group">
                                     {!! Form::open(['route' => ['translate', $element->id], 'method' => 'post', 'class' => 'translation']) !!}
                                     <div class="input-group">
-                                        <input type="text" name="columns[label]" class="form-control input-sm"
+                                        <input type="text" name="translation" class="form-control input-sm"
                                                placeholder="{!! trans('messages.add_translation') !!}"
                                                @if(!empty($element->label_trans))
                                                value="{!! $element->label_trans !!}"
                                                 @endif>
-                                        <input type="hidden" name="model" value="survey_input">
+                                        <input type="hidden" name="origin" value="{!! $element->label !!}">
+                                        <input type="hidden" name="key" value="{!! $element->inputid !!}">
+                                        <input type="hidden" name="group" value="options">
                                         <span class="input-group-btn">
                                 <button class="btn btn-default input-sm"
                                         type="submit">{!! trans('messages.save') !!}</button>

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Scopes\OrderByScope;
 use Eloquent as Model;
+use Illuminate\Support\Facades\Lang;
 
 /**
  * Class Question
@@ -107,22 +108,25 @@ class Question extends Model
         return $query->whereQstatus('published');
     }
 
-    public function getQnumAttribute($value)
-    {
-        return $this->getTranslation('qnum', $value);
-    }
-
     public function getQuestionAttribute($value)
     {
         return $this->getTranslation('question', $value);
     }
 
+    public function getQuestionTransAttribute($value)
+    {
+        $second_locale = config('sms.second_locale.locale');
+        return Lang::get('questions.'.$this->attributes['id'].$this->attributes['qnum'], [], $second_locale);
+    }
+
     private function getTranslation($column, $value)
     {
-        if (\App::isLocale('en')) {
+        $primary_locale = config('sms.primary_locale.locale');
+        $second_locale = config('sms.second_locale.locale');
+        if (\App::isLocale($primary_locale)) {
             return $value;
         } else {
-            return ($this->attributes[$column.'_trans'])? $this->attributes[$column.'_trans']:$value;
+            return Lang::get('questions.'.$this->attributes['id'].$this->attributes['qnum'], [], $second_locale);
         }
     }
 }

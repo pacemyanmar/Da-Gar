@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Scopes\OrderByScope;
 use Eloquent as Model;
+use Illuminate\Support\Facades\Lang;
 
 /**
  * Class SurveyInput
@@ -101,14 +102,23 @@ class SurveyInput extends Model
 
     public function getLabelAttribute($value)
     {
-        return $this->getTranslation('label', $value);
+        return trans('options.'.$this->attributes['inputid']);
     }
+
+    public function getLabelTransAttribute($value)
+    {
+        $second_locale = config('sms.second_locale.locale');
+        return Lang::get('options.'.$this->attributes['inputid'], [], $second_locale);
+    }
+
     private function getTranslation($column, $value)
     {
-        if (\App::isLocale('en')) {
+        $primary_locale = config('sms.primary_locale.locale');
+        $second_locale = config('sms.second_locale.locale');
+        if (\App::isLocale($primary_locale)) {
             return $value;
         } else {
-            return ($this->attributes[$column.'_trans'])? $this->attributes[$column.'_trans']:$value;
+            return Lang::get('options.'.$this->attributes['inputid'], [], $second_locale);
         }
     }
 }
