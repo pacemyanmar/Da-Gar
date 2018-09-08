@@ -67,7 +67,7 @@ class SurveyResultsDataTable extends DataTable
     {
         $auth = Auth::user();
         // create table name
-        $table = str_plural($this->project->dblink);
+        $table = str_plural($this->project->dbname);
         $orderBy = (isset($this->orderBy)) ? $table . '.' . $this->orderBy : $this->project->dbname.'sdv.id';
         $order = (isset($this->order)) ? $this->order : 'asc';
 
