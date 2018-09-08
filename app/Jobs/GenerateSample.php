@@ -38,7 +38,7 @@ class GenerateSample
                 //$form_id = sprintf("%02d", $i);
                 //$samples[] = new Sample(['form_id' => $i, 'project_id' => $this->project->id, 'sample_data_type' => $this->project->dblink]);
                 if(!empty($data->id))
-                    $sample = $sampleInstance->firstOrNew(['sample_data_id' => (int) $data->id, 'form_id' => $i, 'project_id' => $this->project->id, 'sample_data_type' => $this->project->dblink]);
+                    $sample = $sampleInstance->firstOrNew(['sample_data_id' => (int) $data->id, 'form_id' => $i, 'project_id' => $this->project->id, 'sample_data_type' => $this->project->type]);
                     $samples[] = $sample;
             }
 
