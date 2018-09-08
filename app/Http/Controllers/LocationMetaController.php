@@ -33,84 +33,15 @@ class LocationMetaController extends AppBaseController
     }
 
     /**
-     * Display a listing of the LocationMeta.
-     *
-     * @param LocationMetaDataTable $locationMetaDataTable
-     * @return Response
-     */
-    public function index(LocationMetaDataTable $locationMetaDataTable)
-    {
-        return $locationMetaDataTable->render('location_metas.index');
-    }
-
-    /**
-     * Show the form for creating a new LocationMeta.
-     *
-     * @return Response
-     */
-    public function create()
-    {
-        $projects = Project::pluck('project', 'id');
-        return view('location_metas.create')->with('projects', $projects);
-    }
-
-    /**
-     * Store a newly created LocationMeta in storage.
-     *
-     * @param CreateLocationMetaRequest $request
-     *
-     * @return Response
-     */
-    public function store(CreateLocationMetaRequest $request)
-    {
-        $input = $request->except(['fields']);
-
-        $fields = $request->input('fields');
-
-        $project = Project::find($request->input('project_id'));
-
-        foreach($fields as $field) {
-            $inputs = array_merge($input, $field);
-
-            $locationMeta = $this->locationMeta->create($inputs);
-        }
-
-
-        Flash::success('Location Meta saved successfully.');
-
-        return redirect(route('locationMetas.index'));
-    }
-
-    /**
-     * Display the specified LocationMeta.
-     *
-     * @param  int $id
-     *
-     * @return Response
-     */
-    public function show($id)
-    {
-        $locationMeta = $this->locationMeta->findOrFail($id);
-
-        if (empty($locationMeta)) {
-            Flash::error('Location Meta not found');
-
-            return redirect(route('locationMetas.index'));
-        }
-
-        return view('location_metas.show')->with('locationMeta', $locationMeta);
-    }
-
-    /**
      * Show the form for editing the specified LocationMeta.
      *
      * @param  int $id
      *
      * @return Response
      */
-    public function edit($id)
+    public function editStructure($project_id)
     {
-        $project = $this->project->find($id);
+        $project = $this->project->find($project_id);
 
         if (empty($project)) {
             Flash::error('Project not found');
@@ -125,7 +56,7 @@ class LocationMetaController extends AppBaseController
 
         $projects = Project::pluck('project', 'id');
 
-        return view('location_metas.edit')
+        return view('location_metas.edit-structure')
             ->with('project', $project)
             ->with('projects', $projects)
             ->with('locationMetas', $locationMetas);
@@ -141,9 +72,9 @@ class LocationMetaController extends AppBaseController
      *
      * @return Response
      */
-    public function update($id, UpdateLocationMetaRequest $request)
+    public function createOrUpdateStructure($project_id, UpdateLocationMetaRequest $request)
     {
-        $project = $this->project->find($id);
+        $project = $this->project->find($project_id);
 
         if (empty($project)) {
             return redirect()->back()->withErrors(['Project not found'])->withInput($request->all());
@@ -215,30 +146,6 @@ class LocationMetaController extends AppBaseController
         Flash::success($message);
 
         return redirect(route('projects.edit', $project->id));
-    }
-
-    /**
-     * Remove the specified LocationMeta from storage.
-     *
-     * @param  int $id
-     *
-     * @return Response
-     */
-    public function destroy($id)
-    {
-        $locationMeta = $this->locationMeta->findWithoutFail($id);
-
-        if (empty($locationMeta)) {
-            Flash::error('Location Meta not found');
-
-            return redirect(route('locationMetas.index'));
-        }
-
-        $locationMeta->destroy();
-
-        Flash::success('Location Meta deleted successfully.');
-
-        return redirect(route('locationMetas.index'));
     }
 
     public function updateStructure($project)
