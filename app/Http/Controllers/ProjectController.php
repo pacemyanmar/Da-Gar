@@ -60,7 +60,7 @@ class ProjectController extends AppBaseController
      * @param ProjectDataTable $projectDataTable
      * @return Response
      */
-    public function index(ProjectDataTable $projectDataTable)
+    public function index(Project $project)
     {
         try {
             $this->authorize('index', Project::class);
@@ -68,7 +68,10 @@ class ProjectController extends AppBaseController
             Flash::error($e->getMessage());
             return redirect()->back();
         }
-        return $projectDataTable->render('projects.index');
+
+
+        return view('projects.index')
+            ->with('projects', $project->all());
     }
 
     public function migrate()
@@ -1290,7 +1293,7 @@ class ProjectController extends AppBaseController
         $locationMetas = collect($columns);
         $projects = Project::pluck('project', 'id');
 
-        return view('location_metas.edit')
+        return view('location_metas.edit-structure')
             ->with('project', $project)
             ->with('projects', $projects)
             ->with('locationMetas', $locationMetas);
