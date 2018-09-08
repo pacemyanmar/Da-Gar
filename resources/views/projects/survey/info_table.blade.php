@@ -17,9 +17,7 @@
                             @endif
                         @endforeach
 
-                        @if(count($project->samples) > 1)
-                            <th>{!! trans('messages.sample') !!}</th>
-                        @endif
+
                         @if($project->copies > 1)
                             <th>{!! trans('messages.form_id') !!}</th>
                         @endif
@@ -34,18 +32,6 @@
                             @endif
                         @endforeach
 
-
-                        @if(count($project->samples) > 1)
-                            <td>
-                                <select id="sample"
-                                        class="info form-control" {!! (isset($sample_data->sample))?'disabled="disabled"':'name="sample"' !!}>
-                                    @foreach($project->samples as $name => $sample_value)
-                                        <option value="{!! $sample_value !!}" {!! (isset($sample_data->sample) && $sample_data->sample == $sample_value)?' selected="selected"':'' !!}>{!! $name !!}</option>
-                                    @endforeach
-                                </select>
-
-                            </td>
-                        @endif
                         @if(isset($sample_data->sample))
                             <input type="hidden" name="sample" value="{!! $sample_data->sample !!}">
                         @else
