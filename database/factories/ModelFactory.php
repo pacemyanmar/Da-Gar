@@ -79,12 +79,7 @@ $factory->define(App\Models\Project::class, function (Faker\Generator $faker) {
         'project' => $project,
         'unique_code' => strtoupper($faker->unique()->randomLetter),
         'dbname' => $dbname,
-        'dblink' => $faker->randomElement(['voter', 'enumerator']),
         'type' => $faker->randomElement(['sample2db', 'db2sample']),
-        'samples' => [
-            "Country" => "1",
-            "Region" => "2",
-        ],
         'created_at' => $date,
         'updated_at' => $date,
     ];
