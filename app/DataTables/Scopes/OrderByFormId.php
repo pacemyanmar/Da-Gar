@@ -14,6 +14,6 @@ class OrderByFormId implements DataTableScope
      */
     public function apply($query)
     {
-        return $query->orderBy('form_id', 'ASC');
+        return $query->orderBy('form_id', 'ASC')->orderBy('frequency', 'ASC');
     }
 }

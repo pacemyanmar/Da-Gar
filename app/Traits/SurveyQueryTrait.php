@@ -236,6 +236,18 @@ trait SurveyQueryTrait {
                         'width' => '80px',
                     ];
                 }
+                if($this->project->frequencies > 1) {
+                    $columns['frequency'] = [
+                        'name' => 'samples.frequency',
+                        'data' => 'frequency',
+                        'className' => $location->filter_type.' frequency',
+                        'title' => trans('samples.frequency'),
+                        'orderable' => false,
+                        'defaultContent' => 'N/A',
+                        'visible' => true,
+                        'width' => '80px',
+                    ];
+                }
             } else {
                 if($location->export) {
                     $columns[$location->field_name] = [

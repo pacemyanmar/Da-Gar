@@ -21,6 +21,7 @@ class Project extends Model
         'dbname',
         'type',
         'copies',
+        'frequencies',
         'status',
         'project_trans',
         'training',
@@ -37,6 +38,7 @@ class Project extends Model
         'project_trans' => 'string',
         'type' => 'string',
         'copies' => 'integer',
+        'frequencies' => 'integer',
         'training' => 'boolean',
     ];
 

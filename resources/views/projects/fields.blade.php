@@ -32,22 +32,31 @@
     <div class="col-sm-12">
         <div class="row">
             <!-- Type Field -->
-            <div class="col-sm-3"
-            '>
-            <div class="form-group has-error">
-                {!! Form::label('type', 'Database type: ', ['class' => 'toggle']) !!}
-                {!! Form::select('type', $type,(isset($project))?$project->type:null, ['class' => 'form-control toggle']) !!}
+            <div class="col-sm-2">
+                <div class="form-group has-error">
+                    {!! Form::label('type', 'Database type: ', ['class' => 'toggle']) !!}
+                    {!! Form::select('type', $type,(isset($project))?$project->type:null, ['class' => 'form-control toggle']) !!}
+                </div>
+            </div>
+            <div class="col-sm-3">
+                <!-- Type Field -->
+                <div class="form-group has-error">
+                    {!! Form::label('copies', 'Copies: ', ['class' => 'toggle']) !!}
+                    {!! Form::select('copies', ['1' => 1,'2' => 2,'3' => 3,'4' => 4,'5' => 5,'6' => 6,'7' => 7,'8' => 8,'9' => 9,'10' => 10,
+                    '11' => 11,'12' => 12,'13' => 13,'14' => 14,'15' => 15,'16' => 16,'17' => 17,'18' => 18,'19' => 19,'20' => 20],(isset($project))?$project->copies:null, ['class' => 'form-control toggle']) !!}
+                    <small>Copies of form for a sample/location</small>
+                </div>
+            </div>
+            <div class="col-sm-3">
+                <!-- Type Field -->
+                <div class="form-group has-error">
+                    {!! Form::label('frequencies', 'Survey frequency: ', ['class' => 'toggle']) !!}
+                    {!! Form::select('frequencies', ['1' => 1,'2' => 2,'3' => 3,'4' => 4,'5' => 5,'6' => 6,'7' => 7,'8' => 8,'9' => 9,'10' => 10,
+                    '11' => 11,'12' => 12,'13' => 13,'14' => 14,'15' => 15,'16' => 16,'17' => 17,'18' => 18,'19' => 19,'20' => 20],(isset($project))?$project->frequencies:null, ['class' => 'form-control toggle']) !!}
+                    <small>Survey frequencies before project end</small>
+                </div>
             </div>
         </div>
-        <div class="col-sm-3">
-            <!-- Type Field -->
-            <div class="form-group has-error">
-                {!! Form::label('copies', 'Copies of form for a sample: ', ['class' => 'toggle']) !!}
-                {!! Form::select('copies', ['1' => 1,'2' => 2,'3' => 3,'4' => 4,'5' => 5,'6' => 6,'7' => 7,'8' => 8,'9' => 9,'10' => 10,
-                '11' => 11,'12' => 12,'13' => 13,'14' => 14,'15' => 15,'16' => 16,'17' => 17,'18' => 18,'19' => 19,'20' => 20],(isset($project))?$project->copies:null, ['class' => 'form-control toggle']) !!}
-            </div>
-        </div>
-    </div>
     </div>
 @endif
 

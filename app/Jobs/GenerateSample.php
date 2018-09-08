@@ -34,12 +34,14 @@ class GenerateSample
 
         foreach ($samplables as $data) {
             $samples = [];
-            for ($i = 1; $i <= $this->project->copies; $i++) {
-                //$form_id = sprintf("%02d", $i);
-                //$samples[] = new Sample(['form_id' => $i, 'project_id' => $this->project->id, 'sample_data_type' => $this->project->dblink]);
-                if(!empty($data->id))
-                    $sample = $sampleInstance->firstOrNew(['sample_data_id' => (int) $data->id, 'form_id' => $i, 'project_id' => $this->project->id, 'sample_data_type' => $this->project->type]);
+            for($f = 1; $f <= $this->project->frequencies; $f++) {
+                for ($i = 1; $i <= $this->project->copies; $i++) {
+                    //$form_id = sprintf("%02d", $i);
+                    //$samples[] = new Sample(['form_id' => $i, 'project_id' => $this->project->id, 'sample_data_type' => $this->project->dblink]);
+                    if (!empty($data->id))
+                        $sample = $sampleInstance->firstOrNew(['sample_data_id' => (int)$data->id, 'form_id' => $i, 'frequency' => $f, 'project_id' => $this->project->id, 'sample_data_type' => $this->project->type]);
                     $samples[] = $sample;
+                }
             }
 
             // samples() is link between project and sampleData
