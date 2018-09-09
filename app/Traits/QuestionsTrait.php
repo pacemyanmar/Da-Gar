@@ -243,7 +243,7 @@ trait QuestionsTrait
 
                     $language_line = LanguageLine::firstOrNew([
                         'group' => 'options',
-                        'key' => $value['inputid']
+                        'key' => $value['id']
                     ]);
 
                     $language_line->text = [$primary_locale => $value['label'], $second_locale => $value['label']];
@@ -280,7 +280,7 @@ trait QuestionsTrait
 
                     $language_line = LanguageLine::firstOrNew([
                         'group' => 'options',
-                        'key' => $advanced['inputid']
+                        'key' => $advanced['id']
                     ]);
 
                     $language_line->text = [$primary_locale => $advanced['label'], $second_locale => $advanced['label']];
@@ -305,7 +305,7 @@ trait QuestionsTrait
 
                     $language_line = LanguageLine::firstOrNew([
                         'group' => 'options',
-                        'key' => $remark['inputid']
+                        'key' => $remark['id']
                     ]);
 
                     $language_line->text = [$primary_locale => $remark['label'], $second_locale => $remark['label']];
@@ -335,7 +335,7 @@ trait QuestionsTrait
 
                     $language_line = LanguageLine::firstOrNew([
                         'group' => 'options',
-                        'key' => $advanced['inputid']
+                        'key' => $advanced['id']
                     ]);
 
                     $language_line->text = [$primary_locale => $advanced['label'], $second_locale => $advanced['label']];
@@ -360,7 +360,7 @@ trait QuestionsTrait
 
                     $language_line = LanguageLine::firstOrNew([
                         'group' => 'options',
-                        'key' => $remark['inputid']
+                        'key' => $remark['id']
                     ]);
 
                     $language_line->text = [$primary_locale => $remark['label'], $second_locale => $remark['label']];
@@ -393,7 +393,7 @@ trait QuestionsTrait
 
                 $language_line = LanguageLine::firstOrNew([
                     'group' => 'options',
-                    'key' => $input['inputid']
+                    'key' => $input['id']
                 ]);
 
                 $language_line->text = [$primary_locale => $input['label'], $second_locale => $input['label']];

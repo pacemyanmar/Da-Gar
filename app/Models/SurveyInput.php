@@ -102,13 +102,13 @@ class SurveyInput extends Model
 
     public function getLabelAttribute($value)
     {
-        return trans('options.'.$this->attributes['inputid']);
+        return trans('options.'.$this->attributes['id']);
     }
 
     public function getLabelTransAttribute($value)
     {
         $second_locale = config('sms.second_locale.locale');
-        return Lang::get('options.'.$this->attributes['inputid'], [], $second_locale);
+        return Lang::get('options.'.$this->attributes['id'], [], $second_locale);
     }
 
     private function getTranslation($column, $value)
@@ -118,7 +118,7 @@ class SurveyInput extends Model
         if (\App::isLocale($primary_locale)) {
             return $value;
         } else {
-            return Lang::get('options.'.$this->attributes['inputid'], [], $second_locale);
+            return Lang::get('options.'.$this->attributes['id'], [], $second_locale);
         }
     }
 }
