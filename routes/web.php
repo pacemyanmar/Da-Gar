@@ -70,6 +70,9 @@ Route::get('projects/sort/{project}', ['as' => 'projects.sort', 'uses' => Projec
 
 Route::get('projects/migrate', ['as' => 'projects.migrate', 'uses' => ProjectController::class . '@migrate']);
 
+Route::post('projects/import', ['as' => 'projects.import', 'uses' => ProjectController::class . '@import']);
+
+
 Route::resource('projects', 'ProjectController');
 
 Route::post('questions', ['as' => 'questions.store', 'uses' => QuestionController::class . '@store']);

@@ -10,27 +10,28 @@ use App\Models\LocationMeta;
 use App\Models\LogicalCheck;
 use App\Models\Observer;
 use App\Models\Project;
+use App\Models\Question;
 use App\Models\Sample;
 use App\Models\SampleData;
 use App\Models\Section;
 use App\Repositories\ProjectRepository;
 use App\Scopes\OrderByScope;
 use App\SmsHelper;
+use App\Traits\QuestionsTrait;
 use Flash;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
-use Illuminate\Support\Facades\Session;
-use Illuminate\Support\Facades\Storage;
 use League\Csv\Reader;
 use League\Csv\Statement;
 use Maatwebsite\Excel\Facades\Excel;
+use PhpOffice\PhpSpreadsheet\Reader\Xls;
 use Ramsey\Uuid\Uuid;
 use Response;
+use Spatie\TranslationLoader\LanguageLine;
 
 /**
  * Class ProjectController
@@ -38,6 +39,7 @@ use Response;
  */
 class ProjectController extends AppBaseController
 {
+    use QuestionsTrait;
     /**
      * @var  ProjectRepository
      */
@@ -224,7 +226,7 @@ class ProjectController extends AppBaseController
             return redirect(route('projects.index'));
         }
 
-        $observation_type = SampleData::pluck('observer_field','observer_field')->unique();
+        $observation_type = SampleData::pluck('observer_field', 'observer_field')->unique();
 
 
         $project->load(['inputs']);
@@ -259,7 +261,7 @@ class ProjectController extends AppBaseController
             return redirect(route('projects.index'));
         }
 
-        $input = $request->except('samples','sections');
+        $input = $request->except('samples', 'sections');
 
         if (Schema::hasTable($project->dbname)) {
             $input['status'] = 'modified';
@@ -430,10 +432,10 @@ class ProjectController extends AppBaseController
 
         $sections = $project->sections;
 
-        foreach($sections as $section) {
+        foreach ($sections as $section) {
             $questions = $section->questions;
             foreach ($questions as $qk => $question) {
-                $question->sort = $section->sort. sprintf('%02d', $qk);
+                $question->sort = $section->sort . sprintf('%02d', $qk);
                 $question->save();
                 $inputs = $question->surveyInputs;
                 foreach ($inputs as $k => $input) {
@@ -473,16 +475,16 @@ class ProjectController extends AppBaseController
 
             $fields = $section->inputs->sortByDesc('other')->unique('inputid');
 
-            $section_code = 's'.$section->sort;
+            $section_code = 's' . $section->sort;
 
-            $section_dbname = $this->dbname.'_'.$section_code;
+            $section_dbname = $this->dbname . '_' . $section_code;
 
             if (Schema::hasTable($section_dbname)) {
                 $this->updateTable('main', $fields, $section);
             } else {
                 $this->createTable('main', $fields, $section);
             }
-            if(config('sms.double_entry')) {
+            if (config('sms.double_entry')) {
                 // check if table has already created
                 if (Schema::hasTable($section_dbname . '_dbl')) {
                     $this->updateTable('double', $fields, $section);
@@ -490,12 +492,12 @@ class ProjectController extends AppBaseController
                     $this->createTable('double', $fields, $section);
                 }
 
-                $viewName = $this->dbname . '_' . $section_code.'_view';
+                $viewName = $this->dbname . '_' . $section_code . '_view';
 
                 if (!Schema::hasTable($viewName)) {
                     $this->createDoubleStatusView($section);
                 } else {
-                    DB::statement("DROP VIEW ".$viewName);
+                    DB::statement("DROP VIEW " . $viewName);
                     $this->createDoubleStatusView($section);
                 }
             }
@@ -512,7 +514,6 @@ class ProjectController extends AppBaseController
         }
 
         // }
-
 
 
         // check if table has already created
@@ -545,16 +546,16 @@ class ProjectController extends AppBaseController
         $db_name = $this->dbname;
         switch ($type) {
             case 'main':
-                $dbname = $db_name.'_s'.$section->sort;
+                $dbname = $db_name . '_s' . $section->sort;
                 break;
             case 'double':
-                $dbname = $db_name.'_s'.$section->sort.'_dbl';
+                $dbname = $db_name . '_s' . $section->sort . '_dbl';
                 break;
             default:
-                $dbname = $db_name.'_'.$type;
+                $dbname = $db_name . '_' . $type;
                 break;
         }
-        if($type != 'main' && $type != 'double') {
+        if ($type != 'main' && $type != 'double') {
 
             foreach ($project->sections as $key => $section) {
                 $section_num = $section->sort;
@@ -666,16 +667,16 @@ class ProjectController extends AppBaseController
                 }
 
                 if ($input->other) {
-                    if (Schema::hasColumn($dbname, $input->inputid.'_other')) {
+                    if (Schema::hasColumn($dbname, $input->inputid . '_other')) {
 
                         Schema::table($dbname, function ($table) use ($input, $dbname) {
-                            $table->string($input->inputid.'_other', 100)->change()
+                            $table->string($input->inputid . '_other', 100)->change()
                                 ->nullable();
                         });
                     } else {
                         // if column has not been created, creat now
                         Schema::table($dbname, function ($table) use ($input, $project) {
-                            $table->string($input->inputid.'_other', 100)
+                            $table->string($input->inputid . '_other', 100)
                                 ->nullable();
                         });
                     }
@@ -683,10 +684,10 @@ class ProjectController extends AppBaseController
             }
         }
 
-        foreach($questions as $question => $inputs) {
+        foreach ($questions as $question => $inputs) {
             $checkboxes = implode(' OR ', $inputs);
             if (!Schema::hasColumn($dbname, strtolower($question))) {
-                Schema::table($dbname, function($table) use ($question, $checkboxes){
+                Schema::table($dbname, function ($table) use ($question, $checkboxes) {
                     $table->unsignedTinyInteger(strtolower($question))->virtualAs('IF(' . $checkboxes . ',1,0)');
                 });
             }
@@ -700,13 +701,13 @@ class ProjectController extends AppBaseController
 
         switch ($type) {
             case 'main':
-                $dbname = $db_name.'_s'.$section->sort;
+                $dbname = $db_name . '_s' . $section->sort;
                 break;
             case 'double':
-                $dbname = $db_name.'_s'.$section->sort.'_dbl';
+                $dbname = $db_name . '_s' . $section->sort . '_dbl';
                 break;
             default:
-                $dbname = $db_name.'_'.$type;
+                $dbname = $db_name . '_' . $type;
                 break;
         }
 
@@ -781,15 +782,15 @@ class ProjectController extends AppBaseController
                 }
 
                 if ($input->other) {
-                    $table->string($input->inputid.'_other', 100)
+                    $table->string($input->inputid . '_other', 100)
                         ->nullable();
                 }
             }
 
             // Create virtual column which can check multi select answers response
-            foreach($questions as $question => $inputs) {
+            foreach ($questions as $question => $inputs) {
                 $checkboxes = implode(' OR ', $inputs);
-                $table->unsignedTinyInteger(strtolower($question ))->virtualAS('IF('.$checkboxes.',1,0)');
+                $table->unsignedTinyInteger(strtolower($question))->virtualAS('IF(' . $checkboxes . ',1,0)');
             }
         });
 
@@ -811,7 +812,7 @@ class ProjectController extends AppBaseController
         if ($sms_type == 'observer') {
             $observer = Observer::where('code', $sample_id)->first();
 
-            if($observer) {
+            if ($observer) {
                 $location_code = $observer->location->location_code;
             }
 
@@ -870,7 +871,7 @@ class ProjectController extends AppBaseController
             "index_columns" => json_encode($project->index_columns),
             "status" => $project->status,
         ];
-        if(!empty($project->project_trans)) {
+        if (!empty($project->project_trans)) {
             foreach ($project->project_trans as $lang => $trans) {
                 $project_array[0]['project::' . $lang] = $trans;
             }
@@ -909,14 +910,140 @@ class ProjectController extends AppBaseController
         return redirect()->back();
     }
 
-    public function import($project_id)
+    public function import(Request $request)
     {
-        $project = $this->projectRepository->findWithoutFail($project_id);
+        if ($request->file('projectfile')->isValid()) {
+            $primary_locale = config('sms.primary_locale.locale');
+            $second_locale = config('sms.second_locale.locale');
 
-        if (empty($project)) {
-            Flash::error('Project not found');
+            $project_xls_file = $request->projectfile->path();
 
-            return redirect()->back();
+            $reader = new Xls();
+            $reader->setReadDataOnly(true);
+            $spreadsheet = $reader->load($project_xls_file);
+            $spreadsheet->setActiveSheetIndexByName('project');
+            $project = $spreadsheet->getActiveSheet()->toArray();
+
+            $project_header = array_shift($project);
+            $project_data = array_pop($project);
+
+            $project = array_combine($project_header, $project_data);
+
+
+            $short_project_name = substr($project['label'], 0, 10);
+            $short_project_name = preg_replace('/[^a-zA-Z0-9]/', '_', $short_project_name);
+            $unique = uniqid();
+            $short_unique = substr($unique, 0, 5);
+            $project['dbname'] = snake_case(strtolower($short_project_name) . '_' . $short_unique);
+
+            $project['project'] = $project['label'];
+            $project['unique_code'] = $project['uniqueid'];
+
+            $projectInstance = Project::create($project);
+
+            $spreadsheet->setActiveSheetIndexByName('sections');
+            $sections = $spreadsheet->getActiveSheet()->toArray();
+
+            $sections_header = array_shift($sections);
+            array_walk(
+                $sections,
+                function (&$row) use ($sections_header) {
+                    $row = array_combine($sections_header, $row);
+                });
+
+            foreach ($sections as $sort => $section) {
+                $section['sort'] = $sort;
+                $sections_to_save[] = new Section($section);
+            }
+
+            $projectInstance->sections()->saveMany($sections_to_save);
+
+            $spreadsheet->setActiveSheetIndexByName('questions');
+            $questions = $spreadsheet->getActiveSheet()->toArray();
+            $questions_header = array_shift($questions);
+            array_walk(
+                $questions,
+                function (&$row) use ($questions_header) {
+                    $row = array_combine($questions_header, $row);
+                });
+
+            $spreadsheet->setActiveSheetIndexByName('options');
+            $options = $spreadsheet->getActiveSheet()->toArray();
+            $options_header = array_shift($options);
+            array_walk(
+                $options,
+                function (&$row) use ($options_header) {
+                    $row = array_combine($options_header, $row);
+                });
+            foreach ($projectInstance->sections as $section) {
+                foreach ($questions as $sort => $question) {
+                    if (trim($question['section']) === trim($section->sectionname)) {
+                        unset($question['section']);
+                        $question_raw = [
+                            'section' => $section->id
+                        ];
+                        $raw_ans = [];
+                        foreach ($options as $osort => $option) {
+                            if (trim($option['question']) === trim($question['qnum'])) {
+                                $option['other'] = ($option['other']) ? $option['other'] : FALSE;
+                                switch ($option['type']) {
+                                    case 'select_one':
+                                        $option['type'] = 'radio';
+                                        break;
+                                    case 'select_many':
+                                        $option['type'] = 'checkbox';
+                                        break;
+                                    default:
+                                        $option['type'] = $option['type'];
+                                        break;
+                                }
+                                $raw_ans[$osort] = $option;
+                            }
+                        }
+
+                        $question_raw['sort'] = $sort;
+                        $question_raw['project_id'] = $projectInstance->id;
+                        $question_raw['raw_ans'] = json_encode(array_values($raw_ans), JSON_PRETTY_PRINT);
+                        $question_raw['css_id'] = str_slug('s' . $section->id . $question['qnum']);
+                        $question_raw['layout'] = '';
+                        $question_raw['sort'] = $sort;
+                        $question_row = array_merge($question, $question_raw);
+
+                        $questionInstance = Question::create($question_row);
+
+                        $question_translation = LanguageLine::firstOrNew([
+                            'group' => 'questions',
+                            'key' => $questionInstance->id.$questionInstance->qnum
+                        ]);
+
+                        $question_translation->text = [$primary_locale => $questionInstance->question, $second_locale => $questionInstance->question];
+                        $question_translation->save();
+
+                        $render = $this->to_render(
+                            [
+                                'question' => $questionInstance,
+                                'section' => $questionInstance->section,
+                                'project' => $projectInstance,
+                            ],
+                            [
+                                'qnum' => $questionInstance->qnum,
+                                'layout' => $questionInstance->layout,
+                                'raw_ans' => $questionInstance->raw_ans,
+                            ]
+                        );
+
+                        $inputs = $this->getInputs($render);
+                        $q = $questionInstance->surveyInputs()->saveMany($inputs);
+                        unset($questions[$sort]);
+                    }
+                }
+            }
+            Flash::success('Project imported successfully.');
+
+            return redirect(route('projects.index'));
+
+        } else {
+            return redirect()->back()->withErrors('Invalid file');
         }
     }
 
@@ -946,7 +1073,8 @@ class ProjectController extends AppBaseController
     }
 
 
-    public function addLogic($project_id, Request $request) {
+    public function addLogic($project_id, Request $request)
+    {
         $project = $this->projectRepository->findWithoutFail($project_id);
         if (empty($project)) {
             Flash::error('Project not found');
@@ -957,36 +1085,36 @@ class ProjectController extends AppBaseController
 
         $project->logics()->delete();
 
-        if(!empty($logics)) {
+        if (!empty($logics)) {
 
             foreach ($logics as $logic) {
                 switch ($logic['operator']) {
                     case 'between':
                         $leftval = $project->inputs()->where('inputid', $logic['leftval'])->get();
 
-                        if($leftval->isEmpty() || $leftval->count() != 1) {
+                        if ($leftval->isEmpty() || $leftval->count() != 1) {
                             Flash::error('Min/Max Logic left value error!');
                             return redirect()->back();
                         }
                         $rightval = explode(',', $logic['rightval']);
                         $right_error = false;
-                        if(count($rightval) != 2) {
+                        if (count($rightval) != 2) {
                             $right_error = true;
                         } else {
-                            if(!is_numeric($rightval[0])) {
+                            if (!is_numeric($rightval[0])) {
                                 $min = $project->inputs()->where('inputid', $rightval[0])->get();
-                                if($min->isEmpty()) {
+                                if ($min->isEmpty()) {
                                     $right_error = true;
                                 }
                             }
-                            if(!is_numeric($rightval[1])) {
+                            if (!is_numeric($rightval[1])) {
                                 $max = $project->inputs()->where('inputid', $rightval[1])->get();
-                                if($max->isEmpty()) {
+                                if ($max->isEmpty()) {
                                     $right_error = true;
                                 }
                             }
                         }
-                        if($right_error) {
+                        if ($right_error) {
                             Flash::error('Min/Max Logic Right value error!');
                             return redirect()->back();
                         }
@@ -994,12 +1122,12 @@ class ProjectController extends AppBaseController
                     case 'min':
                         $leftval = $project->inputs()->where('inputid', $logic['leftval'])->get();
 
-                        if($leftval->isEmpty() || $leftval->count() != 1) {
+                        if ($leftval->isEmpty() || $leftval->count() != 1) {
                             Flash::error('Minimum Logic left value error!');
                             return redirect()->back();
                         }
 
-                        if(!is_numeric($logic['rightval'])) {
+                        if (!is_numeric($logic['rightval'])) {
                             Flash::error('Minimum Logic right value error!');
                             return redirect()->back();
                         }
@@ -1007,12 +1135,12 @@ class ProjectController extends AppBaseController
                     case 'max':
                         $leftval = $project->inputs()->where('inputid', $logic['leftval'])->get();
 
-                        if($leftval->isEmpty() || $leftval->count() != 1) {
+                        if ($leftval->isEmpty() || $leftval->count() != 1) {
                             Flash::error('Maximum Logic left value error!');
                             return redirect()->back();
                         }
 
-                        if(!is_numeric($logic['rightval'])) {
+                        if (!is_numeric($logic['rightval'])) {
                             Flash::error('Maximum Logic right value error!');
                             return redirect()->back();
                         }
@@ -1020,12 +1148,12 @@ class ProjectController extends AppBaseController
                     case 'equalto':
                         $leftval = $project->inputs()->where('inputid', $logic['leftval'])->get();
 
-                        if($leftval->isEmpty()) {
+                        if ($leftval->isEmpty()) {
                             Flash::error('Equal to Logic left value error!');
                             return redirect()->back();
                         }
 
-                        if(!array_key_exists('rightval', $logic)) {
+                        if (!array_key_exists('rightval', $logic)) {
                             $logic['rightval'] = null;
                         }
 
@@ -1070,18 +1198,18 @@ class ProjectController extends AppBaseController
 
             $fields = $section->inputs->sortByDesc('other')->unique('inputid');
 
-            $section_code = 's'.$section->sort;
+            $section_code = 's' . $section->sort;
 
-            $section_dbname = $this->dbname.'_'.$section_code;
+            $section_dbname = $this->dbname . '_' . $section_code;
 
-            if(config('sms.double_entry')) {
+            if (config('sms.double_entry')) {
 
-                $viewName = $this->dbname . '_' . $section_code.'_view';
+                $viewName = $this->dbname . '_' . $section_code . '_view';
 
                 if (!Schema::hasTable($viewName)) {
                     $this->createDoubleStatusView($section);
                 } else {
-                    DB::statement("DROP VIEW ".$viewName);
+                    DB::statement("DROP VIEW " . $viewName);
                     $this->createDoubleStatusView($section);
                 }
             }
@@ -1093,15 +1221,15 @@ class ProjectController extends AppBaseController
     {
         $section_questions = $section->questions->sortBy('sort');
         $section_num = $section->sort;
-        $dbName = $this->dbname .'_s'.$section_num;
-        $dbDblName = $this->dbname .'_s'.$section_num.'_dbl';
+        $dbName = $this->dbname . '_s' . $section_num;
+        $dbDblName = $this->dbname . '_s' . $section_num . '_dbl';
         $columns = [];
-        foreach($section_questions as $question) {
+        foreach ($section_questions as $question) {
             $inputs = $question->surveyInputs->sortBy('sort');
 
-            foreach($inputs as $input) {
+            foreach ($inputs as $input) {
                 $column = $input->inputid;
-                $columns[$column] = "IF((".$dbName.".".$column." IS NULL AND ".$dbDblName.".".$column." IS NULL) OR ".$dbName.".".$column." = ".$dbDblName.".".$column.", 0, 1) AS ".$column;
+                $columns[$column] = "IF((" . $dbName . "." . $column . " IS NULL AND " . $dbDblName . "." . $column . " IS NULL) OR " . $dbName . "." . $column . " = " . $dbDblName . "." . $column . ", 0, 1) AS " . $column;
             }
             unset($inputs);
         }
@@ -1116,24 +1244,24 @@ class ProjectController extends AppBaseController
         $section_num = $section->sort;
         $select = $this->makeDoubleStatusColumns($section);
 
-        $viewName = $this->dbname . '_s' . $section_num.'_view';
+        $viewName = $this->dbname . '_s' . $section_num . '_view';
 
-        $dbName = $this->dbname .'_s'.$section_num;
+        $dbName = $this->dbname . '_s' . $section_num;
 
-        $dbDblName = $this->dbname .'_s'.$section_num.'_dbl';
+        $dbDblName = $this->dbname . '_s' . $section_num . '_dbl';
 
-        $baseColumns = [$dbName.".sample_id"];
+        $baseColumns = [$dbName . ".sample_id"];
 
         $selectColumns = array_merge($baseColumns, $select);
 
         $selectColumns = implode(',', $selectColumns);
 
 
-            $viewStatement = "CREATE VIEW ".$viewName." AS (SELECT ".$selectColumns. " FROM ";
-            $viewStatement .= $dbName." LEFT JOIN ".$dbDblName. " ON ";
-            $viewStatement .= $dbName.".sample_id = ".$dbDblName.".sample_id)";
+        $viewStatement = "CREATE VIEW " . $viewName . " AS (SELECT " . $selectColumns . " FROM ";
+        $viewStatement .= $dbName . " LEFT JOIN " . $dbDblName . " ON ";
+        $viewStatement .= $dbName . ".sample_id = " . $dbDblName . ".sample_id)";
 
-            DB::statement($viewStatement);
+        DB::statement($viewStatement);
 
     }
 
@@ -1150,17 +1278,16 @@ class ProjectController extends AppBaseController
         if (empty($project))
             return redirect()->back()->withErrors('Project not found.');
 
-        if ($request->input('fileurl'))
-        {
+        if ($request->input('fileurl')) {
             $url = $request->input('fileurl');
 
-            $fileName = 'formurl_'.date('m-d-Y_hia').'.csv';
+            $fileName = 'formurl_' . date('m-d-Y_hia') . '.csv';
 
             $csvData = file_get_contents($url);
 
             $path = storage_path('app/public');
 
-            file_put_contents($path.'/'.$fileName,$csvData);
+            file_put_contents($path . '/' . $fileName, $csvData);
 
             dd('Done');
 
@@ -1171,7 +1298,7 @@ class ProjectController extends AppBaseController
 
             $idcolumn = $request->input('idcolumn');
 
-            if(empty($project->idcolumn)) {
+            if (empty($project->idcolumn)) {
                 $idcolumn_slug = str_dbcolumn($idcolumn);
                 $project->idcolumn = $idcolumn_slug;
             } else {
@@ -1191,17 +1318,17 @@ class ProjectController extends AppBaseController
 
             $column_list = [];
 
-            array_walk($headers, function($slug, $key) use ($idcolumn_slug, &$column_list) {
+            array_walk($headers, function ($slug, $key) use ($idcolumn_slug, &$column_list) {
                 $nkey = str_dbcolumn($slug);
 
-                if($nkey == $idcolumn_slug) {
+                if ($nkey == $idcolumn_slug) {
                     $column_list['idcolumn'] = 'id';
                 } else {
                     $column_list[$nkey] = $slug;
                 }
             });
 
-            if(!array_key_exists('idcolumn', $column_list))
+            if (!array_key_exists('idcolumn', $column_list))
                 return redirect()->back()->withErrors('ID column not found in your file');
 
             $column_list = array_merge(['idcolumn' => $column_list['idcolumn']] + $column_list);
@@ -1210,9 +1337,9 @@ class ProjectController extends AppBaseController
             $project->sample_file = $file;
 
             $project->save();
-            $storage_path = storage_path('app/'.$file);
+            $storage_path = storage_path('app/' . $file);
 
-            if(empty($project->sample_file) || $request->input('update_structure'))
+            if (empty($project->sample_file) || $request->input('update_structure'))
                 return $this->sampleStructure($project, $column_list, $idcolumn);
 
             // upload directly here
@@ -1235,7 +1362,7 @@ class ProjectController extends AppBaseController
         if (empty($project))
             return redirect()->back()->withErrors('Project not found.');
 
-        if($project->id != $request->input('project_id'))
+        if ($project->id != $request->input('project_id'))
             return redirect()->back()->withErrors(['Error with Project. Are you cheating?']);
 
 
@@ -1247,8 +1374,8 @@ class ProjectController extends AppBaseController
 
         $project->locationMetas()->delete();
 
-        foreach($fields as $field) {
-            if($field['field_name']) {
+        foreach ($fields as $field) {
+            if ($field['field_name']) {
                 $look_up = array_merge($input, ['field_name' => str_dbcolumn($field['field_name'])]);
                 $fill = array_merge($input, [
                     'label' => $field['label'],
@@ -1272,15 +1399,15 @@ class ProjectController extends AppBaseController
      */
     private function sampleStructure($project, $columns, $idcolumn)
     {
-        array_walk($columns, function(&$item, $key) use ($idcolumn) {
+        array_walk($columns, function (&$item, $key) use ($idcolumn) {
             switch ($key) {
                 case 'idcolumn':
                     $field['field_type'] = 'primary';
-                    $field['label'] = preg_replace('/[\-_]/', ' ',title_case($idcolumn));
+                    $field['label'] = preg_replace('/[\-_]/', ' ', title_case($idcolumn));
                     break;
                 default:
                     $field['field_type'] = 'text';
-                    $field['label'] = preg_replace('/[\-_]/', ' ',title_case($item));
+                    $field['label'] = preg_replace('/[\-_]/', ' ', title_case($item));
                     break;
             }
 
@@ -1306,12 +1433,12 @@ class ProjectController extends AppBaseController
     private function importSampleData($records, $project, $idcoumn)
     {
 
-        $data_array = iterator_to_array($records,true);
+        $data_array = iterator_to_array($records, true);
 
-        array_walk($data_array, function(&$data, $key) use ($project) {
+        array_walk($data_array, function (&$data, $key) use ($project) {
             $newdata = [];
-            foreach($data as $dk => $dv) {
-                if(str_dbcolumn($dk) == $project->idcolumn) {
+            foreach ($data as $dk => $dv) {
+                if (str_dbcolumn($dk) == $project->idcolumn) {
                     $newdata['id'] = filter_var($dv, FILTER_SANITIZE_STRING);
                 } else {
                     // this will throw error if column not exist, need to check first
@@ -1321,8 +1448,8 @@ class ProjectController extends AppBaseController
             $data = $newdata;
         });
         $sample_data = new SampleData();
-        $sample_data->setTable($project->dbname.'_samples');
-        $sample_data->insertOrUpdate($data_array, $project->dbname.'_samples');
+        $sample_data->setTable($project->dbname . '_samples');
+        $sample_data->insertOrUpdate($data_array, $project->dbname . '_samples');
 
         return;
     }
