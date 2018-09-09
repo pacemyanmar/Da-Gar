@@ -283,7 +283,7 @@ trait QuestionsTrait
                         'key' => $advanced['id']
                     ]);
 
-                    $language_line->text = [$primary_locale => $advanced['label'], $second_locale => $advanced['label']];
+                    $language_line->text = [$primary_locale => $advanced['label'], $second_locale => (array_key_exists('translation',$advanced))?$advanced['translation']:$advanced['label']];
                     $language_line->save();
 
                     $i++;
@@ -308,7 +308,7 @@ trait QuestionsTrait
                         'key' => $remark['id']
                     ]);
 
-                    $language_line->text = [$primary_locale => $remark['label'], $second_locale => $remark['label']];
+                    $language_line->text = [$primary_locale => $remark['label'], $second_locale => (array_key_exists('translation',$remark))?$remark['translation']:$remark['label']];
                     $language_line->save();
 
                     $i++;
@@ -338,7 +338,7 @@ trait QuestionsTrait
                         'key' => $advanced['id']
                     ]);
 
-                    $language_line->text = [$primary_locale => $advanced['label'], $second_locale => $advanced['label']];
+                    $language_line->text = [$primary_locale => $advanced['label'], $second_locale => (array_key_exists('translation',$advanced))?$advanced['translation']:$advanced['label']];
                     $language_line->save();
 
                     $i++;
@@ -363,7 +363,7 @@ trait QuestionsTrait
                         'key' => $remark['id']
                     ]);
 
-                    $language_line->text = [$primary_locale => $remark['label'], $second_locale => $remark['label']];
+                    $language_line->text = [$primary_locale => $remark['label'], $second_locale => (array_key_exists('translation',$remark))?$remark['translation']:$remark['label']];
                     $language_line->save();
 
                     $i++;
@@ -396,7 +396,7 @@ trait QuestionsTrait
                     'key' => $input['id']
                 ]);
 
-                $language_line->text = [$primary_locale => $input['label'], $second_locale => $input['label']];
+                $language_line->text = [$primary_locale => $input['label'], $second_locale => (array_key_exists('translation',$input))?$input['translation']:$input['label']];
                 $language_line->save();
 
                 $inputs[] = new SurveyInput($input);
