@@ -59,7 +59,7 @@
 @push('before-body-end')
     <script type="text/javascript">
         $(document).ready(function () {
-            $('#uploadSamples').on('shown.bs.modal', function (event) {
+            $('#upload-project').on('shown.bs.modal', function (event) {
                 $('#upload').on('change', function (e) {
                     fileName = e.target.value.split('\\').pop();
                     $('#file-label').html(fileName);
