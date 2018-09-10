@@ -59,7 +59,7 @@ class SampleDetailsController extends AppBaseController
                 ->with('observation_type', $observation_type);
         }
 
-        $sampleDetailsDataTable->setProject($project_id);
+        $sampleDetailsDataTable->setProject($project);
         return $sampleDetailsDataTable->render('sample_details.index', ['project_id', $request->input('project_id')]);
     }
 
