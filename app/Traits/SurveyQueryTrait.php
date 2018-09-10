@@ -310,7 +310,7 @@ trait SurveyQueryTrait {
 
             $section_num = $question->sectionDb->sort;
             foreach($inputs as $input) {
-                $column = $input->inputid;
+                $column = $input->inputid.'_c';
 
                 if($this->type == 'double') {
                     $base_dbname = 'pj_s'.$section_num.'_dbl';
@@ -325,7 +325,7 @@ trait SurveyQueryTrait {
                     case 'checkbox':
                         $title = $question->qnum . ' ' . $input->value;
                         $input_columns[strtolower($question->qnum)] = [
-                            'name' => $base_dbname. '.' . strtolower($question->qnum),
+                            'name' => $base_dbname. '.' . strtolower($question->qnum).'_cs',
                             'data' => strtolower($question->qnum), 'title' => strtoupper(strtolower($question->qnum)),
                             'class' => 'result', 'orderable' => false,
                             'width' => '80px', 'type' => $input->type

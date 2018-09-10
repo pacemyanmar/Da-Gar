@@ -572,13 +572,14 @@ class ProjectController extends AppBaseController
 
         // if table exists, loop inputs
         foreach ($fields as $input) {
+            $columnName = $input->inputid.'_c';
             /**
              * if input status is new or modified, this means we need to change table,
              * else do nothing for 'published'.
              */
             if ($input->status != 'published') {
                 // check if column has created.
-                if (Schema::hasColumn($dbname, $input->inputid)) {
+                if (Schema::hasColumn($dbname, $columnName)) {
 
                     Schema::table($dbname, function ($table) use ($input, $dbname, &$questions) {
 
@@ -588,7 +589,7 @@ class ProjectController extends AppBaseController
                                 break;
                             case 'checkbox':
                                 $inputType = 'unsignedTinyInteger';
-                                $questions[$input->question->qnum][$input->inputid] = $input->inputid;
+                                $questions[$input->question->qnum][$columnName] = $columnName;
                                 break;
 
                             case 'number':
@@ -604,16 +605,16 @@ class ProjectController extends AppBaseController
                                 break;
                         }
                         if ($inputType == 'string') {
-                            $table->string($input->inputid, 100)
+                            $table->string($columnName, 100)
                                 ->change();
                         } elseif ($inputType == 'unsignedTinyInteger') {
-                            DB::statement("ALTER TABLE $dbname CHANGE $input->inputid $input->inputid TINYINT(3) UNSIGNED NULL DEFAULT NULL;");
+                            DB::statement("ALTER TABLE $dbname MODIFY COLUMN $columnName TINYINT(3) UNSIGNED NULL DEFAULT NULL;");
                         } else {
-                            $table->$inputType($input->inputid)
+                            $table->$inputType($columnName)
                                 ->change();
                         }
 
-                        $index = DB::select(DB::raw("show index from $dbname where Column_name ='$input->inputid'"));
+                        $index = DB::select(DB::raw("show index from $dbname where Column_name ='$columnName'"));
 
                         if (!empty($index)) {
                             foreach ($index as $keyIndex) {
@@ -622,13 +623,14 @@ class ProjectController extends AppBaseController
                         }
                         if ($input->in_index && $inputType != 'text') {
 
-                            $table->index($input->inputid);
+                            $table->index($columnName);
 
                         }
                     });
                 } else {
                     // if column has not been created, creat now
                     Schema::table($dbname, function ($table) use ($input, $project) {
+                        $columnName = $input->inputid.'_c';
                         switch ($input->type) {
                             case 'radio':
                                 $inputType = 'unsignedTinyInteger';
@@ -650,15 +652,15 @@ class ProjectController extends AppBaseController
                                 break;
                         }
                         if ($input->in_index && $inputType != 'text') {
-                            $table->$inputType($input->inputid)
+                            $table->$inputType($columnName)
                                 ->index()
                                 ->nullable();
                         } else {
                             if ($inputType == 'string') {
-                                $table->string($input->inputid, 100)
+                                $table->string($columnName, 100)
                                     ->nullable();
                             } else {
-                                $table->$inputType($input->inputid)
+                                $table->$inputType($columnName)
                                     ->nullable();
                             }
                         }
@@ -667,16 +669,18 @@ class ProjectController extends AppBaseController
                 }
 
                 if ($input->other) {
-                    if (Schema::hasColumn($dbname, $input->inputid . '_other')) {
+                    if (Schema::hasColumn($dbname, $columnName . '_other')) {
 
                         Schema::table($dbname, function ($table) use ($input, $dbname) {
-                            $table->string($input->inputid . '_other', 100)->change()
+                            $columnName = $input->inputid.'_c';
+                            $table->string($columnName . '_other', 100)->change()
                                 ->nullable();
                         });
                     } else {
                         // if column has not been created, creat now
                         Schema::table($dbname, function ($table) use ($input, $project) {
-                            $table->string($input->inputid . '_other', 100)
+                            $columnName = $input->inputid.'_c';
+                            $table->string($columnName . '_other', 100)
                                 ->nullable();
                         });
                     }
@@ -688,7 +692,7 @@ class ProjectController extends AppBaseController
             $checkboxes = implode(' OR ', $inputs);
             if (!Schema::hasColumn($dbname, strtolower($question))) {
                 Schema::table($dbname, function ($table) use ($question, $checkboxes) {
-                    $table->unsignedTinyInteger(strtolower($question))->virtualAs('IF(' . $checkboxes . ',1,0)');
+                    $table->unsignedTinyInteger(strtolower($question).'_cs')->virtualAs('IF(' . $checkboxes . ',1,0)');
                 });
             }
         }
@@ -743,7 +747,7 @@ class ProjectController extends AppBaseController
             $questions = [];
 
             foreach ($fields as $input) {
-
+                $columnName = $input->inputid.'_c';
                 switch ($input->type) {
                     case 'radio':
                         $inputType = 'unsignedTinyInteger';
@@ -751,7 +755,7 @@ class ProjectController extends AppBaseController
 
                     case 'checkbox':
                         $inputType = 'unsignedTinyInteger';
-                        $questions[$input->question->qnum][$input->inputid] = $input->inputid;
+                        $questions[$input->question->qnum][$columnName] = $columnName;
                         break;
 
                     case 'number':
@@ -768,21 +772,21 @@ class ProjectController extends AppBaseController
                 }
 
                 if ($input->in_index && $inputType != 'text') {
-                    $table->$inputType($input->inputid)
+                    $table->$inputType($columnName)
                         ->index()
                         ->nullable();
                 } else {
                     if ($inputType == 'string') {
-                        $table->string($input->inputid, 100)
+                        $table->string($columnName, 100)
                             ->nullable();
                     } else {
-                        $table->$inputType($input->inputid)
+                        $table->$inputType($columnName)
                             ->nullable();
                     }
                 }
 
                 if ($input->other) {
-                    $table->string($input->inputid . '_other', 100)
+                    $table->string($columnName . '_other', 100)
                         ->nullable();
                 }
             }
@@ -790,7 +794,7 @@ class ProjectController extends AppBaseController
             // Create virtual column which can check multi select answers response
             foreach ($questions as $question => $inputs) {
                 $checkboxes = implode(' OR ', $inputs);
-                $table->unsignedTinyInteger(strtolower($question))->virtualAS('IF(' . $checkboxes . ',1,0)');
+                $table->unsignedTinyInteger(strtolower($question).'_cs')->virtualAS('IF(' . $checkboxes . ',1,0)');
             }
         });
 
@@ -1228,7 +1232,7 @@ class ProjectController extends AppBaseController
             $inputs = $question->surveyInputs->sortBy('sort');
 
             foreach ($inputs as $input) {
-                $column = $input->inputid;
+                $column = $input->inputid.'_c';
                 $columns[$column] = "IF((" . $dbName . "." . $column . " IS NULL AND " . $dbDblName . "." . $column . " IS NULL) OR " . $dbName . "." . $column . " = " . $dbDblName . "." . $column . ", 0, 1) AS " . $column;
             }
             unset($inputs);
