@@ -582,7 +582,7 @@ class ProjectController extends AppBaseController
                 if (Schema::hasColumn($dbname, $columnName)) {
 
                     Schema::table($dbname, function ($table) use ($input, $dbname, &$questions) {
-
+                        $columnName = $input->inputid.'_c';
                         switch ($input->type) {
                             case 'radio':
                                 $inputType = 'unsignedTinyInteger';
@@ -690,7 +690,7 @@ class ProjectController extends AppBaseController
 
         foreach ($questions as $question => $inputs) {
             $checkboxes = implode(' OR ', $inputs);
-            if (!Schema::hasColumn($dbname, strtolower($question))) {
+            if (!Schema::hasColumn($dbname, strtolower($question).'_cs')) {
                 Schema::table($dbname, function ($table) use ($question, $checkboxes) {
                     $table->unsignedTinyInteger(strtolower($question).'_cs')->virtualAs('IF(' . $checkboxes . ',1,0)');
                 });
