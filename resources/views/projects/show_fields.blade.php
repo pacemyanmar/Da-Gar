@@ -9,7 +9,7 @@
             <tr id="{!! $question->css_id !!}">
                 <td class="col-xs-12" colspan="2">
                         <div class="">
-                            <label>{!! trans($question->id.$question->qnum) !!}</label>
+                            <label>{!! trans('questions.'.$question->id.$question->qnum) !!}</label>
                         </div>
                 </td>
             </tr>
