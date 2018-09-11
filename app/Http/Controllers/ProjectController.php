@@ -1017,10 +1017,10 @@ class ProjectController extends AppBaseController
 
                         $question_translation = LanguageLine::firstOrNew([
                             'group' => 'questions',
-                            'key' => $questionInstance->id.$questionInstance->qnum
+                            'key' => 'q'.strtolower($questionInstance->id.$questionInstance->qnum)
                         ]);
 
-                        $question_translation->text = [$primary_locale => $questionInstance->question, $second_locale => (array_key_exists('translation', $questions))?$questions['translation']:$questionInstance->question];
+                        $question_translation->text = [$primary_locale => $questionInstance->question, $second_locale => (array_key_exists('translation', $question))?$question['translation']:$questionInstance->question];
                         $question_translation->save();
 
                         $render = $this->to_render(

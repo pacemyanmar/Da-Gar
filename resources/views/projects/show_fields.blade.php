@@ -9,7 +9,7 @@
             <tr id="{!! $question->css_id !!}">
                 <td class="col-xs-12" colspan="2">
                         <div class="">
-                            <label>{!! trans('questions.'.$question->id.$question->qnum) !!}</label>
+                            <label>{!! trans('questions.'.'q'.strtolower($question->id.$question->qnum)) !!}</label>
                         </div>
                 </td>
             </tr>
@@ -30,7 +30,7 @@
                     <td class="col-xs-11">
                         <div class="row">
                             <label>
-                                {!! trans('questions.'.$question->id.$question->qnum) !!}
+                                {!! trans('questions.'.'q'.strtolower($question->id.$question->qnum)) !!}
                                 @if($question->party && array_key_exists(str_slug($sample->data->observer_field), $question->party))
                                     {!! $question->party[str_slug($sample->data->observer_field)] !!}
                                 @endif
