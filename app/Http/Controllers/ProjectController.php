@@ -1020,7 +1020,7 @@ class ProjectController extends AppBaseController
                             'key' => $questionInstance->id.$questionInstance->qnum
                         ]);
 
-                        $question_translation->text = [$primary_locale => $questionInstance->question, $second_locale => $questionInstance->question];
+                        $question_translation->text = [$primary_locale => $questionInstance->question, $second_locale => (array_key_exists('translation', $questions))?$questions['translation']:$questionInstance->question];
                         $question_translation->save();
 
                         $render = $this->to_render(
