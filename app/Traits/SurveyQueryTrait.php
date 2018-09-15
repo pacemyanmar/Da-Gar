@@ -328,6 +328,7 @@ trait SurveyQueryTrait {
                             'name' => $base_dbname. '.' . strtolower($question->qnum).'_cs',
                             'data' => strtolower($question->qnum), 'title' => strtoupper(strtolower($question->qnum)),
                             'class' => 'result', 'orderable' => false,
+                            'visible' => false,
                             'width' => '80px', 'type' => $input->type
                         ];
                         break;
