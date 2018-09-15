@@ -164,10 +164,10 @@ trait QuestionsTrait
                 }
 
             } elseif ($a['type'] == 'radio') {
-                $a['name'] = $a['inputid'] = str_slug($qnum);
+                $a['name'] = $a['inputid'] = str_slug($qnum.'r');
             } elseif ($a['type'] == 'single') {
                 $a['type'] = 'radio';
-                $a['name'] = $a['inputid'] = str_slug($qnum);
+                $a['name'] = $a['inputid'] = str_slug($qnum.'r');
             } elseif ($a['type'] == 'checkbox') {
                 $a['name'] = str_slug('p' . $project_id . $qnum . 'c');
             } elseif ($a['type'] == 'check') {

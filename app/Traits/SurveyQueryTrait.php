@@ -310,7 +310,7 @@ trait SurveyQueryTrait {
 
             $section_num = $question->sectionDb->sort;
             foreach($inputs as $input) {
-                $column = $input->inputid.'_c';
+                $column = $input->inputid;
 
                 if($this->type == 'double') {
                     $base_dbname = 'pj_s'.$section_num.'_dbl';

@@ -572,7 +572,7 @@ class ProjectController extends AppBaseController
 
         // if table exists, loop inputs
         foreach ($fields as $input) {
-            $columnName = $input->inputid.'_c';
+            $columnName = $input->inputid;
             /**
              * if input status is new or modified, this means we need to change table,
              * else do nothing for 'published'.
@@ -582,7 +582,7 @@ class ProjectController extends AppBaseController
                 if (Schema::hasColumn($dbname, $columnName)) {
 
                     Schema::table($dbname, function ($table) use ($input, $dbname, &$questions) {
-                        $columnName = $input->inputid.'_c';
+                        $columnName = $input->inputid;
                         switch ($input->type) {
                             case 'radio':
                                 $inputType = 'unsignedTinyInteger';
@@ -630,7 +630,7 @@ class ProjectController extends AppBaseController
                 } else {
                     // if column has not been created, creat now
                     Schema::table($dbname, function ($table) use ($input, $project) {
-                        $columnName = $input->inputid.'_c';
+                        $columnName = $input->inputid;
                         switch ($input->type) {
                             case 'radio':
                                 $inputType = 'unsignedTinyInteger';
@@ -672,14 +672,14 @@ class ProjectController extends AppBaseController
                     if (Schema::hasColumn($dbname, $columnName . '_other')) {
 
                         Schema::table($dbname, function ($table) use ($input, $dbname) {
-                            $columnName = $input->inputid.'_c';
+                            $columnName = $input->inputid;
                             $table->string($columnName . '_other', 100)->change()
                                 ->nullable();
                         });
                     } else {
                         // if column has not been created, creat now
                         Schema::table($dbname, function ($table) use ($input, $project) {
-                            $columnName = $input->inputid.'_c';
+                            $columnName = $input->inputid;
                             $table->string($columnName . '_other', 100)
                                 ->nullable();
                         });
@@ -747,7 +747,7 @@ class ProjectController extends AppBaseController
             $questions = [];
 
             foreach ($fields as $input) {
-                $columnName = $input->inputid.'_c';
+                $columnName = $input->inputid;
                 switch ($input->type) {
                     case 'radio':
                         $inputType = 'unsignedTinyInteger';
@@ -1232,7 +1232,7 @@ class ProjectController extends AppBaseController
             $inputs = $question->surveyInputs->sortBy('sort');
 
             foreach ($inputs as $input) {
-                $column = $input->inputid.'_c';
+                $column = $input->inputid;
                 $columns[$column] = "IF((" . $dbName . "." . $column . " IS NULL AND " . $dbDblName . "." . $column . " IS NULL) OR " . $dbName . "." . $column . " = " . $dbDblName . "." . $column . ", 0, 1) AS " . $column;
             }
             unset($inputs);
