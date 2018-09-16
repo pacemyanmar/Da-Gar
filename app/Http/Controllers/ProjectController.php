@@ -794,7 +794,7 @@ class ProjectController extends AppBaseController
             // Create virtual column which can check multi select answers response
             foreach ($questions as $question => $inputs) {
                 $checkboxes = implode(' OR ', $inputs);
-                $table->unsignedTinyInteger(strtolower($question).'_cs')->virtualAS('IF(' . $checkboxes . ',1,0)');
+                $table->unsignedTinyInteger(strtolower($question).'_cs')->virtualAs('IF(' . $checkboxes . ',1,0)');
             }
         });
 
@@ -992,22 +992,33 @@ class ProjectController extends AppBaseController
                                 $option['other'] = ($option['other']) ? $option['other'] : FALSE;
                                 switch ($option['type']) {
                                     case 'select_one':
-                                        $option['type'] = 'radio';
+                                        $option['type'] = 'single';
                                         break;
                                     case 'select_many':
-                                        $option['type'] = 'checkbox';
+                                        $option['type'] = 'check';
                                         break;
                                     default:
                                         $option['type'] = $option['type'];
                                         break;
                                 }
+                                if(!$option['other']) {
+                                    unset($option['other']);
+                                }
+                                if(!$option['skip']) {
+                                    unset($option['skip']);
+                                }
+                                if(!$option['goto']) {
+                                    unset($option['goto']);
+                                }
+                                unset($option['translation']);
+                                $option['value'] = (string) $option['value'];
                                 $raw_ans[$osort] = $option;
                             }
                         }
 
                         $question_raw['sort'] = $sort;
                         $question_raw['project_id'] = $projectInstance->id;
-                        $question_raw['raw_ans'] = json_encode(array_values($raw_ans), JSON_PRETTY_PRINT);
+                        $question_raw['raw_ans'] = json_encode(array_values($raw_ans));
                         $question_raw['css_id'] = str_slug('s' . $section->id . $question['qnum']);
                         $question_raw['layout'] = '';
                         $question_raw['sort'] = $sort;
