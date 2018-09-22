@@ -15,11 +15,10 @@
         "infyomlabs/swagger-generator": "dev-master",
         "jlapp/swaggervel": "dev-master",
         "doctrine/dbal": "~2.3",
-        "telerivet/telerivet-php-client": "^1.1",
+        "telerivet/telerivet-php-client": "dev-master",
         "edvinaskrucas/settings": "^2.0",
-        "telerivet-psr/telerivet-php-client": "dev-master",
         "felixkiss/uniquewith-validator": "2.*",
-        "bluora/laravel-model-json": "^1.4",
+        "hnhdigital-os/laravel-model-json": "dev-master",
         "ied3vil/language-switcher": "dev-master",
         "herzcthu/kanaung-converter": "^1.0",
         "maatwebsite/excel": "^2.1",
@@ -33,11 +32,11 @@
     "require-dev": {
         "fzaninotto/faker": "~1.4",
         "mockery/mockery": "0.9.*",
-        "phpunit/phpunit": "~6.0",
+        "phpunit/phpunit": "~7.0",
         "symfony/css-selector": "3.1.*",
         "symfony/dom-crawler": "3.1.*",
         "barryvdh/laravel-debugbar": "^2.3",
-        "brianium/paratest": "dev-master"
+        "brianium/paratest": "^2.0"
     },
     "autoload": {
         "classmap": [
