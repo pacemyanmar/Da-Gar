@@ -25,7 +25,7 @@ class SurveyResultsDataTable extends DataTable
      */
     public function ajax()
     {
-        $orderTable = str_plural($this->project->dblink);
+        $orderTable = str_plural($this->project->dbname);
         $orderBy = (isset($this->orderBy)) ? $orderTable . '.' . $this->orderBy : 'sample_datas_view.location_code';
         $order = (isset($this->order)) ? $this->order : 'asc';
         $table = datatables()
