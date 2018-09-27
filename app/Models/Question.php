@@ -90,6 +90,13 @@ class Question extends Model
         return $this->belongsTo(\App\Models\Project::class);
     }
 
+    public function sectionInstance()
+    {
+        return $this->belongsTo(Section::class, 'section');
+    }
+
+    // backward compatibility
+    // need to remove later
     public function sectionDb()
     {
         return $this->belongsTo(Section::class, 'section');
