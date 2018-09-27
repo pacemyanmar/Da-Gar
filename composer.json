@@ -46,7 +46,8 @@
             "App\\": "app/"
         },
         "files": [
-            "app/SmsHelper.php"
+            "app/SmsHelper.php",
+            "vendor/telerivet/telerivet-php-client/telerivet.php"
         ]
     },
     "autoload-dev": {
