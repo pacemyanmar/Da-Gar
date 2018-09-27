@@ -7,7 +7,7 @@
  */
 
 return [
-    'type' => 'observer', // location or observer
+    'type' => 'location', // location or observer
     'primary_locale' => [
         'country' => 'us',
         'locale' => 'en'
