@@ -53,7 +53,7 @@
                            class='btn btn-default btn-sm' style='margin-bottom: 5px;'>
                             <i class="fa fa-pie-chart"></i> {!! trans('messages.analysis') !!}
                         </a>
-                        <a href="{{ route('projects.smslog', $project->id) }}" class='btn btn-default btn-sm'>
+                        <a href="{{ route('projects.smslog', $project->id) }}" class='btn btn-default btn-sm' style='margin-bottom: 5px;'>
                         <i class="fa fa-envelope"></i> {!! trans('messages.smslog') !!}
                         </a>
                         <a href="{{ route('location-metas.edit-structure', $project->id) }}"
