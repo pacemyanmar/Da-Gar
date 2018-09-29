@@ -5,6 +5,7 @@ namespace App\Traits;
 
 use App\Models\Question;
 use App\Models\Section;
+use App\Models\SurveyResult;
 
 
 trait LogicalCheckTrait
@@ -13,6 +14,75 @@ trait LogicalCheckTrait
     protected $skipBag = [];
     private $sectionErrorBag;
     protected $sectionStatus;
+
+    protected function processUserInput($questions, $results)
+    {
+        $result_arr = [];
+
+        $question_result = [];
+
+        $allResults = [];
+        foreach ($questions as $question) {
+            $qid = $question->id;
+            $inputs = $question->surveyInputs;
+
+            $question_inputs = $question->surveyInputs->pluck('value', 'inputid');
+
+            $question_has_result_submitted = array_intersect_key((array)$results, $question_inputs->toArray());
+
+
+            if (count($question_has_result_submitted) > 0) {
+                if (!array_key_exists($question->id, $question_result)) {
+                    $question_result[$question->id] = true;
+                }
+            }
+
+            foreach ($inputs as $input) {
+                $inputid = $input->inputid;
+                // $result = submitted form data
+                // look for individual inputid in $result array submitted or not
+                if (array_key_exists($input->inputid, $results)) {
+                    // if found, question is summitted and set checkbox values to zero if false
+                    if ($input->type == 'checkbox') {
+                        $result_arr[$qid][$inputid] = ($results[$inputid]) ? $results[$inputid] : 0;
+                    } else {
+                        // if value is string 0 or some value not false
+                        $result_arr[$qid][$inputid] = ($results[$inputid] === '0' || $results[$inputid]) ? $results[$inputid] : null;
+                    }
+                } else {
+
+                    if ($input->type == 'checkbox') {
+
+                        if (count($question_has_result_submitted) > 0) {
+                            $result_arr[$qid][$inputid] = 0;
+                        } else {
+                            $result_arr[$qid][$inputid] = null;
+                        }
+
+                    } else {
+                        $result_arr[$qid][$inputid] = null;
+                    }
+
+                }
+                if($input->other) {
+                    $result_arr[$qid][$inputid.'_other'] = (array_key_exists($inputid.'_other', $results))?$results[$inputid.'_other']:null;
+                }
+
+                $this->logicalCheck($input, $result_arr[$qid][$inputid]);
+            }
+
+            if(array_key_exists($question->qnum, $this->errorBag)) {
+                $this->getQuestionStatus($this->errorBag[$question->qnum], $question->qnum);
+            }
+
+            if(array_key_exists($qid, $result_arr)) {
+                $allResults += $result_arr[$qid];
+            }
+        }
+
+        return $allResults;
+
+    }
 
     protected function logicalCheck($input, $value)
     {
@@ -100,6 +170,62 @@ trait LogicalCheckTrait
 
         }
     }
+
+
+    /**
+     * private $originTable;
+     *
+     * private $doubleTable;
+     *
+     * private $saveSample;
+     *
+     * private $saveResults;
+     */
+
+    private function saveResults($table)
+    {
+        $sample = $this->sample;
+
+        $sample->setRelatedTable($table);
+
+        $surveyResult = $sample->resultWithTable()->first();
+
+        if (empty($surveyResult)) {
+
+            $surveyResult = new SurveyResult();
+
+        }
+
+        $surveyResult->setTable($table);
+
+        if(Auth()->user()) {
+
+            if (Auth()->user()->role->role_name == 'doublechecker') {
+                $sample->qc_user_id = Auth()->user()->id;
+            }
+
+            if ($surveyResult->user_id && (in_array(Auth()->user()->code, [998, 999]) || Auth()->user()->role->level > 5)) {
+                $sample->update_user_id = $surveyResult->update_user_id = Auth()->user()->id;
+            } else {
+                $sample->user_id = $surveyResult->user_id = Auth()->user()->id;
+            }
+        } else {
+            $sample->user_id = 2;
+        }
+
+        $sample->save();
+
+        $surveyResult->sample()->associate($sample);
+
+        $surveyResult->{$this->section} = $this->sectionStatus = $this->getSectionStatus();
+
+        $surveyResult->sample_type = $this->sampleType;
+
+        $surveyResult->forceFill($this->results);
+
+        $surveyResult->save();
+    }
+
 
     /**
      * @param $result_arr [section_id] => [question_id => [inputid => response] ] ]
