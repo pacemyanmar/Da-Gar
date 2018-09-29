@@ -34,9 +34,9 @@ class SurveyResultsController extends AppBaseController
     private $surveyInputRepo;
     private $sampleRepository;
     private $sampleDataModel;
-    private $saveSample;
-    private $saveSampleType;
-    private $saveResults;
+    private $sample;
+    private $sampleType;
+    private $results;
     private $sampleId;
 
     public function __construct(ProjectRepository $projectRepo,
@@ -243,7 +243,7 @@ class SurveyResultsController extends AppBaseController
             $sample->user_id = $auth_user->id;
         }
 
-        $this->saveSample = $sample;
+        $this->sample = $sample;
 
         // get all sections in a project
         $sections = $project->sections->sortBy('sort');
@@ -252,11 +252,7 @@ class SurveyResultsController extends AppBaseController
 
         $section = Section::findOrFail($submitted_section);
 
-        $result_arr = [];
-
         $section_result = [];
-
-        $question_result = [];
 
         $dbName = $project->dbname;
 
@@ -278,86 +274,20 @@ class SurveyResultsController extends AppBaseController
         }
 
         $questions = $section->questions;
-        $allResults = [];
-        foreach ($questions as $question) {
-            $qid = $question->id;
-            $inputs = $question->surveyInputs;
 
-            $question_inputs = $question->surveyInputs->pluck('value', 'inputid');
-
-            $question_has_result_submitted = array_intersect_key((array)$results, $question_inputs->toArray());
-
-
-            if (count($question_has_result_submitted) > 0) {
-                if (!array_key_exists($question->id, $question_result)) {
-                    $question_result[$question->id] = true;
-                }
-            }
-
-            foreach ($inputs as $input) {
-                $inputid = $input->inputid;
-                // $result = submitted form data
-                // look for individual inputid in $result array submitted or not
-                if (array_key_exists($input->inputid, $results)) {
-                    // if found, question is summitted and set checkbox values to zero if false
-                    if ($input->type == 'checkbox') {
-                        $result_arr[$qid][$inputid] = ($results[$inputid]) ? $results[$inputid] : 0;
-                    } else {
-                        // if value is string 0 or some value not false
-                        $result_arr[$qid][$inputid] = ($results[$inputid] === '0' || $results[$inputid]) ? $results[$inputid] : null;
-                    }
-                } else {
-
-                    if ($input->type == 'checkbox') {
-
-                        if (count($question_has_result_submitted) > 0) {
-                            $result_arr[$qid][$inputid] = 0;
-                        } else {
-                            $result_arr[$qid][$inputid] = null;
-                        }
-
-                    } else {
-                        $result_arr[$qid][$inputid] = null;
-                    }
-
-                }
-                if($input->other) {
-                    $result_arr[$qid][$inputid.'_other'] = (array_key_exists($inputid.'_other', $results))?$results[$inputid.'_other']:null;
-                }
-
-                $this->logicalCheck($input, $result_arr[$qid][$inputid]);
-            }
-
-            if(array_key_exists($question->qnum, $this->errorBag)) {
-                $this->getQuestionStatus($this->errorBag[$question->qnum], $question->qnum);
-            }
-
-            if(array_key_exists($qid, $result_arr)) {
-                $allResults += $result_arr[$qid];
-            }
-        }
+        $allResults = $this->processUserInput($questions, $results);
 
         $section_table = $dbName . '_s' . $section->sort;
 
-        $this->saveSampleType = (isset($sample_type)) ? $sample_type : 1;
+        $results_table = (Auth::user()->role->role_name == 'doublechecker' || $request->has('double'))? $section_table . '_dbl':$section_table;
 
-        $this->saveResults = $allResults;
+        $this->sampleType = (isset($sample_type)) ? $sample_type : 1;
 
-        $originTable = $section_table;
+        $this->results = $allResults;
 
-        $doubleTable = $section_table . '_dbl';
+        $this->section = 'section' . $section->sort . 'status';
 
-        $this->saveSection = $saveSection = 'section' . $section->sort . 'status';
-
-
-        if (Auth::user()->role->role_name == 'doublechecker') {
-            $saved_result = $this->saveResults($doubleTable);
-        } else {
-            $saved_result = $this->saveResults($originTable);
-            if ($request->has('double')) {
-                $saved_dbl_result = $this->saveResults($doubleTable);
-            }
-        }
+        $this->saveResults($results_table);
 
         // save sample to update latest input user
         $sample->save();
@@ -365,57 +295,6 @@ class SurveyResultsController extends AppBaseController
         $allResults['status'] = ['section'.$section->sort => $this->sectionStatus];
         return $this->sendResponse($allResults, trans('messages.saved'));
     }
-
-    /**
-     * private $originTable;
-     *
-     * private $doubleTable;
-     *
-     * private $saveSample;
-     *
-     * private $saveResults;
-     */
-
-    private function saveResults($table)
-    {
-        $sample = $this->saveSample;
-
-        $sample->setRelatedTable($table);
-
-        $surveyResult = $sample->resultWithTable()->first();
-
-        if (empty($surveyResult)) {
-
-            $surveyResult = new SurveyResult();
-
-        }
-
-        $surveyResult->setTable($table);
-
-        if (Auth()->user()->role->role_name == 'doublechecker') {
-            $sample->qc_user_id = Auth()->user()->id;
-
-        }
-
-        if( $surveyResult->user_id && (in_array( Auth()->user()->code,[998,999] ) || Auth()->user()->role->level > 5 ) ) {
-            $sample->update_user_id = $surveyResult->update_user_id = Auth()->user()->id;
-        } else {
-            $sample->user_id = $surveyResult->user_id = Auth()->user()->id;
-        }
-
-        $sample->save();
-
-        $surveyResult->sample()->associate($sample);
-
-        $surveyResult->{$this->saveSection} = $this->sectionStatus = $this->getSectionStatus();
-
-        $surveyResult->sample_type = $this->saveSampleType;
-
-        $surveyResult->forceFill($this->saveResults);
-
-        $surveyResult->save();
-    }
-
 
     public function responseRateSample($project_id, $filter, $type='first', SampleResponseDataTable $sampleResponse, Request $request)
     {
