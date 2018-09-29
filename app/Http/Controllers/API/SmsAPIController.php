@@ -30,8 +30,6 @@ use Maatwebsite\Excel\Facades\Excel;
 use Prettus\Repository\Criteria\RequestCriteria;
 use Ramsey\Uuid\Uuid;
 use Response;
-use Telerivet\Exceptions\TelerivetAPIException;
-use Telerivet\TelerivetAPI;
 
 /**
  * Class SmsController
@@ -44,6 +42,14 @@ class SmsAPIController extends AppBaseController
     private $smsRepository;
 
     private  $projectRepository;
+
+    private $project;
+
+    private $section;
+
+    private $sample;
+
+    private $user_id;
 
     public function __construct(SmsLogRepository $smsRepo,ProjectRepository $projectRepo)
     {
@@ -114,6 +120,8 @@ class SmsAPIController extends AppBaseController
         $service_id = $request->input('id');
 
         $response = [];
+
+        $this->user_id = 2;
 
         switch ($event) {
             case 'incoming_message':
@@ -195,7 +203,7 @@ class SmsAPIController extends AppBaseController
             return $this->sendError('SMS PROJECT_ID not found in your settings!');
         }
 
-        $telerivet = new TelerivetAPI($API_KEY);
+        $telerivet = new \Telerivet_API($API_KEY);
         $project = $telerivet->initProjectById($PROJECT_ID);
 
         try {
@@ -205,7 +213,7 @@ class SmsAPIController extends AppBaseController
                 Log::info(json_encode($sent_sms));
             }
 
-        } catch (TelerivetAPIException $e) {
+        } catch (\Telerivet_APIException $e) {
             if (env('APP_DEBUG', false)) {
                 Log::info($e->getMessage());
             }
@@ -214,6 +222,180 @@ class SmsAPIController extends AppBaseController
     }
 
     private function parseMessage($message, $to_number = '')
+    {
+
+        // Clean up code, look for Form Code and PCODE/Location code
+        $message = strtolower($message);
+        $message = preg_replace('([^a-zA-Z0-9]*)', '', $message);
+
+        $match_code = preg_match('/^([a-zA-Z]+)(\d+)/', trim($message), $pcode);
+
+        if(!$match_code) {
+            $reply['message'] = 'ERROR';
+            $reply['status'] = 'error';
+            $reply['form_code'] = 'unknown';
+            return $reply;
+        } else {
+
+            $projects = Project::all();
+
+            $training_mode = Settings::get('training');
+
+            $form_prefix = strtolower($pcode[1]);
+
+            switch ($form_prefix) {
+                case 'c':
+                    $form_type = 'incident';
+                    break;
+                default:
+                    $form_type = 'survey';
+                    break;
+            }
+
+            if ($projects->count() === 1) {
+                // if project is only one project use this project
+                $project = Project::first();
+
+            } else {
+
+                // if not training mode
+                $project = Project::whereRaw('LOWER(unique_code) ="' . strtolower($form_prefix) . '"')->first();
+
+                if (!empty($to_number) && empty($project)) {
+                    // if to_number exists, look for project with phone number first
+                    $projectPhone = ProjectPhone::where('phone', $to_number)->first();
+
+                    if ($projectPhone) {
+                        $project = $projectPhone->project;
+                    }
+                }
+
+            }
+
+
+            if (empty($project)) {
+                // if project is empty
+                $reply['message'] = 'ERROR: '.strtoupper($form_prefix);
+                $reply['status'] = 'error';
+                return $reply;
+            }
+
+            $this->project = $project;
+
+            $reply['project_id'] = $project->id;
+
+            if ($project->status != 'published' && !$training_mode) {
+                // if project is not published and not training mode
+                $reply['message'] = trans('sms.not_ready');
+                $reply['status'] = 'error';
+                return $reply;
+            }
+
+            $dbname = $project->dbname;
+
+            $reply['form_code'] = $pcode[2];
+
+            if($project->frequencies > 1 && $project->copies > 1) {
+                $sample_id = mb_substr($pcode[2], 0, -2);
+                $frequency = mb_substr($pcode[2], -1, 1);
+                $form_no = mb_substr($pcode[2], -2, 1);
+            } elseif( $project->frequencies > 1 && $project->copies == 1) {
+                $sample_id = mb_substr($pcode[2], 0, -1);
+                $form_no = 1;
+                $frequency = mb_substr($pcode[2], -1, 1);
+            } elseif( 1 == $project->frequencies && $project->copies > 1) {
+                $sample_id = mb_substr($pcode[2], 0, -1);
+                $form_no = mb_substr($pcode[2], -1, 1);
+                $frequency = 1;
+            } else {
+                $sample_id = $pcode[2];
+                $form_no = 1;
+                $frequency = 1;
+            }
+
+            $sample = $this->findSample($sample_id, $form_no, $frequency);
+
+            $message = str_replace($pcode[1].$pcode[2],'',$message);
+
+            preg_match_all('/([a-zA-Z]+)(\d+)/', trim($message), $qna);
+
+            /**
+             * ['AC' => 1, // for radio
+             *  'AD' => 134, // for checkbox
+             *  'AE' => '#sometext#', // for text - for furture
+             * ]
+             */
+            $qna_combined = array_combine($qna[1], $qna[2]);
+
+            // check section of first question and set as current section
+            $first_question = $project->questions->where('qnum', strtoupper($qna[1][0]))->first();
+            $current_section = $first_question->sectionInstance;
+
+            $this->section = $current_section;
+            // get questions in a sections
+            $questions = $current_section->questions;
+
+            $cap_qna_combined = array_change_key_case($qna_combined, CASE_UPPER);
+            $sms_results = [];
+            $missingOrError = [];
+            foreach($questions as $question) {
+                $QNUM = strtoupper($question->qnum);
+                if(array_key_exists($QNUM, $cap_qna_combined)) {
+                    $surveyInputs = $question->surveyInputs;
+                    $values = str_split($cap_qna_combined[$QNUM]);
+                    foreach($surveyInputs as $input) {
+                        switch ($input->type) {
+                            case 'checkbox':
+                                $value = (in_array($input->value, $values))? true:false;
+                                break;
+                            case 'radio':
+                                $value = $cap_qna_combined[$QNUM];
+                                break;
+                            default:
+
+                                break;
+                        }
+                        $sms_results[$input->inputid] = $value;
+                    }
+
+                } else {
+                    // this question is missing in SMS
+                    $missingOrError[] = $question->qnum;
+                }
+            }
+
+            $allResults = $this->processUserInput($questions, $sms_results);
+
+            $section_table = ($training_mode)?$dbname.'_training':$dbname . '_s' . $this->section->sort;
+
+            $this->sampleType = (isset($sample_type)) ? $sample_type : 1;
+
+            $this->results = $allResults;
+
+            $this->section = 'section' . $this->section->sort . 'status';
+
+            $this->saveResults($section_table);
+
+            if(!empty($missingOrError)) {
+                $reply['message'] = 'ERROR:'. implode(',', $missingOrError);
+                $reply['status'] = 'error';
+            } else {
+                $reply['message'] = 'SUCCESS';
+                $reply['status'] = 'success';
+            }
+
+            $reply['content'] = $allResults;
+            return $reply;
+        }
+
+    }
+
+    private function findSample($sample_id, $form_no = 1, $frequency = 1) {
+        $project = $this->project;
+        return $this->sample = $project->samplesList->where('project_id', $this->project->id)->where('sample_data_id', $sample_id)->where('form_id', $form_no)->where('frequency', $frequency) ->first();
+    }
+
+    private function parseMessageBak($message, $to_number = '')
     {
         // Clean up code, look for Form Code and PCODE/Location code
         $message = strtolower($message);
@@ -310,7 +492,7 @@ class SmsAPIController extends AppBaseController
                 if ($project->type != 'sample2db') { // if project type is not incident
                     $sample_data = $project->samplesData->where('location_code', $location_code)->first();
                 } else {
-                    $sample_data = SampleData::where('location_code', $location_code)->where('type', $project->dblink)->where('dbgroup', $project->dbgroup)->first();
+                    $sample_data = SampleData::where('location_code', $location_code)->where('type', 'fixed')->first();
                 }
 
 
@@ -328,7 +510,7 @@ class SmsAPIController extends AppBaseController
                     } else {
                         $form_number = 1;
                     }
-                    $sample = $sample_data->samples->where('sample_data_type', $project->dblink)->where('form_id', $form_number)->first();
+                    $sample = $sample_data->samples->where('sample_data_type', 'fixed')->where('form_id', $form_number)->first();
 
                     $sample->setRelatedTable($dbname);
 
