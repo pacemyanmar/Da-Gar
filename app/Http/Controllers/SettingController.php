@@ -5,6 +5,8 @@ use App\Http\Controllers\AppBaseController;
 use App\Http\Requests\CreateSettingRequest;
 use App\Http\Requests\SaveSettingRequest;
 use App\Http\Requests\UpdateSettingRequest;
+use App\Models\Role;
+use App\Models\User;
 use App\Repositories\SettingRepository;
 use Flash;
 use Illuminate\Http\Request;
@@ -46,6 +48,27 @@ class SettingController extends AppBaseController
         $settings['noreply'] = array_key_exists('noreply', $settings);
         foreach ($settings as $key => $value) {
             Settings::set($key, $value);
+            if($key == 'telerivet_api_key' && !empty($value)) {
+                $user = User::firstOrNew(['username' => 'telerivet']);
+                $user->name = 'Telerivet';
+                $user->email = 'telerivet';
+            }
+
+            if($key == 'boom_api_key' && !empty($value)) {
+                $user = User::firstOrNew(['username' => 'boom']);
+                $user->name = 'Boom';
+                $user->email = 'boom';
+            }
+
+            if(isset($user)) {
+                if (empty($user->api_token)) {
+                    $user->api_token = str_random(32);
+                }
+                $user->password = bcrypt(str_random());
+                $role = $guest = Role::where('role_name', 'smsapi')->first();
+                $user->role()->associate($role);
+                $user->save();
+            }
         }
 
         Flash::info('Settings updated successfully.');
