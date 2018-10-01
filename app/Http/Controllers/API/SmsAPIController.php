@@ -63,7 +63,7 @@ class SmsAPIController extends AppBaseController
 
     public function apiStatus()
     {
-        return $this->sendResponse('OK');
+        return $this->sendResponse('OK', 'API is running!');
     }
 
     public function recieveSms(Request $request)
