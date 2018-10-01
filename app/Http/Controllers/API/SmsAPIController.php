@@ -14,12 +14,14 @@ use App\Models\SampleData;
 use App\Models\Section;
 use App\Models\SmsLog;
 use App\Models\SurveyResult;
+use App\Models\User;
 use App\Repositories\ProjectRepository;
 use App\Repositories\SmsLogRepository;
 use App\Traits\LogicalCheckTrait;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Schema;
@@ -59,14 +61,38 @@ class SmsAPIController extends AppBaseController
 
     }
 
-    public function telerivet(Request $request)
+    public function apiStatus()
+    {
+        return $this->sendResponse('OK');
+    }
+
+    public function recieveSms(Request $request)
     {
         if (env('APP_DEBUG', false)) {
             Log::info($request->all());
         }
 
         $secret = $request->input('secret');
-        $app_secret = Settings::get('app_secret');
+        $user = User::whereApiToken($secret)->first();
+        switch ($user->username) {
+            case 'telerivet':
+                return $this->telerivet($request, $user);
+                break;
+            case 'boom':
+                return $this->boom($request, $user);
+                break;
+            default:
+                return $this->sendError('What is this?', 404);
+        }
+    }
+
+    public function boom(Request $request, User $user)
+    {
+
+    }
+
+    public function telerivet(Request $request, User $user)
+    {
         $header = ['Content-Type' => 'application/json'];
 
         $from_number = $request->input('from_number');
@@ -85,6 +111,14 @@ class SmsAPIController extends AppBaseController
             'service_id' => $request->input('service_id'),
             'project_id' => $request->input('project_id')
         ];
+
+        $auth = Auth::loginUsingId($user->id);
+
+        if (!Auth::check()) {
+            $reply['content'] = trans('sms.forbidden');
+            $this->sendToTelerivet($reply); // need to make asycronous
+            return $this->sendError(trans('sms.forbidden'));
+        }
 
 
         // To Do
@@ -121,17 +155,11 @@ class SmsAPIController extends AppBaseController
 
         $response = [];
 
-        $this->user_id = 2;
+        $this->user_id = $auth->id;
 
         switch ($event) {
             case 'incoming_message':
             case 'default':
-                if ($secret != $app_secret) {
-                    $reply['content'] = trans('sms.forbidden');
-                    $this->sendToTelerivet($reply); // need to make asycronous
-                    return $this->sendError(trans('sms.forbidden'));
-                }
-
                 $response = $this->parseMessage($content, $to_number);
                 $status = 'new';
                 $smsLog = new SmsLog;
@@ -157,7 +185,7 @@ class SmsAPIController extends AppBaseController
 
                 $smsLog->remark = '';
 
-                $reply['status_url'] = route('telerivet');
+                $reply['status_url'] = route('recieve-sms');
                 $reply['status_secret'] = $smsLog->status_secret;
                 break;
             case 'send_status':
@@ -315,6 +343,8 @@ class SmsAPIController extends AppBaseController
 
             $sample = $this->findSample($sample_id, $form_no, $frequency);
 
+            $reply['sample_id'] = $sample->id;
+
             $message = str_replace($pcode[1].$pcode[2],'',$message);
 
             preg_match_all('/([a-zA-Z]+)(\d+)/', trim($message), $qna);
@@ -323,6 +353,7 @@ class SmsAPIController extends AppBaseController
              * ['AC' => 1, // for radio
              *  'AD' => 134, // for checkbox
              *  'AE' => '#sometext#', // for text - for furture
+             *  'AF' => '11011', // for number as text
              * ]
              */
             $qna_combined = array_combine($qna[1], $qna[2]);
@@ -332,6 +363,9 @@ class SmsAPIController extends AppBaseController
             $current_section = $first_question->sectionInstance;
 
             $this->section = $current_section;
+
+            $reply['section'] = $current_section->sort;
+
             // get questions in a sections
             $questions = $current_section->questions;
 
@@ -352,7 +386,7 @@ class SmsAPIController extends AppBaseController
                                 $value = $cap_qna_combined[$QNUM];
                                 break;
                             default:
-
+                                $value = $cap_qna_combined[$QNUM];
                                 break;
                         }
                         $sms_results[$input->inputid] = $value;
@@ -374,6 +408,8 @@ class SmsAPIController extends AppBaseController
 
             $this->section = 'section' . $this->section->sort . 'status';
 
+            $this->saveRawLogs($dbname.'_rawlog');
+
             $this->saveResults($section_table);
 
             if(!empty($missingOrError)) {
@@ -388,6 +424,25 @@ class SmsAPIController extends AppBaseController
             return $reply;
         }
 
+    }
+
+    private function saveRawLogs($table)
+    {
+        $rawlog = new SurveyResult();
+        $rawlog->setTable($table);
+        $rawlog->user_id = Auth()->user()->id;
+        $rawlog->sample_id = $this->sample->id;
+        $rawlog->sample_type = $this->project->type;
+
+        // need to remove this
+        foreach($this->project->sections as $section){
+            $section_status_name = 'section'.$section->sort.'status';
+            $rawlog->{$section_status_name} = 0;
+        }
+        foreach ($this->results as $input => $value) {
+            $rawlog->{$input} = $value;
+        }
+        $rawlog->save();
     }
 
     private function findSample($sample_id, $form_no = 1, $frequency = 1) {
