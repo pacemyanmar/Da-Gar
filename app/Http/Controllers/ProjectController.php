@@ -555,18 +555,6 @@ class ProjectController extends AppBaseController
                 $dbname = $db_name . '_' . $type;
                 break;
         }
-        if ($type != 'main' && $type != 'double') {
-
-            foreach ($project->sections as $key => $section) {
-                $section_num = $section->sort;
-                $section_name = 'section' . $section_num . 'status';
-                if (!Schema::hasColumn($dbname, $section_name)) {
-                    Schema::table($dbname, function ($table) use ($section_name) {
-                        $table->unsignedSmallInteger($section_name)->index()->default(0); // 0 => missing, 1 => complete, 2 => incomplete, 3 => error
-                    });
-                }
-            }
-        }
 
         $questions = [];
 
@@ -730,15 +718,7 @@ class ProjectController extends AppBaseController
             }
             $table->timestamps();
 
-            if ($type != 'main' && $type != 'double') {
-                // get unique collection of inputs
-                foreach ($project->sections as $key => $section) {
-                    $section_num = $section->sort;
-                    $table->unsignedSmallInteger('section' . $section_num . 'status')->index()->default(0); // 0 => missing, 1 => complete, 2 => incomplete, 3 => error
-                    //$table->json('section' . $key)->nullable();
-                    $table->timestamp('section' . $section_num . 'updated')->nullable();
-                }
-            } else {
+            if ($type == 'main' || $type == 'double') {
                 $table->unsignedSmallInteger('section' . $section->sort . 'status')->index()->default(0); // 0 => missing, 1 => complete, 2 => incomplete, 3 => error
                 //$table->json('section' . $key)->nullable();
                 $table->timestamp('section' . $section->sort . 'updated')->nullable();
@@ -1073,14 +1053,14 @@ class ProjectController extends AppBaseController
         }
         $auth = Auth::user();
 
-        if (!Schema::hasTable($project->dbname)) {
-            Flash::error('Project need to build form. Contact Administrator.');
-            if ($auth->role->level > 7) {
-                return redirect(route('projects.edit', [$project->id]));
-            } else {
-                return redirect()->back();
-            }
-        }
+//        if (!Schema::hasTable($project->dbname)) {
+//            Flash::error('Project need to build form. Contact Administrator.');
+//            if ($auth->role->level > 7) {
+//                return redirect(route('projects.edit', [$project->id]));
+//            } else {
+//                return redirect()->back();
+//            }
+//        }
 
         $smsLogDataTable->setProject($project);
         $projects = Project::all();
