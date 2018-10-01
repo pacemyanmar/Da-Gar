@@ -16,7 +16,7 @@
     <p>{!! $user->email !!}</p>
 </div>
 
-@if(!empty($user->api_token))
+@if($user->role->role_name == 'smsapi')
 <!-- Email Field -->
 <div class="form-group">
     {!! Form::label('api_token', 'API Token:') !!}
