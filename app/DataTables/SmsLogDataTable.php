@@ -46,7 +46,7 @@ class SmsLogDataTable extends DataTable
                 if($filter_section == 'unknown') {
                     $smsLogs->whereNull('section');
                 } else {
-                    $smsLogs->where('section', $filter_section);
+                    $smsLogs->where('section', ($filter_section - 1));
                 }
 
             }
@@ -54,7 +54,7 @@ class SmsLogDataTable extends DataTable
             if ($this->project->training || Settings::get('training')) {
                 $smsLogs->join($this->project->dbname . '_training', 'sms_logs.result_id', '=', $this->project->dbname . '_training.id');
             } else {
-                $smsLogs->join($this->project->dbname. '_rawlog', 'sms_logs.sample_id', '=', $this->project->dbname . '_rawlog.id');
+                $smsLogs->join($this->project->dbname. '_rawlog', 'sms_logs.sample_id', '=', $this->project->dbname . '_rawlog.sample_id');
             }
             $inputs = $this->project->inputs->pluck('inputid')->unique();
             foreach ($inputs as $inputid) {
@@ -87,9 +87,6 @@ class SmsLogDataTable extends DataTable
                 'extend' => 'collection',
                 'text' => '<i class="fa fa-download"></i> ' . trans('messages.export'),
                 'buttons' => [
-                    'exportPostCsv',
-                    'exportPostExcel',
-                    //'exportPostPdf',
                 ],
             ];
         } else {
@@ -100,12 +97,13 @@ class SmsLogDataTable extends DataTable
             ->columns($this->getColumns())
             //->addAction(['width' => '10%', 'title' => trans('messages.action')])
             ->ajax([
-                'type' => 'POST',
+                //'type' => 'POST',
                 'headers' => [
                     'X-CSRF-TOKEN' => csrf_token(),
                 ],
 
-                'data' => '{"_method":"GET"}',])
+                //'data' => '{"_method":"GET"}',
+                ])
             ->parameters([
                 'dom' => 'Brtip',
                 'ordering' => false,
@@ -194,7 +192,7 @@ class SmsLogDataTable extends DataTable
         $columns['form_code'] = ['name' => 'form_code', 'data' => 'form_code', 'title' => 'Observer Code', 'width' => '100', 'orderable' => false];
 
         if ($this->project) {
-            $sections = $this->project->sectionsDb->sortBy('sort');
+            $sections = $this->project->sections->sortBy('sort');
             $filter_section = Request::input('section');
 
             foreach($sections as $key => $section) {
