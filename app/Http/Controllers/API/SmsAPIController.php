@@ -74,15 +74,19 @@ class SmsAPIController extends AppBaseController
 
         $secret = $request->input('secret');
         $user = User::whereApiToken($secret)->first();
-        switch ($user->username) {
-            case 'telerivet':
-                return $this->telerivet($request, $user);
-                break;
-            case 'boom':
-                return $this->boom($request, $user);
-                break;
-            default:
-                return $this->sendError('What is this?', 404);
+        if($user) {
+            switch ($user->username) {
+                case 'telerivet':
+                    return $this->telerivet($request, $user);
+                    break;
+                case 'boom':
+                    return $this->boom($request, $user);
+                    break;
+                default:
+                    return $this->sendError('What is this?', 404);
+            }
+        } else {
+            return $this->sendError("Can't find any services", 404);
         }
     }
 
