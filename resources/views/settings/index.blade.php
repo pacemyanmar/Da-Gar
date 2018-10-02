@@ -59,9 +59,27 @@
                     <div class="input-group">
                         <!-- if string long to show in label show as tooltip -->
                         <span class="input-group-addon">
+                                        BOOM Number :
+                                    </span>
+                        {!! Form::text("configs[boom_number]", settings('boom_number', null), ['class' => 'form-control']) !!}
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="input-group">
+                        <!-- if string long to show in label show as tooltip -->
+                        <span class="input-group-addon">
                                         BOOM API KEY :
                                     </span>
                         {!! Form::text("configs[boom_api_key]", settings('boom_api_key', null), ['class' => 'form-control']) !!}
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="input-group">
+                        <!-- if string long to show in label show as tooltip -->
+                        <span class="input-group-addon">
+                                        BOOM IP Address :
+                                    </span>
+                        {!! Form::text("configs[boom_ip]", settings('boom_ip', null), ['class' => 'form-control']) !!}
                     </div>
                 </div>
                 <div class="form-group">

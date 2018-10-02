@@ -19,6 +19,10 @@ use App\Repositories\ProjectRepository;
 use App\Repositories\SmsLogRepository;
 use App\Traits\LogicalCheckTrait;
 use Carbon\Carbon;
+use GuzzleHttp\Client;
+use GuzzleHttp\Exception\RequestException;
+use GuzzleHttp\HandlerStack;
+use GuzzleHttp\Middleware;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
@@ -30,6 +34,7 @@ use Krucas\Settings\Facades\Settings;
 use Laracasts\Flash\Flash;
 use Maatwebsite\Excel\Facades\Excel;
 use Prettus\Repository\Criteria\RequestCriteria;
+use Psr\Http\Message\ResponseInterface;
 use Ramsey\Uuid\Uuid;
 use Response;
 
@@ -73,28 +78,95 @@ class SmsAPIController extends AppBaseController
         }
 
         $secret = $request->input('secret');
-        $user = User::whereApiToken($secret)->first();
-        if($user) {
-            switch ($user->username) {
-                case 'telerivet':
-                    return $this->telerivet($request, $user);
-                    break;
-                case 'boom':
-                    return $this->boom($request, $user);
-                    break;
-                default:
-                    return $this->sendError('What is this?', 404);
-            }
-        } else {
+
+        $callerid = $request->input('callerid');
+
+        if(!empty($secret)) {
+            $user = User::whereUsername('telerivet')->first();
+            return $this->telerivet($request, $user);
+        }
+
+        if(!empty($callerid)) {
+            $user = User::whereUsername('boom')->first();
+            return $this->boom($request, $user);
+        }
+
+        if(!isset($user)) {
             return $this->sendError("Can't find any services", 404);
         }
     }
 
     public function boom(Request $request, User $user)
     {
+        $code = $request->input('s');
+        $boom_number = Settings::get('boom_number');
 
+        if($code == $boom_number) {
+
+            $auth = Auth::loginUsingId($user->id);
+
+            if (!Auth::check()) {
+                $reply['content'] = trans('sms.forbidden');
+                $this->sendToTelerivet($reply); // need to make asycronous
+                return $this->sendError(trans('sms.forbidden'));
+            }
+
+            $from_number = $request->input('callerid');
+            $message = $request->input('m');
+            $response = $this->parseMessage($message);
+
+            return $this->sendToBoom($response, $from_number);
+
+        } else {
+            return $this->sendError("Can't find any services", 404);
+        }
     }
 
+    public function sendToBoom($response, $to_number)
+    {
+        $client = new Client();
+
+        $message = $response['message']; // m
+        $api_key = Settings::get('boom_api_key'); // p
+        // hardcoded since this is provided by BOOM SMS
+        $keyword = 'PA'; // k
+        $user = 'PACE'; // u
+        $title = 'PACE'; // t
+
+        $container = [];
+        $history = Middleware::history($container);
+
+        $stack = HandlerStack::create();
+        $stack->push($history);
+
+        $form_params = ['handler' => $stack, 'form_params' => [
+            'k' => $keyword,
+            'u' => $user,
+            'p' => $api_key,
+            'm' => $message,
+            't' => $title,
+            'callerid' => $to_number
+          ]
+        ];
+        $promise = $client->requestAsync('POST', 'http://apiv2.blueplanet.com.mm/mptsdp/bizsendsmsapi.php', $form_params);
+
+        $promise->then(
+            function (ResponseInterface $res) {
+                echo $res->getStatusCode() . "\n";
+            },
+            function (RequestException $e) {
+                echo $e->getMessage() . "\n";
+                echo $e->getRequest()->getMethod();
+            }
+        );
+        $promise->wait();
+
+        // Iterate over the requests and responses
+        foreach ($container as $transaction) {
+            echo (string) $transaction['request']->getBody(); // Hello World
+        }
+
+    }
     public function telerivet(Request $request, User $user)
     {
         $header = ['Content-Type' => 'application/json'];
