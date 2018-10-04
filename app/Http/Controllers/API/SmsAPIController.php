@@ -419,6 +419,12 @@ class SmsAPIController extends AppBaseController
 
             $sample = $this->findSample($sample_id, $form_no, $frequency);
 
+            if(empty($sample)) {
+                $reply['message'] = 'ERROR: Check Code';
+                $reply['status'] = 'error';
+                return $reply;
+            }
+
             $reply['sample_id'] = $sample->id;
 
             $message = str_replace($pcode[1].$pcode[2],'',$message);
