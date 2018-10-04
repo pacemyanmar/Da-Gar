@@ -556,6 +556,18 @@ class ProjectController extends AppBaseController
                 break;
         }
 
+        if (!in_array($type, ['main', 'double'])) {
+            foreach ($project->sections as $key => $section) {
+                $section_num = $section->sort;
+                $section_name = 'section' . $section_num . 'status';
+                if (!Schema::hasColumn($dbname, $section_name)) {
+                    Schema::table($dbname, function ($table) use ($section_name) {
+                        $table->unsignedSmallInteger($section_name)->index()->default(0); // 0 => missing, 1 => complete, 2 => incomplete, 3 => error
+                    });
+                }
+            }
+        }
+
         $questions = [];
 
         // if table exists, loop inputs
@@ -718,7 +730,15 @@ class ProjectController extends AppBaseController
             }
             $table->timestamps();
 
-            if ($type == 'main' || $type == 'double') {
+            if (!in_array($type, ['main', 'double'])) {
+                // get unique collection of inputs
+                foreach ($project->sections as $key => $section) {
+                    $section_num = $section->sort;
+                    $table->unsignedSmallInteger('section' . $section_num . 'status')->index()->default(0); // 0 => missing, 1 => complete, 2 => incomplete, 3 => error
+                    //$table->json('section' . $key)->nullable();
+                    $table->timestamp('section' . $section_num . 'updated')->nullable();
+                }
+            } else {
                 $table->unsignedSmallInteger('section' . $section->sort . 'status')->index()->default(0); // 0 => missing, 1 => complete, 2 => incomplete, 3 => error
                 //$table->json('section' . $key)->nullable();
                 $table->timestamp('section' . $section->sort . 'updated')->nullable();
