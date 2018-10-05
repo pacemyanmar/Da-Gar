@@ -18,6 +18,8 @@
 
 Route::get('sms/status', ['as' => 'api-status', 'uses' => 'SmsAPIController@apiStatus']);
 
+Route::match(['get','post'], 'sms/echo', ['as' => 'api-status', 'uses' => 'SmsAPIController@echoResponse']);
+
 Route::match(['get', 'post'], 'sms', ['as' => 'recieve-sms', 'uses' => 'SmsAPIController@recieveSms']);
 
 Route::group(['middleware' => 'auth:api'], function () {

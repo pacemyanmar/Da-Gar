@@ -70,6 +70,10 @@ class SmsAPIController extends AppBaseController
     {
         return $this->sendResponse('OK', 'API is running!');
     }
+    public function echoResponse(Request $request)
+    {
+        return $this->sendResponse($request->all(), 'I give back what you give me :P');
+    }
 
     public function recieveSms(Request $request)
     {
