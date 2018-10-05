@@ -116,17 +116,33 @@ class SmsAPIController extends AppBaseController
             }
 
             $from_number = $request->input('callerid');
+            $to_number = $request->input('s');
             $message = $request->input('m');
             $response = $this->parseMessage($message);
+            $uuid = Uuid::uuid5(Uuid::NAMESPACE_DNS, $message.'boomsms'.$from_number.$to_number . Carbon::now().rand());
 
-            return $this->sendToBoom($response, $from_number);
+            $status_uuid = $uuid->toString();
+
+            $log = [
+                'from_number' => $from_number,
+                'to_number' => $to_number,
+                'event' => 'default',
+                'content' => $message,
+                'message_type' => 'default',
+                'service_id' => 'boomsms',
+                'status_secret' => $status_uuid,
+                'status' => 'new'
+            ];
+            $this->smsLogs($response, $log);
+
+            return $this->sendToBoom($response, $from_number, $status_uuid);
 
         } else {
             return $this->sendError("Can't find any services", 404);
         }
     }
 
-    public function sendToBoom($response, $to_number)
+    public function sendToBoom($response, $to_number, $status_uuid)
     {
         $client = new Client();
 
@@ -155,20 +171,27 @@ class SmsAPIController extends AppBaseController
         $promise = $client->requestAsync('POST', 'http://apiv2.blueplanet.com.mm/mptsdp/bizsendsmsapi.php', $form_params);
 
         $promise->then(
-            function (ResponseInterface $res) {
-                echo $res->getStatusCode() . "\n";
+            function (ResponseInterface $res) use($status_uuid) {
+                $http_status = $res->getStatusCode();
+                $response_body = json_decode($res->getBody(), true);
+
+                $smsLog = SmsLog::where('status_secret', $status_uuid)->first();
+                $smsLog->sms_status = ($response_body['result_name'])?$response_body['result_name']:$response_body['result_status'];
+                $smsLog->service_id = (array_key_exists('result_refid', $response_body))?$response_body['result_refid']:$smsLog->service_id;
+                $smsLog->save();
+                return $res;
             },
             function (RequestException $e) {
-                echo $e->getMessage() . "\n";
-                echo $e->getRequest()->getMethod();
+                $error_msg = $e->getMessage();
+                $request_method = $e->getRequest()->getMethod();
             }
         );
-        $promise->wait();
-
+        $response = $promise->wait();
+        return $this->sendResponse((string) $response->getBody(), 'Recieved!');
         // Iterate over the requests and responses
-        foreach ($container as $transaction) {
-            echo (string) $transaction['request']->getBody(); // Hello World
-        }
+        //foreach ($container as $transaction) {
+            //echo (string) $transaction['request']->getBody(); // Hello World
+        //}
 
     }
     public function telerivet(Request $request, User $user)
@@ -512,6 +535,56 @@ class SmsAPIController extends AppBaseController
 
     }
 
+    private function smsLogs(array $response, array $logs)
+    {
+        $default = [
+            'from_number' => '0000000',
+            'from_number_e164' => '0000000',
+            'to_number' => '0000000',
+            'event' => 'default',
+            'content' => 'NO CONTENT',
+            'message_type' => 'default',
+            'service_id' => '0000000',
+        ];
+
+        $log_data = array_merge($default, $logs);
+
+        $status = 'new';
+        $smsLog = new SmsLog;
+        $smsLog->event = $event = $log_data['event'];
+        $smsLog->message_type = $log_data['message_type'];
+        $smsLog->service_id = $service_id = $log_data['service_id'];
+        $smsLog->from_number = $from_number = $log_data['from_number'];
+        $smsLog->from_number_e164 = $log_data['from_number_e164'];
+        //$smsLog->api_project_id = $request->input('project_id');
+        $smsLog->to_number = $to_number = $log_data['to_number'];
+        $smsLog->content = $content=  $log_data['content']; // incoming message
+        $uuid = Uuid::uuid5(Uuid::NAMESPACE_DNS, $content.$service_id.$from_number.$to_number . Carbon::now().rand());
+        $smsLog->status_secret = ($log_data['status_secret'])?$log_data['status_secret']:$uuid->toString();
+        $smsLog->status_message = $response['message']; // reply message
+        $smsLog->status = $response['status'];
+
+        $smsLog->form_code = (array_key_exists('form_code', $response)) ? $response['form_code'] : 'Not Valid';
+
+        $smsLog->section = (array_key_exists('section', $response)) ? $response['section'] : null; // not actual id from database, just ordering number from form
+        $smsLog->result_id = (array_key_exists('result_id', $response)) ? $response['result_id'] : null;
+        $smsLog->project_id = (array_key_exists('project_id', $response)) ? $response['project_id'] : null;
+        $smsLog->sample_id = (array_key_exists('sample_id', $response)) ? $response['sample_id'] : null;
+
+        $smsLog->remark = '';
+
+
+        $smsLog->sms_status = (isset($status)) ? $status : null;
+
+        $smsLog->save();
+
+        return $smsLog;
+
+    }
+
+    /*
+     * To save parsed raw result
+     */
     private function saveRawLogs($table)
     {
         $rawlog = new SurveyResult();
