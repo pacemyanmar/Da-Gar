@@ -116,26 +116,34 @@ class SmsAPIController extends AppBaseController
             }
 
             $from_number = $request->input('callerid');
-            $to_number = $request->input('s');
-            $message = $request->input('m');
-            $response = $this->parseMessage($message);
-            $uuid = Uuid::uuid5(Uuid::NAMESPACE_DNS, $message.'boomsms'.$from_number.$to_number . Carbon::now().rand());
-
-            $status_uuid = $uuid->toString();
-
             $log = [
-                'from_number' => $from_number,
-                'to_number' => $to_number,
-                'event' => 'default',
-                'content' => $message,
-                'message_type' => 'default',
-                'service_id' => 'boomsms',
-                'status_secret' => $status_uuid,
-                'status' => 'new'
+                'from_number' => $from_number
             ];
-            $this->smsLogs($response, $log);
 
-            return $this->sendToBoom($response, $from_number, $status_uuid);
+            if($refid = $request->input('refid')) {
+                $log['event'] = $event = 'delivery_status';
+                $log['service_id'] = $refid;
+                $smsLog = SmsLog::where('service_id', $refid)->first();
+                $smsLog->sms_status = $request->input('result_status');
+                return $smsLog->save();
+            }
+            $message = $request->input('m');
+            if($message) {
+                $log['event'] = $event = 'incoming';
+                $log['to_number'] = $to_number = $request->input('s');
+
+                $log['response'] = $response = $this->parseMessage($message);
+
+                $uuid = Uuid::uuid5(Uuid::NAMESPACE_DNS, $message.'boomsms'.$from_number.$to_number . Carbon::now().rand());
+
+                $log['status_secret'] = $status_uuid = $uuid->toString();
+                $log['status'] = 'new';
+                $log['message_type'] = 'incoming';
+                $log['content'] = $message;
+                $log['service_id'] = 'boomsms';
+                $this->smsLogs($response, $log);
+                $this->sendToBoom($response, $from_number, $status_uuid);
+            }
 
         } else {
             return $this->sendError("Can't find any services", 404);
