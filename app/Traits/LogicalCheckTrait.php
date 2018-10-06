@@ -6,6 +6,7 @@ namespace App\Traits;
 use App\Models\Question;
 use App\Models\Section;
 use App\Models\SurveyResult;
+use Krucas\Settings\Facades\Settings;
 
 
 trait LogicalCheckTrait
@@ -210,7 +211,9 @@ trait LogicalCheckTrait
 
         $sample->save();
 
-        $surveyResult->sample()->associate($sample);
+        if(!Settings::get('training')) {
+            $surveyResult->sample()->associate($sample);
+        }
 
         $surveyResult->{$this->section} = $this->sectionStatus = $this->getSectionStatus();
 
@@ -219,6 +222,7 @@ trait LogicalCheckTrait
         $surveyResult->forceFill($this->results);
 
         $surveyResult->save();
+        return $surveyResult;
     }
 
 

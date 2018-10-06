@@ -58,6 +58,10 @@ class SmsAPIController extends AppBaseController
 
     private $user_id;
 
+    private $results;
+
+    private $rawlog;
+
     public function __construct(SmsLogRepository $smsRepo,ProjectRepository $projectRepo)
     {
         $this->smsRepository = $smsRepo;
@@ -517,17 +521,26 @@ class SmsAPIController extends AppBaseController
 
             $allResults = $this->processUserInput($questions, $sms_results);
 
-            $section_table = ($training_mode)?$dbname.'_training':$dbname . '_s' . $this->section->sort;
+            $section_table = $dbname . '_s' . $this->section->sort;
 
             $this->sampleType = (isset($sample_type)) ? $sample_type : 1;
+
+            if($training_mode) {
+                $allResults['sample_code'] = $reply['form_code'];
+            }
 
             $this->results = $allResults;
 
             $this->section = 'section' . $this->section->sort . 'status';
 
-            $this->saveRawLogs($dbname.'_rawlog');
-
-            $this->saveResults($section_table);
+            if($training_mode) {
+                $this->saveTrainingLogs($dbname . '_training');
+                $reply['result_id'] = $this->traininglog->id;
+            } else {
+                $this->saveRawLogs($dbname . '_rawlog');
+                $savedResult = $this->saveResults($section_table);
+                $reply['result_id'] = $savedResult->id;
+            }
 
             if(!empty($missingOrError)) {
                 $reply['message'] = 'ERROR:'. implode(',', $missingOrError);
@@ -575,7 +588,7 @@ class SmsAPIController extends AppBaseController
         $smsLog->form_code = (array_key_exists('form_code', $response)) ? $response['form_code'] : 'Not Valid';
 
         $smsLog->section = (array_key_exists('section', $response)) ? $response['section'] : null; // not actual id from database, just ordering number from form
-        $smsLog->result_id = (array_key_exists('result_id', $response)) ? $response['result_id'] : null;
+        $smsLog->result_id = (!empty($this->rawlog))?$this->rawlog->id:$response['result_id'];
         $smsLog->project_id = (array_key_exists('project_id', $response)) ? $response['project_id'] : null;
         $smsLog->sample_id = (array_key_exists('sample_id', $response)) ? $response['sample_id'] : null;
 
@@ -595,7 +608,10 @@ class SmsAPIController extends AppBaseController
      */
     private function saveRawLogs($table)
     {
+
+
         $rawlog = new SurveyResult();
+
         $rawlog->setTable($table);
         $rawlog->user_id = Auth()->user()->id;
         $rawlog->sample_id = $this->sample->id;
@@ -610,6 +626,31 @@ class SmsAPIController extends AppBaseController
             $rawlog->{$input} = $value;
         }
         $rawlog->save();
+        $this->rawlog = $rawlog;
+    }
+
+    /*
+     * To save parsed raw result
+     */
+    private function saveTrainingLogs($table)
+    {
+        $traininglog = new SurveyResult();
+        $traininglog->setTable($table);
+        //$traininglog->user_id = Auth()->user()->id;
+        //$traininglog->sample_id = $this->sample->id;
+        //$traininglog->sample_type = $this->project->type;
+
+        // need to remove this
+        foreach($this->project->sections as $section){
+            $section_status_name = 'section'.$section->sort.'status';
+            $traininglog->{$section_status_name} = 0;
+        }
+        foreach ($this->results as $input => $value) {
+            $traininglog->{$input} = $value;
+        }
+        $traininglog->sample_code = $this->sample->sample_data_id;
+        $traininglog->save();
+        $this->traininglog = $traininglog;
     }
 
     private function findSample($sample_id, $form_no = 1, $frequency = 1) {
