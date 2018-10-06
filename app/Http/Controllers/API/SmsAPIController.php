@@ -104,6 +104,13 @@ class SmsAPIController extends AppBaseController
     {
         $code = $request->input('s');
         $boom_number = Settings::get('boom_number');
+        $from_number = $request->input('callerid');
+        if($refid = $request->input('refid')) {
+            $event = 'delivery_status';
+            $smsLog = SmsLog::where('service_id', $refid)->first();
+            $smsLog->sms_status = $request->input('result_status');
+            return $smsLog->save();
+        }
 
         if($code == $boom_number) {
 
@@ -115,18 +122,11 @@ class SmsAPIController extends AppBaseController
                 return $this->sendError(trans('sms.forbidden'));
             }
 
-            $from_number = $request->input('callerid');
+
             $log = [
                 'from_number' => $from_number
             ];
 
-            if($refid = $request->input('refid')) {
-                $log['event'] = $event = 'delivery_status';
-                $log['service_id'] = $refid;
-                $smsLog = SmsLog::where('service_id', $refid)->first();
-                $smsLog->sms_status = $request->input('result_status');
-                return $smsLog->save();
-            }
             $message = $request->input('m');
             if($message) {
                 $log['event'] = $event = 'incoming';
