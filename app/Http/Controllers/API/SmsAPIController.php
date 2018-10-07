@@ -335,8 +335,8 @@ class SmsAPIController extends AppBaseController
     private function sendToTelerivet($reply)
     {
         // from https://telerivet.com/api/keys
-        if (Settings::has('api_key')) {
-            $API_KEY = Settings::get('api_key');
+        if (Settings::has('telerivet_api_key')) {
+            $API_KEY = Settings::get('telerivet_api_key');
         } else {
             return $this->sendError('API_KEY not found in your settings!');
         }
