@@ -5,6 +5,7 @@ use App\Http\Controllers\AppBaseController;
 use App\Http\Requests\CreateSettingRequest;
 use App\Http\Requests\SaveSettingRequest;
 use App\Http\Requests\UpdateSettingRequest;
+use App\Models\Project;
 use App\Models\Role;
 use App\Models\User;
 use App\Repositories\SettingRepository;
@@ -18,10 +19,16 @@ class SettingController extends AppBaseController
 {
     /** @var  SettingRepository */
     private $settingRepository;
-    public function __construct(SettingRepository $settingRepo)
+
+    private $project;
+
+
+    public function __construct(SettingRepository $settingRepo, Project $project)
     {
         $this->middleware('auth');
         $this->settingRepository = $settingRepo;
+        $this->project = $project;
+
     }
     /**
      * Display a listing of the Questions.
@@ -32,8 +39,12 @@ class SettingController extends AppBaseController
     public function index()
     {
         $settings = $this->settingRepository->all();
+
+        $projects = array_merge(['' => 'None'], $this->project->pluck('project', 'id')->toArray());
+
         return view('settings.index')
-            ->with('settings', $settings);
+            ->with('settings', $settings)
+            ->with('projects', $projects);
     }
     /**
      * Display a listing of the Questions.

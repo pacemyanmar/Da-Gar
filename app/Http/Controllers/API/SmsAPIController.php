@@ -399,6 +399,8 @@ class SmsAPIController extends AppBaseController
                 // if project is only one project use this project
                 $project = Project::first();
 
+            } elseif (!empty(Settings::get('active_project'))){
+                $project = Project::find(Settings::get('active_project'));
             } else {
 
                 // if not training mode

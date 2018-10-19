@@ -37,6 +37,16 @@
                         {!! Form::text("configs[app_short]", settings('app_short', null), ['class' => 'form-control']) !!}
                     </div>
                 </div>
+                <!-- Active project -->
+                <div class="form-group">
+                    <div class="input-group">
+                        <!-- if string long to show in label show as tooltip -->
+                        <span class="input-group-addon">
+                                        Active Project :
+                                    </span>
+                        {!! Form::select("configs[active_project]", $projects ,settings('active_project', null), ['class' => 'form-control']) !!}
+                    </div>
+                </div>
                 <div class="form-group">
                     <div class="input-group">
                         <!-- if string long to show in label show as tooltip -->
