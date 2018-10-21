@@ -690,9 +690,12 @@ class ProjectController extends AppBaseController
 
         foreach ($questions as $question => $inputs) {
             $checkboxes = implode(' OR ', $inputs);
-            if (!Schema::hasColumn($dbname, strtolower($question).'_cs')) {
-                Schema::table($dbname, function ($table) use ($question, $checkboxes) {
-                    $table->unsignedTinyInteger(strtolower($question).'_cs')->virtualAs('IF(' . $checkboxes . ',1,0)');
+
+            $checkboxes_status_col = trim(strtolower($question).'_cs');
+
+            if (!Schema::hasColumn($dbname, $checkboxes_status_col)) {
+                Schema::table($dbname, function ($table) use ($checkboxes_status_col, $checkboxes) {
+                    $table->unsignedTinyInteger($checkboxes_status_col)->virtualAs('IF(' . $checkboxes . ',1,0)');
                 });
             }
         }
@@ -794,7 +797,7 @@ class ProjectController extends AppBaseController
             // Create virtual column which can check multi select answers response
             foreach ($questions as $question => $inputs) {
                 $checkboxes = implode(' OR ', $inputs);
-                $table->unsignedTinyInteger(strtolower($question).'_cs')->virtualAs('IF(' . $checkboxes . ',1,0)');
+                $table->unsignedTinyInteger(trim(strtolower($question).'_cs'))->virtualAs('IF(' . $checkboxes . ',1,0)');
             }
         });
 

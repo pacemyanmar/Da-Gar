@@ -164,10 +164,10 @@ trait QuestionsTrait
                 }
 
             } elseif ($a['type'] == 'radio') {
-                $a['name'] = $a['inputid'] = str_slug($qnum.'r');
+                $a['name'] = $a['inputid'] = trim(str_slug($qnum.'r'));
             } elseif ($a['type'] == 'single') {
                 $a['type'] = 'radio';
-                $a['name'] = $a['inputid'] = str_slug($qnum.'r');
+                $a['name'] = $a['inputid'] = trim(str_slug($qnum.'r'));
             } elseif ($a['type'] == 'checkbox') {
                 $a['name'] = str_slug('p' . $project_id . $qnum . 'c');
             } elseif ($a['type'] == 'check') {
@@ -190,7 +190,7 @@ trait QuestionsTrait
                         break;
                 }
 
-                $a['inputid'] = str_replace('-', '_', $a['subtype']);
+                $a['inputid'] = trim(str_replace('-', '_', $a['subtype']));
                 unset($a['subtype']);
             } else {
                 $a['id'] = $param;
@@ -235,7 +235,7 @@ trait QuestionsTrait
                     //if (str_contains(strtolower($value['value']), 'text')) {
                     if (in_array(strtolower($value['value']), ['text', 'count', 'other'])) {
                         $value['type'] = 'text';
-                        $value['inputid'] = $value['inputid'] . strtolower($value['value']);
+                        $value['inputid'] = trim($value['inputid'] . strtolower($value['value']));
                     }
                     //$input['label_trans'] = json_encode([$lang => $value['label']]);
                     $value['status'] = 'new';
@@ -263,7 +263,7 @@ trait QuestionsTrait
                     $station['sort'] = $input['sort'] . $k . $i . ($j + 1);
                     $station['type'] = 'template';
                     $station['section'] = $input['section'];
-                    $station['inputid'] = $station['className'] = strtolower($party) . '_station';
+                    $station['inputid'] = $station['className'] = trim(strtolower($party) . '_station');
                     $station['label'] = ucwords($party) . 'Station';
                     $station['value'] = '';
                     $inputs[] = new SurveyInput($station);
@@ -273,7 +273,7 @@ trait QuestionsTrait
                     $advanced['sort'] = $input['sort'] . $k . $i . ($j + 1);
                     $advanced['type'] = 'template';
                     $advanced['section'] = $input['section'];
-                    $advanced['inputid'] = $advanced['className'] = strtolower($party) . '_advanced';
+                    $advanced['inputid'] = $advanced['className'] = trim(strtolower($party) . '_advanced');
                     $advanced['label'] = ucwords($party) . 'Station';
                     $advanced['value'] = '';
                     $inputs[] = new SurveyInput($advanced);
@@ -297,7 +297,7 @@ trait QuestionsTrait
                     $remark['sort'] = $input['sort'] . $k . $i . $j;
                     $remark['type'] = 'template';
                     $remark['section'] = $input['section'];
-                    $remark['inputid'] = $remark['className'] = 'rem' . $j;
+                    $remark['inputid'] = $remark['className'] = trim('rem' . $j);
                     $remark['label'] = 'Remark ' . $j;
                     $remark['value'] = '';
                     $remark['status'] = 'new';
@@ -327,7 +327,7 @@ trait QuestionsTrait
                     $advanced['sort'] = $input['sort'] . $k . $i . ($j + 1);
                     $advanced['type'] = 'template';
                     $advanced['section'] = $input['section'];
-                    $advanced['inputid'] = $advanced['className'] = strtolower($party) . '_advanced';
+                    $advanced['inputid'] = $advanced['className'] = trim(strtolower($party) . '_advanced');
                     $advanced['label'] = ucwords($party) . 'Station';
                     $advanced['value'] = '';
                     $advanced['status'] = 'new';
@@ -352,7 +352,7 @@ trait QuestionsTrait
                     $remark['sort'] = $input['sort'] . $k . $i . $j;
                     $remark['type'] = 'template';
                     $remark['section'] = $input['section'];
-                    $remark['inputid'] = $remark['className'] = 'rem' . $j;
+                    $remark['inputid'] = $remark['className'] = trim('rem' . $j);
                     $remark['label'] = 'Remark ' . $j;
                     $remark['value'] = '';
                     $remark['status'] = 'new';
