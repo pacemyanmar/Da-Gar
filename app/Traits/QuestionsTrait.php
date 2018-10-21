@@ -60,7 +60,7 @@ trait QuestionsTrait
             if (!array_key_exists('inputid', $a)) {
                 $qindex = (array_key_exists('value', $a) && is_numeric($a['value'])) ? $a['value'] : $input_index;
 
-                $a['inputid'] = strtolower($qnum . '_' . $qindex);
+                $a['inputid'] = trim(strtolower($qnum . '_' . $qindex));
             }
 
             if (!array_key_exists('section', $a)) {
