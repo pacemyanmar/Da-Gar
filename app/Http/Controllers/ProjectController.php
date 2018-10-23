@@ -827,8 +827,8 @@ class ProjectController extends AppBaseController
             $location_code = $sample_id;
         }
 
-        $sampleDb = $project->samplesDb()->first();
-        $sample = SampleData::where('location_code', $location_code)->where('type', $project->dblink)->where('dbgroup', $project->dbgroup)->first();
+        $sample_data = new SampleData();
+        $sample = $sample_data->getSampleByCode($location_code, $project->dbname.'_samples');
 
         if (empty($sample)) {
             Flash::error('Sample Data not found');
@@ -838,19 +838,23 @@ class ProjectController extends AppBaseController
 
         $last_form_id = Sample::where('sample_data_id', $sample->id)
             ->where('project_id', $project->id)
-            ->where('sample_data_type', $project->dblink)->pluck('form_id');
+            ->where('sample_data_type', $project->type)->pluck('form_id');
         $max_form_id = $last_form_id->max() + 1;
+
+        $sample_structure = $project->locationMetas->where('show_index', 1)->pluck('label', 'field_name');
 
         return view('projects.survey.sample2db.info')
             ->with('project', $project)
             ->with('sample', $sample)
-            ->with('form_id', $max_form_id);
+            ->with('form_id', $max_form_id)
+            ->with('sample_structure', $sample_structure);
 
     }
 
-    public function addIncident($project_id, $sampleData_id, $project_dblink, $max_form_id)
+    public function addIncident($project_id, $sampleData_id, $max_form_id)
     {
-        $sampleInstance = Sample::firstOrCreate(['sample_data_id' => $sampleData_id, 'form_id' => $max_form_id, 'project_id' => $project_id, 'sample_data_type' => $project_dblink]);
+        $project = $this->projectRepository->findWithoutFail($project_id);
+        $sampleInstance = Sample::firstOrCreate(['sample_data_id' => $sampleData_id, 'form_id' => $max_form_id, 'project_id' => $project->id, 'sample_data_type' => $project->type, 'frequency' => 1]);
         return redirect(route('projects.surveys.create', [$project_id, $sampleInstance->id, $max_form_id]));
     }
 

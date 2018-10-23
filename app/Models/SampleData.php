@@ -58,6 +58,12 @@ class SampleData extends Model
         return $this->belongsToMany(Projects::class, 'samples', 'sample_data_id', 'project_id');
     }
 
+    public function getSampleByCode($code, $table)
+    {
+        $this->setTable($table);
+        return $this->find($code);
+    }
+
     /**
      * Determine if a get mutator exists for an attribute.
      *
