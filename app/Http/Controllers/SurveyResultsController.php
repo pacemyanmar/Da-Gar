@@ -38,6 +38,8 @@ class SurveyResultsController extends AppBaseController
     private $sampleType;
     private $results;
     private $sampleId;
+    private $project;
+
 
     public function __construct(ProjectRepository $projectRepo,
                                 QuestionRepository $questionRepo,
@@ -224,6 +226,8 @@ class SurveyResultsController extends AppBaseController
             return redirect(route('projects.index'));
         }
 
+        $this->project = $project;
+
         // get all result array from form
         $results = $request->input('result');
 
@@ -252,6 +256,8 @@ class SurveyResultsController extends AppBaseController
         $submitted_section = $request->input('section_id');
 
         $section = Section::findOrFail($submitted_section);
+
+        $this->section = $section;
 
         $section_result = [];
 
