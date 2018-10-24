@@ -74,6 +74,7 @@ class SmsAPIController extends AppBaseController
     {
         return $this->sendResponse('OK', 'API is running!');
     }
+
     public function echoResponse(Request $request)
     {
         return $this->sendResponse($request->all(), 'I give back what you give me :P');
@@ -149,6 +150,8 @@ class SmsAPIController extends AppBaseController
                 $this->sendToBoom($response, $from_number, $status_uuid);
             }
 
+            return $this->sendResponse($message, 'Well received!');
+
         } else {
             return $this->sendError("Can't find any services", 404);
         }
@@ -206,6 +209,7 @@ class SmsAPIController extends AppBaseController
         //}
 
     }
+    
     public function telerivet(Request $request, User $user)
     {
         $header = ['Content-Type' => 'application/json'];
@@ -255,7 +259,7 @@ class SmsAPIController extends AppBaseController
         if (empty($content)) {
             return $this->sendError('Content is empty.');
         }
-        //$message = preg_replace('/[^0-9a-zA-Z]/', '', $message);
+
         $to_number = $request->input('to_number');
         if (empty($to_number)) {
             return $this->sendError('to_number required.');
@@ -373,6 +377,8 @@ class SmsAPIController extends AppBaseController
 
         $match_code = preg_match('/^([a-zA-Z]+)(\d+)/', trim($message), $pcode);
 
+        $reply['result_id'] = null;
+
         if(!$match_code) {
             $reply['message'] = 'ERROR';
             $reply['status'] = 'error';
@@ -484,6 +490,12 @@ class SmsAPIController extends AppBaseController
             // check section of first question and set as current section
             $first_question = $project->questions->where('qnum', strtoupper($qna[1][0]))->first();
             $current_section = $first_question->sectionInstance;
+
+            if($current_section->disablesms) {
+                $reply['message'] = 'ERROR: You do not need to send this report by SMS.';
+                $reply['status'] = 'error';
+                return $reply;
+            }
 
             $this->section = $current_section;
 
