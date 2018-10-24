@@ -1029,6 +1029,9 @@ class ProjectController extends AppBaseController
                         $question_raw['css_id'] = str_slug('s' . $section->id . $question['qnum']);
                         $question_raw['layout'] = '';
                         $question_raw['sort'] = $sort;
+
+                        $question['qnum'] = trim($question['qnum']);
+
                         $question_row = array_merge($question, $question_raw);
 
                         $questionInstance = Question::create($question_row);
