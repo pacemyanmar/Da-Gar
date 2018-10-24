@@ -140,7 +140,7 @@ class SurveyResultsDataTable extends DataTable
 
                 $section_table = $childTable . '_s' . $section->sort;
                 $sect_short = 'pj_s'.$section->sort;
-                $query->{$joinMethod}($section_table.' AS '.$sect_short, function ($join) use ($sect_short) {
+                $query->leftjoin($section_table.' AS '.$sect_short, function ($join) use ($sect_short) {
                     $join->on('samples.id', '=', $sect_short . '.sample_id');
                 });
 
