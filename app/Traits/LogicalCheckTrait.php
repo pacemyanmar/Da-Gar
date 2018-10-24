@@ -19,7 +19,9 @@ trait LogicalCheckTrait
     protected function processUserInput($questions, $results)
     {
         $result_arr = [];
-
+        $oldResult = new SurveyResult();
+        $oldResult->getResultBySample($this->sample, $this->project->dbname.'_s'.$this->section->sort);
+        $oldResultInstance = $oldResult->first();
         $question_result = [];
 
         $allResults = [];
@@ -42,13 +44,13 @@ trait LogicalCheckTrait
                 $inputid = $input->inputid;
                 // $result = submitted form data
                 // look for individual inputid in $result array submitted or not
-                if (array_key_exists($input->inputid, $results)) {
+                if (array_key_exists($inputid, $results)) {
                     // if found, question is summitted and set checkbox values to zero if false
                     if ($input->type == 'checkbox') {
                         $result_arr[$qid][$inputid] = ($results[$inputid]) ? $results[$inputid] : 0;
                     } else {
                         // if value is string 0 or some value not false
-                        $result_arr[$qid][$inputid] = ($results[$inputid] === '0' || $results[$inputid]) ? $results[$inputid] : null;
+                        $result_arr[$qid][$inputid] = ($results[$inputid] === '0' || $results[$inputid]) ? $results[$inputid] : $oldResultInstance->{$inputid};
                     }
                 } else {
 
@@ -57,16 +59,16 @@ trait LogicalCheckTrait
                         if (count($question_has_result_submitted) > 0) {
                             $result_arr[$qid][$inputid] = 0;
                         } else {
-                            $result_arr[$qid][$inputid] = null;
+                            $result_arr[$qid][$inputid] = $oldResultInstance->{$inputid};
                         }
 
                     } else {
-                        $result_arr[$qid][$inputid] = null;
+                        $result_arr[$qid][$inputid] = $oldResultInstance->{$inputid};
                     }
 
                 }
                 if($input->other) {
-                    $result_arr[$qid][$inputid.'_other'] = (array_key_exists($inputid.'_other', $results))?$results[$inputid.'_other']:null;
+                    $result_arr[$qid][$inputid.'_other'] = (array_key_exists($inputid.'_other', $results))?$results[$inputid.'_other']:$oldResultInstance->{$inputid.'_other'};
                 }
 
                 $this->logicalCheck($input, $result_arr[$qid][$inputid]);
