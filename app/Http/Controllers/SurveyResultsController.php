@@ -166,9 +166,10 @@ class SurveyResultsController extends AppBaseController
         foreach ($project->sections as $k => $section) {
             $section_table = $dbname . '_s' . $section->sort;
             $results['section' . $section->sort] = $sample->resultWithTable($section_table)->first();
-
-            $section_dbl_table = $section_table . '_dbl';
-            $double_results['section' . $section->sort] = $sample->resultWithTable($section_dbl_table)->first();
+            if(config('sms.double_entry')) {
+                $section_dbl_table = $section_table . '_dbl';
+                $double_results['section' . $section->sort] = $sample->resultWithTable($section_dbl_table)->first();
+            }
 
         }
 
