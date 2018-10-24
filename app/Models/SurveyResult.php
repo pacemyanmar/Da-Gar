@@ -40,4 +40,9 @@ class SurveyResult extends Model
     {
         return $this->belongsTo(Sample::class);
     }
+
+    public function getResultBySample(Sample $sample, $table)
+    {
+        return $this->setTable($table)->where('sample_id', $sample->id);
+    }
 }
