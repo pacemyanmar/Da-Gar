@@ -16,7 +16,7 @@ return [
         'country' => 'mm',
         'locale' => 'my'
     ],
-    'double_entry' => true,
+    'double_entry' => false,
     'collapse' => true,
     'allowedip' => [
         '172.20.0.1',
