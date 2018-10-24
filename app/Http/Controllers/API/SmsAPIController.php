@@ -460,11 +460,15 @@ class SmsAPIController extends AppBaseController
                 $frequency = 1;
             } else {
                 $sample_id = $pcode[2];
-                $form_no = 1;
-                $frequency = 1;
             }
 
-            $sample = $this->findSample($sample_id, $form_no, $frequency);
+            if($project->type == 'fixed') {
+                $form_no = 1;
+                $frequency = 1;
+                $sample = $this->findSample($sample_id, $form_no, $frequency);
+            } else {
+                $sample = $this->createSample($sample_id);
+            }
 
             if(empty($sample)) {
                 $reply['message'] = 'ERROR: Check Code';
@@ -670,6 +674,20 @@ class SmsAPIController extends AppBaseController
     private function findSample($sample_id, $form_no = 1, $frequency = 1) {
         $project = $this->project;
         return $this->sample = $project->samplesList->where('project_id', $this->project->id)->where('sample_data_id', $sample_id)->where('form_id', $form_no)->where('frequency', $frequency) ->first();
+    }
+
+    private function createSample($sample_id) {
+        $project = $this->project;
+        $samples = $project->samplesList->where('project_id', $this->project->id)->where('sample_data_id', $sample_id)->where('frequency', 1)->all();
+
+        $sample = new Sample();
+        $sample->sample_data_id = $sample_id;
+        $sample->sample_data_type = $project->type;
+        $sample->form_id = count($samples) + 1;
+        $sample->frequency = 1;
+        $sample->project()->associate($project);
+        $sample->save();
+        return $this->sample = $sample;
     }
 
     private function parseMessageBak($message, $to_number = '')

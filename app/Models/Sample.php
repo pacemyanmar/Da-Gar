@@ -57,6 +57,11 @@ class Sample extends Model
 
     public $relatedTable;
 
+    public function project()
+    {
+        return $this->belongsTo(Project::class);
+    }
+
     public function data()
     {
         return $this->belongsTo(SampleData::class, 'sample_data_id');
