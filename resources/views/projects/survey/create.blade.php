@@ -137,7 +137,11 @@
                         </div>
                         <div class="panel-body collapse {{ $collapse }}" id="{!! $sectionClass !!}-body">
 
-                            @include('projects.show_fields')
+                            @if($section->layout == 'form16')
+                                @include('questions.form16-table')
+                            @else
+                                @include('projects.show_fields')
+                            @endif
 
                             <h1 class="pull-right">
                                 <a class="btn btn-sm btn-info pull-right save" data-section="{!! $section->id !!}"

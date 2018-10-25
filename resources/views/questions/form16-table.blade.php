@@ -1,10 +1,3 @@
-@php
-    if(isset($sample)) {
-        $parties = explode(',', $sample->data->parties);
-    } else {
-        $parties = explode(',', $project->parties); //to remove later
-    }
-@endphp
 <div class="row">
     <div class="col-sm-12 ">
         <div class='fade in' id="ballot-error">
@@ -50,30 +43,60 @@
                     <p>{!! trans('ballots.in_words') !!}</p>
                 </th>
             </tr>
-            @foreach($parties as $party)
-                <tr valign="top">
-                    <td>
+            @foreach($section->questions->groupBy('party') as $party => $questions)
+                @if($party)
+                <tr valign="bottom">
+                    <td class="serial"></td>
+                    <td class="candidate"></td>
+                    <td class="party">
+                        {{ $party }}
                     </td>
-                    <td>
+                        @foreach($questions as $question)
+                            @php
+                                $element = $question->surveyInputs->first();
+                            $options = [
+                            'class' => $element->className.' form-control zawgyi '.$sectionClass,
+                            'id' => $element->id,
+                            'placeholder' => Kanaung\Facades\Converter::convert($element->label,'unicode','zawgyi'),
+                            'aria-describedby'=> $element->id.'-addons',
+                            'autocomplete' => 'off',
+                            'style' => 'width: 150px'
+                            ];
+                            @endphp
+                        @if($question->layout == 'ps')
+                            <td class="polling_station">
 
-                    </td>
-                    <td>
-                        <p>{!! $party !!}</p>
-                    </td>
-                    <td>
-                        {!! Form::number("result[ballot][".trim($party)."][station]", (isset($results))?Kanaung\Facades\Converter::convert($results['section'.$section->sort]->{trim($party).'_station'},'unicode','zawgyi'):null, ['class' => 'form-control input-sm party-station']) !!}
-                    </td>
-                    <td>
-                        {!! Form::number("result[ballot][".trim($party)."][advanced]", (isset($results))?Kanaung\Facades\Converter::convert($results['section'.$section->sort]->{trim($party).'_advanced'},'unicode','zawgyi'):null, ['class' => 'form-control input-sm party-advanced']) !!}
-                    </td>
-                    <td>
+                                    <div class="input-group">
+                                        <div class="input-group-addon">
+                                            <span class="input-group-text" id="{{ $element->id.'-addons' }}">{{ $question->qnum }}</span>
+                                        </div>
+                                        {!! Form::input($element->type,"result[".$element->inputid."]", (isset($results) && !empty($results['section'.$section->sort]))?Kanaung\Facades\Converter::convert($results['section'.$section->sort]->{$element->inputid},'unicode','zawgyi'):null, $options) !!}
+                                    </div>
 
-                    </td>
-                    <td>
 
-                    </td>
+                            </td>
+                        @endif
+                        @if($question->layout == 'av')
+                            <td class="advanced_voting">
+
+                                <div class="input-group">
+                                    <div class="input-group-addon">
+                                        <span class="input-group-text" id="{{ $element->id.'-addons' }}">{{ $question->qnum }}</span>
+                                    </div>
+                                    {!! Form::input($element->type,"result[".$element->inputid."]", (isset($results) && !empty($results['section'.$section->sort]))?Kanaung\Facades\Converter::convert($results['section'.$section->sort]->{$element->inputid},'unicode','zawgyi'):null, $options) !!}
+                                </div>
+
+
+                        </td>
+                        @endif
+                        @endforeach
+
+                    <td class="in_number"></td>
+                    <td class="in_words"></td>
                 </tr>
+                @endif
             @endforeach
+
             <tr>
                 <td colspan="9" width="100%" height="89" valign="top">
                     <p>{!! trans('ballots.witnesses') !!}</p>
@@ -86,48 +109,27 @@
             <tr>
                 <th colspan="2">{!! trans('ballots.remarks') !!}</th>
             </tr>
-
-            <tr>
-                <td>
-                    <p>{!! trans('ballots.ballots_issued_on_e_day') !!}</p>
-                </td>
-                <td class="col-sm-5">
-                    {!! Form::number("result[ballot_remark][rem1]", (isset($results))?Kanaung\Facades\Converter::convert($results['section'.$section->sort]->rem1,'unicode','zawgyi'):null, ['class' => 'form-control input-sm remarks', 'id' => 'rem1']) !!}
-                </td>
-            <tr>
-            <tr>
-                <td>
-                    <p>{!! trans('ballots.ballots_received_for_advanced_voting') !!}</p>
-                </td>
-                <td class="col-sm-5">
-                    {!! Form::number("result[ballot_remark][rem2]", (isset($results))?Kanaung\Facades\Converter::convert($results['section'.$section->sort]->rem2,'unicode','zawgyi'):null, ['class' => 'form-control input-sm remarks', 'id' => 'rem2']) !!}
-                </td>
-            <tr>
-            <tr>
-                <td>
-                    <p>{!! trans('ballots.valid') !!}</p>
-                </td>
-                <td class="col-sm-5">
-                    {!! Form::number("result[ballot_remark][rem3]", (isset($results))?Kanaung\Facades\Converter::convert($results['section'.$section->sort]->rem3,'unicode','zawgyi'):null, ['class' => 'form-control input-sm remarks', 'id' => 'rem3']) !!}
-                </td>
-            <tr>
-            <tr>
-                <td>
-                    <p>{!! trans('ballots.invalid') !!}</p>
-                </td>
-                <td class="col-sm-5">
-                    {!! Form::number("result[ballot_remark][rem4]", (isset($results))?Kanaung\Facades\Converter::convert($results['section'.$section->sort]->rem4,'unicode','zawgyi'):null, ['class' => 'form-control input-sm remarks', 'id' => 'rem4']) !!}
-                </td>
-            <tr>
-            <tr>
-                <td>
-                    <p>{!! trans('ballots.missing') !!}</p>
-                </td>
-                <td class="col-sm-5">
-                    {!! Form::number("result[ballot_remark][rem5]", (isset($results))?Kanaung\Facades\Converter::convert($results['section'.$section->sort]->rem5,'unicode','zawgyi'):null, ['class' => 'form-control input-sm remarks', 'id' => 'rem5']) !!}
-                </td>
-            <tr>
-
+            @foreach($section->questions as $question)
+                @if($question->layout == 'remark')
+                    @php
+                        $element = $question->surveyInputs->first();
+                    $options = [
+                    'class' => $element->className.' form-control zawgyi '.$sectionClass,
+                    'id' => $element->id,
+                    'placeholder' => Kanaung\Facades\Converter::convert($element->label,'unicode','zawgyi'),
+                    'aria-describedby'=> $element->id.'-addons',
+                    'autocomplete' => 'off',
+                    'style' => 'width: 150px'
+                    ];
+                    @endphp
+                <tr>
+                    <td class="rem_label">{{ $question->question }}</td>
+                    <td class="rem_value">
+                        {!! Form::input($element->type,"result[".$element->inputid."]", (isset($results) && !empty($results['section'.$section->sort]))?Kanaung\Facades\Converter::convert($results['section'.$section->sort]->{$element->inputid},'unicode','zawgyi'):null, $options) !!}
+                    </td>
+                </tr>
+                @endif
+            @endforeach
         </table>
     </div>
 </div>

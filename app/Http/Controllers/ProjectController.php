@@ -296,6 +296,9 @@ class ProjectController extends AppBaseController
                     $oldsection = Section::find($section['sectionid']);
                     $oldsection->sort = $skey;
                     $oldsection->sectionname = $section['sectionname'];
+                    if (isset($section['layout'])) {
+                        $oldsection->layout = $section['layout'];
+                    }
                     if (isset($section['descriptions'])) {
                         $oldsection->descriptions = $section['descriptions'];
                     }
@@ -950,6 +953,10 @@ class ProjectController extends AppBaseController
             $project['project'] = $project['label'];
             $project['unique_code'] = $project['uniqueid'];
 
+            if(array_key_exists('type', $project)) {
+                $project['type'] = ($project['type'] == 'incident')? 'sample2db':'fixed';
+            }
+
             $projectInstance = Project::create($project);
 
             $spreadsheet->setActiveSheetIndexByName('sections');
@@ -1027,7 +1034,9 @@ class ProjectController extends AppBaseController
                         $question_raw['project_id'] = $projectInstance->id;
                         $question_raw['raw_ans'] = json_encode(array_values($raw_ans));
                         $question_raw['css_id'] = str_slug('s' . $section->id . $question['qnum']);
-                        $question_raw['layout'] = '';
+                        if(array_key_exists('layout', $question)) {
+                            $question_raw['layout'] = ($question['layout']) ? $question['layout'] : ' ';
+                        }
                         $question_raw['sort'] = $sort;
 
                         $question['qnum'] = trim($question['qnum']);

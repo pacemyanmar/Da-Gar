@@ -108,6 +108,12 @@
                                 <label class="normal-text" for="disablesms{!! $section_key !!}"></label>
                             </div>
                         </td>
+                        <td style="" class="toggle">
+                            <div class="">
+                                {!! Form::select("sections[][layout]", ['' => 'Default', 'form16' => 'Form 16' ], ($section->layout)?$section->layout:null, ['class' => 'form-control layout toggle ', 'id' => 'layout'.$section_key]) !!}
+                                <label class="normal-text" for="layout{!! $section_key !!}"></label>
+                            </div>
+                        </td>
                         <td style="vertical-align: middle" class="toggle">
                             <i onclick="removeItem(this)" class="remove fa fa-trash-o"
                                style="cursor: pointer;font-size: 20px;color: red;"></i>
@@ -140,6 +146,15 @@
                     <div class="toggle">
                         <input value="1" class="magic-checkbox disablesms" type="checkbox" id="disablesms0">
                         <label class="normal-text" for="disablesms0"></label>
+                    </div>
+                </td>
+                <td style="">
+                    <div class="toggle">
+                        <label class="normal-text" for="layout0"></label>
+                        <select class="form-control layout toggle" id="layout0">
+                            <option value="">Default</option>
+                            <option value="form16">Form 16</option>
+                        </select>
                     </div>
                 </td>
                 <td style="vertical-align: middle">
@@ -176,6 +191,13 @@
                 htmlStr += '</td>';
                 htmlStr += '<td style="">';
                 htmlStr += '<div><input type="checkbox" value="1" class="magic-checkbox disablesms"/><label class="disablesms"></label></div>';
+                htmlStr += '</td>';
+                htmlStr += '<td style="">';
+                htmlStr += '<div><label class="normal-text"></label>\n' +
+                    '                        <select class="form-control layout">\n' +
+                    '                            <option value="">Default</option>\n' +
+                    '                            <option value="form16">Form 16</option>\n' +
+                    '                        </select></div>';
                 htmlStr += '</td>';
                 htmlStr += '<td style="vertical-align: middle">';
                 htmlStr += '<i onclick="removeItem(this)" class="remove fa fa-trash-o" style="cursor: pointer;font-size: 20px;color: red"></i>';
@@ -227,6 +249,7 @@
                         $(this).find('.optional').attr('name', 'sections[' + index + '][optional]');
                         $(this).find('.double').attr('name', 'sections[' + index + '][indouble]');
                         $(this).find('.disablesms').attr('name', 'sections[' + index + '][disablesms]');
+                        $(this).find('.layout').attr('name', 'sections[' + index + '][layout]');
                     });
                     $('.sample').each(function (index, value) {
                         $(this).find('.samplename').attr('name', 'samples[' + index + '][name]');

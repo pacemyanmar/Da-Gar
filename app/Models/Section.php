@@ -25,6 +25,7 @@ class Section extends Model
         'optional',
         'disablesms',
         'project_id',
+        'layout'
     ];
 
     /**
@@ -40,6 +41,7 @@ class Section extends Model
         'optional' => 'boolean',
         'disablesms' => 'boolean',
         'project_id' => 'integer',
+        'layout' => 'string'
     ];
 
     /**

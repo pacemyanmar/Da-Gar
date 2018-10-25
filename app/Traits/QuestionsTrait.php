@@ -35,6 +35,8 @@ trait QuestionsTrait
         foreach ($ans as $k => $a) {
             // $k is loop index start from 0. $a is input
             $input_index = $k + 1;
+
+            $a['label'] = (empty($a['label']))?' ':$a['label'];
             /**
              * create unique name attribute for each input
              */
