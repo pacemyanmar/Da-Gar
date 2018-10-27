@@ -44,6 +44,7 @@ Route::group(['prefix' => 'projects/{project}'], function () {
     Route::post('/addlogic', ['as' => 'projects.logic', 'uses' => 'ProjectController@addLogic']);
     Route::post('/upload', ['as' => 'projects.upload.samples', 'uses' => 'ProjectController@uploadSamples']);
     Route::match(['get','post'],'/getcsv', ['as' => 'projects.getcsv', 'uses' => 'API\SmsAPIController@getcsv']);
+    Route::get('/channel-rate', ['as' => 'projects.channel.rates', 'uses' => 'ProjectController@channelRates']);
 });
 
 Route::group(['prefix' => 'projects/{project}/surveys'], function () {

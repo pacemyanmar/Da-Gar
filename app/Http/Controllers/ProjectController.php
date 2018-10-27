@@ -1081,6 +1081,20 @@ class ProjectController extends AppBaseController
         }
     }
 
+    public function channelRates($project_id)
+    {
+        $project = $this->projectRepository->findWithoutFail($project_id);
+
+        if (empty($project)) {
+            Flash::error('Project not found');
+
+            return redirect()->back();
+        }
+
+        return view('projects.channel-rate')->with('project', $project);
+
+    }
+
     public function smslog($project_id, SmsLogDataTable $smsLogDataTable)
     {
         $project = $this->projectRepository->findWithoutFail($project_id);

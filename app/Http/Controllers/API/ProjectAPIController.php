@@ -41,8 +41,8 @@ class ProjectAPIController extends AppBaseController
         $sample = Sample::query();
         $sample->select(DB::raw('count(channel_time) AS channel_count'),
             DB::raw('channel'),
-            DB::raw('UNIX_TIMESTAMP(channel_time) AS channel_time'));
-        $sample->where('project_id', $project->id)->whereNotNull('channel_time')->groupBy('channel_time')->groupBy('channel')
+            DB::raw('FROM_UNIXTIME(ROUND((CEILING(UNIX_TIMESTAMP(channel_time) / 600) * 600))) AS time_slice'));
+        $sample->where('project_id', $project->id)->whereNotNull('channel_time')->groupBy('time_slice')->groupBy('channel')
         ->orderBy('channel_time', 'ASC');
 
         $samples = $sample->get();
