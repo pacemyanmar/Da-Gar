@@ -6,6 +6,7 @@ use App\Http\Controllers\AppBaseController;
 use App\Http\Requests\API\CreateSmsAPIRequest;
 use App\Http\Requests\API\UpdateSmsAPIRequest;
 use App\Models\Observer;
+use App\Models\Phone;
 use App\Models\Project;
 use App\Models\ProjectPhone;
 use App\Models\Question;
@@ -30,6 +31,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Schema;
 use InfyOm\Generator\Criteria\LimitOffsetCriteria;
+use Kanaung\Facades\Converter;
 use Krucas\Settings\Facades\Settings;
 use Laracasts\Flash\Flash;
 use Maatwebsite\Excel\Facades\Excel;
@@ -137,7 +139,7 @@ class SmsAPIController extends AppBaseController
                 $log['event'] = $event = 'incoming';
                 $log['to_number'] = $to_number = $request->input('s');
 
-                $log['response'] = $response = $this->parseMessage($message);
+                $log['response'] = $response = $this->parseMessage($message, $from_number);
 
                 $uuid = Uuid::uuid5(Uuid::NAMESPACE_DNS, $message.'boomsms'.$from_number.$to_number . Carbon::now().rand());
 
@@ -379,8 +381,19 @@ class SmsAPIController extends AppBaseController
 
         $reply['result_id'] = null;
 
+        $observer_phone = Phone::find($to_number);
+
+        if (empty($observer_phone)) {
+            // if project is empty
+            $reply['message'] = 'Wrong Phone Number!';
+            $reply['status'] = 'error';
+            return $reply;
+        }
+
+        $encoding = $observer_phone->encoding;
+
         if(!$match_code) {
-            $reply['message'] = 'ERROR';
+            $reply['message'] = $this->encoding('sms.error', $encoding);
             $reply['status'] = 'error';
             $reply['form_code'] = 'unknown';
             return $reply;
@@ -432,6 +445,7 @@ class SmsAPIController extends AppBaseController
             }
 
             $this->project = $project;
+
 
             $reply['project_id'] = $project->id;
 
@@ -688,6 +702,16 @@ class SmsAPIController extends AppBaseController
         $sample->project()->associate($project);
         $sample->save();
         return $this->sample = $sample;
+    }
+
+    private function encoding($translation_key, $encoding)
+    {
+        $message = trans($translation_key);
+        if($encoding != 'unicode') {
+            return Converter::convert($message, 'unicode', 'zawgyi');
+        } else {
+            return $message;
+        }
     }
 
     private function parseMessageBak($message, $to_number = '')

@@ -27,6 +27,7 @@ class LocationMeta extends Model
         'field_name',
         'field_type',
         'filter_type',
+        'data_type',
         'project_id',
         'show_index',
         'export',
@@ -43,6 +44,7 @@ class LocationMeta extends Model
         'field_name' => 'string',
         'field_type' => 'string',
         'filter_type' => 'string',
+        'data_type' => 'string',
         'project_id' => 'integer',
         'show_index' => 'boolean',
         'export' => 'boolean'

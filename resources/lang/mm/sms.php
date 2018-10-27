@@ -7,7 +7,8 @@ return [
     'no_location_code' => 'Please check location code in SMS. No such code found in database!',
     'not_valid_response' => 'You did not sumbit valid response. Please check SMS format.',
     'error_inputs' => ':INPUTS are missing or have error. Please check SMS format.',
-    'success' => 'Success!'
+    'success' => 'Success!',
+    'error' => 'မှားနေသည်'
 
 
 ];

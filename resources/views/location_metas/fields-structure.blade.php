@@ -19,6 +19,7 @@
             <th>DB Field Name</th>
             <th>Field Type</th>
             <th>Filter</th>
+            <th>Data Type</th>
             <th>Show</th>
             <th>Export</th>
             <th>Field Action
@@ -37,6 +38,9 @@
                 </td>
                 <td>
                     {!! Form::text("field_type", 'primary', ["class" => "form-control field_type field", "readonly"]) !!}
+                </td>
+                <td>
+                    {!! Form::select("data_type", ["location" => "Location", "observer1" => "Observer 1", "observer2" => "Observer 2"],'location', ["class" => "form-control data_type field"]) !!}
                 </td>
                 <td>
                     {!! Form::checkbox("show", 1, null,["class" => "magic-checkbox field_show field", "id" => "show"]) !!}
@@ -58,10 +62,13 @@
                     {!! Form::text("field_name", null, ["class" => "form-control field_name field"]) !!}
                 </td>
                 <td>
-                    {!! Form::select("field_type", ["primary" => "Primary Code", "code" => "Code","text" => "Text","textarea" => "Paragraph","integer" => "Number"],'text', ["class" => "form-control field_type field"]) !!}
+                    {!! Form::select("field_type", ["code" => "Code","text" => "Text","textarea" => "Paragraph","integer" => "Number", "phone" => "Phone"],'text', ["class" => "form-control field_type field"]) !!}
                 </td>
                 <td>
                     {!! Form::select("filter_type", ["" => "None", "typein" => "Type In","selectbox" => "Select Box"],null, ["class" => "form-control filter_type field"]) !!}
+                </td>
+                <td>
+                    {!! Form::select("data_type", ["location" => "Location", "observer1" => "Observer 1", "observer2" => "Observer 2"],'location', ["class" => "form-control data_type field"]) !!}
                 </td>
                 <td>
                     {!! Form::checkbox("show", 1, null,["class" => "magic-checkbox field_show field", "id" => "show"]) !!}
@@ -93,7 +100,7 @@
                             @if($location->field_type == 'primary')
                                 {!! Form::text("field_type", 'primary', ["class" => "form-control field_type field", "readonly"]) !!}
                             @else
-                                {!! Form::select("field_type", ["primary" => "Primary Code","code" => "Code","text" => "Text","textarea" => "Paragraph","integer" => "Number"], $location->field_type, ["class" => "form-control field_type field"]) !!}
+                                {!! Form::select("field_type", ["code" => "Code","text" => "Text","textarea" => "Paragraph","integer" => "Number", "phone" => "Phone"], $location->field_type, ["class" => "form-control field_type field"]) !!}
                             @endif
                         </td>
                         <td>
@@ -102,6 +109,9 @@
                             @else
                                 {!! Form::select("filter_type", ["" => "None", "typein" => "Type In","selectbox" => "Select Box"],$location->filter_type, ["class" => "form-control filter_type field"]) !!}
                             @endif
+                        </td>
+                        <td>
+                            {!! Form::select("data_type", ["location" => "Location", "observer1" => "Observer 1", "observer2" => "Observer 2"],$location->data_type, ["class" => "form-control data_type field"]) !!}
                         </td>
                         <td>
                             @if($location->field_type == 'primary')
@@ -156,12 +166,14 @@
             '            {!! Form::text("field_name", null, ["class" => "form-control field_name field"]) !!}\n' +
             '        </td>\n' +
             '        <td>\n' +
-            '            {!! Form::select("field_type", ["text" => "Text","textarea" => "Paragraph","integer" => "Number","code" => "Code"],null, ["class" => "form-control field_type field"]) !!}\n' +
+            '            {!! Form::select("field_type", ["text" => "Text","textarea" => "Paragraph","integer" => "Number","code" => "Code", "phone" => "Phone"],null, ["class" => "form-control field_type field"]) !!}\n' +
             '        </td>\n' +
             '        <td>\n' +
             '            {!! Form::select("filter_type", ["" => "None", "typein" => "Type In","selectbox" => "Select Box"],null, ["class" => "form-control filter_type field"]) !!}\n' +
             '        </td>\n' +
             '        <td>\n' +
+            '            {!! Form::select("data_type", ["location" => "Location", "observer1" => "Observer 1", "observer2" => "Observer 2"],null, ["class" => "form-control data_type field"]) !!}\n' +
+            '        </td>\n' +
             '        <td>\n' +
             '           {!! Form::checkbox("show", 1, null,["class" => "magic-checkbox field_show field", "id" => "show"]) !!}\n' +
             '           {!! Form::label("show", " ") !!}\n' +
@@ -205,6 +217,9 @@
                     });
                     $('.filter_type').each(function (index, value) {
                         $(this).attr('name', 'fields[' + index + '][filter_type]');
+                    });
+                    $('.data_type').each(function (index, value) {
+                        $(this).attr('name', 'fields[' + index + '][data_type]');
                     });
                     $('.field_show').each(function (index, value) {
                         $(this).attr('name', 'fields[' + index + '][show]');

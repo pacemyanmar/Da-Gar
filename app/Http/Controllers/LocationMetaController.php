@@ -7,6 +7,7 @@ use App\Http\Requests;
 use App\Http\Requests\CreateLocationMetaRequest;
 use App\Http\Requests\UpdateLocationMetaRequest;
 use App\Models\LocationMeta;
+use App\Models\Phone;
 use App\Models\Project;
 use App\Models\SampleData;
 use App\Repositories\LocationMetaRepository;
@@ -113,6 +114,7 @@ class LocationMetaController extends AppBaseController
                     'field_name' => $field_name,
                     'field_type' => snake_case($field['field_type']),
                     'filter_type' => $field['filter_type'],
+                    'data_type' => $field['data_type'],
                     'show_index' => array_key_exists('show', $field)? $field['show']:0,
                     'export' => array_key_exists('export', $field)?$field['export']:0
                 ]);
@@ -173,23 +175,9 @@ class LocationMetaController extends AppBaseController
 
                 foreach ($project->locationMetas as $location) {
                     if (Schema::hasColumn($table_name, $location->field_name)) {
-                        switch ($location->field_type) {
-                            case 'primary';
-                                // do nothing for now
-                                //$table->string($location->field_name)->primary()->change();
-                                break;
-                            default;
-                                $table->string($location->field_name)->nullable()->change();
-                        }
+                        $table->string($location->field_name)->nullable()->change();
                     } else {
-                        switch ($location->field_type) {
-                            case 'primary';
-                                // do nothing for now
-                                //$table->string($location->field_name)->primary();
-                                break;
-                            default;
-                                $table->string($location->field_name)->nullable();
-                        }
+                        $table->string($location->field_name)->nullable();
                     }
 
                     if (! $doctrineTable->hasIndex($table_name.'_'.$location->field_name.'_index'))
@@ -218,7 +206,6 @@ class LocationMetaController extends AppBaseController
 
             });
         }
-
     }
 
     public function importData($project)
@@ -237,10 +224,24 @@ class LocationMetaController extends AppBaseController
         array_walk($data_array, function(&$data, $key) use ($project) {
             $newdata = [];
             foreach($data as $dk => $dv) {
-                if(str_dbcolumn($dk) == $project->idcolumn) {
+                $data_column = str_dbcolumn($dk);
+                if($data_column == $project->idcolumn) {
                     $newdata['id'] = filter_var($dv, FILTER_SANITIZE_STRING);
                 } else {
-                    $newdata[str_dbcolumn($dk)] = filter_var($dv, FILTER_SANITIZE_STRING);
+                    $newdata[$data_column] = filter_var($dv, FILTER_SANITIZE_STRING);
+                }
+                $phone_column = $project->locationMetas->where('field_name', $data_column)->where('field_type', 'phone')->first();
+                if($phone_column) {
+                    $phone_number = preg_replace('/[^0-9]/','',$newdata[$data_column]);
+                    if($phone_number) {
+                        $existing_phone = Phone::find($phone_number);
+
+                        if(empty($existing_phone)) {
+                            $phone = new Phone();
+                            $phone->phone = $phone_number;
+                            $phone->save();
+                        }
+                    }
                 }
             }
             $data = $newdata;
