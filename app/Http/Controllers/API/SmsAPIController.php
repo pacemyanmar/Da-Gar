@@ -69,6 +69,7 @@ class SmsAPIController extends AppBaseController
         $this->smsRepository = $smsRepo;
         $this->projectRepository = $projectRepo;
         App::setLocale(config('sms.second_locale.locale'));
+        $this->channel = 'sms';
 
     }
 

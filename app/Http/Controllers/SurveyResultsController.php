@@ -53,6 +53,7 @@ class SurveyResultsController extends AppBaseController
         $this->surveyInputRepo = $surveyInputRepo;
         $this->sampleRepository = $sampleRepo;
         $this->sampleDataModel = $sampleDataModel;
+        $this->channel = 'web';
     }
 
     public function index(SurveyResultsDataTable $resultDataTable, $project_id, $samplable = null)

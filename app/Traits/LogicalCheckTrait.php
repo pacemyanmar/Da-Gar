@@ -6,6 +6,7 @@ namespace App\Traits;
 use App\Models\Question;
 use App\Models\Section;
 use App\Models\SurveyResult;
+use Carbon\Carbon;
 use Krucas\Settings\Facades\Settings;
 
 
@@ -15,6 +16,7 @@ trait LogicalCheckTrait
     protected $skipBag = [];
     private $sectionErrorBag;
     protected $sectionStatus;
+    protected $channel;
 
     protected function processUserInput($questions, $results)
     {
@@ -209,6 +211,11 @@ trait LogicalCheckTrait
             $sample->update_user_id = $surveyResult->update_user_id = Auth()->user()->id;
         } else {
             $sample->user_id = $surveyResult->user_id = Auth()->user()->id;
+        }
+
+        if(empty($sample->channel_time)) {
+            $sample->channel_time = Carbon::now();
+            $sample->channel = $this->channel;
         }
 
         $sample->save();

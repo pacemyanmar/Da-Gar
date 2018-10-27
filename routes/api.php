@@ -16,6 +16,8 @@
 // })->middleware('auth:api');
 // Route::resource('projects', 'ProjectAPIController');
 
+Route::get('projects/{id}/responses',['as' => 'project.responses', 'uses' => 'ProjectAPIController@responses']);
+
 Route::get('sms/status', ['as' => 'api-status', 'uses' => 'SmsAPIController@apiStatus']);
 
 Route::match(['get','post'], 'sms/echo', ['as' => 'api-status', 'uses' => 'SmsAPIController@echoResponse']);

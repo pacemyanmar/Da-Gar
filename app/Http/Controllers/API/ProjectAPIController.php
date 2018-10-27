@@ -5,9 +5,11 @@ namespace App\Http\Controllers\API;
 use App\Http\Requests\API\CreateProjectAPIRequest;
 use App\Http\Requests\API\UpdateProjectAPIRequest;
 use App\Models\Project;
+use App\Models\Sample;
 use App\Repositories\ProjectRepository;
 use Illuminate\Http\Request;
 use App\Http\Controllers\AppBaseController;
+use Illuminate\Support\Facades\DB;
 use InfyOm\Generator\Criteria\LimitOffsetCriteria;
 use Prettus\Repository\Criteria\RequestCriteria;
 use Response;
@@ -25,6 +27,27 @@ class ProjectAPIController extends AppBaseController
     public function __construct(ProjectRepository $projectRepo)
     {
         $this->projectRepository = $projectRepo;
+    }
+
+    public function responses($id)
+    {
+        /** @var Project $project */
+        $project = $this->projectRepository->findWithoutFail($id);
+
+        if (empty($project)) {
+            return $this->sendError('Project not found');
+        }
+
+        $sample = Sample::query();
+        $sample->select(DB::raw('count(channel_time) AS channel_count'),
+            DB::raw('channel'),
+            DB::raw('UNIX_TIMESTAMP(channel_time) AS channel_time'));
+        $sample->where('project_id', $project->id)->whereNotNull('channel_time')->groupBy('channel_time')->groupBy('channel')
+        ->orderBy('channel_time', 'ASC');
+
+        $samples = $sample->get();
+
+        return $this->sendResponse($samples->toArray(), 'Project retrieved successfully');
     }
 
     /**
