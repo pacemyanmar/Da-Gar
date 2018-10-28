@@ -440,7 +440,7 @@ class SmsAPIController extends AppBaseController
 
             if (empty($project)) {
                 // if project is empty
-                $reply['message'] = 'ERROR: '.strtoupper($form_prefix);
+                $reply['message'] = $this->encoding('sms.error', $encoding).' '.strtoupper($form_prefix);
                 $reply['status'] = 'error';
                 return $reply;
             }
@@ -486,7 +486,7 @@ class SmsAPIController extends AppBaseController
             }
 
             if(empty($sample)) {
-                $reply['message'] = 'ERROR: Check Code';
+                $reply['message'] = $this->encoding('sms.error_code', $encoding);
                 $reply['status'] = 'error';
                 return $reply;
             }
@@ -511,7 +511,7 @@ class SmsAPIController extends AppBaseController
             $current_section = $first_question->sectionInstance;
 
             if($current_section->disablesms) {
-                $reply['message'] = 'ERROR: You do not need to send this report by SMS.';
+                $reply['message'] = $this->encoding('sms.error_not_by_sms', $encoding);
                 $reply['status'] = 'error';
                 return $reply;
             }
@@ -576,10 +576,10 @@ class SmsAPIController extends AppBaseController
             }
 
             if(!empty($missingOrError)) {
-                $reply['message'] = 'ERROR:'. implode(',', $missingOrError);
+                $reply['message'] = $this->encoding('sms.error', $encoding).' '. implode(',', $missingOrError);
                 $reply['status'] = 'error';
             } else {
-                $reply['message'] = 'SUCCESS';
+                $reply['message'] = $this->encoding('sms.success', $encoding);
                 $reply['status'] = 'success';
             }
 

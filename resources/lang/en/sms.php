@@ -9,7 +9,7 @@ return [
     'error_inputs' => ':INPUTS are missing or have error. Please check SMS format.',
     'success' => 'Success!',
     'error' => 'Error!',
-    ''
-
+    'error_code' => 'ERROR: Check Code',
+    'error_not_by_sms' => 'ERROR: You do not need to send this report by SMS.',
 
 ];
