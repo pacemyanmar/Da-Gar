@@ -282,7 +282,7 @@ class SmsAPIController extends AppBaseController
         switch ($event) {
             case 'incoming_message':
             case 'default':
-                $response = $this->parseMessage($content, $to_number);
+                $response = $this->parseMessage($content, $from_number);
                 $status = 'new';
                 $smsLog = new SmsLog;
                 $smsLog->event = $event;
