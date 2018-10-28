@@ -45,6 +45,8 @@ trait LogicalCheckTrait
 
             foreach ($inputs as $input) {
                 $inputid = $input->inputid;
+
+                $oldValue = (!empty($oldResultInstance))? $oldResultInstance->{$inputid}:null;
                 // $result = submitted form data
                 // look for individual inputid in $result array submitted or not
                 if (array_key_exists($inputid, $results)) {
@@ -53,7 +55,7 @@ trait LogicalCheckTrait
                         $result_arr[$qid][$inputid] = ($results[$inputid]) ? $results[$inputid] : 0;
                     } else {
                         // if value is string 0 or some value not false
-                        $result_arr[$qid][$inputid] = ($results[$inputid] === '0' || $results[$inputid]) ? $results[$inputid] : $oldResultInstance->{$inputid};
+                        $result_arr[$qid][$inputid] = ($results[$inputid] === '0' || $results[$inputid]) ? $results[$inputid] : $oldValue;
                     }
                 } else {
 
@@ -62,11 +64,11 @@ trait LogicalCheckTrait
                         if (count($question_has_result_submitted) > 0) {
                             $result_arr[$qid][$inputid] = 0;
                         } else {
-                            $result_arr[$qid][$inputid] = $oldResultInstance->{$inputid};
+                            $result_arr[$qid][$inputid] = $oldValue;
                         }
 
                     } else {
-                        $result_arr[$qid][$inputid] = $oldResultInstance->{$inputid};
+                        $result_arr[$qid][$inputid] = $oldValue;
                     }
 
                 }
