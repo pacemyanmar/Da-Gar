@@ -24,6 +24,7 @@ trait LogicalCheckTrait
         $oldResult = new SurveyResult();
         $oldResult->getResultBySample($this->sample, $this->project->dbname.'_s'.$this->section->sort);
         $oldResultInstance = $oldResult->first();
+
         $question_result = [];
 
         $allResults = [];

@@ -40,8 +40,7 @@ class SettingController extends AppBaseController
     {
         $settings = $this->settingRepository->all();
 
-        $projects = array_merge(['' => 'None'], $this->project->pluck('project', 'id')->toArray());
-
+        $projects = array_merge(['None' => ''], $this->project->pluck('id', 'project')->toArray());
         return view('settings.index')
             ->with('settings', $settings)
             ->with('projects', $projects);

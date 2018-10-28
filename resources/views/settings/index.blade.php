@@ -44,7 +44,7 @@
                         <span class="input-group-addon">
                                         Active Project :
                                     </span>
-                        {!! Form::select("configs[active_project]", $projects ,settings('active_project', null), ['class' => 'form-control']) !!}
+                        {!! Form::select("configs[active_project]", array_flip($projects),settings('active_project', null), ['class' => 'form-control']) !!}
                     </div>
                 </div>
                 <div class="form-group">
