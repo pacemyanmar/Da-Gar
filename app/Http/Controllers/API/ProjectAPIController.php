@@ -38,16 +38,27 @@ class ProjectAPIController extends AppBaseController
             return $this->sendError('Project not found');
         }
 
-        $sample = Sample::query();
-        $sample->select(DB::raw('count(channel_time) AS channel_count'),
+        $sample_sms = Sample::query();
+        $sample_sms->select(DB::raw('count(channel_time) AS channel_count'),
             DB::raw('channel'),
-            DB::raw('FROM_UNIXTIME(ROUND((CEILING(UNIX_TIMESTAMP(channel_time) / 600) * 600))) AS time_slice'));
-        $sample->where('project_id', $project->id)->whereNotNull('channel_time')->groupBy('time_slice')->groupBy('channel')
+            DB::raw('FROM_UNIXTIME(ROUND((CEILING(UNIX_TIMESTAMP(channel_time) / 300) * 300))) AS time_slice'));
+        $sample_sms->where('project_id', $project->id)->whereNotNull('channel_time')->where('channel', 'sms')->groupBy('time_slice')->groupBy('channel')
         ->orderBy('channel_time', 'ASC');
 
-        $samples = $sample->get();
+        $samples_sms = $sample_sms->get();
 
-        return $this->sendResponse($samples->toArray(), 'Project retrieved successfully');
+        $sample_web = Sample::query();
+        $sample_web->select(DB::raw('count(channel_time) AS channel_count'),
+            DB::raw('channel'),
+            DB::raw('FROM_UNIXTIME(ROUND((CEILING(UNIX_TIMESTAMP(channel_time) / 300) * 300))) AS time_slice'));
+        $sample_web->where('project_id', $project->id)->whereNotNull('channel_time')->where('channel', 'web')->groupBy('time_slice')->groupBy('channel')
+            ->orderBy('channel_time', 'ASC');
+
+        $samples_web = $sample_web->get();
+
+        $responses = array_merge($samples_sms->toArray(), $samples_web->toArray());
+
+        return $this->sendResponse($responses, 'Project retrieved successfully');
     }
 
     /**
