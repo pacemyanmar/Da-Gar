@@ -576,6 +576,14 @@ class SmsAPIController extends AppBaseController
                 $reply['result_id'] = $savedResult->id;
             }
 
+            $errorsFromSectionBag = $this->sectionErrorBag;
+
+            if (($key = array_search(1, $errorsFromSectionBag)) !== false) {
+                unset($errorsFromSectionBag[$key]);
+            }
+
+            $missingOrError = array_unique(array_merge(array_keys($errorsFromSectionBag), $missingOrError));
+
             if(!empty($missingOrError)) {
                 $reply['message'] = $this->encoding('sms.error', $encoding).' '. implode(',', $missingOrError);
                 $reply['status'] = 'error';

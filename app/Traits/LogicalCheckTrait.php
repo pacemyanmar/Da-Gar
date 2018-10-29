@@ -12,18 +12,17 @@ use Krucas\Settings\Facades\Settings;
 
 trait LogicalCheckTrait
 {
-    protected $errorBag;
+    protected $errorBag=[];
     protected $skipBag = [];
-    private $sectionErrorBag;
+    private $sectionErrorBag = [];
     protected $sectionStatus;
     protected $channel;
 
     protected function processUserInput($questions, $results)
     {
         $result_arr = [];
-        $oldResult = new SurveyResult();
-        $oldResult->getResultBySample($this->sample, $this->project->dbname.'_s'.$this->section->sort);
-        $oldResultInstance = $oldResult->first();
+        $oldResultInstance = new SurveyResult();
+        $oldResultInstance->getResultBySample($this->sample, $this->project->dbname.'_s'.$this->section->sort);
 
         $question_result = [];
 
@@ -43,13 +42,23 @@ trait LogicalCheckTrait
                 }
             }
 
+            $valid_values = $inputs->pluck('value')->toArray();
+
             foreach ($inputs as $input) {
                 $inputid = $input->inputid;
 
                 $oldValue = (!empty($oldResultInstance))? $oldResultInstance->{$inputid}:null;
+
                 // $result = submitted form data
                 // look for individual inputid in $result array submitted or not
                 if (array_key_exists($inputid, $results)) {
+                    // if submitted values is not in valid value, set null
+                    if(in_array($input->type, ['radio','checkbox'])) {
+                        if (!in_array($results[$inputid], $valid_values)) {
+                            $results[$inputid] = null;
+                            $this->errorBag[$question->qnum][$input->id] = 2;
+                        }
+                    }
                     // if found, question is summitted and set checkbox values to zero if false
                     if ($input->type == 'checkbox') {
                         $result_arr[$qid][$inputid] = ($results[$inputid]) ? $results[$inputid] : 0;
@@ -72,6 +81,7 @@ trait LogicalCheckTrait
                     }
 
                 }
+
                 if($input->other) {
                     $result_arr[$qid][$inputid.'_other'] = (array_key_exists($inputid.'_other', $results))?$results[$inputid.'_other']:$oldResultInstance->{$inputid.'_other'};
                 }
@@ -80,7 +90,9 @@ trait LogicalCheckTrait
             }
 
             if(array_key_exists($question->qnum, $this->errorBag)) {
+
                 $this->getQuestionStatus($this->errorBag[$question->qnum], $question->qnum);
+
             }
 
             if(array_key_exists($qid, $result_arr)) {
@@ -114,9 +126,11 @@ trait LogicalCheckTrait
             }
         }
 
-        if(!$input->optional && $value !== '0' && !$value) {
-            // if value is null and input is required, set status as missing
-            $this->errorBag[$input->question->qnum][$input->id] = 2;
+        if(!$input->optional){
+            if($value !== '0' && !$value) {
+                // if value is null and input is required, set status as missing
+                $this->errorBag[$input->question->qnum][$input->id] = 2;
+            }
         }
 
         if(!empty($this->skipBag) && array_key_exists(strtolower($input->question->qnum), $this->skipBag)) {
@@ -126,7 +140,6 @@ trait LogicalCheckTrait
 
     private function getQuestionStatus($qError, $qnum)
     {
-
         $unique_error = array_unique($qError);
         $error_count = count($unique_error);
 
@@ -158,7 +171,7 @@ trait LogicalCheckTrait
         // if all questions have same status, set that status to section
         // section must be set as complete only after all questions complete
         if (1 == $error_count) {
-            $error_code = array_shift($this->sectionErrorBag); //this can be any of 1,2,3
+            $error_code = array_shift($unique_error); //this can be any of 1,2,3
             if($error_code == 2) {
                 return 0;
             } else {
@@ -168,11 +181,11 @@ trait LogicalCheckTrait
         // if questions have different status
         if ($error_count > 1) {
             // if one question has error, set section status as error (3)
-            if (in_array(3, $this->sectionErrorBag)) {
+            if (in_array(3, $unique_error)) {
                 return 3; // error
             }
             // if no error and if one question missing/incomplete, set section status as incomplete (2)
-            if (!in_array(3, $this->sectionErrorBag) && in_array(2, $this->sectionErrorBag)) {
+            if (!in_array(3, $unique_error) && in_array(2, $unique_error)) {
                 return 2; // missing or incomplete
             }
 
@@ -234,6 +247,7 @@ trait LogicalCheckTrait
         $surveyResult->forceFill($this->results);
 
         $surveyResult->save();
+
         return $surveyResult;
     }
 

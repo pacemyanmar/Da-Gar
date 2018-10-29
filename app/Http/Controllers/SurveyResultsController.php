@@ -26,7 +26,7 @@ class SurveyResultsController extends AppBaseController
 {
     use LogicalCheckTrait;
 
-    protected $errorBag;
+    protected $errorBag = [];
 
     /** @var  ProjectRepository */
     private $projectRepository;

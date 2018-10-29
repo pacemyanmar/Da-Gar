@@ -43,6 +43,6 @@ class SurveyResult extends Model
 
     public function getResultBySample(Sample $sample, $table)
     {
-        return $this->setTable($table)->where('sample_id', $sample->id);
+        return $this->setTable($table)->where('sample_id', $sample->id)->first();
     }
 }
