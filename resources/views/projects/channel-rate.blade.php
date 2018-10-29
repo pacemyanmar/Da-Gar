@@ -67,19 +67,20 @@
             success: function(response){
                 if(response.success) {
 
-                    var channel_time = [];
+                    var sms_channel_time = [];
+                    var web_channel_time = [];
 
                     jQuery.each(response.data, function (index, value) {
 
                         if(value.channel == 'sms') {
-                            channel_time.push(value.time_slice);
-                            ySMS.push(value.channel_count);
+                            sms_channel_time.push(value.sms_time_slice);
+                            ySMS.push(value.sms_channel_count);
 
                         }
 
                         if(value.channel == 'web') {
-                            channel_time.push(value.time_slice);
-                            yWeb.push(value.channel_count);
+                            web_channel_time.push(value.web_time_slice);
+                            yWeb.push(value.web_channel_count);
                         }
 
                     });
@@ -87,7 +88,7 @@
                         type: "linear",
                         //mode: "lines",
                         name: 'SMS',
-                        x: channel_time,
+                        x: sms_channel_time,
                         y: ySMS,
                         line: {color: '#17BECF'}
                     }
@@ -96,7 +97,7 @@
                         type: "linear",
                         //mode: "lines",
                         name: 'Web',
-                        x: channel_time,
+                        x: web_channel_time,
                         y: yWeb,
                         line: {color: '#7F7F7F'}
                     }
@@ -112,7 +113,7 @@
 
     function drawChart(trace1,trace2) {
         var data = [trace1,trace2];
-        console.log(data);
+        //console.log(data);
 
         var layout = {
             title: '{{ $project->project }} response rate by report channel',
