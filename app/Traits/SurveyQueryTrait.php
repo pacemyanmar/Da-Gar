@@ -210,6 +210,16 @@ trait SurveyQueryTrait {
             'visible' => false,
             'width' => '80px',
         ];
+        $columns['channel'] = [
+            'name' => 'samples.channel as channel',
+            'data' => 'channel',
+            'className' => 'select channel',
+            'title' => trans('samples.channel'),
+            'orderable' => false,
+            'defaultContent' => 'N/A',
+            'visible' => true,
+            'width' => '80px',
+        ];
         foreach ($locationMetas as $location) {
 
             if($location->field_type == 'primary') {

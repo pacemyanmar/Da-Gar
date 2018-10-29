@@ -350,13 +350,23 @@ class SurveyResultsDataTable extends DataTable
         $selectbox = $locationMetas->where('filter_type', 'selectbox');
 
         $selectfields = $selectbox->pluck('field_name');
+
+        $selectfields->push('channel');
+
         $select_js = "";
         foreach ($selectfields as $field) {
             $collect = $data_collection->pluck($field)->unique();
             $options = "";
-            foreach($collect as $option) {
-                $options .= '<option value="'.$option.'">'.$option.'</option>';
+
+            if($field == 'channel') {
+                $options .= '<option value="sms">sms</option>';
+                $options .= '<option value="web">web</option>';
+            } else {
+                foreach($collect as $option) {
+                    $options .= '<option value="'.$option.'">'.$option.'</option>';
+                }
             }
+
             $select_js .= "this.api().columns('.$field').every( function () {
                               var column = this;
                               var location = $('<select style=\"width:80% !important\"><option value=\"\">-</option>$options</select>')
