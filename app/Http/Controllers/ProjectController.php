@@ -18,6 +18,7 @@ use App\Repositories\ProjectRepository;
 use App\Scopes\OrderByScope;
 use App\SmsHelper;
 use App\Traits\QuestionsTrait;
+use Carbon\Carbon;
 use Flash;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\Schema\Blueprint;
@@ -1090,8 +1091,17 @@ class ProjectController extends AppBaseController
 
             return redirect()->back();
         }
+        $samples = Sample::query();
+        $samples->select(DB::raw('SUBTIME(channel_time, "00:05:00") AS channel_time'));
+        $first_record = $samples->where('project_id', $project->id)->whereNotNull('channel_time')->orderBy('channel_time', 'ASC')->first();
 
-        return view('projects.channel-rate')->with('project', $project);
+        $start_time = $first_record->channel_time;
+        if(empty($start_time)){
+            $now = Carbon::now();
+            $start_time = $now->toDateTimeString();
+        }
+
+        return view('projects.channel-rate')->with('project', $project)->with('start_time', $start_time);
 
     }
 

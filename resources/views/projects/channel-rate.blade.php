@@ -50,15 +50,7 @@
     function getFirstData() {
         var ajaxurl = "{{ route('project.responses', [$project->id]) }}";
 
-
-        var time = new Date;
-        time.setHours(00);
-        time.setMinutes(00);
-        time.setSeconds(00);
-        time.setMilliseconds(00);
-        var ySMS = [];
-        var yWeb = [];
-
+        var start_time = "{!! $start_time !!}"
         jQuery.ajax({
             type: "get",
             url: ajaxurl,
@@ -66,9 +58,11 @@
             cache: "false",
             success: function(response){
                 if(response.success) {
+                    var ySMS = [0];
+                    var yWeb = [0];
 
-                    var sms_channel_time = [];
-                    var web_channel_time = [];
+                    var sms_channel_time = [start_time];
+                    var web_channel_time = [start_time];
 
                     jQuery.each(response.data, function (index, value) {
 
@@ -113,7 +107,7 @@
 
     function drawChart(trace1,trace2) {
         var data = [trace1,trace2];
-        //console.log(data);
+        console.log(data);
 
         var layout = {
             title: '{{ $project->project }} response rate by report channel',
