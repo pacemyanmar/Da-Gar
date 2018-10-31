@@ -56,7 +56,7 @@
                         <a href="{{ route('projects.smslog', $project->id) }}" class='btn btn-default btn-sm' style='margin-bottom: 5px;'>
                         <i class="fa fa-envelope"></i> {!! trans('messages.smslog') !!}
                         </a>
-                        <a href="{{ route('location-metas.edit-structure', $project->id) }}"
+                        <a href="{{ route('location-metas.show-structure', $project->id) }}"
                            class='btn btn-default btn-sm' style='margin-bottom: 5px;'>
                             <i class="glyphicon glyphicon-edit"></i>Edit Sample Columns
                         </a>

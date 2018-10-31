@@ -1401,7 +1401,12 @@ class ProjectController extends AppBaseController
                 return $this->sampleStructure($project, $column_list, $idcolumn);
 
             // upload directly here
-            return $this->importSampleData($records, $project, $idcolumn);
+            $imported = $this->importSampleData($records, $project, $idcolumn);
+            if($imported) {
+                Flash::success('Imported');
+
+                return redirect(route('sample-details.index', $project->id));
+            }
 
         } else {
             return redirect()->back()->withErrors('Invalid file');
@@ -1469,6 +1474,19 @@ class ProjectController extends AppBaseController
                     break;
             }
 
+            $field_type = preg_match('/(.*)@([1-9])$/',$item, $types);
+
+            if($field_type) {
+                $field['data_type'] = 'observer'. $types[2];
+            } else {
+                $field['data_type'] = 'location';
+            }
+
+            $phone = preg_match('/(.*)phone|mobile(.*)/', strtolower($item));
+
+            if($phone) {
+                $field['field_type'] = 'phone';
+            }
 
             $field['field_name'] = str_dbcolumn($item);
             $new_loc = new LocationMeta();

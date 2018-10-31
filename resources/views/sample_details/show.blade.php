@@ -11,7 +11,7 @@
             <div class="box-body">
                 <div class="row" style="padding-left: 20px">
                     @include('sample_details.show_fields')
-                    <a href="{!! route('sample-details.index') !!}" class="btn btn-default">Back</a>
+                    <a href="{!! route('sample-details.index', $project->id) !!}" class="btn btn-default">Back</a>
                 </div>
             </div>
         </div>

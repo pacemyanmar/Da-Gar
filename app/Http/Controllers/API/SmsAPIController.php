@@ -394,6 +394,8 @@ class SmsAPIController extends AppBaseController
 
         $encoding = $observer_phone->encoding;
 
+        $this->phone = $observer_phone;
+
         if(!$match_code) {
             $reply['message'] = $this->encoding('sms.error', $encoding);
             $reply['status'] = 'error';

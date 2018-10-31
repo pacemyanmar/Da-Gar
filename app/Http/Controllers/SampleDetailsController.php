@@ -37,9 +37,8 @@ class SampleDetailsController extends AppBaseController
      * @param SampleDetailsDataTable $sampleDetailsDataTable
      * @return Response
      */
-    public function index(SampleDetailsDataTable $sampleDetailsDataTable, Request $request)
+    public function index($project_id, SampleDetailsDataTable $sampleDetailsDataTable)
     {
-        $project_id = $request->input('project_id');
 
         $project = $this->projectRepository->findWithoutFail($project_id);
 
@@ -60,7 +59,7 @@ class SampleDetailsController extends AppBaseController
         }
 
         $sampleDetailsDataTable->setProject($project);
-        return $sampleDetailsDataTable->render('sample_details.index', ['project_id', $request->input('project_id')]);
+        return $sampleDetailsDataTable->render('sample_details.index', compact('project'));
     }
 
     /**
@@ -68,9 +67,9 @@ class SampleDetailsController extends AppBaseController
      *
      * @return Response
      */
-    public function create()
+    public function create($project_id)
     {
-        return view('sample_details.create');
+        return view('sample_details.create', $project_id)->with('project_id', $project_id);
     }
 
     /**
@@ -80,7 +79,7 @@ class SampleDetailsController extends AppBaseController
      *
      * @return Response
      */
-    public function store(CreateSampleDetailsRequest $request)
+    public function store($project_id, CreateSampleDetailsRequest $request)
     {
         $input = $request->all();
 
@@ -88,7 +87,7 @@ class SampleDetailsController extends AppBaseController
 
         Flash::success('Sample Details saved successfully.');
 
-        return redirect(route('sample-details.index'));
+        return redirect(route('sample-details.index', $project_id));
     }
 
     /**
@@ -98,9 +97,8 @@ class SampleDetailsController extends AppBaseController
      *
      * @return Response
      */
-    public function show($id, Request $request)
+    public function show($project_id, $id, Request $request)
     {
-        $project_id = $request->input('project_id');
         $project = $this->projectRepository->findWithoutFail($project_id);
 
         if (empty($project)) {
@@ -118,7 +116,7 @@ class SampleDetailsController extends AppBaseController
             return redirect(route('sample-details.index', ['project_id', $request->input('project_id')]));
         }
 
-        return view('sample_details.show')->with('sampleColumns', $sampleColumns )->with('sampleDetails', $sampleDetails);
+        return view('sample_details.show')->with('project', $project)->with('sampleColumns', $sampleColumns )->with('sampleDetails', $sampleDetails);
     }
 
     /**
@@ -128,9 +126,8 @@ class SampleDetailsController extends AppBaseController
      *
      * @return Response
      */
-    public function edit($id, Request $request)
+    public function edit($project_id, $id, Request $request)
     {
-        $project_id = $request->input('project_id');
         $project = $this->projectRepository->findWithoutFail($project_id);
 
         if (empty($project)) {
@@ -148,7 +145,10 @@ class SampleDetailsController extends AppBaseController
             return redirect(route('sample-details.index', ['project_id', $project_id]));
         }
 
-        return view('sample_details.edit')->with('sampleColumns', $sampleColumns )->with('sampleDetails', $sampleDetails);
+        return view('sample_details.edit')
+            ->with('project', $project)
+            ->with('sampleColumns', $sampleColumns )
+            ->with('sampleDetails', $sampleDetails);
     }
 
     /**
@@ -159,21 +159,21 @@ class SampleDetailsController extends AppBaseController
      *
      * @return Response
      */
-    public function update($id, UpdateSampleDetailsRequest $request)
+    public function update($project_id, $id, UpdateSampleDetailsRequest $request)
     {
         $sampleDetails = $this->sampleDetailsRepository->findWithoutFail($id);
 
         if (empty($sampleDetails)) {
             Flash::error('Sample Details not found');
 
-            return redirect(route('sample-details.index', ['project_id', $request->input('project_id')]));
+            return redirect(route('sample-details.index', ['project', $project_id]));
         }
 
         $sampleDetails = $this->sampleDetailsRepository->update($request->all(), $id);
 
         Flash::success('Sample Details updated successfully.');
 
-        return redirect(route('sample-details.index'));
+        return redirect(route('sample-details.index', $project_id));
     }
 
     /**
@@ -183,20 +183,20 @@ class SampleDetailsController extends AppBaseController
      *
      * @return Response
      */
-    public function destroy($id, Request $request)
+    public function destroy($project_id, $id, Request $request)
     {
         $sampleDetails = $this->sampleDetailsRepository->findWithoutFail($id);
 
         if (empty($sampleDetails)) {
             Flash::error('Sample Details not found');
 
-            return redirect(route('sample-details.index', ['project_id', $request->input('project_id')]));
+            return redirect(route('sample-details.index', ['project_id', $project_id]));
         }
 
         $this->sampleDetailsRepository->delete($id);
 
         Flash::success('Sample Details deleted successfully.');
 
-        return redirect(route('sample-details.index', ['project_id', $request->input('project_id')]));
+        return redirect(route('sample-details.index', ['project_id', $project_id]));
     }
 }

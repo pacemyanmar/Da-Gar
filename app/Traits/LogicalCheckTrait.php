@@ -18,6 +18,8 @@ trait LogicalCheckTrait
     protected $sectionStatus;
     protected $channel;
 
+    protected $phone;
+
     protected function processUserInput($questions, $results)
     {
         $result_arr = [];
@@ -234,13 +236,31 @@ trait LogicalCheckTrait
             $sample->channel = $this->channel;
         }
 
+        if(!empty($this->phone)) {
+            $last_messages = json_decode($sample->last_message, true);
+
+            if($sample->sample_data_id != $this->phone->sample_code) {
+                $flag_error = 3;
+
+                $last_messages['E1001'] = 'CODE NOT MATCH!';
+            } else {
+                if(is_array($last_messages)) {
+                    if (array_key_exists('E1000', $last_messages)) {
+                        unset($last_messages['E1000']);
+                    }
+                }
+            }
+            $new_message = json_encode($last_messages);
+            $sample->last_message = $new_message;
+        }
+
         $sample->save();
 
         if(!Settings::get('training')) {
             $surveyResult->sample()->associate($sample);
         }
 
-        $surveyResult->{$this->section} = $this->sectionStatus = $this->getSectionStatus();
+        $surveyResult->{$this->section} = $this->sectionStatus = (isset($flag_error))?$flag_error:$this->getSectionStatus();
 
         $surveyResult->sample_type = $this->sampleType;
 

@@ -184,6 +184,16 @@ trait SurveyQueryTrait {
             'width' => '40px',
             'title' => 'Corrected Sections',
         ];
+
+        $extras_columns['last_message'] = [
+            'name' => 'last_message',
+            'data' => 'last_message',
+            'orderable' => false,
+            'searchable' => true,
+            'width' => '40px',
+            'title' => 'Last Messages',
+            'exportable' => false,
+        ];
         return $extras_columns;
     }
 
@@ -210,16 +220,7 @@ trait SurveyQueryTrait {
             'visible' => false,
             'width' => '80px',
         ];
-        $columns['channel'] = [
-            'name' => 'samples.channel as channel',
-            'data' => 'channel',
-            'className' => 'select channel',
-            'title' => trans('samples.channel'),
-            'orderable' => false,
-            'defaultContent' => 'N/A',
-            'visible' => true,
-            'width' => '80px',
-        ];
+
         foreach ($locationMetas as $location) {
 
             if($location->field_type == 'primary') {
@@ -274,6 +275,17 @@ trait SurveyQueryTrait {
             }
         }
 
+        $columns['channel'] = [
+            'name' => 'samples.channel as channel',
+            'data' => 'channel',
+            'className' => 'select channel',
+            'title' => trans('samples.channel'),
+            'orderable' => false,
+            'defaultContent' => 'N/A',
+            'visible' => true,
+            'width' => '80px',
+        ];
+
         $columns['user_id'] = [
             'name' => 'user.name AS username',
             'data' => 'username',
@@ -292,15 +304,17 @@ trait SurveyQueryTrait {
             'visible' => false,
             'width' => '80px',
         ];
-        $columns['qc_user_id'] = [
-            'name' => 'qc_user.name AS qcuser',
-            'data' => 'qcuser',
-            'title' => 'Double Checker',
-            'orderable' => false,
-            'defaultContent' => 'N/A',
-            'visible' => ($auth->role->role_name == 'doublechecker')?true:false,
-            'width' => '80px',
-        ];
+        if(config('sms.double_entry')) {
+            $columns['qc_user_id'] = [
+                'name' => 'qc_user.name AS qcuser',
+                'data' => 'qcuser',
+                'title' => 'Double Checker',
+                'orderable' => false,
+                'defaultContent' => 'N/A',
+                'visible' => ($auth->role->role_name == 'doublechecker') ? true : false,
+                'width' => '80px',
+            ];
+        }
         return $columns;
     }
 

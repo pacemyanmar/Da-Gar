@@ -234,18 +234,20 @@ class LocationMetaController extends AppBaseController
                 if($phone_column) {
                     $phone_number = preg_replace('/[^0-9]/','',$newdata[$data_column]);
                     if($phone_number) {
-                        $existing_phone = Phone::find($phone_number);
+                        $phone = Phone::find($phone_number);
 
-                        if(empty($existing_phone)) {
+                        if(empty($phone)) {
                             $phone = new Phone();
                             $phone->phone = $phone_number;
-                            $phone->save();
                         }
+                        $phone->sample_code = $newdata['id'];
+                        $phone->save();
                     }
                 }
             }
             $data = $newdata;
         });
+
         $sample_data = new SampleData();
 
         $sample_data->insertOrUpdate($data_array, $project->dbname.'_samples');
