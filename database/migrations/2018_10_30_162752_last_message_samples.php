@@ -14,7 +14,7 @@ class LastMessageSamples extends Migration
     public function up()
     {
         Schema::table('samples', function (Blueprint $table) {
-            $table->text('last_message'); // array of last messages for sections
+            $table->text('last_message')->nullable(); // array of last messages for sections
         });
     }
 
