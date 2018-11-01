@@ -146,20 +146,20 @@ trait LogicalCheckTrait
         $error_count = count($unique_error);
 
         if (1 == $error_count) {
-            $this->sectionErrorBag[$qnum] = array_shift($qError); //this can be any of 1,2,3
+            $this->sectionErrorBag[$qnum] = array_shift($unique_error); //this can be any of 1,2,3
         }
 
         if ($error_count > 1) {
             // if no error and missing, set status as missing (2)
-            if (!in_array(3, $qError) && in_array(2, $qError)) {
+            if (!in_array(3, $unique_error) && in_array(2, $unique_error)) {
                 $this->sectionErrorBag[$qnum] = 2; // missing or incomplete
             }
             // if at least 1 input complete, set question status as complete (1)
-            if (in_array(1, $qError)) {
+            if (in_array(1, $unique_error)) {
                 $this->sectionErrorBag[$qnum] = 1;
             }
             // if there is error on one input, set question as error (3)
-            if (in_array(3, $qError)) {
+            if (in_array(3, $unique_error)) {
                 $this->sectionErrorBag[$qnum] = 3; // error
             }
 
