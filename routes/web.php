@@ -49,7 +49,7 @@ Route::group(['prefix' => 'projects/{project}'], function () {
     Route::get('location-metas/show-structure', ['as' => 'location-metas.show-structure', 'uses' => 'LocationMetaController@editStructure']);
 
     Route::match(['post','patch'],'location-metas/edit-structure', ['as' => 'location-metas.edit-structure', 'uses' => 'LocationMetaController@createOrUpdateStructure']);
-    
+
     Route::resource('sample-details', 'SampleDetailsController');
 });
 
@@ -102,8 +102,6 @@ Route::resource('settings', 'SettingController');
 
 Route::post('sample/import', ['as' => 'sample.import', 'uses' => 'SampleDataController@import']);
 
-Route::post('sample/import/translation', ['as' => 'sample.importTranslation', 'uses' => 'SampleDataController@importTranslation']);
-
 Route::resource('sampleDatas', 'SampleDataController');
 
 Route::resource('users', 'UserController');
@@ -119,7 +117,7 @@ Route::resource('logicalChecks', 'LogicalCheckController');
 
 Route::resource('location-metas', 'LocationMetaController');
 
-
+Route::post('translations/import',['as' => 'translations.import', 'uses' => 'TranslationController@import']);
 
 Route::resource('translations', 'TranslationController');
 
