@@ -580,8 +580,10 @@ class SmsAPIController extends AppBaseController
 
             $errorsFromSectionBag = $this->sectionErrorBag;
 
-            if (($key = array_search(1, $errorsFromSectionBag)) !== false) {
-                unset($errorsFromSectionBag[$key]);
+            foreach ($errorsFromSectionBag as $key => $status) {
+                if($status === 1) {
+                    unset($errorsFromSectionBag[$key]);
+                }
             }
 
             $missingOrError = array_unique(array_merge(array_keys($errorsFromSectionBag), $missingOrError));
