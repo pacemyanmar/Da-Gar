@@ -123,7 +123,7 @@ class Question extends Model
     public function getQuestionTransAttribute($value)
     {
         $second_locale = config('sms.second_locale.locale');
-        return Lang::get('questions.'.$this->attributes['id'].$this->attributes['qnum'], [], $second_locale);
+        return Lang::get('questions.q'.$this->attributes['id'].strtolower($this->attributes['qnum']), [], $second_locale);
     }
 
     private function getTranslation($column, $value)
@@ -133,7 +133,7 @@ class Question extends Model
         if (\App::isLocale($primary_locale)) {
             return $value;
         } else {
-            return Lang::get('questions.'.$this->attributes['id'].$this->attributes['qnum'], [], $second_locale);
+            return Lang::get('questions.q'.$this->attributes['id'].strtolower($this->attributes['qnum']), [], $second_locale);
         }
     }
 }
