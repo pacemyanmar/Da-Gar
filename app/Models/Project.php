@@ -102,7 +102,7 @@ class Project extends Model
 
     public function getProjectAttribute($value)
     {
-        if (\App::isLocale('en')) {
+        if (\App::isLocale('en') || !array_key_exists('project_trans', $this->attributes)) {
             return $value;
         } else {
             return ($this->attributes['project_trans'])? $this->attributes['project_trans']:$value;
