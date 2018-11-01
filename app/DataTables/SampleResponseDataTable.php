@@ -113,7 +113,7 @@ class SampleResponseDataTable extends DataTable
                     $complete[] = 'IF( ' . $dbname . '.section' . $section->sort . 'status = 1, 1, 0) ';
                     $incomplete[] = 'IF( ' . $dbname . '.section' . $section->sort . 'status = 2, 1, 0) ';
                     $missing[] = 'IF( ' . $dbname . '.section' . $section->sort . 'status IS NULL OR ' . $dbname . '.section' . $section->sort . 'status = 0, 1, 0) ';
-                    //$error[] = 'IF( ' . $dbname . '.section' . $section->sort . 'status = 3, 1, 0) ';
+                    $error[] = 'IF( ' . $dbname . '.section' . $section->sort . 'status = 3, 1, 0) ';
                     $reported[] = '( ' . $dbname .'.sample_id is not null AND samples.id = ' . $dbname .'.sample_id )';
                 }
 
@@ -130,8 +130,8 @@ class SampleResponseDataTable extends DataTable
                 $missing_status = implode (' + ', $missing);
                 $missed ="SUM( IF(" . $missing_status . ",1,0) )";
 
-//                $error_status = implode (' + ', $error);
-//                $incorrect ="SUM( IF(" . $error_status . ",1,0) )";
+                $error_status = implode (' + ', $error);
+                $incorrect ="SUM( IF(" . $error_status . ",1,0) )";
 
                 $reported = implode( ' AND ', $reported);
 
@@ -164,9 +164,10 @@ class SampleResponseDataTable extends DataTable
                             DB::raw($completed. ' AS complete'),
                             DB::raw($incompleted. ' AS incomplete'),
                             DB::raw($missed. ' AS missing'),
-                            //DB::raw($incorrect. ' AS error'),
+                            DB::raw($incorrect. ' AS error'),
                             DB::raw($reported_locations.' AS rlocations'),
                             DB::raw('SUM(IF(samples.id,1,0)) AS alltotal, ' . $total . ' AS total'),
+                            DB::raw('SUM(IF(samples.channel = "sms",1,0)) AS sms,SUM(IF(samples.channel = "web",1,0)) AS web'),
                             DB::raw('GROUP_CONCAT(DISTINCT user.name) as user_name',
                                 'GROUP_CONCAT(DISTINCT update_user.name) as update_user',
                                 'GROUP_CONCAT(DISTINCT qc_user.name) as qc_user'));
@@ -385,6 +386,18 @@ class SampleResponseDataTable extends DataTable
                 'title' => 'Reported Locations',
                 'defaultContent' => 'N/A'
                 ];
+            $columns['sms'] = [
+                'data' => 'sms',
+                'name' => 'sms',
+                'title' => 'SMS',
+                'defaultContent' => 'N/A'
+            ];
+            $columns['web'] = [
+                'data' => 'web',
+                'name' => 'web',
+                'title' => 'Web',
+                'defaultContent' => 'N/A'
+            ];
 
             $columns['complete'] = [
                 'data' => 'complete',
@@ -428,20 +441,20 @@ class SampleResponseDataTable extends DataTable
                                   }";
                 }
             ];
-//            $columns['error'] = [
-//                'data' => 'error',
-//                'name' => 'error',
-//                'defaultContent' => 'N/A',
-//                "render" => function () use ($project, $filter) {
-//                    return "function ( data, type, full, meta ) {
-//                                    if(type == 'display') {
-//                                      return '<a href=" . route('projects.surveys.index', [$project->id]) . "/?nosample=1&" . $filter . "='+ encodeURI(full." . $filter . ") +'&totalstatus=incorrect>' + data + '<br> (' +parseFloat((parseInt(data, 10) * 100)/ parseInt(full.alltotal, 10)).toFixed(1) + '%) </a>';
-//                                    } else {
-//                                      return data;
-//                                    }
-//                                  }";
-//                }
-//            ];
+            $columns['error'] = [
+                'data' => 'error',
+                'name' => 'error',
+                'defaultContent' => 'N/A',
+                "render" => function () use ($project, $filter) {
+                    return "function ( data, type, full, meta ) {
+                                    if(type == 'display') {
+                                      return '<a href=" . route('projects.surveys.index', [$project->id]) . "/?nosample=1&" . $filter . "='+ encodeURI(full." . $filter . ") +'&totalstatus=incorrect>' + data + '<br> (' +parseFloat((parseInt(data, 10) * 100)/ parseInt(full.alltotal, 10)).toFixed(1) + '%) </a>';
+                                    } else {
+                                      return data;
+                                    }
+                                  }";
+                }
+            ];
         }
 
         return $columns;
@@ -503,6 +516,19 @@ class SampleResponseDataTable extends DataTable
 
             ],
             'initComplete' => "function () {
+                            // Disable TBODY scoll bars
+                            $('.dataTables_scrollBody').css({
+                                'overflow': 'hidden',
+                                'border': '0'
+                            });
+                        
+                            // Enable TFOOT scoll bars
+                            $('.dataTables_scrollFoot').css('overflow', 'auto');
+                        
+                            // Sync TFOOT scrolling with TBODY
+                            $('.dataTables_scrollFoot').on('scroll', function () {
+                                $('.dataTables_scrollBody').scrollLeft($(this).scrollLeft());
+                            }); 
                             this.api().columns([0]).every(function () {
                                 var column = this;
                                 var br = document.createElement(\"br\");
@@ -520,7 +546,7 @@ class SampleResponseDataTable extends DataTable
 
         if(!$this->section) {
 
-            $builder["footerCallback"] = "function ( row, data, start, end, display ) {
+            $builder["footerCallback"] = " function ( row, data, start, end, display ) {
                             var api = this.api();
                             total = api
                                 .column( 1 )
@@ -537,7 +563,7 @@ class SampleResponseDataTable extends DataTable
                                     return parseInt(a, 10) + parseInt(b, 10);
                                 }, 0 );    
                                 
-                            api.columns([1,2,5,6,7]).every(function(){
+                            api.columns([1,2,7,8,9,10]).every(function(){
                                   var column = this;
                                   
                                   var sum = column
@@ -589,6 +615,24 @@ class SampleResponseDataTable extends DataTable
                                       });
 
                                   $(column.footer()).html('<a href=" . route('projects.surveys.index', [$project->id]) . "/?nosample=1&totalstatus='+column.dataSrc()+'>' + sum + ' (' + parseFloat((sum * 100)/ total_location).toFixed(1) + '%)</a>');
+                              });
+                              
+                              api.columns([5,6]).every(function(){
+                                  var column = this;
+                                  
+                                  var sum = column
+                                      .data()
+                                      .reduce(function (a, b) {
+                                         a = parseInt(a, 10);
+                                         if(isNaN(a)){ a = 0; }
+
+                                         b = parseInt(b, 10);
+                                         if(isNaN(b)){ b = 0; }
+
+                                         return a + b;
+                                      });
+
+                                  $(column.footer()).html(sum);
                               });
 
                             $(api.column(0).footer()).html('Total');
