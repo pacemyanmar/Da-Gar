@@ -1016,16 +1016,12 @@ class ProjectController extends AppBaseController
                                         $option['type'] = $option['type'];
                                         break;
                                 }
-                                if(!$option['other']) {
-                                    unset($option['other']);
-                                }
-                                if(!$option['skip']) {
-                                    unset($option['skip']);
-                                }
-                                if(!$option['goto']) {
-                                    unset($option['goto']);
-                                }
-                                unset($option['translation']);
+
+                                // to remove empty column from option
+                                array_filter($option, function($item){
+                                   return !$item;
+                                });
+
                                 $option['value'] = (string) $option['value'];
                                 $raw_ans[$osort] = $option;
                             }
