@@ -218,6 +218,7 @@ trait SurveyQueryTrait {
             'orderable' => false,
             'defaultContent' => 'N/A',
             'visible' => false,
+            'exportable' => false,
             'width' => '80px',
         ];
 
