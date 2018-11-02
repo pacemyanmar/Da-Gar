@@ -18,7 +18,7 @@
                class="btn btn-info">{!! trans('messages.export_project') !!}</a>
             <a href="{!! route('projects.sort', [$project->id]) !!}"
                class="btn btn-info">{!! trans('messages.sort_project') !!}</a>
-            @if($project->status != 'published')
+            @if($project->status != 'published' || Auth::user()->role->level > 8)
                 {!! Form::open(['route' => ['projects.dbcreate', $project->id], 'method' => 'post', 'class' => 'btn']) !!}
                 @if($project->status == 'modified')
                     {!! Form::button('<i class="fa fa-list-alt"></i> '.trans('messages.rebuild_form'), [
