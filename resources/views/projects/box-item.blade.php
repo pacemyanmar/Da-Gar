@@ -28,6 +28,10 @@
                             <i class="glyphicon glyphicon-eye-open"></i> {!! trans('messages.list_samples') !!}
                         </a>
                     @endif
+                        <a href="{{ route('projects.response.filter', [$project->id, $response_filter]) }}"
+                           class='btn btn-default btn-sm' style='margin-bottom: 5px;'>
+                            <i class="glyphicon glyphicon-equalizer"></i> {!! trans('messages.response') !!}
+                        </a>
                     @if(Auth::user()->role->level > 8)
                         <a href="{{ route('projects.edit', $project->id) }}" class='btn btn-default btn-sm'
                            style='margin-bottom: 5px;'>
@@ -35,10 +39,7 @@
                         </a>
                     @endif
                     @if(Auth::user()->role->level >= 7)
-                        <a href="{{ route('projects.response.filter', [$project->id, $response_filter]) }}"
-                           class='btn btn-default btn-sm' style='margin-bottom: 5px;'>
-                            <i class="glyphicon glyphicon-equalizer"></i> {!! trans('messages.response') !!}
-                        </a>
+
                         @if(config('sms.double_entry'))
                             <a href="{{ route('projects.response.filter', [$project->id, $response_filter, 'double']) }}"
                                class='btn btn-default btn-sm' style='margin-bottom: 5px;'>
