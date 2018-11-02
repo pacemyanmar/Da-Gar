@@ -1004,7 +1004,7 @@ class ProjectController extends AppBaseController
                         $raw_ans = [];
                         foreach ($options as $osort => $option) {
                             if (trim($option['question']) === trim($question['qnum'])) {
-                                $option['other'] = ($option['other']) ? $option['other'] : FALSE;
+                                $option['other'] = ($option['other']) ? TRUE : FALSE;
                                 switch ($option['type']) {
                                     case 'select_one':
                                         $option['type'] = 'single';
