@@ -180,9 +180,10 @@ class LocationMetaController extends AppBaseController
                         $table->string($location->field_name)->nullable();
                     }
 
-                    if (! $doctrineTable->hasIndex($table_name.'_'.$location->field_name.'_index'))
-                    {
-                        $table->index($location->field_name);
+                    if($location->show_index || $location->export) {
+                        if (!$doctrineTable->hasIndex($table_name . '_' . $location->field_name . '_index')) {
+                            $table->index($location->field_name);
+                        }
                     }
 
                 }
@@ -199,7 +200,11 @@ class LocationMetaController extends AppBaseController
                                 ->primary($location->field_name);
                             break;
                         default;
-                            $table->string($location->field_name)->nullable()->index();
+                            if($location->show_index || $location->export) {
+                                $table->string($location->field_name)->nullable()->index();
+                            } else {
+                                $table->string($location->field_name)->nullable();
+                            }
                     }
 
                 }
