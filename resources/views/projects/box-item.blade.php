@@ -39,7 +39,10 @@
                         </a>
                     @endif
                     @if(Auth::user()->role->level >= 7)
-
+                            <a href="{{ route('projects.channel.rates', [$project->id]) }}"
+                               class='btn btn-default btn-sm' style='margin-bottom: 5px;'>
+                                <i class="glyphicon glyphicon-equalizer"></i> {!! trans('messages.channel-rate') !!}
+                            </a>
                         @if(config('sms.double_entry'))
                             <a href="{{ route('projects.response.filter', [$project->id, $response_filter, 'double']) }}"
                                class='btn btn-default btn-sm' style='margin-bottom: 5px;'>

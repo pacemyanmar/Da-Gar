@@ -1,5 +1,6 @@
 <?php
 return [
+    'channel-rate' => 'Channel Rate',
     'no_' => 'No.',
     'project' => 'Project',
     'projects' => 'Project|Projects',
