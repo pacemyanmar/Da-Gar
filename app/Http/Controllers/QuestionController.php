@@ -192,9 +192,9 @@ class QuestionController extends AppBaseController
             $render = $this->to_render($args, $form_input);
 
             $inputs = $this->getInputs($render);
-
             $new_question->surveyInputs()->delete();
             $new_question->surveyInputs()->saveMany($inputs);
+            $new_question->save();
 
             $project = $new_question->project;
             if ($request->input('qnum') && $project->status == 'published') {

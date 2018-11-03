@@ -139,6 +139,8 @@
 
                             @if($section->layout == 'form16')
                                 @include('questions.form16-table')
+                            @elseif($section->layout == 'form18')
+                                @include('questions.form18-table')
                             @else
                                 @include('projects.show_fields')
                             @endif

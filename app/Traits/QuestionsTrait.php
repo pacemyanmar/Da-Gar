@@ -13,6 +13,11 @@ trait QuestionsTrait
      */
     private function to_render($args = [], $request = false)
     {
+        $default = [
+            'layout' => false
+        ];
+
+        $request = array_merge($default, $request);
         $raw_ans = ($request['raw_ans']) ? $request['raw_ans'] : '';
         $qnum = ($request['qnum']) ? $request['qnum'] : '';
         $layout = ($request['layout']) ? $request['layout'] : '';
