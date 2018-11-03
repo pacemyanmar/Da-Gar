@@ -36,7 +36,7 @@ Route::group(['prefix' => 'projects/{project}'], function () {
     Route::get('/search/sample', ['as' => 'projects.sample.search', 'uses' => 'ProjectController@search']);
     Route::get('/sampledata/{sampledata}/form/{formid}', ['as' => 'projects.incident.create', 'uses' => 'ProjectController@addIncident']);
     Route::get('/analysis', ['as' => 'projects.analysis', 'uses' => 'SurveyResultsController@analysis']);
-    Route::get('/smslog', ['as' => 'projects.smslog', 'uses' => 'ProjectController@smslog']);
+    Route::match(['get','post'],'/smslog', ['as' => 'projects.smslog', 'uses' => 'ProjectController@smslog']);
     Route::get('/export', ['as' => 'projects.export', 'uses' => 'ProjectController@export']);
     Route::post('/import', ['as' => 'projects.import', 'uses' => 'ProjectController@import']);
     Route::get('/create-views', ['as' => 'projects.createviews', 'uses' => 'ProjectController@createAllViews']);
@@ -93,6 +93,8 @@ Route::delete('questions/{question}', ['as' => 'questions.destroy', 'uses' => Qu
 //Route::resource('questions', 'QuestionController');
 
 Route::resource('smsLogs', 'SmsLogController');
+
+Route::match(['get','post'], 'smslogs', ['as' => 'smsLogs.index', 'uses' => 'SmsLogController@index']);
 
 Route::post('translate/{id}', ['as' => 'translate', 'uses' => 'SettingController@translate']);
 

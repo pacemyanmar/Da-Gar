@@ -96,14 +96,11 @@ class SmsLogDataTable extends DataTable
             ->setTableAttributes($tableAttributes)
             ->columns($this->getColumns())
             //->addAction(['width' => '10%', 'title' => trans('messages.action')])
-            ->ajax([
-                //'type' => 'POST',
+            ->ajax(['type' => 'POST',
                 'headers' => [
                     'X-CSRF-TOKEN' => csrf_token(),
                 ],
-
-                //'data' => '{"_method":"GET"}',
-                ])
+                'data' => '{"_method":"GET"}'])
             ->parameters([
                 'dom' => 'Brtip',
                 'ordering' => false,
