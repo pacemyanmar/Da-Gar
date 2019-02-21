@@ -182,7 +182,8 @@ return [
          * https://github.com/edvinaskrucas/settings
          * settings provider
          */
-        Krucas\Settings\Providers\SettingsServiceProvider::class,
+        // Krucas\Settings\Providers\SettingsServiceProvider::class,
+        Akaunting\Setting\Provider::class,
 
         /**
          * unique with validator
@@ -260,7 +261,8 @@ return [
         'Moloquent' => Jenssegers\Mongodb\Eloquent\Model::class,
         'Debugbar' => Barryvdh\Debugbar\Facade::class,
 
-        'Settings' => Krucas\Settings\Facades\Settings::class,
+        //'Settings' => Krucas\Settings\Facades\Settings::class,
+        'Settings' => Akaunting\Setting\Facade::class,
 
         'Converter' => Kanaung\Facades\Converter::class,
     ],

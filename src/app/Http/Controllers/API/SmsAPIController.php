@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\API;
 
+use Akaunting\Setting\Facade as Settings;
 use App\Http\Controllers\AppBaseController;
 use App\Http\Requests\API\CreateSmsAPIRequest;
 use App\Http\Requests\API\UpdateSmsAPIRequest;
@@ -32,7 +33,6 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Schema;
 use InfyOm\Generator\Criteria\LimitOffsetCriteria;
 use Kanaung\Facades\Converter;
-use Krucas\Settings\Facades\Settings;
 use Laracasts\Flash\Flash;
 use Maatwebsite\Excel\Facades\Excel;
 use Prettus\Repository\Criteria\RequestCriteria;
@@ -70,7 +70,6 @@ class SmsAPIController extends AppBaseController
         $this->projectRepository = $projectRepo;
         App::setLocale(config('sms.second_locale.locale'));
         $this->channel = 'sms';
-
     }
 
     public function apiStatus()

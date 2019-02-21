@@ -5,7 +5,7 @@ namespace App\DataTables;
 use App\Models\SmsLog;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Request;
-use Krucas\Settings\Facades\Settings;
+use Akaunting\Setting\Facade as Settings;
 use Yajra\DataTables\Services\DataTable;
 
 class SmsLogDataTable extends DataTable

@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>{!! settings('app_name', 'Kanaung SMS Default'); !!} | Registration</title>
+    <title>{!! setting('app_name', 'Kanaung SMS Default'); !!} | Registration</title>
 
     <!-- Tell the browser to be responsive to screen width -->
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
@@ -18,7 +18,7 @@
 <body class="hold-transition register-page">
 <div class="register-box">
     <div class="register-logo">
-        <a href="{{ url('/home') }}">{!! settings('app_name', 'Kanaung SMS Default'); !!}</a>
+        <a href="{{ url('/home') }}">{!! setting('app_name', 'Kanaung SMS Default'); !!}</a>
     </div>
 
     <div class="register-box-body">

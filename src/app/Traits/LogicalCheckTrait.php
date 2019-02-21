@@ -7,7 +7,7 @@ use App\Models\Question;
 use App\Models\Section;
 use App\Models\SurveyResult;
 use Carbon\Carbon;
-use Krucas\Settings\Facades\Settings;
+use Akaunting\Setting\Facade as Settings;
 
 
 trait LogicalCheckTrait

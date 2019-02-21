@@ -8,7 +8,7 @@ use App\Repositories\SmsLogRepository;
 use Faker\Factory;
 use Illuminate\Console\Command;
 use Illuminate\Container\Container;
-use Krucas\Settings\Facades\Settings;
+use Akaunting\Setting\Facade as Settings;
 use Maatwebsite\Excel\Facades\Excel;
 
 class GenerateSMSLog extends Command

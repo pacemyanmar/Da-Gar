@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>{!! settings('app_name', 'Kanaung SMS Default'); !!}</title>
+    <title>{!! setting('app_name', 'Kanaung SMS Default'); !!}</title>
     <meta content='width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no' name='viewport'>
     @yield('meta')
 
@@ -28,7 +28,7 @@
 
             <!-- Logo -->
             <a href="{!! url('/') !!}" class="logo">
-                <b>{!! settings('app_short', 'SMS'); !!}</b>
+                <b>{!! setting('app_short', 'SMS'); !!}</b>
             </a>
 
             <!-- Header Navbar -->
@@ -95,7 +95,7 @@
 
         <!-- Main Footer -->
         <footer class="main-footer" style="max-height: 100px;text-align: center">
-            <strong>Copyright © 2016 <a href="#">{!! settings('app_name', 'Kanaung SMS Default'); !!}</a>.</strong> All rights reserved.
+            <strong>Copyright © 2016 <a href="#">{!! setting('app_name', 'Kanaung SMS Default'); !!}</a>.</strong> All rights reserved.
         </footer>
 
     </div>
@@ -115,7 +115,7 @@
 
                 <!-- Branding Image -->
                 <a class="navbar-brand" href="{!! url('/') !!}">
-                    {!! settings('app_name', 'Kanaung SMS Default'); !!}
+                    {!! setting('app_name', 'Kanaung SMS Default'); !!}
                 </a>
             </div>
 

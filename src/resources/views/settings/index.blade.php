@@ -24,7 +24,7 @@
                         <span class="input-group-addon">
                                         APP Name :
                                     </span>
-                        {!! Form::text("configs[app_name]", settings('app_name', null), ['class' => 'form-control']) !!}
+                        {!! Form::text("configs[app_name]", setting('app_name', null), ['class' => 'form-control']) !!}
                     </div>
                 </div>
                 <!-- APP Name Field -->
@@ -34,7 +34,7 @@
                         <span class="input-group-addon">
                                         APP Short Name :
                                     </span>
-                        {!! Form::text("configs[app_short]", settings('app_short', null), ['class' => 'form-control']) !!}
+                        {!! Form::text("configs[app_short]", setting('app_short', null), ['class' => 'form-control']) !!}
                     </div>
                 </div>
                 <!-- Active project -->
@@ -44,7 +44,7 @@
                         <span class="input-group-addon">
                                         Active Project :
                                     </span>
-                        {!! Form::select("configs[active_project]", array_flip($projects),settings('active_project', null), ['class' => 'form-control']) !!}
+                        {!! Form::select("configs[active_project]", array_flip($projects),setting('active_project', null), ['class' => 'form-control']) !!}
                     </div>
                 </div>
                 <div class="form-group">
@@ -53,7 +53,7 @@
                         <span class="input-group-addon">
                                         Telerivet API KEY :
                                     </span>
-                        {!! Form::text("configs[telerivet_api_key]", settings('telerivet_api_key', null), ['class' => 'form-control']) !!}
+                        {!! Form::text("configs[telerivet_api_key]", setting('telerivet_api_key', null), ['class' => 'form-control']) !!}
                     </div>
                 </div>
                 <div class="form-group">
@@ -62,7 +62,7 @@
                         <span class="input-group-addon">
                                         Telerivet Project ID :
                                     </span>
-                        {!! Form::text("configs[project_id]", settings('project_id', null), ['class' => 'form-control']) !!}
+                        {!! Form::text("configs[project_id]", setting('project_id', null), ['class' => 'form-control']) !!}
                     </div>
                 </div>
                 <div class="form-group">
@@ -71,7 +71,7 @@
                         <span class="input-group-addon">
                                         BOOM Number :
                                     </span>
-                        {!! Form::text("configs[boom_number]", settings('boom_number', null), ['class' => 'form-control']) !!}
+                        {!! Form::text("configs[boom_number]", setting('boom_number', null), ['class' => 'form-control']) !!}
                     </div>
                 </div>
                 <div class="form-group">
@@ -80,7 +80,7 @@
                         <span class="input-group-addon">
                                         BOOM API KEY :
                                     </span>
-                        {!! Form::text("configs[boom_api_key]", settings('boom_api_key', null), ['class' => 'form-control']) !!}
+                        {!! Form::text("configs[boom_api_key]", setting('boom_api_key', null), ['class' => 'form-control']) !!}
                     </div>
                 </div>
                 <div class="form-group">
@@ -89,15 +89,15 @@
                         <span class="input-group-addon">
                                         BOOM IP Address :
                                     </span>
-                        {!! Form::text("configs[boom_ip]", settings('boom_ip', null), ['class' => 'form-control']) !!}
+                        {!! Form::text("configs[boom_ip]", setting('boom_ip', null), ['class' => 'form-control']) !!}
                     </div>
                 </div>
                 <div class="form-group">
-                    {!! Form::checkbox("configs[training]", true,settings('training', null), ['class' => 'magic-checkbox', 'id' => 'training', 'autocomplete' => 'off']) !!}
+                    {!! Form::checkbox("configs[training]", true,setting('training', null), ['class' => 'magic-checkbox', 'id' => 'training', 'autocomplete' => 'off']) !!}
                     <label class="normal-text" for="training">Training Mode
                     </label>
 
-                    {!! Form::checkbox("configs[noreply]", true,settings('noreply', null), ['class' => 'magic-checkbox', 'id' => 'noreply', 'autocomplete' => 'off']) !!}
+                    {!! Form::checkbox("configs[noreply]", true,setting('noreply', null), ['class' => 'magic-checkbox', 'id' => 'noreply', 'autocomplete' => 'off']) !!}
                     <label class="normal-text" for="noreply">Disable SMS Reply
                     </label>
                 </div>

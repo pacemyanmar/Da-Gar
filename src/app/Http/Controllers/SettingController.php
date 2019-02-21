@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\Controllers;
 
+use Akaunting\Setting\Facade as Settings;
 use App\Http\Controllers\AppBaseController;
 use App\Http\Requests\CreateSettingRequest;
 use App\Http\Requests\SaveSettingRequest;
@@ -11,7 +12,6 @@ use App\Models\User;
 use App\Repositories\SettingRepository;
 use Flash;
 use Illuminate\Http\Request;
-use Krucas\Settings\Facades\Settings;
 use Response;
 use Spatie\TranslationLoader\LanguageLine;
 
@@ -28,7 +28,6 @@ class SettingController extends AppBaseController
         $this->middleware('auth');
         $this->settingRepository = $settingRepo;
         $this->project = $project;
-
     }
     /**
      * Display a listing of the Questions.
