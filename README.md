@@ -32,6 +32,9 @@ create project.
 
 to import survey, use xls template in docs directory.
 
+## Version
+This software is still in alpha stage. There are many breaking changes between releases.
+
 ## Laravel Documentation
 
 Read Laravel documentation for web server setup.

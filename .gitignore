@@ -32,6 +32,10 @@ npm-debug.log
 yarn-error.log
 yarn.lock
 
+# Development files
+*.sql
+*.save
+
 resources/views/enumerators/
 resources/views/locations/
 resources/views/voters/
