@@ -385,12 +385,19 @@ class SmsAPIController extends AppBaseController
         $sender = preg_replace('/[^0-9]/','', $to_number);
         $observer_phone = Phone::find($sender);
 
-        if (empty($observer_phone)) {
+        if (empty($observer_phone) && config('sms.verify_phone')) {
             // if project is empty
             $reply['message'] = 'Wrong Phone Number!';
             $reply['status'] = 'error';
             return $reply;
         }
+
+        if(!config('sms.verify_phone')) {
+            $observer_phone = new Phone();
+            $observer_phone->phone=$sender;
+            $observer_phone->encoding="zawgyi";
+        }
+
 
         $encoding = $observer_phone->encoding;
 

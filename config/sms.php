@@ -19,6 +19,7 @@ return [
     'double_entry' => false,
     'collapse' => true,
     'response_filter' => 'state_region',
+    'verify_phone' => false,
     'allowedip' => [
         '172.20.0.1',
         '172.16.16.61',
