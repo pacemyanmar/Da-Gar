@@ -2,6 +2,14 @@
 
 SMS is survey management software based on Laravel Framework
 
+
+## Acknowledgement
+
+This project start in 2014 with election related survey in Myanmar funded by [National Democratic Institute (NDI)](https://www.ndi.org/) with an agreement to release as opensource MIT license.
+ Since then development is going on peroidically in some of my freetime. Rewrite from scratch more than 3 times. To continue development [People's Alliance for Credible Election (PACE)](https://www.pacemyanmar.org) funded further development since 2015.
+ [TI Cambodia](https://www.ticambodia.org/) also funded to extend software to support SMS data reporting to use in Cambodia's 2017 Election.
+
+
 ## Installation
 
 clone or download from github
@@ -21,6 +29,8 @@ register first admin user account.
 import sample data list.
 
 create project.
+
+to import survey, use xls template in docs directory.
 
 ## Laravel Documentation
 
