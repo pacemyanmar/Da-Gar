@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>D3 Timeseries</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/4.10.0/d3.min.js"></script>
+    <script src="https://mcaule.github.io/d3-timeseries/dist/d3_timeseries.min.js"></script>
+    <script src="https://d3js.org/d3-zoom.v0.1.min.js"></script>
+</head>
+<body>
+<div id="chart"></div>
+<div id="line-chart"></div>
+<script>
+    function getFirstData() {
+        var ajaxurl = "http://sms.is-on-the.cloud/api/v1/projects/1/responses";
+        var ySMS = 0;
+        var yWeb = 0;
+
+        var time = new Date;
+        time.setHours(00);
+        time.setMinutes(00);
+        time.setSeconds(00);
+        time.setMilliseconds(00);
+
+        jQuery.ajax({
+            type: "get",
+            url: ajaxurl,
+            dataType : 'JSON',
+            cache: "false",
+            success: function(response){
+                if(response.success) {
+                    jQuery.each(response.data, function (index, value) {
+
+                        time.setTime(value.channel_time);
+
+                        if(value.channel == 'sms') {
+                            ySMS = value.channel_count;
+
+                        }
+                        if(value.channel == 'web') {
+                            yWeb = value.channel_count;
+                        }
+                        data.push({
+                            date: time.getTime(),
+                            n: ySMS,
+                            n2: yWeb
+                        });
+
+                    });
+                    drawChart(data);
+                }
+            }
+        });
+    }
+    var data = [];
+    getFirstData();
+
+    function drawChart(data) {
+console.log(data);
+        var chart = d3_timeseries()
+            .addSerie(data,{x:'date',y:'n'},{interpolate:'step-before'})
+            .addSerie(null,{x:'date',y:'n2'},
+                {interpolate:'linear'})
+            .margin.left(70)
+            .width(820)
+
+        chart('#chart')
+    }
+
+
+    var lastUpdateTime = + new Date();
+
+    var GenData = function(N, lastTime){
+        var output = [];
+        for (var i=0; i<N; i++){
+            output.push({value:Math.random()*100, timestamp:lastTime});
+            lastTime = lastTime + 1000;
+        }
+        return output;
+    }
+
+    var globalData;
+    var dataIntervals = 1;
+
+    // plot the original data by retrieving everything from time 0
+    data = GenData(100, lastUpdateTime);
+    lastUpdateTime = data[data.length-1].timestamp;
+
+    globalData = data;
+
+    var margin = {top: 30, right: 20, bottom: 30, left: 50},
+        width = 600 - margin.left - margin.right,
+        height = 300 - margin.top - margin.bottom;
+
+    var x = d3.scaleTime()
+        .range([0, width]);
+
+    var y = d3.scaleLinear()
+        .range([height, 0]);
+
+
+    x.domain(d3.extent(globalData, function (d) { return d.timestamp; }));
+    y.domain(d3.extent(globalData, function (d) { return d.value;}));
+
+
+    var xAxis = d3.axisBottom(x)
+        .ticks(d3.timeSeconds, 20)
+        .tickFormat(d3.timeFormat('%X'))
+        .tickSize(1)
+        .tickPadding(8);
+
+    var xAxisTop = d3.axisBottom(x)
+        .tickFormat("").tickSize(0);
+
+    var yAxis = d3.axisLeft(y)
+        .ticks(5);
+
+    var yAxisRight = d3.axisRight(y)
+        .tickFormat("").tickSize(0);
+
+    var valueline = d3.line()
+        .x(function (d) { return x(d.timestamp); })
+        .y(function (d) { return y(d.value); });
+
+    var zoom = d3.zoom()
+        .on("zoom", zoomed);
+
+    var svg = d3.select("#line-chart")
+        .append("svg")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+        .append("g")
+        .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+        .call(zoom);
+
+    svg.append("rect")
+        .attr("width", width)
+        .attr("height", height)
+        .attr("class", "plot"); // ????
+
+    var clip = svg.append("clipPath")
+        .attr("id", "clip")
+        .append("rect")
+        .attr("x", 0)
+        .attr("y", 0)
+        .attr("width", width)
+        .attr("height", height);
+
+    var chartBody = svg.append("g")
+        .attr("clip-path", "url(#clip)");
+
+    chartBody.append("path")        // Add the valueline path
+        .datum(globalData)
+        .attr("class", "line")
+        .attr("d", valueline);
+
+    svg.append("g")         // Add the X Axis
+        .attr("class", "x axis")
+        .attr("transform", "translate(0," + height + ")")
+        .call(xAxis);
+
+    svg.append("g")         // Add the Y Axis
+        .attr("class", "y axis")
+        .call(yAxis);
+
+    svg.append("g")
+        .attr("class", "y axis")
+        .attr("transform", "translate("+ width +",0)")
+        .call(yAxisRight);
+
+    svg.append("g")
+        .attr("class", "x axis")
+        .attr("transform", "translate(0," + String(0) + ")")
+        .call(xAxisTop);
+
+    svg.append("text")
+        .attr("transform", "rotate(-90)")
+        .attr("y", 0 - margin.left)
+        .attr("x", (0 - (height / 2)))
+        .attr("dy", "1em")
+        .style("text-anchor", "middle")
+        .text("Return (%)");
+
+    var inter = setInterval(function () {
+        updateData();
+    }, 2000);
+
+    var panMeasure = 0;
+    var oldScale = 1;
+    function zoomed() {
+
+        d3.event.translate[1] = 0;
+        svg.select(".x.axis").call(xAxis);
+
+        if (Math.abs(oldScale - d3.event.scale) > 1e-5) {
+            oldScale = d3.event.scale;
+            svg.select(".y.axis").call(yAxis);
+        }
+
+        svg.select("path.line").attr("transform", "translate(" +                     d3.event.translate[0] + ",0)scale(" + d3.event.scale + ", 1)");
+
+        panMeasure = d3.event.translate[0];
+        console.log(panMeasure);
+    }
+
+
+    //////////////////////////////////////////////////////////////
+
+    var N = 10;
+    var dx = 0;
+    function updateData() {
+
+        var newData = GenData(N,lastUpdateTime);
+        lastUpdateTime = newData[newData.length-1].timestamp;
+
+        for (var i=0; i<newData.length; i++){
+            globalData.push(newData[i]);
+        }
+
+        if (panMeasure <= 0) { // add the new data and pan
+
+            x1 = newData[0].timestamp;
+            x2 = newData[newData.length - 1].timestamp;
+            dx = dx + (x(x1) - x(x2)); // dx needs to be cummulative
+
+            d3.select("path")
+                .datum(globalData)
+                .attr("class", "line")
+                .attr("d", valueline(globalData))
+                .transition()
+                .ease("linear")
+                .attr("transform", "translate(" + String(dx) + ")");
+        }
+
+        else { // otherwise - just add the new data
+            d3.select("path")
+                .datum(globalData)
+                .attr("class", "line")
+                .attr("d", valueline(globalData));
+        }
+
+        svg.select(".x.axis").call(xAxis);
+    }
+
+
+
+</script>
+</body>
+</html>
