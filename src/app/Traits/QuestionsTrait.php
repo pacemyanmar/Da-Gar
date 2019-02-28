@@ -431,7 +431,8 @@ trait QuestionsTrait
          */
         $qids = [];
         if ($key == 'skip') {
-            $qnum_array = explode(' ', $value);
+            $value = str_replace(' ', ',', $value);
+            $qnum_array = explode(',', $value);
             foreach ($qnum_array as $qnum) {
                 $qids[] = '.' . str_slug('qnum' . $qnum);
             }
