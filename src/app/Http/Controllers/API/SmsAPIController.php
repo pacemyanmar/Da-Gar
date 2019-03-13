@@ -6,6 +6,7 @@ use Akaunting\Setting\Facade as Settings;
 use App\Http\Controllers\AppBaseController;
 use App\Http\Requests\API\CreateSmsAPIRequest;
 use App\Http\Requests\API\UpdateSmsAPIRequest;
+use App\Models\BulkSms;
 use App\Models\Observer;
 use App\Models\Phone;
 use App\Models\Project;
@@ -115,8 +116,17 @@ class SmsAPIController extends AppBaseController
         if($refid = $request->input('refid')) {
             $event = 'delivery_status';
             $smsLog = SmsLog::where('service_id', $refid)->first();
-            $smsLog->sms_status = $request->input('result_status');
-            return $smsLog->save();
+            if($smsLog) {
+                $smsLog->sms_status = $request->input('result_status');
+                return $smsLog->save();
+            } else {
+                $sms_list = BulkSms::find($request->input('result_callerid'));
+                if($sms_list) {
+                    $sms_list->status = $request->input('result_status');
+                    $sms_list->save();
+                }
+                return;
+            }
         }
 
         if($code == $boom_number) {

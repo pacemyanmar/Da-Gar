@@ -123,3 +123,14 @@ Route::post('translations/import',['as' => 'translations.import', 'uses' => 'Tra
 
 Route::resource('translations', 'TranslationController');
 
+
+Route::post('bulkSms/import', ['as' => 'bulksms.import', 'uses' => 'BulkSmsController@import']);
+
+Route::get('bulkSms/send', function () {
+    $exitCode = Artisan::call('bulksms:send');
+    Flash::success('SMS sending in batch.');
+
+    return redirect(route('bulkSms.index'));
+});
+
+Route::resource('bulkSms', 'BulkSmsController');
