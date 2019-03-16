@@ -66,8 +66,8 @@ class TranslationDataTable extends DataTable
         return [
             'group',
             'key',
-            'primary_locale' => ['name' => 'text.'.config('sms.primary_locale.locale'), 'data' => 'text.'.config('sms.primary_locale.locale'), 'title' => title_case(config('sms.primary_locale.locale'))],
-            'second_locale' => ['name' => 'text.'.config('sms.second_locale.locale'), 'data' => 'text.'.config('sms.second_locale.locale'), 'title' => title_case(config('sms.second_locale.locale'))],
+            'primary_locale' => ['name' => 'text', 'data' => 'text.'.config('sms.primary_locale.locale'), 'title' => title_case(config('sms.primary_locale.locale'))],
+            'second_locale' => ['name' => 'text', 'data' => 'text.'.config('sms.second_locale.locale'), 'title' => title_case(config('sms.second_locale.locale'))],
 
         ];
     }
