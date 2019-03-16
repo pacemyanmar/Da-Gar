@@ -59,6 +59,8 @@ class BulkSmsController extends AppBaseController
     {
         $input = $request->all();
 
+        $input['status'] = 'new';
+
         $bulkSms = $this->bulkSmsRepository->create($input);
 
         Flash::success('Bulk Sms saved successfully.');
@@ -166,6 +168,8 @@ class BulkSmsController extends AppBaseController
             $records = (new Statement())->process($reader);
             $records->getHeader();
             foreach ($records as $record) {
+                $record = array_change_key_case($record);
+
                 $sms_phone = BulkSms::firstOrNew(['phone' => $record['phone']]);
                 $sms_phone->name = $record['name'];
                 $sms_phone->message = $record['message'];
