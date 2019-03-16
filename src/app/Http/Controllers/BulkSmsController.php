@@ -172,8 +172,13 @@ class BulkSmsController extends AppBaseController
 
                 $sms_phone = BulkSms::firstOrNew(['phone' => $record['phone']]);
                 $sms_phone->name = $record['name'];
-                $sms_phone->message = $record['message'];
-                $sms_phone->status = 'new';
+
+                // Do not sent same message twice
+                if($sms_phone->message != $record['message']) {
+                    $sms_phone->message = $record['message'];
+                    $sms_phone->status = 'new';
+                }
+
                 $sms_phone->save();
             }
 
