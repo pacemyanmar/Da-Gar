@@ -8,6 +8,8 @@ use App\Http\Requests\UpdateTranslationRequest;
 use App\Models\Translation;
 use Flash;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Cache;
 use League\Csv\Reader;
 use League\Csv\Statement;
 use Response;
@@ -60,6 +62,9 @@ class TranslationController extends AppBaseController
             'key' => $request->key,
             'text' => [$primary_locale => $request->{$primary_locale}, $second_locale => $request->{$second_locale}]
         ]);
+
+        Cache::forget("spatie.translation-loader.{$request->group}.{$primary_locale}");
+        Cache::forget("spatie.translation-loader.{$request->group}.{$second_locale}");
 
         Flash::success('Translation saved successfully.');
 
@@ -133,6 +138,9 @@ class TranslationController extends AppBaseController
 
         $translation->save();
 
+        Cache::forget("spatie.translation-loader.{$request->group}.{$primary_locale}");
+        Cache::forget("spatie.translation-loader.{$request->group}.{$second_locale}");
+
         Flash::success('Translation updated successfully.');
 
         return redirect(route('translations.index'));
@@ -189,22 +197,29 @@ class TranslationController extends AppBaseController
             $data_array = iterator_to_array($records, true);
 
 
-            array_walk($data_array, function (&$data, $key) {
+            $primary_locale = config('sms.primary_locale.locale');
+            $second_locale = config('sms.second_locale.locale');
+
+
+            array_walk($data_array, function (&$data, $key) use ( $primary_locale, $second_locale) {
                 $data = array_change_key_case($data, CASE_LOWER);
 
-                $default_lang = config('sms.primary_locale.locale');
-                $secondary = config('sms.second_locale.locale');
+                $data['text'][$primary_locale] = $data[$primary_locale];
 
-                $data['text'][$default_lang] = $data[$default_lang];
-
-                $data['text'][$secondary] = $data[$secondary];
-                unset($data[$default_lang]);
-                unset($data[$secondary]);
-                $data['text'] = json_encode($data['text'], JSON_FORCE_OBJECT);
+                $data['text'][$second_locale] = $data[$second_locale];
+                unset($data[$primary_locale]);
+                unset($data[$second_locale]);
+                $data['text'] = json_encode($data['text'], JSON_FORCE_OBJECT|JSON_UNESCAPED_UNICODE);
             });
 
             $translation = new Translation();
             $translation->insertOrUpdate($data_array);
+
+            $translation_groups = array_unique(Arr::pluck($data_array, 'group'));
+            foreach($translation_groups as $group) {
+                Cache::forget("spatie.translation-loader.{$group}.{$primary_locale}");
+                Cache::forget("spatie.translation-loader.{$group}.{$second_locale}");
+            }
 
             Flash::success('Translation imported successfully.');
 
