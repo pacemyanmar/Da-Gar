@@ -26,6 +26,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\Validator;
 use League\Csv\Reader;
 use League\Csv\Statement;
 use Maatwebsite\Excel\Facades\Excel;
@@ -956,6 +957,17 @@ class ProjectController extends AppBaseController
 
             if(array_key_exists('type', $project)) {
                 $project['type'] = ($project['type'] == 'incident')? 'sample2db':'fixed';
+            }
+
+            $validator = Validator::make($project, [
+                'project' => 'required',
+                'unique_code' => 'unique:projects|required',
+            ]);
+
+            if ($validator->fails()) {
+                Flash::error('Project already exists with same unique code '.$project['unique_code'].'. If you want to update, use edit feature or change unique code.');
+
+                return redirect(route('projects.index'));
             }
 
             $projectInstance = Project::create($project);
