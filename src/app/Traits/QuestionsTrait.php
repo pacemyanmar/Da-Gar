@@ -23,7 +23,7 @@ trait QuestionsTrait
         $layout = ($request['layout']) ? $request['layout'] : '';
 
         $project = $args['project'];
-        $project_id = $project->id;
+        $project_id = $project->unique_code;
         $section_id = $args['section'];
 
         $ans = json_decode($raw_ans, true);
