@@ -38,8 +38,9 @@ class SurveyResultsDataTable extends DataTable
         $sectionColumns = $this->makeSectionColumns();
 
         foreach ($filterColumns as $index => $column) {
-            $columnName = $column['name'];
-            if(array_key_exists('search', $column)) {
+            $columnName = (array_keys_exists('name', $column))?$column['name']:null;
+
+            if($columnName && array_key_exists('search', $column)) {
                 $value = $column['search']['value'];
 
                 if (in_array($column['data'], array_keys($sectionColumns)) && $value != '') {
