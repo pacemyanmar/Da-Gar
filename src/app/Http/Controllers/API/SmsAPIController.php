@@ -124,6 +124,8 @@ class SmsAPIController extends AppBaseController
                 if($sms_list) {
                     $sms_list->status = $request->input('result_status');
                     $sms_list->save();
+
+
                 }
                 return;
             }
@@ -434,11 +436,12 @@ class SmsAPIController extends AppBaseController
                     break;
             }
 
-            if ($projects->count() === 1) {
-                // if project is only one project use this project
-                $project = Project::first();
-
-            } elseif (!empty(Settings::get('active_project'))){
+//            if ($projects->count() === 1) {
+//                // if project is only one project use this project
+//                $project = Project::first();
+//
+//            } else
+            if (!empty(Settings::get('active_project'))){
                 $project = Project::find(Settings::get('active_project'));
             } else {
 
