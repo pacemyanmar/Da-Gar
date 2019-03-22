@@ -239,7 +239,7 @@ trait LogicalCheckTrait
         if(!empty($this->phone)) {
             $last_messages = json_decode($sample->last_message, true);
 
-            if($sample->sample_data_id != $this->phone->sample_code) {
+            if($sample->sample_data_id != $this->phone->sample_code && config('sms.verify_phone')) {
                 $flag_error = 3;
 
                 $last_messages['E1001'] = 'CODE NOT MATCH!';
