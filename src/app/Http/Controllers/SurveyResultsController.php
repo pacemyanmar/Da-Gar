@@ -287,7 +287,7 @@ class SurveyResultsController extends AppBaseController
 
         $section_table = $dbName . '_s' . $section->sort;
 
-        $results_table = (Auth::user()->role->role_name == 'doublechecker' || $request->has('double'))? $section_table . '_dbl':$section_table;
+        $results_table = (Auth::user()->role->role_name == 'doublechecker')? $section_table . '_dbl':$section_table;
 
         $this->sampleType = (isset($sample_type)) ? $sample_type : 1;
 
@@ -296,6 +296,10 @@ class SurveyResultsController extends AppBaseController
         $this->section = 'section' . $section->sort . 'status';
 
         $this->saveResults($results_table);
+
+        if($request->has('double')) {
+            $this->saveResults($section_table . '_dbl');
+        }
 
         // save sample to update latest input user
         $sample->save();
@@ -394,7 +398,7 @@ class SurveyResultsController extends AppBaseController
         }
 
         $ori_table = $project->dbname;
-        $dou_table = $ori_table . '_double';
+        $dou_table = $ori_table . '_dbl';
 
         $ori_result = $sample->resultWithTable($ori_table)->first(); // used first() because of one to one relation
 
@@ -434,7 +438,7 @@ class SurveyResultsController extends AppBaseController
         }
 
         $ori_table = $project->dbname;
-        $dou_table = $ori_table . '_double';
+        $dou_table = $ori_table . '_dbl';
         $ori_result = $sample->resultWithTable($ori_table)->first(); // used first() because of one to one relation
 
         if (empty($ori_result)) {
