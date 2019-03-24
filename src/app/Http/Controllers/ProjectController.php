@@ -27,6 +27,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
 use League\Csv\Reader;
 use League\Csv\Statement;
 use Maatwebsite\Excel\Facades\Excel;
@@ -135,10 +136,10 @@ class ProjectController extends AppBaseController
         }
 
         $short_project_name = substr($input['project'], 0, 10);
-        $short_project_name = preg_replace('/[^a-zA-Z0-9]/', '_', $short_project_name);
+        $short_project_name = preg_replace('/[^a-zA-Z0-9]/', '', $short_project_name);
         $unique = uniqid();
         $short_unique = substr($unique, 0, 5);
-        $input['dbname'] = snake_case(strtolower($short_project_name) . '_' . $short_unique);
+        $input['dbname'] = Str::snake(strtolower($short_project_name) . '_' . $short_unique . $input['unique_code']);
 
         // $lang = config('app.fallback_locale');
 
@@ -507,6 +508,15 @@ class ProjectController extends AppBaseController
                 }
             }
         }
+
+        $project_view = $this->dbname . '_view';
+        if (!Schema::hasTable($project_view)) {
+            $this->createResultsView($project);
+        } else {
+            DB::statement("DROP VIEW " . $project_view);
+            $this->createResultsView($project);
+        }
+
 
         $project_fields = $project->inputs->sortByDesc('other')->unique('inputid');
 
@@ -945,15 +955,16 @@ class ProjectController extends AppBaseController
 
             $project = array_combine($project_header, $project_data);
 
+            $project['unique_code'] = $project['uniqueid'];
+
 
             $short_project_name = substr($project['label'], 0, 10);
-            $short_project_name = preg_replace('/[^a-zA-Z0-9]/', '_', $short_project_name);
+            $short_project_name = preg_replace('/[^a-zA-Z0-9]/', '', $short_project_name);
             $unique = uniqid();
             $short_unique = substr($unique, 0, 5);
-            $project['dbname'] = snake_case(strtolower($short_project_name) . '_' . $short_unique);
+            $project['dbname'] = Str::snake(strtolower($short_project_name) . '_' . $short_unique . $project['unique_code']);
 
             $project['project'] = $project['label'];
-            $project['unique_code'] = $project['uniqueid'];
 
             if(array_key_exists('type', $project)) {
                 $project['type'] = ($project['type'] == 'incident')? 'sample2db':'fixed';
@@ -1042,7 +1053,7 @@ class ProjectController extends AppBaseController
                         $question_raw['sort'] = $sort;
                         $question_raw['project_id'] = $projectInstance->id;
                         $question_raw['raw_ans'] = json_encode(array_values($raw_ans));
-                        $question_raw['css_id'] = str_slug('s' . $section->id . $question['qnum']);
+                        $question_raw['css_id'] = Str::slug('s' . $section->id . $question['qnum']);
                         if(array_key_exists('layout', $question)) {
                             $question_raw['layout'] = ($question['layout']) ? $question['layout'] : ' ';
                         }
@@ -1326,6 +1337,57 @@ class ProjectController extends AppBaseController
         $viewStatement = "CREATE VIEW " . $viewName . " AS (SELECT " . $selectColumns . " FROM ";
         $viewStatement .= $dbName . " LEFT JOIN " . $dbDblName . " ON ";
         $viewStatement .= $dbName . ".sample_id = " . $dbDblName . ".sample_id)";
+
+        DB::statement($viewStatement);
+
+    }
+
+
+    private function makeSelectColumns($section)
+    {
+        $section_questions = $section->questions->sortBy('sort');
+        $section_num = $section->sort;
+        $dbName = $this->dbname . '_s' . $section_num;
+        $columns = [$dbName.'.section'.$section_num.'status'];
+        foreach ($section_questions as $question) {
+            $inputs = $question->surveyInputs->sortBy('sort');
+
+            foreach ($inputs as $input) {
+                $column = $input->inputid;
+                $columns[$column] = $dbName . "." . $column ;
+            }
+            unset($inputs);
+        }
+
+        $select_column = implode(',', $columns);
+
+        return $select_column;
+    }
+
+    public function createResultsView(Project $project)
+    {
+
+        $this->dbname = $project->dbname;
+
+        $viewName = $project->dbname . '_view';
+
+        $sections = $project->sections;
+
+        $selects = [];
+        foreach ($sections as $section) {
+            $selects[$section->sort] = $this->makeSelectColumns($section);
+            if($section->sort) {
+                $joins[$section->sort] = 'LEFT JOIN '.$this->dbname . '_s' . $section->sort.' ON '.$this->dbname . '_s0.sample_id = '.$this->dbname . '_s' . $section->sort.'.sample_id';
+            }
+        }
+
+        $select_query = implode(',', $selects);
+
+        $join_query = implode(' ', $joins);
+
+        $query = 'SELECT '.$this->dbname . '_s0.sample_id,'. $select_query . ' FROM '. $this->dbname . '_s0 '.$join_query;
+
+        $viewStatement = "CREATE VIEW " . $viewName . " AS (".$query.")";
 
         DB::statement($viewStatement);
 
