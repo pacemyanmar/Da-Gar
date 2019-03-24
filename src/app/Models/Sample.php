@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Eloquent as Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
@@ -72,10 +73,56 @@ class Sample extends Model
         return $this->hasOne(SurveyResult::class);
     }
 
+
+    public function createdBy()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
+
+    public function updatedBy()
+    {
+        return $this->belongsTo(User::class, 'update_user_id');
+    }
+
+    public function checkedBy()
+    {
+        return $this->belongsTo(User::class, 'qc_user_id');
+    }
+
     public function setRelatedTable($table)
     {
         $this->relatedTable = $table;
         return $this;
+    }
+
+    public function details()
+    {
+        $table = $this->project->dbname.'_samples';
+
+        $instance = $this->newRelatedInstance(SampleData::class);
+
+        $instance->setTable($table);
+
+        return $this->newBelongsTo(
+            $instance->newQuery(), $this, 'sample_data_id', 'id', 'sample'
+        );
+    }
+
+    public function results()
+    {
+
+        $sample = $this->query();
+
+        $table = $this->project->dbname.'_view';
+        $foreignKey = $this->getForeignKey();
+
+        $instance = new SurveyResult();
+
+        $instance->bind($table);
+
+        $localKey = $this->getKeyName();
+
+        return new HasOne($instance->newQuery(), $this, $instance->getTable() . '.' . $foreignKey, $localKey);
     }
 
     /**
