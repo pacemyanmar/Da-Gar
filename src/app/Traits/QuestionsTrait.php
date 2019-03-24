@@ -2,6 +2,7 @@
 namespace App\Traits;
 
 use App\Models\SurveyInput;
+use Illuminate\Support\Str;
 use Spatie\TranslationLoader\LanguageLine;
 
 trait QuestionsTrait
@@ -45,7 +46,7 @@ trait QuestionsTrait
             /**
              * create unique name attribute for each input
              */
-            $param = str_slug('p' . $project_id . $qnum . 'i' . $input_index);
+            $param = Str::slug('p' . $project_id . $qnum . 'i' . $input_index);
 
             /**
              * assign className attribute using format_input method
@@ -67,7 +68,7 @@ trait QuestionsTrait
             if (!array_key_exists('inputid', $a)) {
                 $qindex = (array_key_exists('value', $a) && is_numeric($a['value'])) ? $a['value'] : $input_index;
 
-                $a['inputid'] = trim(strtolower($qnum . '_' . $qindex));
+                $a['inputid'] = trim(strtolower($qnum . $qindex));
             }
 
             if (!array_key_exists('section', $a)) {
@@ -87,7 +88,7 @@ trait QuestionsTrait
             }
 
             if (array_key_exists('goto', $a)) {
-                $qnumid = str_slug('qnum' . $a['goto']);
+                $qnumid = Str::slug('qnum' . $a['goto']);
                 $a['extras']['goto'] = '#' . $qnumid;
             }
 
@@ -128,7 +129,7 @@ trait QuestionsTrait
                     $av['type'] = 'radio';
                     $av['id'] = $param . 'o' . $j;
                     $av['sort'] = $qsort . $j;
-                    if (str_contains(strtolower($av['label']), 'other') || str_contains(strtolower($av['label']), 'text')) {
+                    if (Str::contains(strtolower($av['label']), 'other') || Str::contains(strtolower($av['label']), 'text')) {
                         $av['other'] = true;
                     }
                     // merge $a and $av to get input array as $answer
@@ -147,7 +148,7 @@ trait QuestionsTrait
                     $av['type'] = 'checkbox';
                     $av['id'] = $param . 'o' . $j;
                     $av['sort'] = $qsort . $j;
-                    if (str_contains(strtolower($av['label']), 'other') || str_contains(strtolower($av['label']), 'text')) {
+                    if (Str::contains(strtolower($av['label']), 'other') || Str::contains(strtolower($av['label']), 'text')) {
                         $av['other'] = true;
                     }
                     // merge $a and $av to get input array as $answer
@@ -171,15 +172,15 @@ trait QuestionsTrait
                 }
 
             } elseif ($a['type'] == 'radio') {
-                $a['name'] = $a['inputid'] = trim(str_slug($qnum.'r'));
+                $a['name'] = $a['inputid'] = trim(Str::slug($qnum.'r'));
             } elseif ($a['type'] == 'single') {
                 $a['type'] = 'radio';
-                $a['name'] = $a['inputid'] = trim(str_slug($qnum.'r'));
+                $a['name'] = $a['inputid'] = trim(Str::slug($qnum.'r'));
             } elseif ($a['type'] == 'checkbox') {
-                $a['name'] = str_slug('p' . $project_id . $qnum . 'c');
+                $a['name'] = Str::slug('p' . $project_id . $qnum . 'c');
             } elseif ($a['type'] == 'check') {
                 $a['type'] = 'checkbox';
-                $a['name'] = str_slug('p' . $project_id . $qnum . 'c');
+                $a['name'] = Str::slug('p' . $project_id . $qnum . 'c');
             } elseif ($a['type'] == 'template') {
                 // if layout is form16 or form18
                 // set input type as layout
@@ -233,13 +234,13 @@ trait QuestionsTrait
                         $value['label'] = $label[$i];
                     }
 
-                    if (str_contains(strtolower($value['label']), 'other') || str_contains(strtolower($value['label']), 'type')) {
+                    if (Str::contains(strtolower($value['label']), 'other') || Str::contains(strtolower($value['label']), 'type')) {
                         $value['other'] = true;
                     }
                     $value['sort'] = $k . $i;
                     $value['extras']['group'] = $input['label'];
                     $value = array_merge($input, $value);
-                    //if (str_contains(strtolower($value['value']), 'text')) {
+                    //if (Str::contains(strtolower($value['value']), 'text')) {
                     if (in_array(strtolower($value['value']), ['text', 'count', 'other'])) {
                         $value['type'] = 'text';
                         $value['inputid'] = trim($value['inputid'] . strtolower($value['value']));
@@ -421,9 +422,9 @@ trait QuestionsTrait
      */
     private static function format_input(&$value, $key, $param_array)
     {
-        $input_id = str_slug('p' . $param_array['p'] . $param_array['q'] . 'i' . $param_array['i']);
-        $input_class = str_slug('qnum' . $param_array['q']);
-        //$input_class = str_slug('s' . $param_array['s'] . $param_array['q']);
+        $input_id = Str::slug('p' . $param_array['p'] . $param_array['q'] . 'i' . $param_array['i']);
+        $input_class = Str::slug('qnum' . $param_array['q']);
+        //$input_class = Str::slug('s' . $param_array['s'] . $param_array['q']);
         /**
         if ($key == 'name') {
         $value = $param;
@@ -434,7 +435,7 @@ trait QuestionsTrait
             $value = str_replace(' ', ',', $value);
             $qnum_array = explode(',', $value);
             foreach ($qnum_array as $qnum) {
-                $qids[] = '.' . str_slug('qnum' . $qnum);
+                $qids[] = '.' . Str::slug('qnum' . $qnum);
             }
             $value = implode(',', $qids);
         }
