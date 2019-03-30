@@ -118,16 +118,15 @@ class SmsAPIController extends AppBaseController
             $smsLog = SmsLog::where('service_id', $refid)->first();
             if($smsLog) {
                 $smsLog->sms_status = $request->input('result_status');
-                return $smsLog->save();
+                $smsLog->save();
+                return $this->sendResponse($smsLog->sms_status, 'Well received!');
             } else {
                 $sms_list = BulkSms::find($request->input('result_callerid'));
                 if($sms_list) {
                     $sms_list->status = $request->input('result_status');
                     $sms_list->save();
-
-
                 }
-                return;
+                return $this->sendResponse($sms_list, 'Well received!');
             }
         }
 
@@ -164,7 +163,7 @@ class SmsAPIController extends AppBaseController
                 $this->sendToBoom($response, $from_number, $status_uuid);
             }
 
-            return $this->sendResponse($message, 'Well received!');
+            return $this->sendResponse('Message:'. $message, 'Well received!');
 
         } else {
             return $this->sendError("Can't find any services", 404);
