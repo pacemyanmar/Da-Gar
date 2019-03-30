@@ -87,6 +87,8 @@ class SmsLogDataTable extends DataTable
                 'extend' => 'collection',
                 'text' => '<i class="fa fa-download"></i> ' . trans('messages.export'),
                 'buttons' => [
+                    'csvp',
+                    'excelp',
                 ],
             ];
         } else {
