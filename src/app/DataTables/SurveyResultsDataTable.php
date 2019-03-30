@@ -239,6 +239,10 @@ class SurveyResultsDataTable extends DataTable
             }
         }
 
+        if($code = Request::input('code')) {
+            $query->where('sample_data_id', $code);
+        }
+
         $inputcolumn = Request::input('column');
         $inputvalue = Request::input('value');
         $sect = Request::input('sect');
