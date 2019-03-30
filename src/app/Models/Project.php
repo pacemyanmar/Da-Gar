@@ -60,6 +60,11 @@ class Project extends Model
         return $this->hasMany(Question::class);
     }
 
+    public function reportedIncidents()
+    {
+        return $this->hasMany(Reported::class);
+    }
+
     /**
      * { Distance children inputs for project }
      *
