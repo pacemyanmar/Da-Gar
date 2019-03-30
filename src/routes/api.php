@@ -18,6 +18,9 @@
 
 Route::get('projects/{id}/responses',['as' => 'project.responses', 'uses' => 'ProjectAPIController@responses']);
 
+Route::get('projects/{id}/incidents',['as' => 'project.incidents', 'uses' => 'ProjectAPIController@getNewIncidents']);
+
+
 Route::get('sms/status', ['as' => 'api-status', 'uses' => 'SmsAPIController@apiStatus']);
 
 Route::match(['get','post'], 'sms/echo', ['as' => 'api-status', 'uses' => 'SmsAPIController@echoResponse']);
