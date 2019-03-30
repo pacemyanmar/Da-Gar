@@ -16,6 +16,7 @@ return [
         'country' => 'mm',
         'locale' => 'my'
     ],
+    'reporting_mode' => true,
     'double_entry' => false,
     'collapse' => true,
     'response_filter' => 'state_region',

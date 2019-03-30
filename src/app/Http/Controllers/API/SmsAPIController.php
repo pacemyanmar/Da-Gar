@@ -517,7 +517,24 @@ class SmsAPIController extends AppBaseController
 
             $message = str_replace($pcode[1].$pcode[2],'',$message);
 
-            preg_match_all('/([a-zA-Z]+)(\d+)/', trim($message), $qna);
+            $qnamatch = preg_match_all('/([a-zA-Z]+)(\d+)/', trim($message), $qna);
+
+            if(!$qnamatch && config('sms.reporting_mode')) {
+                $title = (strtolower($sample->details->sex) == 'female')? 'မ':'ကို';
+                $name = $sample->details->name_mm;
+
+                $extra_message = Converter::convert($title.$name, 'unicode', 'zawgyi');
+
+                $reply['message'] = $this->encoding('sms.success_complete', $encoding).' '.$extra_message;
+                $reply['status'] = 'success';
+                return $reply;
+            }
+
+            if(!$qnamatch) {
+                $reply['message'] = $this->encoding('sms.error_not_complete', $encoding);
+                $reply['status'] = 'error';
+                return $reply;
+            }
 
             /**
              * ['AC' => 1, // for radio

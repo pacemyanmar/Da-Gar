@@ -10,5 +10,7 @@ return [
     'success' => 'SMS ပြည့်စုံစွာ ရပါပြီ!',
     'error' => 'မှားနေသည်',
     'error_code' => 'ကုဒ်နံပတ်မှားနေသည်',
-    'error_not_by_sms' => 'ဒီအပိုင်းအား SMS ပေးပို့ရန်မလိုပါ။'
+    'error_not_by_sms' => 'ဒီအပိုင်းအား SMS ပေးပို့ရန်မလိုပါ။',
+    'error_not_complete' => 'မပြည့်စုံပါ။',
+    'success_complete' => 'ပြည့်စုံစွာရပါပြီ',
 ];

@@ -1,14 +1,16 @@
 <?php
 return [
-    'forbidden' => 'Forbidden',
+    'forbidden' => 'ခွင့်ပြုမထားပါ။',
     'no_valid_event'  => 'No valid Event.',
-    'no_project_code' => 'Please check SMS format. Project code not found!',
-    'not_ready' => 'Not ready! Please call to data center immediately.',
-    'no_location_code' => 'Please check location code in SMS. No such code found in database!',
-    'not_valid_response' => 'You did not sumbit valid response. Please check SMS format.',
-    'error_inputs' => ':INPUTS are missing or have error. Please check SMS format.',
-    'success' => 'Success!',
-    'error' => 'မှားနေသည်'
-
-
+    'no_project_code' => 'ဆာဗေ ကုဒ်မတွေ့ပါ။ SMS ပေးပို့မှု ပုံစံအား ပြန်စစ်ဆေးပါ။',
+    'not_ready' => 'အဆင်သင့်မဖြစ်သေးပါ။ အချက်အလက်စင်တာသို့ ချက်ြခင်းဖုန်းခေါ်ပေးပါ။',
+    'no_location_code' => 'နေရာ (သို့) လေ့လာသူ ကုဒ်အား SMS တွင် ပြန်စစ်ပါ။',
+    'not_valid_response' => 'သင့်ပို့သော အဖြေများ တစ်ခုခုလွဲနေသည်။ SMS ပေးပို့မှု ပုံစံအား ပြန်စစ်ဆေးပါ။',
+    'error_inputs' => ':INPUTS အဖြေများ မပါ (သို့) မှားနေသည်။ SMS ပေးပို့မှု ပုံစံအား ပြန်စစ်ဆေးပါ။',
+    'success' => 'SMS ပြည့်စုံစွာ ရပါပြီ!',
+    'error' => 'မှားနေသည်',
+    'error_code' => 'ကုဒ်နံပတ်မှားနေသည်',
+    'error_not_by_sms' => 'ဒီအပိုင်းအား SMS ပေးပို့ရန်မလိုပါ။',
+    'error_not_complete' => 'မပြည့်စုံပါ။',
+    'success_complete' => 'ပြည့်စုံစွာရပါပြီ',
 ];

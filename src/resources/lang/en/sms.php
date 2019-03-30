@@ -11,5 +11,7 @@ return [
     'error' => 'Error!',
     'error_code' => 'ERROR: Check Code',
     'error_not_by_sms' => 'ERROR: You do not need to send this report by SMS.',
+    'error_not_complete' => 'ERROR: Incomplete SMS',
+    'success_complete' => 'Completed',
 
 ];
