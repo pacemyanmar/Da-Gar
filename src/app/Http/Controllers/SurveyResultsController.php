@@ -308,6 +308,20 @@ class SurveyResultsController extends AppBaseController
         return $this->sendResponse($allResults, trans('messages.saved'));
     }
 
+    public function monitor($project_id)
+    {
+        $project = $this->projectRepository->findWithoutFail($project_id);
+        if (empty($project)) {
+            Flash::error('Project not found');
+
+            return redirect(route('projects.index'));
+        }
+
+        $question_in_report = $project->questions->where('report', true);
+
+        return view('projects.monitor')->withQuestions($question_in_report);
+    }
+
     public function responseRateSample($project_id, $filter, $type='first', SampleResponseDataTable $sampleResponse, Request $request)
     {
         $project = $this->projectRepository->findWithoutFail($project_id);
