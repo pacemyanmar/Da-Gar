@@ -161,15 +161,26 @@ class SampleDetailsController extends AppBaseController
      */
     public function update($project_id, $id, UpdateSampleDetailsRequest $request)
     {
-        $sampleDetails = $this->sampleDetailsRepository->findWithoutFail($id);
+        $project = $this->projectRepository->findWithoutFail($project_id);
+
+        if (empty($project)) {
+            Flash::error('Project not found');
+
+            return redirect(route('sample-details.index', ['project_id', $request->input('project_id')]));
+        }
+        $sampleColumns = $project->locationMetas->pluck('label','field_name');
+
+        $sampleDetails = $this->sampleDetails->setTable($project->dbname.'_samples')->find($id);
 
         if (empty($sampleDetails)) {
             Flash::error('Sample Details not found');
 
-            return redirect(route('sample-details.index', ['project', $project_id]));
+            return redirect(route('sample-details.index', ['project_id', $project_id]));
         }
 
-        $sampleDetails = $this->sampleDetailsRepository->update($request->all(), $id);
+        $sampleDetails->fill($request->all());
+
+        $sampleDetails->save();
 
         Flash::success('Sample Details updated successfully.');
 

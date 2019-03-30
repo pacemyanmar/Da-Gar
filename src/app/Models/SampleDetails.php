@@ -16,6 +16,8 @@ class SampleDetails extends Model
 
     public $incrementing = false;
 
+    public $timestamps = false;
+
     public $table = 'sample_details';
 
     public $guarded = [
