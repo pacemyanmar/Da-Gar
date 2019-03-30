@@ -20,7 +20,7 @@
                         </div>
                     </div>
                     <div class="panel-body">
-                        <table class="table table-responsive" id="questions-table">
+                        <table class="table table-responsive table-bordered" id="questions-table">
                             <thead>
                             @foreach($question->surveyInputs as $option)
                                 <th class="col-xs-1">({{ $option->value }}) {{ $option->label }}</th>
