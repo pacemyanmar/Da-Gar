@@ -77,6 +77,7 @@
                 </div>
             </div>
             <div class="media-right">
+                @if(Auth::user()->role->level >= 7)
                 {!! Form::open(['route' => ['projects.destroy', $project->id], 'method' => 'delete', 'class' => 'from-inline']) !!}
 
                 {!! Form::button('<i class="glyphicon glyphicon-trash"></i>', [
@@ -87,6 +88,7 @@
                 ]) !!}
 
                 {!! Form::close() !!}
+                @endif
             </div>
         </div>
     </div>
