@@ -160,4 +160,19 @@ class ProjectAPIController extends AppBaseController
 
         return $this->sendResponse($id, 'Project deleted successfully');
     }
+
+    public function getNewIncidents($id)
+    {
+        /** @var Project $project */
+        $project = $this->projectRepository->findWithoutFail($id);
+
+        if (empty($project)) {
+            return $this->sendError('Project not found');
+        }
+
+        $new_incidents = $project->reportedIncidents->groupBy('inputid');
+
+        return $this->sendResponse($new_incidents, "New incidents");
+
+    }
 }
