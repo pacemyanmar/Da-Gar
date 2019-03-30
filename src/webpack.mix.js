@@ -1,6 +1,6 @@
-const {mix} = require('laravel-mix');
+const mix = require('laravel-mix');
 const webpack = require('webpack');
-let CommonsChunkPlugin = require('webpack/lib/optimize/CommonsChunkPlugin');
+
 require('webpack/lib/ProvidePlugin')
 
 
