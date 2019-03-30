@@ -394,7 +394,7 @@ class SmsAPIController extends AppBaseController
         $reply['result_id'] = null;
 
         $sender = preg_replace('/[^0-9]/','', $to_number);
-        $observer_phone = Phone::find($sender);
+        $observer_phone = Phone::find(config('sms.country_prefix').$sender);
 
         if (empty($observer_phone) && config('sms.verify_phone')) {
             // if project is empty

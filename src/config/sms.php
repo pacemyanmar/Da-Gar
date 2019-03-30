@@ -16,6 +16,7 @@ return [
         'country' => 'mm',
         'locale' => 'my'
     ],
+    'country_prefix' => '95',
     'reporting_mode' => true,
     'double_entry' => false,
     'collapse' => true,
