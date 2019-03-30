@@ -7,6 +7,7 @@
     @yield('meta')
 
     <link rel="stylesheet" href="{{ mix('/css/app.css') }}">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 
     @yield('css')
 
