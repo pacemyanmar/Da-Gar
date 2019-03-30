@@ -13,7 +13,7 @@ try {
     require('jquery-ui');
     require('jquery-ui-sortable');
 
-    require('./tooltip-conflict');
+    //require('./tooltip-conflict');
 
     require('bootstrap-sass');
 
@@ -29,6 +29,8 @@ try {
      * Require datatables library
      */
     require('datatables.net');
+
+
     require('datatables.net-bs');
 
     require('datatables.net-buttons');
@@ -100,3 +102,11 @@ if (token) {
 //     broadcaster: 'pusher',
 //     key: 'your-pusher-key'
 // });
+import Echo from "laravel-echo"
+
+window.io = require('socket.io-client');
+
+window.Echo = new Echo({
+    broadcaster: 'socket.io',
+    host: window.location.hostname + ':6001'
+});
