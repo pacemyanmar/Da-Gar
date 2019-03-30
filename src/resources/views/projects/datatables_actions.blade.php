@@ -6,6 +6,9 @@
                     <a href="{{ route('projects.surveys.index', $id) }}" class='btn btn-default btn-sm'>
                         <i class="glyphicon glyphicon-eye-open"></i> {!! trans('messages.list_incidents') !!}
                     </a>
+                    <a href="{{ route('projects.monitor', $id) }}" class='btn btn-default btn-sm'>
+                        <i class="glyphicon glyphicon-eye-envelope"></i> Monitor Incidents
+                    </a>
                 @else
                     <a href="{{ route('projects.surveys.index', $id) }}" class='btn btn-default btn-sm'>
                         <i class="glyphicon glyphicon-eye-open"></i> {!! trans('messages.list_samples') !!}
