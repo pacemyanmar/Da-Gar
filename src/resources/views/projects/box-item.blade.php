@@ -22,6 +22,9 @@
                            class='btn btn-success btn-sm' style='margin-bottom: 5px;'>
                             <i class="glyphicon glyphicon-eye-open"></i> {!! trans('messages.list_incidents') !!}
                         </a>
+                        <a href="{{ route('project.monitor', $project->id) }}" class='btn btn-default btn-sm' style='margin-bottom: 5px;'>
+                            <i class="glyphicon glyphicon-eye-envelope"></i> Monitor Incidents
+                        </a>
                     @else
                         <a href="{{ route('projects.surveys.index', $project->id) }}"
                            class='btn btn-success btn-sm' style='margin-bottom: 5px;'>
