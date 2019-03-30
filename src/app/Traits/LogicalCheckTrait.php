@@ -3,7 +3,9 @@
 namespace App\Traits;
 
 
+use App\Events\ReportedEvent;
 use App\Models\Question;
+use App\Models\Reported;
 use App\Models\Section;
 use App\Models\SurveyResult;
 use Carbon\Carbon;
@@ -17,6 +19,8 @@ trait LogicalCheckTrait
     private $sectionErrorBag = [];
     protected $sectionStatus;
     protected $channel;
+
+    protected $reportedEvent;
 
     protected $phone;
 
@@ -89,6 +93,20 @@ trait LogicalCheckTrait
                 }
 
                 $this->logicalCheck($input, $result_arr[$qid][$inputid]);
+
+                if($result_arr[$qid][$inputid] &&  $question->report && $this->project->type != 'fixed') {
+
+                    $reportedEvent['channel'] = $this->channel;
+                    $reportedEvent['inputid'] = $input->id;
+                    $reportedEvent['sid'] = $this->sample->id;
+                    $reportedEvent['scode'] = $this->sample->sample_data_id;
+
+                    $reportedEvent['followup'] = ($this->channel == 'sms')?'new':'done';
+                    $reportedEvent['project_id'] = $this->project->id;
+
+                    $this->reportedEvent[$input->id] = Reported::forceCreate($reportedEvent)->toArray();
+
+                }
             }
 
             if(array_key_exists($question->qnum, $this->errorBag)) {
@@ -104,6 +122,11 @@ trait LogicalCheckTrait
 
         return $allResults;
 
+    }
+
+    protected function reportedEvent()
+    {
+        event(new ReportedEvent($this->reportedEvent));
     }
 
     protected function logicalCheck($input, $value)
@@ -242,7 +265,7 @@ trait LogicalCheckTrait
             if($sample->sample_data_id != $this->phone->sample_code && config('sms.verify_phone')) {
                 $flag_error = 3;
 
-                $last_messages['E1001'] = 'CODE NOT MATCH!';
+                $last_messages['E1001'] = 'Phone and CODE NOT MATCH!';
             } else {
                 if(is_array($last_messages)) {
                     if (array_key_exists('E1000', $last_messages)) {
@@ -260,6 +283,20 @@ trait LogicalCheckTrait
             $surveyResult->sample()->associate($sample);
         }
 
+        if($this->channel == 'web') {
+            Reported::where('sid','=', $sample->id)->update(['followup' => 'done']);
+
+            $followup_done = Reported::where('sid','=', $sample->id)->get();
+
+            $followup_done = $followup_done->groupBy('inputid')->toArray();
+
+            foreach ($followup_done as $inputid => $followup)
+            {
+                $this->reportedEvent[$inputid] = $followup[0];
+            }
+
+        }
+
         $surveyResult->{$this->section} = $this->sectionStatus = (isset($flag_error))?$flag_error:$this->getSectionStatus();
 
         $surveyResult->sample_type = $this->sampleType;
@@ -267,6 +304,8 @@ trait LogicalCheckTrait
         $surveyResult->forceFill($this->results);
 
         $surveyResult->save();
+
+        $this->reportedEvent();
 
         return $surveyResult;
     }
