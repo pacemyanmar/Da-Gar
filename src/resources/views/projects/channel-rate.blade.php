@@ -117,6 +117,72 @@
     }
 
     setInterval(function(){getFirstData();}, 3000);
+
+
+
+
+
+    function drawSectionChart(section_data, section_title, section_id) {
+        var data = [section_data];
+        console.log(data);
+
+        var layout = {
+            title: section_title,
+        };
+
+        Plotly.newPlot(section_id, data, layout);
+    }
+
+    function getSectionData(ajaxurl, section_title, section_id) {
+
+        var start_time = "{!! $start_time !!}"
+
+        jQuery.ajax({
+            type: "get",
+            url: ajaxurl,
+            dataType : 'JSON',
+            cache: "false",
+            success: function(response){
+                if(response.success) {
+                    var ySMS = [0];
+
+                    var sms_channel_time = [start_time];
+
+                    jQuery.each(response.data, function (index, value) {
+
+                            sms_channel_time.push(value.time);
+                            ySMS.push(value.count);
+
+                    });
+                    section_data = {
+                        type: "linear",
+                        mode: "lines",
+                        name: 'SMS',
+                        x: sms_channel_time,
+                        y: ySMS,
+                        line: {color: '#17BECF'}
+                    }
+
+                    drawSectionChart(section_data, section_title, section_id);
+                }
+            }
+        });
+
+    }
+
 </script>
+
+@foreach($project->sections as $section)
+    <div id="section{{$section->sort}}"></div>
+        <script>
+
+            var section_data{{$section->sort}} = {};
+
+            getSectionData("{{ route('smscount', [$project->id, $section->sort]) }}", "{{ $section->sectionname }}", "section{{$section->sort}}");
+
+           setInterval(function(){getSectionData("{{ route('smscount', [$project->id, $section->sort]) }}", "{{ $section->sectionname }}", "section{{$section->sort}}");}, 10000);
+        </script>
+
+@endforeach
 </body>
 </html>

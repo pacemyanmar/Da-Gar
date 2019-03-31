@@ -6,6 +6,7 @@ use App\Http\Requests\API\CreateProjectAPIRequest;
 use App\Http\Requests\API\UpdateProjectAPIRequest;
 use App\Models\Project;
 use App\Models\Sample;
+use App\Models\SmsLog;
 use App\Repositories\ProjectRepository;
 use Illuminate\Http\Request;
 use App\Http\Controllers\AppBaseController;
@@ -59,6 +60,20 @@ class ProjectAPIController extends AppBaseController
         $responses = array_merge($samples_sms->toArray(), $samples_web->toArray());
 
         return $this->sendResponse($responses, 'Project retrieved successfully');
+    }
+
+    public function smscount($project_id, $section)
+    {
+        $sms_count = SmsLog::query();
+        $sms_count->select(DB::raw('count(form_code) count,DATE_FORMAT(MAX(created_at),\'%Y-%m-%d %H:%i\') time, section'));
+        $sms_count->where('project_id', $project_id);
+        $sms_count->where('section', $section);
+        $sms_count->groupBy('section');
+        $sms_count->groupBy(DB::raw('MINUTE(created_at)'))->orderBy('time', 'ASC');
+
+        $sms_count_result = $sms_count->get();
+
+        return $this->sendResponse($sms_count_result->toArray(), 'SMS Report count.');
     }
 
     /**

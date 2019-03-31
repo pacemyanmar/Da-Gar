@@ -30,3 +30,7 @@ Route::match(['get', 'post'], 'sms', ['as' => 'recieve-sms', 'uses' => 'SmsAPICo
 Route::group(['middleware' => 'auth:api'], function () {
     //Route::resource('sms', 'SmsAPIController');
 });
+
+
+Route::get('smscount/{project_id}/{section}', ['as' => 'smscount', 'uses' => 'ProjectAPIController@smscount']);
+
