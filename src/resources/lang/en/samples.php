@@ -9,6 +9,7 @@
 return [
     'id' => 'ID Code',
     'sample' => 'Sample',
+    'channel' => 'Channel',
     'uecnec_code' => 'NEC Code',
     'ps_code' => 'Polling Station Code',
     'registered_voters' => 'Registered Voters',
