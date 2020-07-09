@@ -18,7 +18,7 @@ class UserPolicy
      */
     public function index(User $auth)
     {
-        return $auth->role->level > 8;
+        return $auth->role->level >= 8;
     }
 
     /**
@@ -41,7 +41,7 @@ class UserPolicy
      */
     public function create(User $auth)
     {
-        return $auth->role->level > 8;
+        return $auth->role->level >= 8;
     }
 
     /**
@@ -53,7 +53,7 @@ class UserPolicy
      */
     public function update(User $auth, User $user)
     {
-        return ($auth->role->level === 9 || $auth->id == $user->id || $auth->role->level > $user->role->level);
+        return ($auth->role->level >= 8 || $auth->id == $user->id || $auth->role->level > $user->role->level);
     }
 
     /**
@@ -68,6 +68,6 @@ class UserPolicy
         if ($auth->role->level === 9 && $auth->id != $user->id) {
             return true;
         }
-        return $auth->role->level > $user->role->level;
+        return $auth->role->level > $user->role->level && $auth->role->level >= 8;
     }
 }
