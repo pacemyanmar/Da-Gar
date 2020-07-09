@@ -73,10 +73,10 @@ trait SurveyQueryTrait {
                 if(array_key_exists('type', $ori_column)) {
                     switch ($ori_column['type']) {
                         case 'checkbox':
-                            $column = 'IF(' . $ori_column['name'] . ',1,IFNULL('.$ori_column['name'].',NULL)) AS ' . $column_name;
+                            $column = 'IF(' . $ori_column['name'] . ',1,IFNULL('.$ori_column['name'].',NULL)) AS `' . $column_name . '`';
                             break;
                         case 'double_entry':
-                            $column = 'IF(' . $ori_column['name']. ' = ' . $ori_column['origin_name']. ', 1, 0) AS ' . $column_name;
+                            $column = 'IF(' . $ori_column['name']. ' = ' . $ori_column['origin_name']. ', 1, 0) AS `' . $column_name . '`';
                             break;
                         default:
                             $column = $ori_column['name'];
@@ -350,7 +350,7 @@ trait SurveyQueryTrait {
                     case 'checkbox':
                         $title = $question->qnum . ' ' . $input->value;
                         $input_columns[strtolower($question->qnum)] = [
-                            'name' => $base_dbname. '.' . strtolower($question->qnum).'_cs',
+                            'name' => '`'.$base_dbname. '`.`' . strtolower($question->qnum).'_cs`',
                             'data' => strtolower($question->qnum), 'title' => strtoupper(strtolower($question->qnum)),
                             'class' => 'result', 'orderable' => false,
                             'visible' => false,
@@ -362,7 +362,7 @@ trait SurveyQueryTrait {
                         break;
                     default:
                         if($inputs->count() > 1) {
-                            if($input->type == 'text') {
+                            if(in_array($input->type,['text','number'])) {
                                 $title = title_case($input->inputid);
                             } else {
                                 $title = $question->qnum . ' ' . $input->value;
