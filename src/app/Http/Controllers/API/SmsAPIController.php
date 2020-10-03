@@ -635,7 +635,7 @@ class SmsAPIController extends AppBaseController
 
             $missingOrError = array_unique(array_merge(array_keys($errorsFromSectionBag), $missingOrError));
 
-            $optional_error = ['ZA','ZB'];
+            $optional_error = ['']; //add question number to skip error checking to make section complete even if question has error
 
             if(!empty($missingOrError) && $missingOrError != $optional_error) {
                 $reply['message'] = $this->encoding('sms.error', $encoding).' '. implode(',', $missingOrError);
