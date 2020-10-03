@@ -7,6 +7,7 @@ use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Middleware;
 use Akaunting\Setting\Facade as Settings;
 use Psr\Http\Message\ResponseInterface;
+use Illuminate\Support\Facades\Log;
 
 Class BluePlanetSMS implements SMSInterface {
 
@@ -42,6 +43,8 @@ Class BluePlanetSMS implements SMSInterface {
             'to' => $request['to'],
             'message' => $request['message']
         ];
+
+        Log::debug($this->api_url);
 
         $promise = $client->requestAsync('POST', $this->api_url, [
             'headers' => [
