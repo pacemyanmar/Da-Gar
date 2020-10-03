@@ -45,6 +45,10 @@ class SendBulkSms extends Command
      */
     public function handle(SMSInterface $smsprovider)
     {
+        $smsprovider->setApiUrl(Settings::get('boom_api_url','https://boomsms.net/api/sms/json'));
+        $smsprovider->setAccessToken(Settings::get('boom_api_key'));
+        $smsprovider->setSenderId(Settings::get('sender_id', 'PACE'));
+
         $sms_list = BulkSms::all();
 
         foreach($sms_list as $sms) {

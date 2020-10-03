@@ -18,15 +18,15 @@ Class BluePlanetSMS implements SMSInterface {
     protected $sender_id;
 
     public function setApiUrl($api_url){
-        $this->api_url = Settings::get('boom_api_url','https://boomsms.net/api/sms/json');
+        $this->api_url = $api_url; //Settings::get('boom_api_url','https://boomsms.net/api/sms/json');
     }
 
-    public function setAccessToken(){
-        $this->access_token = Settings::get('boom_api_key');
+    public function setAccessToken($token){
+        $this->access_token = $token; // Settings::get('boom_api_key');
     }
 
-    public function setSenderId() {
-        $this->sender_id = Settings::get('sender_id', 'PACE');
+    public function setSenderId($senderId) {
+        $this->sender_id = $senderId; // Settings::get('sender_id', 'PACE');
     }
     
     public function receive($request){}

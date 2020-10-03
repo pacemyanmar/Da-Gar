@@ -9,7 +9,9 @@ Interface SMSInterface {
 
     public function setApiUrl($api_url);
 
-    public function setAccessToken();
+    public function setAccessToken($token);
+
+    public function setSenderId($senderId);
     
     public function receive($request);
 
