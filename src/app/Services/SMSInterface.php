@@ -13,6 +13,6 @@ Interface SMSInterface {
     
     public function receive($request);
 
-    public function send($request, $model);
+    public function send($request);
   
   }
