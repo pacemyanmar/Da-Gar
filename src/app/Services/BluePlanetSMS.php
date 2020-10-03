@@ -56,12 +56,9 @@ Class BluePlanetSMS implements SMSInterface {
         ]);
 
             $promise->then(
-                function (ResponseInterface $res) use ($sms) {
+                function (ResponseInterface $res) {
                     $http_status = $res->getStatusCode();
                     $response_body = json_decode($res->getBody(), true);
-
-                    $sms->status = ($response_body['result_name'])?$response_body['result_name']:$response_body['result_status'];
-                    $sms->save();
                     return $res;
                 },
                 function (RequestException $e) {
