@@ -52,7 +52,10 @@ class SendBulkSms extends Command
         $sms_list = BulkSms::all();
 
         foreach($sms_list as $sms) {
-            $smsresponse = $smsprovider->send(['message' => $sms->message, 'to' => $sms->phone]);
+
+            $message = str_replace("{{NAME}}", $sms->name, $sms->message);
+
+            $smsresponse = $smsprovider->send(['message' => $message, 'to' => $sms->phone]);
 
             $response_body = json_decode($smsresponse->getBody(), true);
 
