@@ -43,26 +43,13 @@ class SendBulkSms extends Command
      *
      * @return mixed
      */
-    public function handle()
+    public function handle(SMSInterface $smsprovider)
     {
         $sms_list = BulkSms::all();
 
         foreach($sms_list as $sms) {
-            $this->sendToBoom($sms);
+            $smsprovider->send(['message' => $sms->message, 'to' => $sms->phone]);
         }
-    }
-
-    public function sendToBoom($sms, SMSInterface $smsprovider)
-    {
-        if($sms->status == 'new') {
-
-            $message = $sms->message; // m
-            $to = $sms->phone;
-            $smsprovider->send(['message' => $message, 'to' => $to]);
-            
-        }
-        return;
-
     }
 
 }
