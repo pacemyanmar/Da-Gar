@@ -10,7 +10,7 @@ use GuzzleHttp\Middleware;
 use Illuminate\Console\Command;
 use Akaunting\Setting\Facade as Settings;
 use Psr\Http\Message\ResponseInterface;
-
+use App\Services\SMSInterface;
 
 class SendBulkSms extends Command
 {
@@ -52,50 +52,14 @@ class SendBulkSms extends Command
         }
     }
 
-    public function sendToBoom($sms)
+    public function sendToBoom($sms, SMSInterface $smsprovider)
     {
         if($sms->status == 'new') {
-            $client = new Client();
 
             $message = $sms->message; // m
-            $api_key = Settings::get('boom_api_key'); // p
-            // hardcoded since this is provided by BOOM SMS
-            $keyword = 'PA'; // k
-            $user = 'PACE'; // u
-            $title = 'PACE'; // t
-
-            $container = [];
-            $history = Middleware::history($container);
-
-            $stack = HandlerStack::create();
-            $stack->push($history);
-
-            $form_params = ['handler' => $stack, 'form_params' => [
-                'k' => $keyword,
-                'u' => $user,
-                'p' => $api_key,
-                'm' => $message,
-                't' => $title,
-                'callerid' => $sms->phone
-            ]
-            ];
-            $promise = $client->requestAsync('POST', 'http://apiv2.blueplanet.com.mm/mptsdp/bizsendsmsapi.php', $form_params);
-
-            $promise->then(
-                function (ResponseInterface $res) use ($sms) {
-                    $http_status = $res->getStatusCode();
-                    $response_body = json_decode($res->getBody(), true);
-
-                    $sms->status = ($response_body['result_name'])?$response_body['result_name']:$response_body['result_status'];
-                    $sms->save();
-                    return $res;
-                },
-                function (RequestException $e) {
-                    $error_msg = $e->getMessage();
-                    $request_method = $e->getRequest()->getMethod();
-                }
-            );
-            $response = $promise->wait();
+            $to = $sms->phone;
+            $smsprovider->send(['message' => $message, 'to' => $to]);
+            
         }
         return;
 
