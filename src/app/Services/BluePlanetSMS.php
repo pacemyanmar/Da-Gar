@@ -41,7 +41,7 @@ Class BluePlanetSMS implements SMSInterface {
         $form_params = [
             'from' => $this->sender_id,
             'to' => $request['to'],
-            'message' => $request['message']
+            'text' => $request['message']
         ];
 
         Log::debug($this->api_url);
