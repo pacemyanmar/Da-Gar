@@ -54,7 +54,7 @@ class SendBulkSms extends Command
         foreach($sms_list as $sms) {
             $smsresponse = $smsprovider->send(['message' => $sms->message, 'to' => $sms->phone]);
 
-            $response_body = json_decode($smsresponse, true);
+            $response_body = json_decode($smsresponse->getBody(), true);
 
             $sms->status = ($response_body['status'] === 0)?"sent":$response_body['error-text'];
             $sms->save();
