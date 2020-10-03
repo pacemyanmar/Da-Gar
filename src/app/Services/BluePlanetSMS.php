@@ -40,7 +40,7 @@ Class BluePlanetSMS implements SMSInterface {
         $stack->push($history);
         $form_params = [
             'from' => $this->sender_id,
-            'to' => $request['to'],
+            'to' => ltrim($request['to'], '0'),
             'text' => $request['message']
         ];
 
@@ -66,7 +66,7 @@ Class BluePlanetSMS implements SMSInterface {
                     $request_method = $e->getRequest()->getMethod();
                 }
             );
-            $response = $promise->wait();
+            return $promise->wait();
     }
 
 }
