@@ -10,13 +10,12 @@ class SampleViewModel extends ViewModel
 {
     protected $project;
 
-    protected $sample;
+    protected $samples;
 
-    public function __construct(Project $project, Sample $sample)
+    public function __construct(Project $project)
     {
         $this->project = $project;
-
-        $this->sample = $sample;
+        $this->samples = $this->project->samplesList;
     }
 
     public function sampleJson()
@@ -25,14 +24,13 @@ class SampleViewModel extends ViewModel
     }
     public function sampleJsonPaginate()
     {
-        return $this->sample
+        return $this->samples
             ->with('project')
             ->with('details')
             ->with('createdBy')
             ->with('updatedBy')
             ->with('checkedBy')
             ->with('results')
-            ->where('project_id', $this->project->id)
             ->paginate();
     }
 }

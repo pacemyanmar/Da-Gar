@@ -1114,7 +1114,7 @@ class ProjectController extends AppBaseController
         $samples->select(DB::raw('SUBTIME(channel_time, "00:05:00") AS channel_time'));
         $first_record = $samples->where('project_id', $project->id)->whereNotNull('channel_time')->orderBy('channel_time', 'ASC')->first();
 
-        $start_time = $first_record->channel_time;
+        $start_time = ($first_record)?$first_record->channel_time:null;
         if(empty($start_time)){
             $now = Carbon::now();
             $start_time = $now->toDateTimeString();

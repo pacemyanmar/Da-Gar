@@ -107,6 +107,20 @@ trait LogicalCheckTrait
                     $this->reportedEvent[$input->id] = Reported::forceCreate($reportedEvent)->toArray();
 
                 }
+
+                if($this->project->type == 'fixed') {
+                    $reportedEvent['channel'] = $this->channel;
+                    $reportedEvent['inputid'] = '';
+                    $reportedEvent['sid'] = $this->sample->id;
+                    $reportedEvent['scode'] = $this->sample->sample_data_id;
+
+                    $reportedEvent['followup'] = 'new';
+                    $reportedEvent['project_id'] = $this->project->id;
+
+                    $reportedEvent['report_number'] = $this->section->sort + 1;
+
+                    $this->reportedEvent[$reportedEvent['report_number']] = Reported::forceCreate($reportedEvent)->toArray();
+                }
             }
 
             if(array_key_exists($question->qnum, $this->errorBag)) {

@@ -546,7 +546,13 @@ class SmsAPIController extends AppBaseController
 
             // check section of first question and set as current section
             $first_question = $project->questions->where('qnum', strtoupper($qna[1][0]))->first();
-            $current_section = $first_question->sectionInstance;
+            $current_section = ($first_question) ?? $first_question->sectionInstance;
+            if(!$current_section) {
+                //$reply['message'] = $this->encoding('sms.error_not_by_sms', $encoding);
+                $reply['message'] = 'ERROR';
+                $reply['status'] = 'error';
+                return $reply;
+            }
 
             if($current_section->disablesms) {
                 $reply['message'] = $this->encoding('sms.error_not_by_sms', $encoding);
@@ -560,6 +566,12 @@ class SmsAPIController extends AppBaseController
 
             // get questions in a sections
             $questions = $current_section->questions;
+
+            if(!$questions) {
+                $reply['message'] = 'ERROR: message format';
+                $reply['status'] = 'error';
+                return $reply;
+            }
 
             $cap_qna_combined = array_change_key_case($qna_combined, CASE_UPPER);
             $sms_results = [];
@@ -623,7 +635,9 @@ class SmsAPIController extends AppBaseController
 
             $missingOrError = array_unique(array_merge(array_keys($errorsFromSectionBag), $missingOrError));
 
-            if(!empty($missingOrError)) {
+            $optional_error = ['ZA','ZB'];
+
+            if(!empty($missingOrError) && $missingOrError != $optional_error) {
                 $reply['message'] = $this->encoding('sms.error', $encoding).' '. implode(',', $missingOrError);
                 $reply['status'] = 'error';
             } else {

@@ -40,6 +40,7 @@ window.Vue = require('vue');
  */
 
 //Vue.component('data-table', require('./components/DataTable.vue'));
+Vue.component('line-chart', require('./components/LineChart.vue').default);
 
 
 // Form reset method from stackoverflow

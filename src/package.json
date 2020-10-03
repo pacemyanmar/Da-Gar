@@ -56,6 +56,7 @@
     "select2": "^4.0.6-rc.1",
     "socket.io-client": "^2.2.0",
     "v-tooltip": "^2.0.0-rc.33",
+    "vue-chartjs": "^3.4.2",
     "vue-loader": "^15.7.0",
     "vue-template-compiler": "^2.6.10",
     "vuejs-datatable": "^1.7.0",

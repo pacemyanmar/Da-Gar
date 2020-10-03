@@ -28,6 +28,9 @@ Auth::routes();
 
 Route::get('/home', 'HomeController@index');
 
+Route::get('/test', function (){
+    return view('welcome');
+});
 
 Route::group(['prefix' => 'projects/{project}'], function () {
     Route::get('/monitor', [ 'as' => 'project.monitor', 'uses' => 'SurveyResultsController@monitor' ]);
