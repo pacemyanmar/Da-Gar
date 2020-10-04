@@ -8,6 +8,9 @@ use GuzzleHttp\Middleware;
 use Akaunting\Setting\Facade as Settings;
 use Psr\Http\Message\ResponseInterface;
 use Illuminate\Support\Facades\Log;
+use App\Exceptions\ApiUrlErrorException;
+use App\Exceptions\TokenErrorException;
+use App\Exceptions\SenderIdErrorException;
 
 Class BluePlanetSMS implements SMSInterface {
 
@@ -19,14 +22,24 @@ Class BluePlanetSMS implements SMSInterface {
 
     public function setApiUrl($api_url){
         $this->api_url = $api_url; //Settings::get('boom_api_url','https://boomsms.net/api/sms/json');
+
+        if(!$this->api_url) {
+            throw new ApiUrlErrorException();
+        }
     }
 
     public function setAccessToken($token){
         $this->access_token = $token; // Settings::get('boom_api_key');
+        if(!$this->access_token) {
+            throw new TokenErrorException();
+        }
     }
 
     public function setSenderId($senderId) {
         $this->sender_id = $senderId; // Settings::get('sender_id', 'PACE');
+        if(!$this->sender_id) {
+            throw new SenderIdErrorException();
+        }
     }
     
     public function receive($request){}
