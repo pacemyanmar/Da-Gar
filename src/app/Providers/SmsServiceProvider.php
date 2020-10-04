@@ -5,6 +5,7 @@ namespace App\Providers;
 use Illuminate\Support\ServiceProvider;
 use App\Registries\SmsProviderRegistry;
 use App\Services\BluePlanetSMS;
+use Akaunting\Setting\Facade as Settings;
 
 class SmsServiceProvider extends ServiceProvider
 {

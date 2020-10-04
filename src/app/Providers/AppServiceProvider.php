@@ -5,8 +5,6 @@ namespace App\Providers;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\ServiceProvider;
 use App\Services\BluePlanetSMS;
-use Akaunting\Setting\Facade as Settings;
-
 
 class AppServiceProvider extends ServiceProvider
 {
