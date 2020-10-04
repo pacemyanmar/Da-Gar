@@ -3,6 +3,7 @@
 namespace App\Registries;
 
 use App\Services\SMSInterface;
+use Exception;
 
 Class SmsProviderRegistry {
     protected $providers = [];
