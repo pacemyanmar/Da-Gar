@@ -10,7 +10,7 @@ use GuzzleHttp\Middleware;
 use Illuminate\Console\Command;
 use Akaunting\Setting\Facade as Settings;
 use Psr\Http\Message\ResponseInterface;
-use App\Services\SMSInterface;
+use App\Registries\SmsProviderRegistry;
 
 class SendBulkSms extends Command
 {
@@ -43,11 +43,8 @@ class SendBulkSms extends Command
      *
      * @return mixed
      */
-    public function handle(SMSInterface $smsprovider)
+    public function handle(SmsProviderRegistry $smsprovider)
     {
-        $smsprovider->setApiUrl(Settings::get('boom_api_url','https://boomsms.net/api/sms/json'));
-        $smsprovider->setAccessToken(Settings::get('boom_api_key'));
-        $smsprovider->setSenderId(Settings::get('sender_id', 'PACE'));
 
         $sms_list = BulkSms::all();
 
@@ -57,7 +54,7 @@ class SendBulkSms extends Command
 
                 $message = str_replace("{{NAME}}", $sms->name, $sms->message);
 
-                $smsresponse = $smsprovider->send(['message' => $message, 'to' => $sms->phone]);
+                $smsresponse = $smsprovider->get('blueplanet')->send(['message' => $message, 'to' => $sms->phone]);
 
                 $response_body = json_decode($smsresponse->getBody(), true);
 
