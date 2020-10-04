@@ -5,6 +5,8 @@ namespace App\Providers;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\ServiceProvider;
 use App\Services\BluePlanetSMS;
+use Akaunting\Setting\Facade as Settings;
+
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -29,6 +31,6 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->app->singleton(BluePlanetSMS::class);
+        
     }
 }

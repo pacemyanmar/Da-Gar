@@ -45,7 +45,7 @@ class SendBulkSms extends Command
      */
     public function handle()
     {
-        $smsprovider = app(SmsProviderRegistry::class);
+        $smsprovider = app('blueplanet');
 
         $sms_list = BulkSms::all();
 
@@ -55,7 +55,7 @@ class SendBulkSms extends Command
 
                 $message = str_replace("{{NAME}}", $sms->name, $sms->message);
 
-                $smsresponse = $smsprovider->get('blueplanet')->send(['message' => $message, 'to' => $sms->phone]);
+                $smsresponse = $smsprovider->send(['message' => $message, 'to' => $sms->phone]);
 
                 $response_body = json_decode($smsresponse->getBody(), true);
 

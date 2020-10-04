@@ -16,6 +16,13 @@ return [
         'country' => 'mm',
         'locale' => 'my'
     ],
+    'providers' => [
+        'blueplanet' => [
+            'api_url' => 'https://boomsms.net/api/sms/json',
+            'access_token' => '',
+            'sender_id' => 'PACE'
+        ]
+    ],
     'country_prefix' => '95',
     'reporting_mode' => true,
     'double_entry' => false,
