@@ -26,11 +26,11 @@ class SmsServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        $blueplanet = new BluePlanetSMS();
-        $blueplanet->setApiUrl(Settings::get('boom_api_url','https://boomsms.net/api/sms/json'));
-        $blueplanet->setAccessToken(Settings::get('boom_api_key'));
-        $blueplanet->setSenderId(Settings::get('sender_id', 'PACE'));
         $this->app->make(SmsProviderRegistry::class)
-            ->register("blueplanet", $blueplanet);
+            ->register("blueplanet", (new BluePlanetSMS())
+                    ->setApiUrl(Settings::get('boom_api_url','https://boomsms.net/api/sms/json'))
+                    ->setAccessToken(Settings::get('boom_api_key'))
+                    ->setSenderId(Settings::get('sender_id', 'PACE'))
+        );
     }
 }
