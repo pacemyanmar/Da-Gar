@@ -5,7 +5,6 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Middleware;
-use Akaunting\Setting\Facade as Settings;
 use Psr\Http\Message\ResponseInterface;
 use Illuminate\Support\Facades\Log;
 use App\Exceptions\ApiUrlErrorException;
