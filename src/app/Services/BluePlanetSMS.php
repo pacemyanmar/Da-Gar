@@ -25,6 +25,7 @@ Class BluePlanetSMS implements SMSInterface {
         if(!$this->api_url) {
             throw new ApiUrlErrorException();
         }
+        return $this;
     }
 
     public function setAccessToken($token){
@@ -32,6 +33,7 @@ Class BluePlanetSMS implements SMSInterface {
         if(!$this->access_token) {
             throw new TokenErrorException();
         }
+        return $this;
     }
 
     public function setSenderId($senderId) {
@@ -39,6 +41,7 @@ Class BluePlanetSMS implements SMSInterface {
         if(!$this->sender_id) {
             throw new SenderIdErrorException();
         }
+        return $this;
     }
     
     public function receive($request){}
