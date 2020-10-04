@@ -43,8 +43,9 @@ class SendBulkSms extends Command
      *
      * @return mixed
      */
-    public function handle(SmsProviderRegistry $smsprovider)
+    public function handle()
     {
+        $smsprovider = app(SmsProviderRegistry::class);
 
         $sms_list = BulkSms::all();
 
