@@ -16,9 +16,7 @@ class SmsServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->app->singleton(SmsProviderRegistry::class, function($app){
-            return new SmsProviderRegistry();
-        });
+        $this->app->singleton(SmsProviderRegistry::class);
     }
 
     /**
@@ -29,7 +27,7 @@ class SmsServiceProvider extends ServiceProvider
     public function boot()
     {
         $this->app->make(SmsProviderRegistry::class)
-            ->register("blueplanet", (new BluePlanetSMS())
+            ->register("blueplanet", (app(BluePlanetSMS::class))
                     ->setApiUrl(Settings::get('boom_api_url','https://boomsms.net/api/sms/json'))
                     ->setAccessToken(Settings::get('boom_api_key'))
                     ->setSenderId(Settings::get('sender_id', 'PACE'))
