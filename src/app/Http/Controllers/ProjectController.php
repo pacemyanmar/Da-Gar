@@ -1374,6 +1374,7 @@ class ProjectController extends AppBaseController
         $sections = $project->sections;
 
         $selects = [];
+        $joins = [];
         foreach ($sections as $section) {
             $selects[$section->sort] = $this->makeSelectColumns($section);
             if($section->sort) {
