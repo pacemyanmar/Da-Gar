@@ -323,6 +323,8 @@ class SmsAPIController extends AppBaseController
                 }
             }
         }
+
+        return $this->sendResponse('Success', 'Message processed successfully');
         
     }
 
