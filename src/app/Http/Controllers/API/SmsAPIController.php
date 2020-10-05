@@ -318,12 +318,12 @@ class SmsAPIController extends AppBaseController
                                 $this->sendToTelerivet($reply);
                         }                            
                     } else {
-                        $this->sendToTelerivet($reply);
+                        return $this->sendResponse($reply, 'Message processed successfully');
                     }
                 }
             }
         }
-        return $this->sendResponse($reply, 'Message processed successfully');
+        
     }
 
     private function sendToTelerivet($reply)
