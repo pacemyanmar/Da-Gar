@@ -527,13 +527,13 @@ class SmsAPIController extends AppBaseController
              */
             $qna_combined = array_combine($qna[1], $qna[2]);
 
-            Log::debug(print_r($qna_combined));
-            Log::debug(print_r($qna));
+            Log::debug($qna_combined);
+            Log::debug($qna);
 
             // check section of first question and set as current section
             $first_question = $project->questions->where('qnum', strtoupper($qna[1][0]))->first();
 
-            Log::debug(print_r($first_question->toArray()));
+            Log::debug($first_question->toArray());
             $current_section = ($first_question) ?? $first_question->sectionInstance;
             if(!$current_section) {
                 //$reply['message'] = $this->encoding('sms.error_not_by_sms', $encoding);
