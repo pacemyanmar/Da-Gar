@@ -370,7 +370,7 @@ class SmsAPIController extends AppBaseController
 
         $match_code = preg_match('/^([a-zA-Z]+)(\d+)/', trim($message), $pcode);
 
-        Log::debug(print_r($pcode));
+        Log::debug($pcode);
 
         $reply['result_id'] = null;
 
