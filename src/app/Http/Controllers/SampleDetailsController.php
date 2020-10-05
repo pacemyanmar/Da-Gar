@@ -216,6 +216,6 @@ class SampleDetailsController extends AppBaseController
 
         Flash::success('Sample Details deleted successfully.');
 
-        return redirect(route('sample-details.index', ['project_id', $project_id]));
+        return redirect(route('sample-details.index', $project_id));
     }
 }
