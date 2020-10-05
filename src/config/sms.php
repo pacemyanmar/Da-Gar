@@ -17,6 +17,10 @@ return [
         'locale' => 'my'
     ],
     'providers' => [
+        'global' => [
+            'provider' => 'blueplanet',
+            'use' => true
+        ],
         'blueplanet' => [
             'api_url' => 'https://boomsms.net/api/sms/json',
             'access_token' => '',
