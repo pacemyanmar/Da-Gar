@@ -363,7 +363,7 @@ class SmsAPIController extends AppBaseController
 
         // Clean up code, look for Form Code and PCODE/Location code
         $message = strtolower($message);
-        $message = preg_replace('([^a-zA-Z0-9]*)', '', $message);
+        $message = preg_replace('/([^a-zA-Z0-9]*)/', '', $message);
 
         $match_code = preg_match('/^([a-zA-Z]+)(\d+)/', trim($message), $pcode);
 
