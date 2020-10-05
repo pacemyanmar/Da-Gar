@@ -365,7 +365,11 @@ class SmsAPIController extends AppBaseController
         $message = strtolower($message);
         $message = preg_replace('/([^a-zA-Z0-9]*)/', '', $message);
 
+        Log::debug(print_r($message));
+
         $match_code = preg_match('/^([a-zA-Z]+)(\d+)/', trim($message), $pcode);
+
+        Log::debug(print_r($pcode));
 
         $reply['result_id'] = null;
 
