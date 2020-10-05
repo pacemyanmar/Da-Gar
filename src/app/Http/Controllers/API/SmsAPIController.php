@@ -556,6 +556,8 @@ class SmsAPIController extends AppBaseController
             // get questions in a sections
             $questions = $current_section->questions;
 
+            Log::debug($questions);
+
             if(!$questions) {
                 $reply['message'] = 'ERROR: message format';
                 $reply['status'] = 'error';
