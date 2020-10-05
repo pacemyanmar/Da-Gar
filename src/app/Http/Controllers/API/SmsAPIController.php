@@ -183,9 +183,6 @@ class SmsAPIController extends AppBaseController
         $smsLog->service_id = (array_key_exists('message_id', $response_body))?$response_body['message_id']:$smsLog->service_id;
         $smsLog->save();
 
-        $sms->status = ($response_body['status'] === 0)?"sent":$response_body['error-text'];
-        $sms->save();
-
         return $this->sendResponse((string) $smsresponse->getBody(), 'Recieved!');
         // Iterate over the requests and responses
         //foreach ($container as $transaction) {
