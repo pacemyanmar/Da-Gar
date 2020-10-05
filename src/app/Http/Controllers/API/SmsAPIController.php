@@ -363,7 +363,7 @@ class SmsAPIController extends AppBaseController
 
         $reply['result_id'] = null;
 
-        $sender = preg_replace('^(\+95|0)','', preg_replace('/[^\+0-9]/','', $to_number));
+        $sender = preg_replace('/^(\+95|0)/','', preg_replace('/[^\+0-9]/','', $to_number));
 
         $observer_phone = Phone::find($sender);
 
