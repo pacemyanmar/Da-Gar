@@ -534,7 +534,7 @@ class SmsAPIController extends AppBaseController
             $first_question = $project->questions->where('qnum', strtoupper($qna[1][0]))->first();
 
             Log::debug($first_question->toArray());
-            $current_section = ($first_question) ?? $first_question->sectionInstance;
+            $current_section = ($first_question) ?? false;
             Log::debug($current_section);
             if(!$current_section) {
                 //$reply['message'] = $this->encoding('sms.error_not_by_sms', $encoding);
@@ -549,12 +549,12 @@ class SmsAPIController extends AppBaseController
                 return $reply;
             }
 
-            $this->section = $current_section;
+            $this->section = $current_section->sectionInstance;
 
-            $reply['section'] = $current_section->sort;
+            $reply['section'] = $this->section->sort;
 
             // get questions in a sections
-            $questions = $current_section->questions;
+            $questions = $this->section->questions;
 
             Log::debug($questions);
 
