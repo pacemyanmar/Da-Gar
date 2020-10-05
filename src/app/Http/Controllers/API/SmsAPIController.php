@@ -172,50 +172,21 @@ class SmsAPIController extends AppBaseController
 
     public function sendToBoom($response, $to_number, $status_uuid)
     {
-        $client = new Client();
+        $smsprovider = app('blueplanet');
+        $message = $response['message'];
 
-        $message = $response['message']; // m
-        $api_key = Settings::get('boom_api_key'); // p
-        // hardcoded since this is provided by BOOM SMS
-        $keyword = 'PA'; // k
-        $user = 'PACE'; // u
-        $title = 'PACE'; // t
+        $smsresponse = $smsprovider->send(['message' => $message, 'to' => $sms->phone]);
 
-        $container = [];
-        $history = Middleware::history($container);
+        $response_body = json_decode($smsresponse->getBody(), true);
+        $smsLog = SmsLog::where('status_secret', $status_uuid)->first();
+        $smsLog->sms_status = ($response_body['status'] === 0)?"sent":$response_body['error-text'];
+        $smsLog->service_id = (array_key_exists('message_id', $response_body))?$response_body['message_id']:$smsLog->service_id;
+        $smsLog->save();
 
-        $stack = HandlerStack::create();
-        $stack->push($history);
+        $sms->status = ($response_body['status'] === 0)?"sent":$response_body['error-text'];
+        $sms->save();
 
-        $form_params = ['handler' => $stack, 'form_params' => [
-            'k' => $keyword,
-            'u' => $user,
-            'p' => $api_key,
-            'm' => $message,
-            't' => $title,
-            'callerid' => $to_number
-          ]
-        ];
-        $promise = $client->requestAsync('POST', 'http://apiv2.blueplanet.com.mm/mptsdp/bizsendsmsapi.php', $form_params);
-
-        $promise->then(
-            function (ResponseInterface $res) use($status_uuid) {
-                $http_status = $res->getStatusCode();
-                $response_body = json_decode($res->getBody(), true);
-
-                $smsLog = SmsLog::where('status_secret', $status_uuid)->first();
-                $smsLog->sms_status = ($response_body['result_name'])?$response_body['result_name']:$response_body['result_status'];
-                $smsLog->service_id = (array_key_exists('result_refid', $response_body))?$response_body['result_refid']:$smsLog->service_id;
-                $smsLog->save();
-                return $res;
-            },
-            function (RequestException $e) {
-                $error_msg = $e->getMessage();
-                $request_method = $e->getRequest()->getMethod();
-            }
-        );
-        $response = $promise->wait();
-        return $this->sendResponse((string) $response->getBody(), 'Recieved!');
+        return $this->sendResponse((string) $smsresponse->getBody(), 'Recieved!');
         // Iterate over the requests and responses
         //foreach ($container as $transaction) {
             //echo (string) $transaction['request']->getBody(); // Hello World
@@ -392,7 +363,8 @@ class SmsAPIController extends AppBaseController
 
         $reply['result_id'] = null;
 
-        $sender = preg_replace('/[^0-9]/','', $to_number);
+        $sender = preg_replace('^(\+95|0)','', preg_replace('/[^\+0-9]/','', $to_number));
+
         $observer_phone = Phone::find($sender);
 
         if (empty($observer_phone) && config('sms.verify_phone')) {
