@@ -523,6 +523,7 @@ class SmsAPIController extends AppBaseController
             $qna_combined = array_combine($qna[1], $qna[2]);
 
             Log::debug(print_r($qna_combined));
+            Log::debug(print_r($qna));
 
             // check section of first question and set as current section
             $first_question = $project->questions->where('qnum', strtoupper($qna[1][0]))->first();
