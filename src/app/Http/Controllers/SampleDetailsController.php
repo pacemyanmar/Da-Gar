@@ -196,7 +196,15 @@ class SampleDetailsController extends AppBaseController
      */
     public function destroy($project_id, $id, Request $request)
     {
-        $sampleDetails = $this->sampleDetailsRepository->findWithoutFail($id);
+        $project = $this->projectRepository->findWithoutFail($project_id);
+
+        if (empty($project)) {
+            Flash::error('Project not found');
+
+            return redirect(route('sample-details.index', ['project_id', $request->input('project_id')]));
+        }
+
+        $sampleDetails = $this->sampleDetails->setTable($project->dbname.'_samples')->find($id);
 
         if (empty($sampleDetails)) {
             Flash::error('Sample Details not found');
@@ -204,7 +212,7 @@ class SampleDetailsController extends AppBaseController
             return redirect(route('sample-details.index', ['project_id', $project_id]));
         }
 
-        $this->sampleDetailsRepository->delete($id);
+        $this->sampleDetails->delete($id);
 
         Flash::success('Sample Details deleted successfully.');
 
