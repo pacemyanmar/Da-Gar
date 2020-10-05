@@ -175,7 +175,7 @@ class SmsAPIController extends AppBaseController
         $smsprovider = app('blueplanet');
         $message = $response['message'];
 
-        $smsresponse = $smsprovider->send(['message' => $message, 'to' => $sms->phone]);
+        $smsresponse = $smsprovider->send(['message' => $message, 'to' => $to_number]);
 
         $response_body = json_decode($smsresponse->getBody(), true);
         $smsLog = SmsLog::where('status_secret', $status_uuid)->first();
