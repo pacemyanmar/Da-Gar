@@ -360,6 +360,7 @@ class SmsAPIController extends AppBaseController
 
     private function parseMessage($message, $to_number = '')
     {
+        Log::debug($message);
 
         // Clean up code, look for Form Code and PCODE/Location code
         $message = strtolower($message);
