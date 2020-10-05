@@ -55,7 +55,7 @@ Class BluePlanetSMS implements SMSInterface {
         $stack->push($history);
         $form_params = [
             'from' => $this->sender_id,
-            'to' => ltrim($request['to'], '0'),
+            'to' => ltrim($request['to'], '0+'),
             'text' => $request['message']
         ];
 
