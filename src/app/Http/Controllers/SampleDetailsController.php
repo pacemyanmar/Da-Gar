@@ -212,7 +212,7 @@ class SampleDetailsController extends AppBaseController
             return redirect(route('sample-details.index', ['project_id', $project_id]));
         }
 
-        $this->sampleDetails->setTable($project->dbname.'_samples')->delete($id);
+        $this->sampleDetails->setTable($project->dbname.'_samples')->delete();
 
         Flash::success('Sample Details deleted successfully.');
 
