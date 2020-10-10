@@ -178,6 +178,21 @@ class SampleDetailsController extends AppBaseController
             return redirect(route('sample-details.index', ['project_id', $project_id]));
         }
 
+        $phone_columns = $project->locationMetas->where('field_type', 'phone');
+
+        foreach( $phone_columns as $column ) {
+            $phone_number = $request->input($column);
+            $phone_number = preg_replace('/[^0-9]/','',$phone_number);
+            $phone = Phone::find($phone_number);
+
+            if(empty($phone)) {
+                $phone = new Phone();
+                $phone->phone = $phone_number;
+            }
+            $phone->sample_code = $sampleDetails->id;
+            $phone->save();
+        }
+
         $sampleDetails->fill($request->all());
 
         $sampleDetails->save();
