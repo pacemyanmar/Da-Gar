@@ -261,29 +261,22 @@ class SmsAPIController extends AppBaseController
             case 'incoming_message':
             case 'default':
                 $response = $this->parseMessage($content, $from_number);
-                $status = 'new';
-                $smsLog = new SmsLog;
-                $smsLog->event = $event;
-                $smsLog->message_type = $message_type;
-                $smsLog->service_id = $service_id;
-                $smsLog->from_number = $from_number;
-                $smsLog->from_number_e164 = $request->input('from_number_e164');
-                //$smsLog->api_project_id = $request->input('project_id');
-                $smsLog->to_number = $to_number;
-                $smsLog->content = $content; // incoming message
+                $log['event'] = $event;
+                $log['to_number'] = $to_number;
+
+                $log['response'] = $response;
+
                 $uuid = Uuid::uuid5(Uuid::NAMESPACE_DNS, $content.$service_id.$from_number.$to_number . Carbon::now().rand());
-                $smsLog->status_secret = $uuid->toString();
-                $smsLog->status_message = $response['message']; // reply message
-                $smsLog->status = $response['status'];
 
-                $smsLog->form_code = (array_key_exists('form_code', $response)) ? $response['form_code'] : 'Not Valid';
+                $log['status_secret'] = $uuid->toString();
+                $log['status'] = $response['status'];
+                $log['message_type'] = $message_type;
+                $log['content'] = $content;
+                $log['service_id'] = $service_id;
+                $log['from_number'] = $from_number;
+                $log['from_number_e164'] = $request->input('from_number_e164');
 
-                $smsLog->section = (array_key_exists('section', $response)) ? $response['section'] : null; // not actual id from database, just ordering number from form
-                $smsLog->result_id = (array_key_exists('result_id', $response)) ? $response['result_id'] : null;
-                $smsLog->project_id = (array_key_exists('project_id', $response)) ? $response['project_id'] : null;
-                $smsLog->sample_id = (array_key_exists('sample_id', $response)) ? $response['sample_id'] : null;
-
-                $smsLog->remark = '';
+                $log['remark'] = '';
 
                 $reply['status_url'] = route('recieve-sms');
                 $reply['status_secret'] = $smsLog->status_secret;
@@ -292,6 +285,7 @@ class SmsAPIController extends AppBaseController
                 $status_secret = $request->input('secret');
                 $smsLog = SmsLog::where('status_secret', $status_secret)->first();
                 $status = $request->input('status');
+                $log['sms_status'] = $status;
 
                 break;
             default:
@@ -302,9 +296,8 @@ class SmsAPIController extends AppBaseController
         }
 
         if ($smsLog) {
-            $smsLog->sms_status = (isset($status)) ? $status : null;
 
-            $smsLog->save();
+            $this->smsLogs($response, $log);
 
             if ($event != 'send_status') {
                 $reply['content'] = $response['message']; // reply message
