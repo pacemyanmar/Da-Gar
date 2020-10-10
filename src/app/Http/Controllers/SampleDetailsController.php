@@ -14,6 +14,7 @@ use Flash;
 use App\Http\Controllers\AppBaseController;
 use Illuminate\Http\Request;
 use Response;
+use Illuminate\Support\Facades\Log;
 
 class SampleDetailsController extends AppBaseController
 {
@@ -180,8 +181,11 @@ class SampleDetailsController extends AppBaseController
 
         $phone_columns = $project->locationMetas->where('field_type', 'phone');
 
+        Log::debug($phone_columns);
+
         foreach( $phone_columns as $column ) {
             $phone_number = $request->input($column);
+            Log::debug($phone_number);
             $phone_number = preg_replace('/[^0-9]/','',$phone_number);
             $phone = Phone::find($phone_number);
 
