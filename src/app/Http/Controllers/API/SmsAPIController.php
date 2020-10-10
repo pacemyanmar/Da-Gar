@@ -676,6 +676,7 @@ class SmsAPIController extends AppBaseController
         $smsLog->form_code = (array_key_exists('form_code', $response)) ? $response['form_code'] : 'Not Valid';
 
         $smsLog->section = (array_key_exists('section', $response)) ? $response['section'] : null; // not actual id from database, just ordering number from form
+        Log::debug($this->rawlog);
         $smsLog->result_id = (!empty($this->rawlog))?$this->rawlog->id:$response['result_id'];
         $smsLog->project_id = (array_key_exists('project_id', $response)) ? $response['project_id'] : null;
         $smsLog->sample_id = (array_key_exists('sample_id', $response)) ? $response['sample_id'] : null;
