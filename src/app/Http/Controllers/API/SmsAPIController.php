@@ -279,11 +279,10 @@ class SmsAPIController extends AppBaseController
                 $log['remark'] = '';
 
                 $reply['status_url'] = route('recieve-sms');
-                $reply['status_secret'] = $smsLog->status_secret;
+                $reply['status_secret'] = $log['status_secret'];
                 break;
             case 'send_status':
                 $status_secret = $request->input('secret');
-                $smsLog = SmsLog::where('status_secret', $status_secret)->first();
                 $status = $request->input('status');
                 $log['sms_status'] = $status;
 
@@ -651,8 +650,11 @@ class SmsAPIController extends AppBaseController
 
         $log_data = array_merge($default, $logs);
 
+        $status_secret = ($log_data['status_secret'])?$log_data['status_secret']:$uuid->toString();
+
         $status = 'new';
-        $smsLog = new SmsLog;
+        $smsLog = SmsLog::where('status_secret', $status_secret)->first();
+        $smsLog = ($smsLog) ?? new SmsLog;
         $smsLog->event = $event = $log_data['event'];
         $smsLog->message_type = $log_data['message_type'];
         $smsLog->service_id = $service_id = $log_data['service_id'];
@@ -662,7 +664,7 @@ class SmsAPIController extends AppBaseController
         $smsLog->to_number = $to_number = $log_data['to_number'];
         $smsLog->content = $content=  $log_data['content']; // incoming message
         $uuid = Uuid::uuid5(Uuid::NAMESPACE_DNS, $content.$service_id.$from_number.$to_number . Carbon::now().rand());
-        $smsLog->status_secret = ($log_data['status_secret'])?$log_data['status_secret']:$uuid->toString();
+        $smsLog->status_secret = $status_secret;
         $smsLog->status_message = $response['message']; // reply message
         $smsLog->status = $response['status'];
 
