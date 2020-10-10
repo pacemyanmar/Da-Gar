@@ -16,7 +16,7 @@
             <span class="label label-primary badge">{!! $element->value !!}</span> @endif
         @if($element->status != 'published')
             <span class="label label-warning badge">{!! $element->status !!}</span> @endif
-        @if($double)
+        @if(isset($double) && config('sms.double_entry'))
             @if(isset($results) && !empty($results['section'.$section->sort]) && isset($double_results) && !empty($double_results['section'.$section->sort]))
                 @if($double_results['section'.$section->sort]->{$element->inputid} == $results['section'.$section->sort]->{$element->inputid})
                     <span class="label label-success badge"><i class="fa fa-check"></i></span>
