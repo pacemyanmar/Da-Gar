@@ -6,6 +6,7 @@ use App\DataTables\SampleDetailsDataTable;
 use App\Http\Requests;
 use App\Http\Requests\CreateSampleDetailsRequest;
 use App\Http\Requests\UpdateSampleDetailsRequest;
+use App\Models\Phone;
 use App\Models\SampleData;
 use App\Models\SampleDetails;
 use App\Repositories\ProjectRepository;
