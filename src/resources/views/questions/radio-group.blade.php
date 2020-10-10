@@ -89,7 +89,7 @@
                                  $options ) !!}
                             @endif
                             <label class="normal-text" for='{{ $radio->id }}'><!-- dummy for magic radio -->
-                                @if(isset($double))
+                                @if(isset($double) && config('sms.double_entry'))
                                     @if(isset($results) && !empty($results['section'.$section->sort]) && isset($double_results) && !empty($double_results['section'.$section->sort]))
                                         @if($double_results['section'.$section->sort]->{$radio->inputid} == $results['section'.$section->sort]->{$radio->inputid})
                                             <span class="label label-success badge"><i class="fa fa-check"></i></span>
