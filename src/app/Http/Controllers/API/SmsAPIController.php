@@ -716,6 +716,7 @@ class SmsAPIController extends AppBaseController
         }
         $rawlog->save();
         $this->rawlog = $rawlog;
+        Log::debug("In RAWLOG : ". $this->rawlog);
     }
 
     /*
