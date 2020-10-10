@@ -185,7 +185,7 @@ class SampleDetailsController extends AppBaseController
         Log::debug($phone_columns);
 
         foreach( $phone_columns as $column ) {
-            $phone_number = $request->input($column);
+            $phone_number = $request->input($column->field_name);
             Log::debug($phone_number);
             $phone_number = preg_replace('/[^0-9]/','',$phone_number);
             $phone = Phone::find($phone_number);
