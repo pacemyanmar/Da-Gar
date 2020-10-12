@@ -947,6 +947,7 @@ class ProjectController extends AppBaseController
             $reader = new Xls();
             $reader->setReadDataOnly(true);
             $spreadsheet = $reader->load($project_xls_file);
+            //$spreadsheet = IOFactory::load($project_xls_file);
             $spreadsheet->setActiveSheetIndexByName('project');
             $project = $spreadsheet->getActiveSheet()->toArray();
 
@@ -967,7 +968,7 @@ class ProjectController extends AppBaseController
             $project['project'] = $project['label'];
 
             if(array_key_exists('type', $project)) {
-                $project['type'] = ($project['type'] == 'incident')? 'sample2db':'fixed';
+                $project['type'] = ($project['type'] == 'incident')? 'sample2db':'fixed'; //this should be sbo or incident or campaign
             }
 
             $validator = Validator::make($project, [
@@ -1475,10 +1476,9 @@ class ProjectController extends AppBaseController
             // upload directly here
             $imported = $this->importSampleData($records, $project, $idcolumn);
             if($imported) {
-                Flash::success('Imported');
-
-                return redirect(route('sample-details.index', $project->id));
+                Flash::success('Imported');               
             }
+            return redirect(route('sample-details.index', $project->id));
 
         } else {
             return redirect()->back()->withErrors('Invalid file');
@@ -1599,7 +1599,7 @@ class ProjectController extends AppBaseController
         $sample_data->setTable($project->dbname . '_samples');
         $sample_data->insertOrUpdate($data_array, $project->dbname . '_samples');
 
-        return;
+        return $sample_data;
     }
 
 }
