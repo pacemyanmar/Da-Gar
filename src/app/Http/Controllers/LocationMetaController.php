@@ -177,17 +177,13 @@ class LocationMetaController extends AppBaseController
                     if (Schema::hasColumn($table_name, $location->field_name)) {
                         switch ($location->field_type) {
                             case 'code';
-                                $table->string($location->field_name,20)->index()->change();
+                                $table->string($location->field_name,20)->change();
                                 break;                        
                             case 'textarea';
                                 $table->text($location->field_name)->change();
                                 break;
                             default;
-                                if($location->show_index || $location->export) {
-                                    $table->string($location->field_name,100)->nullable()->index()->change();
-                                } else {
-                                    $table->string($location->field_name,100)->nullable()->change();
-                                }
+                                $table->string($location->field_name,100)->nullable()->change();
                         }
                     } else {
                         switch ($location->field_type) {
