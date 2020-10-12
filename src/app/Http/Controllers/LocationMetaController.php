@@ -175,9 +175,35 @@ class LocationMetaController extends AppBaseController
 
                 foreach ($project->locationMetas as $location) {
                     if (Schema::hasColumn($table_name, $location->field_name)) {
-                        $table->string($location->field_name)->nullable()->change();
+                        switch ($location->field_type) {
+                            case 'code';
+                                $table->string($location->field_name,20)->index()->change();
+                                break;                        
+                            case 'textarea';
+                                $table->text($location->field_name)->change();
+                                break;
+                            default;
+                                if($location->show_index || $location->export) {
+                                    $table->string($location->field_name,100)->nullable()->index()->change();
+                                } else {
+                                    $table->string($location->field_name,100)->nullable()->change();
+                                }
+                        }
                     } else {
-                        $table->string($location->field_name)->nullable();
+                        switch ($location->field_type) {
+                            case 'code';
+                                $table->string($location->field_name,20)->index();
+                                break;                        
+                            case 'textarea';
+                                $table->text($location->field_name);
+                                break;
+                            default;
+                                if($location->show_index || $location->export) {
+                                    $table->string($location->field_name,100)->nullable()->index();
+                                } else {
+                                    $table->string($location->field_name,100)->nullable();
+                                }
+                        }
                     }
 
                     if($location->show_index || $location->export) {
