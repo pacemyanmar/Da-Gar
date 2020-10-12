@@ -196,14 +196,20 @@ class LocationMetaController extends AppBaseController
 
                     switch ($location->field_type) {
                         case 'primary';
-                            $table->string($location->field_name)
+                            $table->string($location->field_name,50)
                                 ->primary($location->field_name);
+                            break;
+                        case 'code';
+                            $table->string($location->field_name,20)->index();
+                            break;                        
+                        case 'textarea';
+                            $table->text($location->field_name);
                             break;
                         default;
                             if($location->show_index || $location->export) {
-                                $table->string($location->field_name)->nullable()->index();
+                                $table->string($location->field_name,100)->nullable()->index();
                             } else {
-                                $table->string($location->field_name)->nullable();
+                                $table->string($location->field_name,100)->nullable();
                             }
                     }
 
