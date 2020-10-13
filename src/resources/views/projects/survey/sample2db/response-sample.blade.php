@@ -2,6 +2,10 @@
 @section('meta')
 <meta name="csrf-token" content="{{ csrf_token() }}">
 @endsection
+@php
+    $select_filters = $project->locationMetas->where('filter_type', 'selectbox')->pluck('field_name');
+
+@endphp
 @section('content')
     <section class="content-header">
         <h1 class="pull-left">Projects Sample Response Rate</h1>
