@@ -83,9 +83,35 @@ class SampleDetailsController extends AppBaseController
      */
     public function store($project_id, CreateSampleDetailsRequest $request)
     {
+        $project = $this->projectRepository->findWithoutFail($project_id);
+
+        if (empty($project)) {
+            Flash::error('Project not found');
+
+            return redirect(route('sample-details.index', ['project_id', $request->input('project_id')]));
+        }
+        
         $input = $request->all();
 
         $sampleDetails = $this->sampleDetailsRepository->create($input);
+
+        $phone_columns = $project->locationMetas->where('field_type', 'phone');
+
+        Log::debug($phone_columns);
+
+        foreach( $phone_columns as $column ) {
+            $phone_number = $request->input($column->field_name);
+            Log::debug($phone_number);
+            $phone_number = preg_replace('/[^0-9]/','',$phone_number);
+            $phone = Phone::find($phone_number);
+
+            if(empty($phone)) {
+                $phone = new Phone();
+                $phone->phone = $phone_number;
+            }
+            $phone->sample_code = $sampleDetails->id;
+            $phone->save();
+        }
 
         Flash::success('Sample Details saved successfully.');
 

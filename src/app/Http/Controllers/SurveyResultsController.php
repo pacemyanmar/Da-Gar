@@ -339,11 +339,18 @@ class SurveyResultsController extends AppBaseController
         $sampleResponse->setProject($project);
 
         $sampleResponse->setFilter($filter);
+
+        if(!empty($request->input('sample_group'))) {
+            $sample_group = $request->input('sample_group');
+            $sampleResponse->setSample($sample_group);
+        }
         switch ($project->type) {
             case 'sample2db':
                 $project_type = $project->type;
                 break;
-
+            case 'incident':
+                $project_type = 'sample2db';
+                break;
             default:
                 $project_type = 'db2sample';
                 break;
@@ -361,7 +368,14 @@ class SurveyResultsController extends AppBaseController
 
         $filters = ['type' => $filter, 'section_num' => $section_num];
 
-        return $sampleResponse->render('projects.survey.' . $project_type . '.response-sample', compact('project', $project), compact('filters', $filters));
+        $sample_groups = $project->locationMetas->where('data_type', 'sample')->pluck('field_name');
+
+        $data = [   'filters' => $filters,
+                    'samples' => $sample_groups,
+                    'selected' => $request->input('sample_group')
+                ];
+
+        return $sampleResponse->render('projects.survey.' . $project_type . '.response-sample', compact('project', $project), compact('data', $data));
     }
 
     public function responseRateDouble($project_id, DoubleResponseDataTable $doubleResponse)

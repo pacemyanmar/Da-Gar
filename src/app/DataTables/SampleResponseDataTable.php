@@ -12,10 +12,11 @@ class SampleResponseDataTable extends DataTable
 {
     use SurveyQueryTrait;
 
-
     private $filter;
 
     private $type;
+
+    private $sample_group;
 
     private $section;
 
@@ -34,6 +35,12 @@ class SampleResponseDataTable extends DataTable
     public function setType($type)
     {
         $this->type = $type;
+        return $this;
+    }
+
+    public function setSample($sample)
+    {
+        $this->sample_group = $sample;
         return $this;
     }
 
@@ -209,6 +216,10 @@ class SampleResponseDataTable extends DataTable
             $join->on('qc_user.id', 'samples.qc_user_id');
         });
         $query->where('project_id', $project->id);
+
+        if(!empty($this->sample_group)) {
+            $query->whereNotNull($this->sample_group)->where($this->sample_group,'>',0);
+        }
         //$query->where('sdv.sample', '<>', '0');
 
 //        $query->orderBy('samples.sample_data_id', 'ASC');

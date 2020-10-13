@@ -40,7 +40,7 @@
                     {!! Form::text("field_type", 'primary', ["class" => "form-control field_type field", "readonly"]) !!}
                 </td>
                 <td>
-                    {!! Form::select("data_type", ["location" => "Location", "observer1" => "Observer 1", "observer2" => "Observer 2"],'location', ["class" => "form-control data_type field"]) !!}
+                    {!! Form::select("data_type", ["location" => "Location", "observer1" => "Observer 1", "observer2" => "Observer 2", "sample" => "Sample Group"],'location', ["class" => "form-control data_type field"]) !!}
                 </td>
                 <td>
                     {!! Form::checkbox("show", 1, null,["class" => "magic-checkbox field_show field", "id" => "show"]) !!}
@@ -68,7 +68,7 @@
                     {!! Form::select("filter_type", ["" => "None", "typein" => "Type In","selectbox" => "Select Box"],null, ["class" => "form-control filter_type field"]) !!}
                 </td>
                 <td>
-                    {!! Form::select("data_type", ["location" => "Location", "observer1" => "Observer 1", "observer2" => "Observer 2"],'location', ["class" => "form-control data_type field"]) !!}
+                    {!! Form::select("data_type", ["location" => "Location", "observer1" => "Observer 1", "observer2" => "Observer 2", "sample" => "Sample Group"],'location', ["class" => "form-control data_type field"]) !!}
                 </td>
                 <td>
                     {!! Form::checkbox("show", 1, null,["class" => "magic-checkbox field_show field", "id" => "show"]) !!}
@@ -111,7 +111,7 @@
                             @endif
                         </td>
                         <td>
-                            {!! Form::select("data_type", ["location" => "Location", "observer1" => "Observer 1", "observer2" => "Observer 2"],$location->data_type, ["class" => "form-control data_type field"]) !!}
+                            {!! Form::select("data_type", ["location" => "Location", "observer1" => "Observer 1", "observer2" => "Observer 2", "sample" => "Sample Group"],$location->data_type, ["class" => "form-control data_type field"]) !!}
                         </td>
                         <td>
                             @if($location->field_type == 'primary')
@@ -172,7 +172,7 @@
             '            {!! Form::select("filter_type", ["" => "None", "typein" => "Type In","selectbox" => "Select Box"],null, ["class" => "form-control filter_type field"]) !!}\n' +
             '        </td>\n' +
             '        <td>\n' +
-            '            {!! Form::select("data_type", ["location" => "Location", "observer1" => "Observer 1", "observer2" => "Observer 2"],null, ["class" => "form-control data_type field"]) !!}\n' +
+            '            {!! Form::select("data_type", ["location" => "Location", "observer1" => "Observer 1", "observer2" => "Observer 2", "sample" => "Sample Group"],null, ["class" => "form-control data_type field"]) !!}\n' +
             '        </td>\n' +
             '        <td>\n' +
             '           {!! Form::checkbox("show", 1, null,["class" => "magic-checkbox field_show field", "id" => "show"]) !!}\n' +
