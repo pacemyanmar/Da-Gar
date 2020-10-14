@@ -68,7 +68,7 @@
         sample_group="{{$data['selected']}}"
     @endif
 
-    $('button.sample').click(function(){
+    $('button.sample').on('change', function(){
         sample_group=$(this).data('sample');
         var url = document.location.href.split('?')[0]+"?sample_group="+sample_group;
         document.location = url;
@@ -78,6 +78,8 @@
         var filterurl = $(this).val();
         if(sample_group) {
             url = filterurl.split('?')[0]+"?sample_group="+sample_group;
+        } else {
+            url = filterurl;
         }
 
         window.location.href = url;
