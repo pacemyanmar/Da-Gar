@@ -478,7 +478,9 @@ class SmsAPIController extends AppBaseController
             if($project->type == 'fixed' || $project->type == 'db2sample') {
                 $form_no = 1;
                 $frequency = 1;
+                Log::debug($sample_id.$this->phone->observer);
                 $sample = $this->findSample($sample_id.$this->phone->observer, $form_no, $frequency);
+                Log::debug($sample);
             } else {
                 $sample = $this->createSample($sample_id);
             }
