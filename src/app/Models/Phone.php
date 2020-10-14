@@ -14,5 +14,7 @@ class Phone extends Model
     public $fillable = [
         'phone',
         'encoding',
+        'observer',
+        'sample_code'
     ];
 }

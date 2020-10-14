@@ -62,7 +62,7 @@
                     {!! Form::text("field_name", null, ["class" => "form-control field_name field"]) !!}
                 </td>
                 <td>
-                    {!! Form::select("field_type", ["code" => "Code","text" => "Text","textarea" => "Paragraph","integer" => "Number", "phone" => "Phone"],'text', ["class" => "form-control field_type field"]) !!}
+                    {!! Form::select("field_type", ["code" => "Code","text" => "Text","textarea" => "Paragraph","integer" => "Number", "sbo_number" => "SBO Number", "phone" => "Phone"],'text', ["class" => "form-control field_type field"]) !!}
                 </td>
                 <td>
                     {!! Form::select("filter_type", ["" => "None", "typein" => "Type In","selectbox" => "Select Box"],null, ["class" => "form-control filter_type field"]) !!}
@@ -100,7 +100,7 @@
                             @if($location->field_type == 'primary')
                                 {!! Form::text("field_type", 'primary', ["class" => "form-control field_type field", "readonly"]) !!}
                             @else
-                                {!! Form::select("field_type", ["code" => "Code","text" => "Text","textarea" => "Paragraph","integer" => "Number", "phone" => "Phone"], $location->field_type, ["class" => "form-control field_type field"]) !!}
+                                {!! Form::select("field_type", ["code" => "Code","text" => "Text","textarea" => "Paragraph","integer" => "Number", "sbo_number" => "SBO Number", "phone" => "Phone"], $location->field_type, ["class" => "form-control field_type field"]) !!}
                             @endif
                         </td>
                         <td>
@@ -166,7 +166,7 @@
             '            {!! Form::text("field_name", null, ["class" => "form-control field_name field"]) !!}\n' +
             '        </td>\n' +
             '        <td>\n' +
-            '            {!! Form::select("field_type", ["text" => "Text","textarea" => "Paragraph","integer" => "Number","code" => "Code", "phone" => "Phone"],null, ["class" => "form-control field_type field"]) !!}\n' +
+            '            {!! Form::select("field_type", ["text" => "Text","textarea" => "Paragraph","integer" => "Number","code" => "Code", "sbo_number" => "SBO Number","phone" => "Phone"],null, ["class" => "form-control field_type field"]) !!}\n' +
             '        </td>\n' +
             '        <td>\n' +
             '            {!! Form::select("filter_type", ["" => "None", "typein" => "Type In","selectbox" => "Select Box"],null, ["class" => "form-control filter_type field"]) !!}\n' +

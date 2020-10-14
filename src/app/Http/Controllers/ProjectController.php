@@ -9,6 +9,7 @@ use App\Http\Requests\UpdateProjectRequest;
 use App\Models\LocationMeta;
 use App\Models\LogicalCheck;
 use App\Models\Observer;
+use App\Models\Phone;
 use App\Models\Project;
 use App\Models\Question;
 use App\Models\Sample;
@@ -25,6 +26,7 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
@@ -1535,6 +1537,7 @@ class ProjectController extends AppBaseController
     private function sampleStructure($project, $columns, $idcolumn)
     {
         array_walk($columns, function (&$item, $key) use ($idcolumn) {
+            $field = [];
             switch ($key) {
                 case 'idcolumn':
                     $field['field_type'] = 'primary';
@@ -1581,23 +1584,51 @@ class ProjectController extends AppBaseController
     private function importSampleData($records, $project, $idcoumn)
     {
 
-        $data_array = iterator_to_array($records, true);
+        $data_array = iterator_to_array($records,true);
 
-        array_walk($data_array, function (&$data, $key) use ($project) {
+        array_walk($data_array, function(&$data, $key) use ($project) {
             $newdata = [];
-            foreach ($data as $dk => $dv) {
-                if (str_dbcolumn($dk) == $project->idcolumn) {
+            
+
+            foreach($data as $dk => $dv) {
+                $data_column = str_dbcolumn($dk);
+                if($data_column == $project->idcolumn) {
                     $newdata['id'] = filter_var($dv, FILTER_SANITIZE_STRING);
                 } else {
-                    // this will throw error if column not exist, need to check first
-                    $newdata[str_dbcolumn($dk)] = filter_var($dv, FILTER_SANITIZE_STRING);
+                    $newdata[$data_column] = filter_var($dv, FILTER_SANITIZE_STRING);
+                }               
+            }
+
+            foreach($newdata as $dk => $dv) {
+                $phone_column = $project->locationMetas->where('field_name', $dk)->where('field_type', 'phone')->first();
+                
+                if($phone_column) {
+                    Log::debug($newdata);
+                    $sbo_number_col = $project->locationMetas->where('field_type', 'sbo_number')->first();
+                    $observer_number = (array_key_exists($sbo_number_col->field_name, $newdata))?$newdata[$sbo_number_col->field_name]:null;
+                    Log::debug($sbo_number_col);
+                    Log::debug($observer_number);
+
+                    $phone_number = preg_replace('/[^0-9]/','',$newdata[$dk]);
+                    if($phone_number) {
+                        $phone = Phone::find($phone_number);
+
+                        if(empty($phone)) {
+                            $phone = new Phone();
+                            $phone->phone = $phone_number;
+                        }
+                        $phone->sample_code = $newdata['id'];
+                        $phone->observer = $observer_number;
+                        $phone->save();
+                    }
                 }
             }
             $data = $newdata;
         });
+
         $sample_data = new SampleData();
-        $sample_data->setTable($project->dbname . '_samples');
-        $sample_data->insertOrUpdate($data_array, $project->dbname . '_samples');
+
+        $sample_data->insertOrUpdate($data_array, $project->dbname.'_samples');
 
         return $sample_data;
     }

@@ -15,6 +15,7 @@ use App\Repositories\ProjectRepository;
 use App\Http\Controllers\AppBaseController;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\Log;
 use Laracasts\Flash\Flash;
 use League\Csv\Reader;
 use League\Csv\Statement;
@@ -152,6 +153,7 @@ class LocationMetaController extends AppBaseController
 
 
         if ($request->submit == "Import Data") {
+            $this->updateStructure($project);
             $this->importData($project);
             $message = 'Data imported';
         }
@@ -177,10 +179,14 @@ class LocationMetaController extends AppBaseController
                     if (Schema::hasColumn($table_name, $location->field_name)) {
                         switch ($location->field_type) {
                             case 'code';
-                                $table->string($location->field_name,20)->change();
+                                $table->string($location->field_name,20)->nullable()->change();
                                 break;                        
                             case 'textarea';
-                                $table->text($location->field_name)->change();
+                                $table->text($location->field_name)->nullable()->change();
+                                break;
+                            case 'number':
+                            case 'sbo_number':
+                                $table->integer($location->field_name)->nullable()->change();
                                 break;
                             default;
                                 $table->string($location->field_name,100)->nullable()->change();
@@ -188,10 +194,14 @@ class LocationMetaController extends AppBaseController
                     } else {
                         switch ($location->field_type) {
                             case 'code';
-                                $table->string($location->field_name,20)->index();
+                                $table->string($location->field_name,20)->nullable()->index();
                                 break;                        
                             case 'textarea';
-                                $table->text($location->field_name);
+                                $table->text($location->field_name)->nullable();
+                                break;
+                            case 'number':
+                            case 'sbo_number':
+                                $table->integer($location->field_name)->nullable()->change()->index();
                                 break;
                             default;
                                 if($location->show_index || $location->export) {
@@ -227,6 +237,10 @@ class LocationMetaController extends AppBaseController
                         case 'textarea';
                             $table->text($location->field_name);
                             break;
+                        case 'number':
+                        case 'sbo_number':
+                            $table->integer($location->field_name)->nullable()->change()->index();
+                            break;
                         default;
                             if($location->show_index || $location->export) {
                                 $table->string($location->field_name,100)->nullable()->index();
@@ -243,7 +257,6 @@ class LocationMetaController extends AppBaseController
 
     public function importData($project)
     {
-        $this->updateStructure($project);
         $storage_path = storage_path('app/'.$project->sample_file);
 
         $reader = Reader::createFromPath($storage_path, 'r');
@@ -256,16 +269,28 @@ class LocationMetaController extends AppBaseController
 
         array_walk($data_array, function(&$data, $key) use ($project) {
             $newdata = [];
+            
+
             foreach($data as $dk => $dv) {
                 $data_column = str_dbcolumn($dk);
                 if($data_column == $project->idcolumn) {
                     $newdata['id'] = filter_var($dv, FILTER_SANITIZE_STRING);
                 } else {
                     $newdata[$data_column] = filter_var($dv, FILTER_SANITIZE_STRING);
-                }
-                $phone_column = $project->locationMetas->where('field_name', $data_column)->where('field_type', 'phone')->first();
+                }               
+            }
+
+            foreach($newdata as $dk => $dv) {
+                $phone_column = $project->locationMetas->where('field_name', $dk)->where('field_type', 'phone')->first();
+                
                 if($phone_column) {
-                    $phone_number = preg_replace('/[^0-9]/','',$newdata[$data_column]);
+                    Log::debug($newdata);
+                    $sbo_number_col = $project->locationMetas->where('field_type', 'sbo_number')->first();
+                    $observer_number = (array_key_exists($sbo_number_col->field_name, $newdata))?$newdata[$sbo_number_col->field_name]:null;
+                    Log::debug($sbo_number_col);
+                    Log::debug($observer_number);
+
+                    $phone_number = preg_replace('/[^0-9]/','',$newdata[$dk]);
                     if($phone_number) {
                         $phone = Phone::find($phone_number);
 
@@ -274,6 +299,7 @@ class LocationMetaController extends AppBaseController
                             $phone->phone = $phone_number;
                         }
                         $phone->sample_code = $newdata['id'];
+                        $phone->observer = $observer_number;
                         $phone->save();
                     }
                 }

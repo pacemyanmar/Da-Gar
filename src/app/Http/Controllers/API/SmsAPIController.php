@@ -457,7 +457,7 @@ class SmsAPIController extends AppBaseController
 
             $dbname = $project->dbname;
 
-            $reply['form_code'] = $pcode[2];
+            $reply['form_code'] = $project->uniqueid;
 
             if($project->frequencies > 1 && $project->copies > 1) {
                 $sample_id = mb_substr($pcode[2], 0, -2);
@@ -478,7 +478,7 @@ class SmsAPIController extends AppBaseController
             if($project->type == 'fixed' || $project->type == 'db2sample') {
                 $form_no = 1;
                 $frequency = 1;
-                $sample = $this->findSample($sample_id, $form_no, $frequency);
+                $sample = $this->findSample($sample_id.$this->phone->observer, $form_no, $frequency);
             } else {
                 $sample = $this->createSample($sample_id);
             }
