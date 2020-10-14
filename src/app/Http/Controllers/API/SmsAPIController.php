@@ -372,6 +372,8 @@ class SmsAPIController extends AppBaseController
 
         $observer_phone = Phone::find($sender);
 
+        Log::debug("Observer Phone: ". $observer_phone);
+
         if (empty($observer_phone) && config('sms.verify_phone')) {
             // if project is empty
             $reply['message'] = 'Wrong Phone Number!';
