@@ -201,7 +201,7 @@ class LocationMetaController extends AppBaseController
                                 break;
                             case 'number':
                             case 'sbo_number':
-                                $table->integer($location->field_name)->nullable()->change()->index();
+                                $table->integer($location->field_name)->nullable()->index();
                                 break;
                             default;
                                 if($location->show_index || $location->export) {
@@ -239,7 +239,7 @@ class LocationMetaController extends AppBaseController
                             break;
                         case 'number':
                         case 'sbo_number':
-                            $table->integer($location->field_name)->nullable()->change()->index();
+                            $table->integer($location->field_name)->nullable()->index();
                             break;
                         default;
                             if($location->show_index || $location->export) {
