@@ -457,7 +457,7 @@ class SmsAPIController extends AppBaseController
 
             $dbname = $project->dbname;
 
-            $reply['form_code'] = $project->uniqueid;
+            $reply['form_code'] = $project->unique_code;
 
             if($project->frequencies > 1 && $project->copies > 1) {
                 $sample_id = mb_substr($pcode[2], 0, -2);
