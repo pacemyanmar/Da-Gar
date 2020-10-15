@@ -256,9 +256,21 @@ class UserController extends AppBaseController
 
             $csv = Reader::createFromPath($path, 'r')
                 ->setHeaderOffset(0);
+            
+            $default = [
+                'name' => '',
+                'code' => '',
+                'username' => '',
+                'password' => '',
+                'email' => '',
+                'role' => 'entryclerk'
+            ];
+
 
             foreach($csv as $row){
 
+                $row = array_merge($default, $row);
+                $role = $this->role->where('role_name',strtolower($row['role']))->first();
 
                 User::firstOrcreate([
                     'name' => $row['name'],
@@ -266,7 +278,7 @@ class UserController extends AppBaseController
                     'username' => $row['username'],
                     'password' => bcrypt($row['password']),
                     'email' => $row['email'],
-                    'role_id'   => 5 //Data Entry Clerk Role_Id 5
+                    'role_id'   => ($row->id) ?? 5 //Data Entry Clerk Role_Id 5
                 ]);
 
             }
