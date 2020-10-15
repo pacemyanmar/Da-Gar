@@ -273,14 +273,14 @@ class UserController extends AppBaseController
                 $role = $this->role->where('role_name',strtolower($row['role']))->first();
 
                 $user = User::firstOrcreate([
-                    'name' => $row['name'],
-                    'code' => $row['code'],
-                    'username' => $row['username'],
+                    'email' => $row['email'],
                 ]);
 
                 $user->fill([
+                    'name' => $row['name'],
+                    'code' => $row['code'],
+                    'username' => $row['username'],
                     'password' => bcrypt($row['password']),
-                    'email' => $row['email'],
                     'role_id'   => ($role->id) ?? 5 //Data Entry Clerk Role_Id 5
                 ]);
                 $user->save();
