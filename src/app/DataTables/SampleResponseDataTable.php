@@ -490,7 +490,7 @@ class SampleResponseDataTable extends DataTable
             'dom' => $dom,
             'scrollX' => $scrollX,
             'ordering' => false,
-            'pageLength' => 50,
+            'pageLength' => 200,
             'fixedColumns' => ['leftColumns' => 2],
             'language' => [
                 "decimal" => trans('messages.decimal'),

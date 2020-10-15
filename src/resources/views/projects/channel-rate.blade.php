@@ -48,7 +48,7 @@
     // })
 
     function getFirstData() {
-        var ajaxurl = "{{ route('project.responses', [$project->id]) }}";
+        var ajaxurl = "{{ route('project.responses', [$project->id], false) }}";
 
         var start_time = "{!! $start_time !!}"
         jQuery.ajax({
@@ -110,7 +110,7 @@
         console.log(data);
 
         var layout = {
-            title: '{{ $project->project }} response rate by report channel',
+            title: "{{ preg_replace('/\s+/', ' ', $project->project) }} response rate by report channel"
         };
 
         Plotly.newPlot('plot2', data, layout);
@@ -178,9 +178,9 @@
 
             var section_data{{$section->sort}} = {};
 
-            getSectionData("{{ route('smscount', [$project->id, $section->sort]) }}", "{{ $section->sectionname }}", "section{{$section->sort}}");
+            getSectionData("{{ route('smscount', [$project->id, $section->sort], false) }}", "{{ $section->sectionname }}", "section{{$section->sort}}");
 
-           setInterval(function(){getSectionData("{{ route('smscount', [$project->id, $section->sort]) }}", "{{ $section->sectionname }}", "section{{$section->sort}}");}, 10000);
+           setInterval(function(){getSectionData("{{ route('smscount', [$project->id, $section->sort], false) }}", "{{ $section->sectionname }}", "section{{$section->sort}}");}, 10000);
         </script>
 
 @endforeach

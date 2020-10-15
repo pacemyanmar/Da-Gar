@@ -1033,9 +1033,11 @@ class ProjectController extends AppBaseController
                                 $option['other'] = ($option['other']) ? TRUE : FALSE;
                                 switch ($option['type']) {
                                     case 'select_one':
+                                    case 'radio':
                                         $option['type'] = 'single';
                                         break;
                                     case 'select_many':
+                                    case 'checkbox':
                                         $option['type'] = 'check';
                                         break;
                                     default:
