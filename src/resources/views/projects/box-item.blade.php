@@ -17,6 +17,7 @@
             </div>
             <div class="media-body">
                 <div class="clearfix">
+                @if(in_array(Auth::user()->role->level,[3,4,5,6,7,8,9]))
                     @if($project->type == 'sample2db')
                         <a href="{{ route('projects.surveys.index', $project->id) }}"
                            class='btn btn-success btn-sm' style='margin-bottom: 5px;'>
@@ -31,17 +32,20 @@
                             <i class="glyphicon glyphicon-eye-open"></i> {!! trans('messages.list_samples') !!}
                         </a>
                     @endif
+                @endif
+                @if(in_array(Auth::user()->role->level,[3,4,5,6,7,8,9]))
                         <a href="{{ route('projects.response.filter', [$project->id, $response_filter]) }}"
                            class='btn btn-default btn-sm' style='margin-bottom: 5px;'>
                             <i class="glyphicon glyphicon-equalizer"></i> {!! trans('messages.response') !!}
                         </a>
-                    @if(Auth::user()->role->level > 8)
+                @endif
+                @if(in_array(Auth::user()->role->level,[8,9]))
                         <a href="{{ route('projects.edit', $project->id) }}" class='btn btn-default btn-sm'
                            style='margin-bottom: 5px;'>
                             <i class="glyphicon glyphicon-edit"></i> {!! trans('messages.edit') !!}
                         </a>
                     @endif
-                    @if(Auth::user()->role->level >= 7)
+                    @if(in_array(Auth::user()->role->level,[3,7,8,9]))
                             <a href="{{ route('projects.channel.rates', [$project->id]) }}"
                                class='btn btn-default btn-sm' style='margin-bottom: 5px;'>
                                 <i class="glyphicon glyphicon-equalizer"></i> {!! trans('messages.channel-rate') !!}
@@ -56,27 +60,33 @@
                                 <i class="fa fa-balance-scale"></i> {!! trans('messages.check') !!}</i>
                             </a>
                         @endif
+                    @endif
+                    @if(in_array(Auth::user()->role->level,[7,8,9]))
                         <a href="{{ route('projects.analysis', $project->id) }}"
                            class='btn btn-default btn-sm' style='margin-bottom: 5px;'>
                             <i class="fa fa-pie-chart"></i> {!! trans('messages.analysis') !!}
                         </a>
+                    @endif
+                    @if(in_array(Auth::user()->role->level,[3,7,8,9]))
                         <a href="{{ route('projects.smslog', $project->id) }}" class='btn btn-default btn-sm' style='margin-bottom: 5px;'>
                         <i class="fa fa-envelope"></i> {!! trans('messages.smslog') !!}
                         </a>
+                    @endif
+                    @if(in_array(Auth::user()->role->level,[7,8,9]))
                         <a href="{{ route('location-metas.show-structure', $project->id) }}"
                            class='btn btn-default btn-sm' style='margin-bottom: 5px;'>
                             <i class="glyphicon glyphicon-edit"></i>Edit Sample Columns
                         </a>
-
+                    @endif
+                    @if(in_array(Auth::user()->role->level,[7,8,9]))
                         <a href="{{ route('sample-details.index', ['project_id' => $project->id]) }}"
                            class='btn btn-default btn-sm' style='margin-bottom: 5px;'>
                             <i class="glyphicon glyphicon-edit"></i>List Sample Data
                         </a>
-
                     @endif
                 </div>
             </div>
-            <div class="media-right">
+            <!--div class="media-right">
                 @if(Auth::user()->role->level >= 7)
                 {!! Form::open(['route' => ['projects.destroy', $project->id], 'method' => 'delete', 'class' => 'from-inline']) !!}
 
@@ -89,7 +99,7 @@
 
                 {!! Form::close() !!}
                 @endif
-            </div>
+            </div-->
         </div>
     </div>
 </div>
