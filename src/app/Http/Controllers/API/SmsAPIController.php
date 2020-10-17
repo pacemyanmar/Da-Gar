@@ -534,8 +534,8 @@ class SmsAPIController extends AppBaseController
             $current_section = ($first_question) ?? false;
             Log::debug($current_section);
             if(!$current_section) {
-                //$reply['message'] = $this->encoding('sms.error_not_by_sms', $encoding);
-                $reply['message'] = 'ERROR';
+                $reply['message'] = $this->encoding('sms.error_unknown_section', $encoding);
+                //$reply['message'] = 'ERROR';
                 $reply['status'] = 'error';
                 return $reply;
             }
