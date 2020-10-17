@@ -763,6 +763,9 @@ class SmsAPIController extends AppBaseController
     private function encoding($translation_key, $encoding)
     {
         $message = trans($translation_key);
+        if(!config('sms.font_converter')) {
+            return $message;
+        }
         if($encoding != 'unicode') {
             return Converter::convert($message, 'unicode', 'zawgyi');
         } else {
