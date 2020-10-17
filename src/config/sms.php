@@ -28,11 +28,11 @@ return [
         ]
     ],
     'country_prefix' => '95',
-    'reporting_mode' => true,
+    'reporting_mode' => false,
     'double_entry' => false,
     'collapse' => true,
     'response_filter' => 'state_region',
-    'verify_phone' => false,
+    'verify_phone' => true,
     'allowedip' => [
         '172.20.0.1',
         '172.16.16.61',
