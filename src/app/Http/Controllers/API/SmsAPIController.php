@@ -414,12 +414,11 @@ class SmsAPIController extends AppBaseController
                     break;
             }
 
-//            if ($projects->count() === 1) {
-//                // if project is only one project use this project
-//                $project = Project::first();
-//
-//            } else
-            if (!empty(Settings::get('active_project'))){
+            if ($form_prefix === "s") {
+                // if project is only one project use this project
+                $project = Project::whereRaw('LOWER(unique_code) ="' . strtolower($form_prefix) . '"')->first();
+
+            } elseif (!empty(Settings::get('active_project'))){
                 $project = Project::find(Settings::get('active_project'));
             } else {
 
