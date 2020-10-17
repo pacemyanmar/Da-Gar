@@ -106,6 +106,7 @@ class SmsLogDataTable extends DataTable
             ->parameters([
                 'dom' => 'Brtip',
                 'ordering' => false,
+                'pageLength' => 20,
                 'scrollX' => true,
                 'scrollCollapse' => true,
                 'autoWidth' => true,
