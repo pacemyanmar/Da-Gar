@@ -530,7 +530,7 @@ class SmsAPIController extends AppBaseController
             // check section of first question and set as current section
             $first_question = $project->questions->where('qnum', strtoupper($qna[1][0]))->first();
 
-            Log::debug($first_question->toArray());
+            Log::debug($first_question);
             $current_section = ($first_question) ?? false;
             Log::debug($current_section);
             if(!$current_section) {
