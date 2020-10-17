@@ -209,6 +209,8 @@ class SampleDetailsController extends AppBaseController
         $phone_columns = $project->locationMetas->where('field_type', 'phone');
 
         Log::debug($phone_columns);
+        $sbo_number_col = $project->locationMetas->where('field_type', 'sbo_number')->first();
+        $observer_number = $sampleDetails->{$sbo_number_col->field_name};
 
         foreach( $phone_columns as $column ) {
             $phone_number = $request->input($column->field_name);
@@ -221,6 +223,7 @@ class SampleDetailsController extends AppBaseController
                 $phone->phone = $phone_number;
             }
             $phone->sample_code = $sampleDetails->id;
+            $phone->observer = $observer_number;
             $phone->save();
         }
 
