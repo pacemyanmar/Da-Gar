@@ -659,7 +659,7 @@ class SmsAPIController extends AppBaseController
 
         $uuid = Uuid::uuid5(Uuid::NAMESPACE_DNS, $content.$service_id.$from_number.$to_number . Carbon::now().rand());
 
-        $status_secret = ($log_data['status_secret'])?$log_data['status_secret']:$uuid->toString();
+        $status_secret = (array_keys_exists('status_secret', $log_data))?$log_data['status_secret']:$uuid->toString();
 
         $status = 'new';
         $smsLog = SmsLog::where('status_secret', $status_secret)->first();
