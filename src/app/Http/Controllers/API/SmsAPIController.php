@@ -652,6 +652,12 @@ class SmsAPIController extends AppBaseController
         ];
 
         $log_data = array_merge($default, $logs);
+        $content=  $log_data['content'];
+        $to_number = $log_data['to_number'];
+        $from_number = $log_data['from_number'];
+        $service_id = $log_data['service_id'];
+
+        $uuid = Uuid::uuid5(Uuid::NAMESPACE_DNS, $content.$service_id.$from_number.$to_number . Carbon::now().rand());
 
         $status_secret = ($log_data['status_secret'])?$log_data['status_secret']:$uuid->toString();
 
@@ -660,13 +666,13 @@ class SmsAPIController extends AppBaseController
         $smsLog = ($smsLog) ?? new SmsLog;
         $smsLog->event = $event = $log_data['event'];
         $smsLog->message_type = $log_data['message_type'];
-        $smsLog->service_id = $service_id = $log_data['service_id'];
-        $smsLog->from_number = $from_number = $log_data['from_number'];
+        $smsLog->service_id = $service_id;
+        $smsLog->from_number = $from_number;
         $smsLog->from_number_e164 = $log_data['from_number_e164'];
         //$smsLog->api_project_id = $request->input('project_id');
-        $smsLog->to_number = $to_number = $log_data['to_number'];
-        $smsLog->content = $content=  $log_data['content']; // incoming message
-        $uuid = Uuid::uuid5(Uuid::NAMESPACE_DNS, $content.$service_id.$from_number.$to_number . Carbon::now().rand());
+        $smsLog->to_number = $to_number;
+        $smsLog->content = $content; // incoming message
+
         $smsLog->status_secret = $status_secret;
         $smsLog->status_message = $response['message']; // reply message
         $smsLog->status = $response['status'];
