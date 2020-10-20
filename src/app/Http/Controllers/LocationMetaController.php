@@ -273,6 +273,7 @@ class LocationMetaController extends AppBaseController
                             $phone = new Phone();
                             $phone->phone = $phone_number;
                         }
+                        $phone->observer = substr($phone_column->data_type,-1);
                         $phone->sample_code = $newdata['id'];
                         $phone->save();
                     }
