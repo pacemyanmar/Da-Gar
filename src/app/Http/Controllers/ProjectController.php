@@ -1628,7 +1628,7 @@ class ProjectController extends AppBaseController
 
         if(!empty($phone_mass_insert))
             Phone::insert(array_values($phone_mass_insert));
-        
+
         $sample_data = new SampleData();
         $sample_data->setTable($project->dbname . '_samples');
         $sample_data->insertOrUpdate($data_array, $project->dbname . '_samples');
