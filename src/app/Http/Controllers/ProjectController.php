@@ -9,6 +9,7 @@ use App\Http\Requests\UpdateProjectRequest;
 use App\Models\LocationMeta;
 use App\Models\LogicalCheck;
 use App\Models\Observer;
+use App\Models\Phone;
 use App\Models\Project;
 use App\Models\Question;
 use App\Models\Sample;
@@ -25,6 +26,7 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
@@ -1585,18 +1587,48 @@ class ProjectController extends AppBaseController
 
         $data_array = iterator_to_array($records, true);
 
-        array_walk($data_array, function (&$data, $key) use ($project) {
+        $phones = Phone::all();
+
+        $phone_mass_insert = [];
+
+        array_walk($data_array, function (&$data, $key) use ($project, $phones, &$phone_mass_insert) {
             $newdata = [];
             foreach ($data as $dk => $dv) {
-                if (str_dbcolumn($dk) == $project->idcolumn) {
+                $data_column = str_dbcolumn($dk);
+                if($data_column == $project->idcolumn) {
                     $newdata['id'] = filter_var($dv, FILTER_SANITIZE_STRING);
                 } else {
-                    // this will throw error if column not exist, need to check first
-                    $newdata[str_dbcolumn($dk)] = filter_var($dv, FILTER_SANITIZE_STRING);
+                    $newdata[$data_column] = filter_var($dv, FILTER_SANITIZE_STRING);
+                }
+                $phone_column = $project->locationMetas->where('field_name', $data_column)->where('field_type', 'phone')->first();
+                if($phone_column) {
+                    $phone_number = preg_replace('/[^0-9]/','',$newdata[$data_column]);
+                    if($phone_number) {
+                        if($phone = $phones->find($phone_number)) {
+
+                            if (substr($phone_column->data_type, -1) != $phone->observer || $newdata['id'] != $phone->sample_code) {
+                                Log::debug($phone->phone . ',' . substr($phone_column->data_type, -1) . ',' . $phone->observer . ',' . $newdata['id'] . ',' . $phone->sample_code);
+
+                                $phone->observer = substr($phone_column->data_type, -1);
+                                $phone->sample_code = $newdata['id'];
+                                $phone->save();
+                            }
+                        } else {
+                            $phone_mass_insert[$phone_number] = [
+                                'phone' => $phone_number,
+                                'sample_code' => $newdata['id'],
+                                'observer' => substr($phone_column->data_type, -1)
+                            ];
+                        }
+                    }
                 }
             }
             $data = $newdata;
         });
+
+        if(!empty($phone_mass_insert))
+            Phone::insert(array_values($phone_mass_insert));
+        
         $sample_data = new SampleData();
         $sample_data->setTable($project->dbname . '_samples');
         $sample_data->insertOrUpdate($data_array, $project->dbname . '_samples');

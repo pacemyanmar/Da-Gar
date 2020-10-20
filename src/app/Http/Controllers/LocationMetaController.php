@@ -13,8 +13,11 @@ use App\Models\SampleData;
 use App\Repositories\LocationMetaRepository;
 use App\Repositories\ProjectRepository;
 use App\Http\Controllers\AppBaseController;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Str;
 use Laracasts\Flash\Flash;
 use League\Csv\Reader;
 use League\Csv\Statement;
@@ -92,7 +95,7 @@ class LocationMetaController extends AppBaseController
 
         $fields = $request->input('fields');
 
-        $primary_fields = array_where($fields,function($value, $key){
+        $primary_fields = Arr::where($fields,function($value, $key){
             return ($value['field_type'] == 'primary');
         });
 
@@ -100,8 +103,47 @@ class LocationMetaController extends AppBaseController
             return redirect()->back()->withErrors('Primary ID code column has not yet been set.');
         }
 
-        $project->locationMetas()->delete();
+        if ($request->submit == 'Save Column Info') {
+            $project->locationMetas()->delete();
+            $this->saveColumns($input, $fields);
+            $message = "Sample columns saved";
 
+            Flash::success($message);
+
+            return redirect()->back()->withSuccess($message);
+        }
+
+        if ($request->submit == "Update DB Schemas") {
+
+            $this->updateStructure($project);
+
+            $message = 'Sample DB Schemas updated successfully.';
+
+            Flash::success($message);
+
+            return redirect()->back()->withSuccess($message);
+        }
+
+        if ($request->submit == "Import Data") {
+            //$this->updateStructure($project);
+            $this->importData($project);
+            $message = 'Data imported';
+        }
+
+        if ($request->submit == "Create and Import") {
+            $this->saveColumns($input, $fields);
+            $this->updateStructure($project);
+            $this->importData($project);
+            $message = 'Samples structure created and Data imported';
+        }
+
+        Flash::success($message);
+
+        return redirect(route('projects.edit', $project->id));
+    }
+
+    private function saveColumns($input, $fields)
+    {
         $filled = [];
 
         foreach($fields as $k => $field) {
@@ -112,7 +154,7 @@ class LocationMetaController extends AppBaseController
                     'sort' => $k,
                     'label' => $field['label'],
                     'field_name' => $field_name,
-                    'field_type' => snake_case($field['field_type']),
+                    'field_type' => Str::snake($field['field_type']),
                     'filter_type' => $field['filter_type'],
                     'data_type' => $field['data_type'],
                     'show_index' => array_key_exists('show', $field)? $field['show']:0,
@@ -139,26 +181,6 @@ class LocationMetaController extends AppBaseController
                 }
             }
         }
-
-        $message = "Sample column structure saved";
-
-        if ($request->submit == "Update Structure") {
-
-            $this->updateStructure($project);
-
-            $message = 'Sample Structure created sccessfully.';
-        }
-
-
-
-        if ($request->submit == "Import Data") {
-            $this->importData($project);
-            $message = 'Data imported';
-        }
-
-        Flash::success($message);
-
-        return redirect(route('projects.edit', $project->id));
     }
 
     public function updateStructure($project)
@@ -243,7 +265,6 @@ class LocationMetaController extends AppBaseController
 
     public function importData($project)
     {
-        $this->updateStructure($project);
         $storage_path = storage_path('app/'.$project->sample_file);
 
         $reader = Reader::createFromPath($storage_path, 'r');
@@ -254,7 +275,11 @@ class LocationMetaController extends AppBaseController
 
         $data_array = iterator_to_array($records,true);
 
-        array_walk($data_array, function(&$data, $key) use ($project) {
+        $phones = Phone::all();
+
+        $phone_mass_insert = [];
+
+        array_walk($data_array, function(&$data, $key) use ($project, $phones, &$phone_mass_insert) {
             $newdata = [];
             foreach($data as $dk => $dv) {
                 $data_column = str_dbcolumn($dk);
@@ -263,24 +288,36 @@ class LocationMetaController extends AppBaseController
                 } else {
                     $newdata[$data_column] = filter_var($dv, FILTER_SANITIZE_STRING);
                 }
+
                 $phone_column = $project->locationMetas->where('field_name', $data_column)->where('field_type', 'phone')->first();
+
                 if($phone_column) {
                     $phone_number = preg_replace('/[^0-9]/','',$newdata[$data_column]);
                     if($phone_number) {
-                        $phone = Phone::find($phone_number);
+                        if($phone = $phones->find($phone_number)) {
 
-                        if(empty($phone)) {
-                            $phone = new Phone();
-                            $phone->phone = $phone_number;
+                            if (substr($phone_column->data_type, -1) != $phone->observer || $newdata['id'] != $phone->sample_code) {
+                                Log::debug($phone->phone . ',' . substr($phone_column->data_type, -1) . ',' . $phone->observer . ',' . $newdata['id'] . ',' . $phone->sample_code);
+
+                                $phone->observer = substr($phone_column->data_type, -1);
+                                $phone->sample_code = $newdata['id'];
+                                $phone->save();
+                            }
+                        } else {
+                            $phone_mass_insert[$phone_number] = [
+                                'phone' => $phone_number,
+                                'sample_code' => $newdata['id'],
+                                'observer' => substr($phone_column->data_type, -1)
+                            ];
                         }
-                        $phone->observer = substr($phone_column->data_type,-1);
-                        $phone->sample_code = $newdata['id'];
-                        $phone->save();
                     }
                 }
             }
             $data = $newdata;
         });
+
+        if(!empty($phone_mass_insert))
+            Phone::insert(array_values($phone_mass_insert));
 
         $sample_data = new SampleData();
 

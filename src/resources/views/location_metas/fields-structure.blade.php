@@ -149,9 +149,10 @@
 <!-- Submit Field -->
 <div class="form-group col-sm-12">
 
-    {!! Form::submit('Save Only', ['class' => 'btn btn-primary','name'=> 'submit']) !!}
-    {!! Form::submit('Update Structure', ['class' => 'btn btn-primary','name'=> 'submit']) !!}
+    {!! Form::submit('Save Column Info', ['class' => 'btn btn-primary','name'=> 'submit']) !!}
+    {!! Form::submit('Update DB Schemas', ['class' => 'btn btn-primary','name'=> 'submit']) !!}
     {!! Form::submit('Import Data', ['class' => 'btn btn-primary','name'=> 'submit']) !!}
+    {!! Form::submit('Create and Import', ['class' => 'btn btn-primary','name'=> 'submit']) !!}
 
     <a href="{!! route('location-metas.index') !!}" class="btn btn-default">Cancel</a>
 </div>
