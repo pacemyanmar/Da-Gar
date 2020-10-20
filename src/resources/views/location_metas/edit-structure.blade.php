@@ -3,7 +3,7 @@
 @section('content')
     <section class="content-header">
         <h1>
-            Location Meta
+            Sample List Column Structure for {{ $project->project }}
         </h1>
    </section>
    <div class="content">

@@ -10,6 +10,10 @@
     <p class="bg-warning text-danger">Please set one field as primary. It will be used as id code for survey to store
         and filter by.</p>
     <p class="bg-warning text-danger">Remove unused fields</p>
+    <p class="text-info">Save Column Info : This will save anything you change on this page</p>
+    <p class="text-info">Update DB Schemas : This will create database table and columns for data to be imported</p>
+    <p class="text-info">Import Data : Import data from uploaded file</p>
+    <p class="text-info">Create and Import : This will do all three step above.</p>
 </div>
 
 <div class="form-group col-sm-12">
