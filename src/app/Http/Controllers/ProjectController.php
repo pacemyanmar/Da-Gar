@@ -1539,6 +1539,7 @@ class ProjectController extends AppBaseController
     private function sampleStructure($project, $columns, $idcolumn)
     {
         array_walk($columns, function (&$item, $key) use ($idcolumn) {
+            $field = [];
             switch ($key) {
                 case 'idcolumn':
                     $field['field_type'] = 'primary';
@@ -1600,16 +1601,27 @@ class ProjectController extends AppBaseController
                 } else {
                     $newdata[$data_column] = filter_var($dv, FILTER_SANITIZE_STRING);
                 }
-                $phone_column = $project->locationMetas->where('field_name', $data_column)->where('field_type', 'phone')->first();
+            }
+
+            foreach($newdata as $dk => $dv) {
+                $phone_column = $project->locationMetas->where('field_name', $dk)->where('field_type', 'phone')->first();
+
                 if($phone_column) {
-                    $phone_number = preg_replace('/[^0-9]/','',$newdata[$data_column]);
+                    Log::debug($newdata);
+                    $sbo_number_col = $project->locationMetas->where('field_type', 'sbo_number')->first();
+                    $observer_number = (array_key_exists($sbo_number_col->field_name, $newdata))?$newdata[$sbo_number_col->field_name]:null;
+                    $guessed_observer_number = (is_numeric(substr($phone_column->data_type, -1)))?substr($phone_column->data_type, -1):1;
+                    Log::debug($sbo_number_col);
+                    Log::debug($observer_number);
+
+                    $phone_number = preg_replace('/[^0-9]/','',$newdata[$dk]);
                     if($phone_number) {
                         if($phone = $phones->find($phone_number)) {
 
-                            if (substr($phone_column->data_type, -1) != $phone->observer || $newdata['id'] != $phone->sample_code) {
-                                Log::debug($phone->phone . ',' . substr($phone_column->data_type, -1) . ',' . $phone->observer . ',' . $newdata['id'] . ',' . $phone->sample_code);
+                            if ($guessed_observer_number != $phone->observer || $newdata['id'] != $phone->sample_code) {
+                                Log::debug($phone->phone . ',' . $guessed_observer_number .','.$observer_number. ',' . $phone->observer . ',' . $newdata['id'] . ',' . $phone->sample_code);
 
-                                $phone->observer = substr($phone_column->data_type, -1);
+                                $phone->observer = ($observer_number)??$guessed_observer_number;
                                 $phone->sample_code = $newdata['id'];
                                 $phone->save();
                             }
@@ -1617,7 +1629,7 @@ class ProjectController extends AppBaseController
                             $phone_mass_insert[$phone_number] = [
                                 'phone' => $phone_number,
                                 'sample_code' => $newdata['id'],
-                                'observer' => substr($phone_column->data_type, -1)
+                                'observer' => ($observer_number)??$guessed_observer_number
                             ];
                         }
                     }
@@ -1630,8 +1642,8 @@ class ProjectController extends AppBaseController
             Phone::insert(array_values($phone_mass_insert));
 
         $sample_data = new SampleData();
-        $sample_data->setTable($project->dbname . '_samples');
-        $sample_data->insertOrUpdate($data_array, $project->dbname . '_samples');
+
+        $sample_data->insertOrUpdate($data_array, $project->dbname.'_samples');
 
         return $sample_data;
     }
