@@ -467,7 +467,7 @@ class SmsAPIController extends AppBaseController
 
             $dbname = $project->dbname;
 
-            $reply['form_code'] = $form_code = ($pcode[2] === substr($observer_phone->sample_code,0, length($pcode[2])))?$observer_phone->sample_code:$pcode[2];
+            $reply['form_code'] = $form_code = ($pcode[2] === substr($observer_phone->sample_code,0, strlen($pcode[2])))?$observer_phone->sample_code:$pcode[2];
 
             /*
              * Copies = More than one form to be submitted for one location ( Something similar to incident form or
