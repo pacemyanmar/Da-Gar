@@ -13,15 +13,10 @@
 
 Route::get('/', function () {
     if (Auth::check()) {
-        if (Auth::user()->role->role_name == 'trainer') {
-            return redirect('smsLogs');
-        } else {
-            return redirect('projects');
-        }
-    } else {
         return redirect('projects');
+    } else {
+        return redirect('login');
     }
-
 });
 
 Auth::routes();
