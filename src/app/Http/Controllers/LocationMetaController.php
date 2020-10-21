@@ -13,9 +13,11 @@ use App\Models\SampleData;
 use App\Repositories\LocationMetaRepository;
 use App\Repositories\ProjectRepository;
 use App\Http\Controllers\AppBaseController;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Str;
 use Laracasts\Flash\Flash;
 use League\Csv\Reader;
 use League\Csv\Statement;
@@ -93,7 +95,7 @@ class LocationMetaController extends AppBaseController
 
         $fields = $request->input('fields');
 
-        $primary_fields = array_where($fields,function($value, $key){
+        $primary_fields = Arr::where($fields,function($value, $key){
             return ($value['field_type'] == 'primary');
         });
 
@@ -101,8 +103,47 @@ class LocationMetaController extends AppBaseController
             return redirect()->back()->withErrors('Primary ID code column has not yet been set.');
         }
 
-        $project->locationMetas()->delete();
+        if ($request->submit == 'Save Column Info') {
+            $project->locationMetas()->delete();
+            $this->saveColumns($input, $fields);
+            $message = "Sample columns saved";
 
+            Flash::success($message);
+
+            return redirect()->back()->withSuccess($message);
+        }
+
+        if ($request->submit == "Update DB Schemas") {
+
+            $this->updateStructure($project);
+
+            $message = 'Sample DB Schemas updated successfully.';
+
+            Flash::success($message);
+
+            return redirect()->back()->withSuccess($message);
+        }
+
+        if ($request->submit == "Import Data") {
+            //$this->updateStructure($project);
+            $this->importData($project);
+            $message = 'Data imported';
+        }
+
+        if ($request->submit == "Create and Import") {
+            $this->saveColumns($input, $fields);
+            $this->updateStructure($project);
+            $this->importData($project);
+            $message = 'Samples structure created and Data imported';
+        }
+
+        Flash::success($message);
+
+        return redirect(route('projects.edit', $project->id));
+    }
+
+    private function saveColumns($input, $fields)
+    {
         $filled = [];
 
         foreach($fields as $k => $field) {
@@ -113,7 +154,7 @@ class LocationMetaController extends AppBaseController
                     'sort' => $k,
                     'label' => $field['label'],
                     'field_name' => $field_name,
-                    'field_type' => snake_case($field['field_type']),
+                    'field_type' => Str::snake($field['field_type']),
                     'filter_type' => $field['filter_type'],
                     'data_type' => $field['data_type'],
                     'show_index' => array_key_exists('show', $field)? $field['show']:0,
@@ -140,27 +181,6 @@ class LocationMetaController extends AppBaseController
                 }
             }
         }
-
-        $message = "Sample column structure saved";
-
-        if ($request->submit == "Update Structure") {
-
-            $this->updateStructure($project);
-
-            $message = 'Sample Structure created sccessfully.';
-        }
-
-
-
-        if ($request->submit == "Import Data") {
-            $this->updateStructure($project);
-            $this->importData($project);
-            $message = 'Data imported';
-        }
-
-        Flash::success($message);
-
-        return redirect(route('projects.edit', $project->id));
     }
 
     public function updateStructure($project)
@@ -179,14 +199,10 @@ class LocationMetaController extends AppBaseController
                     if (Schema::hasColumn($table_name, $location->field_name)) {
                         switch ($location->field_type) {
                             case 'code';
-                                $table->string($location->field_name,20)->nullable()->change();
+                                $table->string($location->field_name,20)->change();
                                 break;                        
                             case 'textarea';
-                                $table->text($location->field_name)->nullable()->change();
-                                break;
-                            case 'number':
-                            case 'sbo_number':
-                                $table->integer($location->field_name)->nullable()->change();
+                                $table->text($location->field_name)->change();
                                 break;
                             default;
                                 $table->string($location->field_name,100)->nullable()->change();
@@ -267,7 +283,11 @@ class LocationMetaController extends AppBaseController
 
         $data_array = iterator_to_array($records,true);
 
-        array_walk($data_array, function(&$data, $key) use ($project) {
+        $phones = Phone::all();
+
+        $phone_mass_insert = [];
+
+        array_walk($data_array, function(&$data, $key) use ($project, $phones, &$phone_mass_insert) {
             $newdata = [];
             
 
