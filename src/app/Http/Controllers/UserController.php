@@ -256,7 +256,7 @@ class UserController extends AppBaseController
 
             $csv = Reader::createFromPath($path, 'r')
                 ->setHeaderOffset(0);
-            
+
             $default = [
                 'name' => '',
                 'code' => '',
