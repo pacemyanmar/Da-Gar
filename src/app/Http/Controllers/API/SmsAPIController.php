@@ -380,6 +380,14 @@ class SmsAPIController extends AppBaseController
             $reply['status'] = 'error';
             return $reply;
         }
+        if($match_code) {
+            if (config('sms.verify_phone') && $pcode[2] != $observer_phone->sample_code) {
+                // if project is empty
+                $reply['message'] = $this->encoding('sms.error_code', 'zawgyi');
+                $reply['status'] = 'error';
+                return $reply;
+            }
+        }
 
         if(!config('sms.verify_phone')) {
             $observer_phone = new Phone();
