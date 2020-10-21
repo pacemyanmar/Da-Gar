@@ -1600,7 +1600,7 @@ class ProjectController extends AppBaseController
                     $newdata['id'] = filter_var($dv, FILTER_SANITIZE_STRING);
                 } else {
                     $newdata[$data_column] = filter_var($dv, FILTER_SANITIZE_STRING);
-                }               
+                }
             }
 
             foreach($newdata as $dk => $dv) {
