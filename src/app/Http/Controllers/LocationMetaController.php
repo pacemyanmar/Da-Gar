@@ -210,10 +210,14 @@ class LocationMetaController extends AppBaseController
                     } else {
                         switch ($location->field_type) {
                             case 'code';
-                                $table->string($location->field_name,20)->index();
+                                $table->string($location->field_name,20)->nullable()->index();
                                 break;                        
                             case 'textarea';
-                                $table->text($location->field_name);
+                                $table->text($location->field_name)->nullable();
+                                break;
+                            case 'number':
+                            case 'sbo_number':
+                                $table->integer($location->field_name)->nullable()->index();
                                 break;
                             default;
                                 if($location->show_index || $location->export) {
@@ -248,6 +252,10 @@ class LocationMetaController extends AppBaseController
                             break;                        
                         case 'textarea';
                             $table->text($location->field_name);
+                            break;
+                        case 'number':
+                        case 'sbo_number':
+                            $table->integer($location->field_name)->nullable()->index();
                             break;
                         default;
                             if($location->show_index || $location->export) {
