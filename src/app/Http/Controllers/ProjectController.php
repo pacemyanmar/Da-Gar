@@ -1586,13 +1586,15 @@ class ProjectController extends AppBaseController
     private function importSampleData($records, $project, $idcoumn)
     {
 
-        $data_array = iterator_to_array($records,true);
+        $data_array = iterator_to_array($records, true);
 
-        array_walk($data_array, function(&$data, $key) use ($project) {
+        $phones = Phone::all();
+
+        $phone_mass_insert = [];
+
+        array_walk($data_array, function (&$data, $key) use ($project, $phones, &$phone_mass_insert) {
             $newdata = [];
-            
-
-            foreach($data as $dk => $dv) {
+            foreach ($data as $dk => $dv) {
                 $data_column = str_dbcolumn($dk);
                 if($data_column == $project->idcolumn) {
                     $newdata['id'] = filter_var($dv, FILTER_SANITIZE_STRING);
