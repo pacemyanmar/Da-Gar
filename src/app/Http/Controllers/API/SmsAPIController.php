@@ -372,12 +372,23 @@ class SmsAPIController extends AppBaseController
 
         $observer_phone = Phone::find($sender);
 
+        Log::debug("Observer Phone: ". $observer_phone);
+
         if (empty($observer_phone) && config('sms.verify_phone')) {
             // if project is empty
             $reply['message'] = $this->encoding('sms.phone_error', 'zawgyi');
             $reply['status'] = 'error';
             return $reply;
         }
+        if($match_code) {
+            if (config('sms.verify_phone') && $pcode[2] !== substr($observer_phone->sample_code,0, strlen($pcode[2]))) {
+                // if project is empty
+                $reply['message'] = $this->encoding('sms.error_code', 'zawgyi');
+                $reply['status'] = 'error';
+                return $reply;
+            }
+        }
+
 
         if(!config('sms.verify_phone')) {
             $observer_phone = new Phone();
@@ -412,12 +423,11 @@ class SmsAPIController extends AppBaseController
                     break;
             }
 
-//            if ($projects->count() === 1) {
-//                // if project is only one project use this project
-//                $project = Project::first();
-//
-//            } else
-            if (!empty(Settings::get('active_project'))){
+            if ($form_prefix === "s") {
+                // if project is only one project use this project
+                $project = Project::whereRaw('LOWER(unique_code) ="' . strtolower($form_prefix) . '"')->first();
+
+            } elseif (!empty(Settings::get('active_project'))){
                 $project = Project::find(Settings::get('active_project'));
             } else {
 
@@ -457,28 +467,35 @@ class SmsAPIController extends AppBaseController
 
             $dbname = $project->dbname;
 
-            $reply['form_code'] = $pcode[2];
+            $reply['form_code'] = $form_code = ($pcode[2] === substr($observer_phone->sample_code,0, strlen($pcode[2])))?$observer_phone->sample_code:$pcode[2];
 
+            /*
+             * Copies = More than one form to be submitted for one location ( Something similar to incident form or
+             *          Some survey that ask more than one people but use same location code
+             * Frequencies = More than one times to submit for one or more locations ( Something like campaign monitoring )
+             */
             if($project->frequencies > 1 && $project->copies > 1) {
-                $sample_id = mb_substr($pcode[2], 0, -2);
-                $frequency = mb_substr($pcode[2], -1, 1);
-                $form_no = mb_substr($pcode[2], -2, 1);
+                $sample_id = mb_substr($form_code, 0, -2);
+                $frequency = mb_substr($form_code, -1, 1);
+                $form_no = mb_substr($form_code, -2, 1);
             } elseif( $project->frequencies > 1 && $project->copies == 1) {
-                $sample_id = mb_substr($pcode[2], 0, -1);
+                $sample_id = mb_substr($form_code, 0, -1);
                 $form_no = 1;
-                $frequency = mb_substr($pcode[2], -1, 1);
+                $frequency = mb_substr($form_code, -1, 1);
             } elseif( 1 == $project->frequencies && $project->copies > 1) {
-                $sample_id = mb_substr($pcode[2], 0, -1);
-                $form_no = mb_substr($pcode[2], -1, 1);
+                $sample_id = mb_substr($form_code, 0, -1);
+                $form_no = mb_substr($form_code, -1, 1);
                 $frequency = 1;
             } else {
-                $sample_id = $pcode[2];
+                $sample_id = $form_code;
             }
 
             if($project->type == 'fixed' || $project->type == 'db2sample') {
-                $form_no = 1;
-                $frequency = 1;
+                $form_no = ($form_no)??1;
+                $frequency = ($frequency)??1;
+                Log::debug($sample_id);
                 $sample = $this->findSample($sample_id, $form_no, $frequency);
+                Log::debug($sample);
             } else {
                 $sample = $this->createSample($sample_id);
             }
