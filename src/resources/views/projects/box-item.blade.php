@@ -67,7 +67,7 @@
                             <i class="fa fa-pie-chart"></i> {!! trans('messages.analysis') !!}
                         </a>
                     @endif
-                    @if(in_array(Auth::user()->role->level,[3,7,8,9]))
+                    @if(in_array(Auth::user()->role->level,[3,4,5,6,7,8,9]))
                         <a href="{{ route('projects.smslog', $project->id) }}" class='btn btn-default btn-sm' style='margin-bottom: 5px;'>
                         <i class="fa fa-envelope"></i> {!! trans('messages.smslog') !!}
                         </a>
