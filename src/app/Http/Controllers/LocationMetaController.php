@@ -316,7 +316,7 @@ class LocationMetaController extends AppBaseController
                         if($phone = $phones->find($phone_number)) {
 
                             if ($guessed_observer_number != $phone->observer || $newdata['id'] != $phone->sample_code) {
-                                Log::debug($phone->phone . ',' . $guessed_observer_number . ',' . $phone->observer . ',' . $newdata['id'] . ',' . $phone->sample_code);
+                                Log::debug($phone->phone . ',' . $guessed_observer_number .','.$observer_number. ',' . $phone->observer . ',' . $newdata['id'] . ',' . $phone->sample_code);
 
                                 $phone->observer = ($observer_number)??$guessed_observer_number;
                                 $phone->sample_code = $newdata['id'];
