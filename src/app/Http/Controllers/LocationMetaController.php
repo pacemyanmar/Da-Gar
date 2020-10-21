@@ -289,7 +289,7 @@ class LocationMetaController extends AppBaseController
 
         array_walk($data_array, function(&$data, $key) use ($project, $phones, &$phone_mass_insert) {
             $newdata = [];
-            
+
 
             foreach($data as $dk => $dv) {
                 $data_column = str_dbcolumn($dk);
@@ -297,35 +297,46 @@ class LocationMetaController extends AppBaseController
                     $newdata['id'] = filter_var($dv, FILTER_SANITIZE_STRING);
                 } else {
                     $newdata[$data_column] = filter_var($dv, FILTER_SANITIZE_STRING);
-                }               
+                }
             }
 
             foreach($newdata as $dk => $dv) {
                 $phone_column = $project->locationMetas->where('field_name', $dk)->where('field_type', 'phone')->first();
-                
+
                 if($phone_column) {
                     Log::debug($newdata);
                     $sbo_number_col = $project->locationMetas->where('field_type', 'sbo_number')->first();
                     $observer_number = (array_key_exists($sbo_number_col->field_name, $newdata))?$newdata[$sbo_number_col->field_name]:null;
+                    $guessed_observer_number = (is_numeric(substr($phone_column->data_type, -1)))?substr($phone_column->data_type, -1):1;
                     Log::debug($sbo_number_col);
                     Log::debug($observer_number);
 
                     $phone_number = preg_replace('/[^0-9]/','',$newdata[$dk]);
                     if($phone_number) {
-                        $phone = Phone::find($phone_number);
+                        if($phone = $phones->find($phone_number)) {
 
-                        if(empty($phone)) {
-                            $phone = new Phone();
-                            $phone->phone = $phone_number;
+                            if ($guessed_observer_number != $phone->observer || $newdata['id'] != $phone->sample_code) {
+                                Log::debug($phone->phone . ',' . $guessed_observer_number . ',' . $phone->observer . ',' . $newdata['id'] . ',' . $phone->sample_code);
+
+                                $phone->observer = ($observer_number)??$guessed_observer_number;
+                                $phone->sample_code = $newdata['id'];
+                                $phone->save();
+                            }
+                        } else {
+                            $phone_mass_insert[$phone_number] = [
+                                'phone' => $phone_number,
+                                'sample_code' => $newdata['id'],
+                                'observer' => ($observer_number)??substr($phone_column->data_type, -1)
+                            ];
                         }
-                        $phone->sample_code = $newdata['id'];
-                        $phone->observer = $observer_number;
-                        $phone->save();
                     }
                 }
             }
             $data = $newdata;
         });
+
+        if(!empty($phone_mass_insert))
+            Phone::insert(array_values($phone_mass_insert));
 
         $sample_data = new SampleData();
 
