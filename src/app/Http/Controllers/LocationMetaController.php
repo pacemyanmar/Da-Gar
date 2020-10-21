@@ -289,6 +289,8 @@ class LocationMetaController extends AppBaseController
 
         array_walk($data_array, function(&$data, $key) use ($project, $phones, &$phone_mass_insert) {
             $newdata = [];
+
+
             foreach($data as $dk => $dv) {
                 $data_column = str_dbcolumn($dk);
                 if($data_column == $project->idcolumn) {
@@ -296,8 +298,10 @@ class LocationMetaController extends AppBaseController
                 } else {
                     $newdata[$data_column] = filter_var($dv, FILTER_SANITIZE_STRING);
                 }
+            }
 
-                $phone_column = $project->locationMetas->where('field_name', $data_column)->where('field_type', 'phone')->first();
+            foreach($newdata as $dk => $dv) {
+                $phone_column = $project->locationMetas->where('field_name', $dk)->where('field_type', 'phone')->first();
 
                 if($phone_column) {
                     $phone_number = preg_replace('/[^0-9]/','',$newdata[$data_column]);
