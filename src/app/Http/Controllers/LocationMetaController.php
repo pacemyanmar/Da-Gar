@@ -326,7 +326,7 @@ class LocationMetaController extends AppBaseController
                             $phone_mass_insert[$phone_number] = [
                                 'phone' => $phone_number,
                                 'sample_code' => $newdata['id'],
-                                'observer' => ($observer_number)??substr($phone_column->data_type, -1)
+                                'observer' => ($observer_number)??$guessed_observer_number
                             ];
                         }
                     }
