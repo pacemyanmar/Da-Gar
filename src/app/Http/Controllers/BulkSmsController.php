@@ -11,6 +11,7 @@ use App\Repositories\BulkSmsRepository;
 use Flash;
 use App\Http\Controllers\AppBaseController;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Artisan;
 use League\Csv\Reader;
 use League\Csv\Statement;
 use Response;
@@ -190,6 +191,9 @@ class BulkSmsController extends AppBaseController
 
     public function send()
     {
+        $exitCode = Artisan::call('bulksms:send');
+        Flash::success('SMS sending in batch.');
 
+        return redirect(route('bulkSms.index'));
     }
 }

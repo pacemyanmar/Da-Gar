@@ -11,21 +11,9 @@
 |
  */
 
-Route::get('/', function () {
-    if (Auth::check()) {
-        return redirect('projects');
-    } else {
-        return redirect('login');
-    }
-});
-
 Auth::routes();
 
-Route::get('/home', 'HomeController@index');
-
-Route::get('/test', function (){
-    return view('welcome');
-});
+Route::get('/', 'HomeController@index');
 
 Route::group(['prefix' => 'projects/{project}'], function () {
     Route::get('/monitor', [ 'as' => 'project.monitor', 'uses' => 'SurveyResultsController@monitor' ]);
@@ -126,11 +114,6 @@ Route::resource('translations', 'TranslationController');
 
 Route::post('bulkSms/import', ['as' => 'bulksms.import', 'uses' => 'BulkSmsController@import']);
 
-Route::get('bulkSms/send', function () {
-    $exitCode = Artisan::call('bulksms:send');
-    Flash::success('SMS sending in batch.');
-
-    return redirect(route('bulkSms.index'));
-});
+Route::get('bulkSms/send', ['as' => 'bulksms.send', 'uses' => 'BulkSmsController@send']);
 
 Route::resource('bulkSms', 'BulkSmsController');
