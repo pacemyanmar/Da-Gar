@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "72d604d966357ea911a3745b2ef5feda",
+    "content-hash": "43069ad4f0f71ac2d6fccc764b48cb37",
     "packages": [
         {
             "name": "akaunting/setting",
@@ -4411,6 +4411,48 @@
                 "spatie"
             ],
             "time": "2019-09-04T07:31:58+00:00"
+        },
+        {
+            "name": "staudenmeir/laravel-migration-views",
+            "version": "v1.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/staudenmeir/laravel-migration-views.git",
+                "reference": "d783d2626a54ce245f78d694bc836453333d5e9c"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/staudenmeir/laravel-migration-views/zipball/d783d2626a54ce245f78d694bc836453333d5e9c",
+                "reference": "d783d2626a54ce245f78d694bc836453333d5e9c",
+                "shasum": ""
+            },
+            "require": {
+                "illuminate/database": "5.8.*",
+                "illuminate/support": "~5.8.1",
+                "php": "^7.1.3"
+            },
+            "require-dev": {
+                "laravel/homestead": "^8.0",
+                "phpunit/phpunit": "^7.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Staudenmeir\\LaravelMigrationViews\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Jonas Staudenmeir",
+                    "email": "mail@jonas-staudenmeir.de"
+                }
+            ],
+            "description": "Laravel migrations with views",
+            "time": "2019-06-15T12:48:13+00:00"
         },
         {
             "name": "swiftmailer/swiftmailer",

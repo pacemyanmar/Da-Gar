@@ -37,6 +37,8 @@ use PhpOffice\PhpSpreadsheet\Reader\Xls;
 use Ramsey\Uuid\Uuid;
 use Response;
 use Spatie\TranslationLoader\LanguageLine;
+use Staudenmeir\LaravelMigrationViews\Facades\Schema as ViewSchema;
+
 
 /**
  * Class ProjectController
@@ -503,14 +505,14 @@ class ProjectController extends AppBaseController
                 $viewName = $this->dbname . '_' . $section_code . '_view';
 
                 // recreate view every structure update
-                DB::statement("DROP VIEW " . $viewName);
+                ViewSchema::dropViewIfExists($viewName);
                 $this->createDoubleStatusView($section);
             }
         }
 
         $project_view = $this->dbname . '_view';
         // recreate view every structure update
-        DB::statement("DROP VIEW " . $project_view);
+        ViewSchema::dropViewIfExists($project_view);
         $this->createResultsView($project);
 
 
@@ -1282,7 +1284,7 @@ class ProjectController extends AppBaseController
 
                 $viewName = $this->dbname . '_' . $section_code . '_view';
 
-                DB::statement("DROP VIEW " . $viewName);
+                ViewSchema::dropViewIfExists($viewName);
                 $this->createDoubleStatusView($section);
             }
         }
