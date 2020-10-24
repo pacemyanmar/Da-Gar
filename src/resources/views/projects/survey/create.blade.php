@@ -1,7 +1,7 @@
 @extends('layouts.app')
 @push('before-head-end')
     <script type="text/javascript">
-        window.url = "{!! route('projects.surveys.save', ['project' => $project->id, 'sample' => $sample->id]) !!}"
+        window.url = "{!! route('projects.surveys.save', ['project' => $project->id, 'sample' => $sample->id], false) !!}"
     </script>
 @endpush
 @push('after-body-start')
