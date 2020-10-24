@@ -39,9 +39,9 @@
 @endsection
 
 @push('document-ready')
-window.LaravelDataTables["#dataTableBuilder"].columns.adjust().draw();
+window.LaravelDataTables["dataTableBuilder"].columns.adjust().draw();
 setInterval( function () {
-window.LaravelDataTables["#dataTableBuilder"].ajax.reload( null, false ); // user paging is not reset on reload
+window.LaravelDataTables["dataTableBuilder"].ajax.reload( null, false ); // user paging is not reset on reload
 }, 10000 );
 ajaxoverlay = false;
 $('#project').on('change', function(e){
