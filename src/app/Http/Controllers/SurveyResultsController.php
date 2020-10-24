@@ -375,7 +375,7 @@ class SurveyResultsController extends AppBaseController
                     'selected' => $request->input('sample_group')
                 ];
 
-        return $sampleResponse->render('projects.survey.' . $project_type . '.response-sample', compact('project', $project), compact('data', $data));
+        return $sampleResponse->render('projects.survey.' . $project_type . '.response-sample', compact('project', $project), compact('data', collect($data)));
     }
 
     public function responseRateDouble($project_id, DoubleResponseDataTable $doubleResponse)
