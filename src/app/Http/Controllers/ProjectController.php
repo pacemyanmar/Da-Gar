@@ -1608,8 +1608,10 @@ class ProjectController extends AppBaseController
 
                 if($phone_column) {
                     Log::debug($newdata);
+                    $observer_number = null;
                     $sbo_number_col = $project->locationMetas->where('field_type', 'sbo_number')->first();
-                    $observer_number = (array_key_exists($sbo_number_col->field_name, $newdata))?$newdata[$sbo_number_col->field_name]:null;
+                    if($sbo_number_col)
+                        $observer_number = (array_key_exists($sbo_number_col->field_name, $newdata))?$newdata[$sbo_number_col->field_name]:null;
                     $guessed_observer_number = (is_numeric(substr($phone_column->data_type, -1)))?substr($phone_column->data_type, -1):1;
                     Log::debug($sbo_number_col);
                     Log::debug($observer_number);
