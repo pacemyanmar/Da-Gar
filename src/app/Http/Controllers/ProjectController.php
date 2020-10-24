@@ -502,22 +502,16 @@ class ProjectController extends AppBaseController
 
                 $viewName = $this->dbname . '_' . $section_code . '_view';
 
-                if (!Schema::hasTable($viewName)) {
-                    $this->createDoubleStatusView($section);
-                } else {
-                    DB::statement("DROP VIEW " . $viewName);
-                    $this->createDoubleStatusView($section);
-                }
+                // recreate view every structure update
+                DB::statement("DROP VIEW " . $viewName);
+                $this->createDoubleStatusView($section);
             }
         }
 
         $project_view = $this->dbname . '_view';
-        if (!Schema::hasTable($project_view)) {
-            $this->createResultsView($project);
-        } else {
-            DB::statement("DROP VIEW " . $project_view);
-            $this->createResultsView($project);
-        }
+        // recreate view every structure update
+        DB::statement("DROP VIEW " . $project_view);
+        $this->createResultsView($project);
 
 
         $project_fields = $project->inputs->sortByDesc('other')->unique('inputid');
@@ -1288,12 +1282,8 @@ class ProjectController extends AppBaseController
 
                 $viewName = $this->dbname . '_' . $section_code . '_view';
 
-                if (!Schema::hasTable($viewName)) {
-                    $this->createDoubleStatusView($section);
-                } else {
-                    DB::statement("DROP VIEW " . $viewName);
-                    $this->createDoubleStatusView($section);
-                }
+                DB::statement("DROP VIEW " . $viewName);
+                $this->createDoubleStatusView($section);
             }
         }
 
