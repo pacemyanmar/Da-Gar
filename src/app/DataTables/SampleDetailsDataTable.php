@@ -46,7 +46,11 @@ class SampleDetailsDataTable extends DataTable
     {
         return $this->builder()
             ->columns($this->getColumns())
-            ->minifiedAjax()
+            ->ajax(['type' => 'GET',
+                'headers' => [
+                    'X-CSRF-TOKEN' => csrf_token(),
+                ]
+            ])
             ->addAction(['width' => '80px'])
             ->parameters([
                 'dom'     => 'Bfrtip',
