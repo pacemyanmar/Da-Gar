@@ -122,7 +122,7 @@ class SurveyResultsController extends AppBaseController
                 break;
         }
 
-        return $table->addScope(new OrderByCode())->addScope(new OrderByFormId())->render('projects.survey.' . $project_type . '.index', compact('project'), compact('locations'));
+        return $table->addScope(new OrderByCode())->addScope(new OrderByFormId())->render('projects.survey.' . $project_type . '.index', compact('project'));
     }
 
     /**
