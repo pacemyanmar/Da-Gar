@@ -38,8 +38,14 @@ class SettingController extends AppBaseController
     public function index()
     {
         $settings = $this->settingRepository->all();
+        $all_projects = $this->project->all();
+        $projects_col = $all_projects->mapWithKeys(function($item,$key){
+            $nkey = preg_replace('/\s+/',' ', $item->unique_code.' : '.$item->project);
+            return [$nkey => $item->id];
+        });
 
-        $projects = array_merge(['None' => ''], $this->project->pluck('id', 'project')->toArray());
+        $projects = array_merge(['None' => ''], $projects_col->toArray());
+
         return view('settings.index')
             ->with('settings', $settings)
             ->with('projects', $projects);
