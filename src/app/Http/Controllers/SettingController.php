@@ -53,8 +53,10 @@ class SettingController extends AppBaseController
     public function save(SaveSettingRequest $request)
     {
         $settings = $request->input('configs');
+
         $settings['training'] = array_key_exists('training', $settings);
         $settings['noreply'] = array_key_exists('noreply', $settings);
+        $settings['show_projects'] = ($settings['show_projects'])??[''];
         foreach ($settings as $key => $value) {
             Settings::set($key, $value);
             if($key == 'telerivet_api_key' && !empty($value)) {

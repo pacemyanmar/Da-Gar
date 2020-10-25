@@ -7,9 +7,17 @@
             <label for="project" class="control-label">Select Project:</label>
             <select id="project" name="project" class="form-control">
                 <option value="{!! route('smsLogs.index') !!}">All</option>
-                @foreach($projects as $p)
-                    <option value="{!! route('projects.smslog', $p->id) !!}" @if(isset($project) && $p->id === $project->id) selected="selected" @endif>{!! $p->project !!}</option>
-                @endforeach
+
+                    @foreach($projects as $p)
+                    @if(!empty(array_filter(setting('show_projects'))))
+                        @if((setting('show_projects')[$p->id])??false)
+                        <option value="{!! route('projects.smslog', $p->id) !!}" @if(isset($project) && $p->id === $project->id) selected="selected" @endif>{!! $p->project !!}</option>
+                        @endif
+                    @else
+                        <option value="{!! route('projects.smslog', $p->id) !!}" @if(isset($project) && $p->id === $project->id) selected="selected" @endif>{!! $p->project !!}</option>
+                    @endif
+                    @endforeach
+
             </select>
         </span>
         <div class="clearfix"></div>
