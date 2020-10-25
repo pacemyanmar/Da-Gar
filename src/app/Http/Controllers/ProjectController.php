@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Akaunting\Setting\Facade as Settings;
 use App\DataTables\ProjectDataTable;
 use App\DataTables\SmsLogDataTable;
 use App\Http\Requests\CreateProjectRequest;
@@ -1093,6 +1094,9 @@ class ProjectController extends AppBaseController
                     }
                 }
             }
+            $settings = array_replace(setting('show_projects'),[$projectInstance->id => 1]);
+
+            Settings::set('show_projects', $settings);
             Flash::success('Project imported successfully.');
 
             return redirect(route('projects.index'));
