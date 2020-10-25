@@ -92,6 +92,25 @@
                         {!! Form::text("configs[boom_ip]", setting('boom_ip', null), ['class' => 'form-control']) !!}
                     </div>
                 </div>
+                <!-- Show project -->
+                <div class="form-group">
+                    <div class="panel panel-default col-xs-12">
+                        <div class="panel-heading">
+                            Show/Hide Projects
+                        </div>
+                        <div class="panel-body">
+                        @foreach($projects as $project => $id)
+                            @if($id)
+                            <div class="col-xs-6">
+                            {!! Form::checkbox("configs[show_projects][$id]", true,(setting('show_projects')[$id])??null, ['class' => 'magic-checkbox', 'id' => 'project'.$id, 'autocomplete' => 'off']) !!}
+                            <label class="normal-text" for="project{{$id}}">{{$project}}
+                            </label>
+                            </div>
+                            @endif
+                        @endforeach
+                        </div>
+                    </div>
+                </div>
                 <div class="form-group">
                     {!! Form::checkbox("configs[training]", true,setting('training', null), ['class' => 'magic-checkbox', 'id' => 'training', 'autocomplete' => 'off']) !!}
                     <label class="normal-text" for="training">Training Mode
