@@ -25,6 +25,8 @@ class Project extends Model
         'status',
         'project_trans',
         'training',
+        'report_by',
+        'store_by'
     ];
 
     /**

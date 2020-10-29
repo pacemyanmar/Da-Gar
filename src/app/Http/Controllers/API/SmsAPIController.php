@@ -489,6 +489,15 @@ class SmsAPIController extends AppBaseController
             } else {
                 $sample_id = $form_code;
             }
+            if($project->report_by != $project->store_by) {
+                if($project->store_by == 'observer') {
+                    $sample_id = $form_code.$this->phone->observer;
+                }
+                // location code is always shorter than observer code
+                if($project->store_by == 'location') {
+                    $sample_id = substr($form_code,0,-1);
+                }
+            }
 
             if($project->type == 'fixed') {
                 $form_no = ($form_no)??1;

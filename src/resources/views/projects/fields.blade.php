@@ -11,19 +11,32 @@
 <!-- Name Field -->
 <div class="form-group col-sm-12 has-warning">
     <div class="row">
-        <div class="col-sm-10">
+        <div class="col-sm-12">
             {!! Form::label('project', 'Name:', ['class' => 'toggle']) !!}
             @if(isset($project))
                 <h3 class="toggle" style="display:initial">{!! $project->project !!}</h3>
             @endif
             {!! Form::text('project', null, ['class' => 'form-control toggle', 'placeholder' => 'Choose carefully.']) !!}
         </div>
-        <div class="col-sm-2">
+    </div>
+    <div class="row">
+
+        <div class="col-sm-4">
             {!! Form::label('unique_code', 'SMS Code:', ['class' => 'toggle']) !!}
             @if(isset($project))
                 <h3 class="toggle" style="display:initial">{!! $project->unique_code !!}</h3>
             @endif
             {!! Form::text('unique_code', null, ['class' => 'form-control toggle', 'placeholder' => 'Unique Code']) !!}
+        </div>
+        <div class="col-sm-4">
+            <label class="toggle" for="report_by">Report By:</label>
+            {!! Form::select("report_by", ['location' => 'Location', 'observer' => 'Observer' ], ($project->report_by)??null, ['class' => 'form-control toggle', 'id' => 'report_by']) !!}
+
+        </div>
+        <div class="col-sm-4">
+            <label class="toggle" for="store_by">Store By:</label>
+            {!! Form::select("store_by", ['location' => 'Location', 'observer' => 'Observer' ], ($project->store_by)??null, ['class' => 'form-control toggle', 'id' => 'store_by']) !!}
+
         </div>
     </div>
 </div>
