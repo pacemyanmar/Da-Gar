@@ -387,6 +387,10 @@ class SmsAPIController extends AppBaseController
                 $reply['status'] = 'error';
                 return $reply;
             }
+        } else {
+            $reply['message'] = $this->encoding('sms.do_not_send_or_call', 'zawgyi');
+            $reply['status'] = 'error';
+            return $reply;
         }
 
 

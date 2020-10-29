@@ -13,5 +13,6 @@ return [
     'error_not_by_sms' => 'ERROR: You do not need to send this report by SMS.',
     'error_not_complete' => 'ERROR: Incomplete SMS',
     'success_complete' => 'Completed',
+    'do_not_send_or_call' => 'Do not send other messages or call.'
 
 ];
