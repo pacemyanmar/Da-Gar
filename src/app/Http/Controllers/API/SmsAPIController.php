@@ -302,14 +302,13 @@ class SmsAPIController extends AppBaseController
 
         if ($event != 'send_status') {
             $reply['content'] = $response['message']; // reply message
-            $no_reply = ($request->input('noreply'))?$request->input('noreply'):Settings::get('noreply');
+            $no_reply = ($request->input('noreply'))??Settings::get('noreply');
             if(!$no_reply) {
                 if(config('sms.providers.global.use')) {
-                    switch(config('sms.providers.global.provider')){
-                        case 'blueplanet':
-                            $this->sendToBoom($response, $from_number, $uuid);
-                        default:
-                            $this->sendToTelerivet($reply);
+                    if(config('sms.providers.global.provider') == 'blueplanet') {
+                        $this->sendToBoom($response, $from_number, $uuid);
+                    } else {
+                        $this->sendToTelerivet($reply);
                     }                            
                 } else {
                     return $this->sendResponse($reply, 'Message processed successfully');
