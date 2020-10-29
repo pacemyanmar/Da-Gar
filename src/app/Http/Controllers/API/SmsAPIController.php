@@ -374,18 +374,23 @@ class SmsAPIController extends AppBaseController
 
         Log::debug("Observer Phone: ". $observer_phone);
 
-        if (empty($observer_phone) && config('sms.verify_phone')) {
-            // if project is empty
-            $reply['message'] = $this->encoding('sms.phone_error', 'zawgyi');
-            $reply['status'] = 'error';
-            return $reply;
-        }
+
         if($match_code) {
-            if (config('sms.verify_phone') && $pcode[2] !== substr($observer_phone->sample_code,0, strlen($pcode[2]))) {
-                // if project is empty
-                $reply['message'] = $this->encoding('sms.error_code', 'zawgyi');
-                $reply['status'] = 'error';
-                return $reply;
+            if (config('sms.verify_phone')) {
+                
+                if (empty($observer_phone)) {
+                    // if project is empty
+                    $reply['message'] = $this->encoding('sms.phone_error', 'zawgyi');
+                    $reply['status'] = 'error';
+                    return $reply;
+                }
+
+                if( $pcode[2] !== substr($observer_phone->sample_code,0, strlen($pcode[2]))) {
+                    // if project is empty
+                    $reply['message'] = $this->encoding('sms.error_code', 'zawgyi');
+                    $reply['status'] = 'error';
+                    return $reply;
+                }
             }
         } else {
             $reply['message'] = $this->encoding('sms.do_not_send_or_call', 'zawgyi');
