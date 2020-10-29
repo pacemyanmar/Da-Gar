@@ -55,7 +55,7 @@ Class BluePlanetSMS implements SMSInterface {
         $stack->push($history);
         $form_params = [
             'from' => $this->sender_id,
-            'to' => ltrim($request['to'], '0+'),
+            'to' => preg_replace('/^(\+959|09)/','959',ltrim($request['to'])),
             'text' => $request['message']
         ];
 
