@@ -967,7 +967,14 @@ class ProjectController extends AppBaseController
             $project['project'] = $project['label'];
 
             if(array_key_exists('type', $project)) {
-                $project['type'] = ($project['type'] == 'incident')? 'sample2db':'fixed'; //this should be sbo or incident or campaign
+                switch ($project['type']){
+                    case 'incident':
+                    case 'sample2db':
+                        $project['type'] = 'sample2db';
+                        break;
+                    default:
+                        $project['type'] = 'db2sample';
+                }
             }
 
             $validator = Validator::make($project, [
