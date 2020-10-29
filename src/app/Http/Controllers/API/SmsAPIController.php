@@ -467,7 +467,7 @@ class SmsAPIController extends AppBaseController
 
             $dbname = $project->dbname;
 
-            $reply['form_code'] = $form_code = ($pcode[2] === substr($observer_phone->sample_code,0, strlen($pcode[2])))?$observer_phone->sample_code:$pcode[2];
+            $form_code = ($pcode[2] === substr($observer_phone->sample_code,0, strlen($pcode[2])))?$observer_phone->sample_code:$pcode[2];
 
             /*
              * Copies = More than one form to be submitted for one location ( Something similar to incident form or
@@ -475,38 +475,40 @@ class SmsAPIController extends AppBaseController
              * Frequencies = More than one times to submit for one or more locations ( Something like campaign monitoring )
              */
             if($project->frequencies > 1 && $project->copies > 1) {
-                $sample_id = mb_substr($form_code, 0, -2);
+                $sample_code = mb_substr($form_code, 0, -2);
                 $frequency = mb_substr($form_code, -1, 1);
                 $form_no = mb_substr($form_code, -2, 1);
             } elseif( $project->frequencies > 1 && $project->copies == 1) {
-                $sample_id = mb_substr($form_code, 0, -1);
+                $sample_code = mb_substr($form_code, 0, -1);
                 $form_no = 1;
                 $frequency = mb_substr($form_code, -1, 1);
             } elseif( 1 == $project->frequencies && $project->copies > 1) {
-                $sample_id = mb_substr($form_code, 0, -1);
+                $sample_code = mb_substr($form_code, 0, -1);
                 $form_no = mb_substr($form_code, -1, 1);
                 $frequency = 1;
             } else {
-                $sample_id = $form_code;
+                $sample_code = $form_code;
             }
             if($project->report_by != $project->store_by) {
                 if($project->store_by == 'observer') {
-                    $sample_id = $form_code.$this->phone->observer;
+                    $sample_code = $form_code.$this->phone->observer;
                 }
                 // location code is always shorter than observer code
                 if($project->store_by == 'location') {
-                    $sample_id = substr($form_code,0,-1);
+                    $sample_code = substr($form_code,0,-1);
                 }
             }
+
+            $reply['form_code'] = $sample_code;
 
             if($project->type == 'fixed') {
                 $form_no = ($form_no)??1;
                 $frequency = ($frequency)??1;
-                Log::debug($sample_id);
-                $sample = $this->findSample($sample_id, $form_no, $frequency);
+                Log::debug($sample_code);
+                $sample = $this->findSample($sample_code, $form_no, $frequency);
                 Log::debug($sample);
             } else {
-                $sample = $this->createSample($sample_id);
+                $sample = $this->createSample($sample_code);
             }
 
             if(empty($sample)) {
@@ -596,9 +598,6 @@ class SmsAPIController extends AppBaseController
                         switch ($input->type) {
                             case 'checkbox':
                                 $value = (in_array($input->value, $values))? true:false;
-                                break;
-                            case 'radio':
-                                $value = $cap_qna_combined[$QNUM];
                                 break;
                             default:
                                 $value = $cap_qna_combined[$QNUM];
