@@ -362,7 +362,7 @@ class SmsAPIController extends AppBaseController
 
         Log::debug($message);
 
-        $match_code = preg_match('/^([a-zA-Z]+)(\d+)/', trim($message), $pcode);
+        $match_code = preg_match('/^([a-zA-Z]{1,2})(\d+)/', trim($message), $pcode);
 
         Log::debug($pcode);
 
@@ -377,7 +377,7 @@ class SmsAPIController extends AppBaseController
 
         if($match_code) {
             if (config('sms.verify_phone')) {
-                
+
                 if (empty($observer_phone)) {
                     // if project is empty
                     $reply['message'] = $this->encoding('sms.phone_error', 'zawgyi');
