@@ -183,6 +183,8 @@ class SmsAPIController extends AppBaseController
         $smsLog->service_id = (array_key_exists('message_id', $response_body))?$response_body['message_id']:$smsLog->service_id;
         $smsLog->save();
 
+        Log::debug("SMS Log:".$smsresponse->getBody());
+
         return $this->sendResponse((string) $smsresponse->getBody(), 'Recieved!');
         // Iterate over the requests and responses
         //foreach ($container as $transaction) {
