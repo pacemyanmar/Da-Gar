@@ -162,7 +162,7 @@ class SmsAPIController extends AppBaseController
                 $this->smsLogs($response, $log);
                 $this->sendToBoom($response, $from_number, $status_uuid);
             }
-
+            Log::debug("Boom Log:".$message);
             return $this->sendResponse('Message:'. $message, 'Well received!');
 
         } else {
