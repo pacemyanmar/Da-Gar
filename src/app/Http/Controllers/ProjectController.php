@@ -20,6 +20,7 @@ use App\Repositories\ProjectRepository;
 use App\Scopes\OrderByScope;
 use App\SmsHelper;
 use App\Traits\QuestionsTrait;
+use App\Traits\SampleImportTrait;
 use Carbon\Carbon;
 use Flash;
 use Illuminate\Auth\Access\AuthorizationException;
@@ -47,7 +48,7 @@ use Staudenmeir\LaravelMigrationViews\Facades\Schema as ViewSchema;
  */
 class ProjectController extends AppBaseController
 {
-    use QuestionsTrait;
+    use QuestionsTrait, SampleImportTrait;
     /**
      * @var  ProjectRepository
      */
@@ -545,7 +546,7 @@ class ProjectController extends AppBaseController
         $project->inputs()->withoutGlobalScope(OrderByScope::class)
             ->update(['status' => 'published']);
         $project->save();
-        if ($project->type != 'sample2db') {
+        if ($project->type != 'dynamic') {
             dispatch(new \App\Jobs\GenerateSample($project)); // need to decide this to run once or every time project update
         }
         //app()->setLocale(Session::get('locale'));
@@ -857,7 +858,7 @@ class ProjectController extends AppBaseController
 
         $sample_structure = $project->locationMetas->where('show_index', 1)->pluck('label', 'field_name');
 
-        return view('projects.survey.sample2db.info')
+        return view('projects.survey.dynamic.info')
             ->with('project', $project)
             ->with('sample', $sample)
             ->with('form_id', $max_form_id)
@@ -969,11 +970,11 @@ class ProjectController extends AppBaseController
             if(array_key_exists('type', $project)) {
                 switch ($project['type']){
                     case 'incident':
-                    case 'sample2db':
-                        $project['type'] = 'sample2db';
+                    case 'dynamic':
+                        $project['type'] = 'dynamic';
                         break;
                     default:
-                        $project['type'] = 'db2sample';
+                        $project['type'] = 'fixed';
                 }
             }
 
@@ -1589,66 +1590,7 @@ class ProjectController extends AppBaseController
     private function importSampleData($records, $project, $idcoumn)
     {
 
-        $data_array = iterator_to_array($records, true);
-
-        $phones = Phone::all();
-
-        $phone_mass_insert = [];
-
-        array_walk($data_array, function (&$data, $key) use ($project, $phones, &$phone_mass_insert) {
-            $newdata = [];
-            foreach ($data as $dk => $dv) {
-                $data_column = str_dbcolumn($dk);
-                if($data_column == $project->idcolumn) {
-                    $newdata['id'] = filter_var($dv, FILTER_SANITIZE_STRING);
-                } else {
-                    $newdata[$data_column] = filter_var($dv, FILTER_SANITIZE_STRING);
-                }
-            }
-
-            foreach($newdata as $dk => $dv) {
-                $phone_column = $project->locationMetas->where('field_name', $dk)->where('field_type', 'phone')->first();
-
-                if($phone_column) {
-                    Log::debug($newdata);
-                    $observer_number = null;
-                    $sbo_number_col = $project->locationMetas->where('field_type', 'sbo_number')->first();
-                    if($sbo_number_col)
-                        $observer_number = (array_key_exists($sbo_number_col->field_name, $newdata))?$newdata[$sbo_number_col->field_name]:null;
-                    $guessed_observer_number = (is_numeric(substr($phone_column->data_type, -1)))?substr($phone_column->data_type, -1):1;
-                    Log::debug($sbo_number_col);
-                    Log::debug($observer_number);
-
-                    $phone_number = preg_replace('/[^0-9]/','',$newdata[$dk]);
-                    if($phone_number) {
-                        if($phone = $phones->find($phone_number)) {
-
-                            if ($guessed_observer_number != $phone->observer || $newdata['id'] != $phone->sample_code) {
-                                Log::debug($phone->phone . ',' . $guessed_observer_number .','.$observer_number. ',' . $phone->observer . ',' . $newdata['id'] . ',' . $phone->sample_code);
-
-                                $phone->observer = ($observer_number)??$guessed_observer_number;
-                                $phone->sample_code = $newdata['id'];
-                                $phone->save();
-                            }
-                        } else {
-                            $phone_mass_insert[$phone_number] = [
-                                'phone' => $phone_number,
-                                'sample_code' => $newdata['id'],
-                                'observer' => ($observer_number)??$guessed_observer_number
-                            ];
-                        }
-                    }
-                }
-            }
-            $data = $newdata;
-        });
-
-        if(!empty($phone_mass_insert))
-            Phone::insert(array_values($phone_mass_insert));
-
-        $sample_data = new SampleData();
-
-        $sample_data->insertOrUpdate($data_array, $project->dbname.'_samples');
+        $sample_data = $this->massInsert($project,$records);
 
         return $sample_data;
     }

@@ -3,8 +3,8 @@
      *  db value to name array
      */
      $type = [
-        'db2sample' => 'Survey',
-        'sample2db' => 'Incident',
+        'fixed' => 'Survey',
+        'dynamic' => 'Incident',
      ]
 
 @endphp

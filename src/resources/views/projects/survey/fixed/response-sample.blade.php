@@ -32,7 +32,7 @@
         <div class="clearfix"></div>
         <div class="box box-default">
             <div class="box-body">
-                    @include('projects.survey.db2sample.table')
+                    @include('projects.survey.fixed.table')
             </div>
         </div>
         <div class="box box-default">

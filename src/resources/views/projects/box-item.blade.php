@@ -18,7 +18,7 @@
             <div class="media-body">
                 <div class="clearfix">
                 @if(in_array(Auth::user()->role->level,[3,4,5,6,7,8,9]))
-                    @if($project->type == 'sample2db')
+                    @if($project->type == 'dynamic')
                         <a href="{{ route('projects.surveys.index', $project->id) }}"
                            class='btn btn-success btn-sm' style='margin-bottom: 5px;'>
                             <i class="glyphicon glyphicon-eye-open"></i> {!! trans('messages.list_incidents') !!}

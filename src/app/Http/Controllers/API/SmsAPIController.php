@@ -490,7 +490,7 @@ class SmsAPIController extends AppBaseController
                 $sample_id = $form_code;
             }
 
-            if($project->type == 'fixed' || $project->type == 'db2sample') {
+            if($project->type == 'fixed') {
                 $form_no = ($form_no)??1;
                 $frequency = ($frequency)??1;
                 Log::debug($sample_id);
@@ -887,7 +887,7 @@ class SmsAPIController extends AppBaseController
                 }
 
 
-                if ($project->type != 'sample2db') { // if project type is not incident
+                if ($project->type != 'dynamic') { // if project type is not incident
                     $sample_data = $project->samplesData->where('location_code', $location_code)->first();
                 } else {
                     $sample_data = SampleData::where('location_code', $location_code)->where('type', 'fixed')->first();
@@ -900,7 +900,7 @@ class SmsAPIController extends AppBaseController
                     return $reply;
                 }
 
-                if ($project->type != 'sample2db') { // if project type is not incident
+                if ($project->type != 'dynamic') { // if project type is not incident
                     // look for Form ID
                     preg_match('/fnnnnnn(\d+)/', $message, $form_id); // this is temporary form number code
                     if ($form_id) {
@@ -944,11 +944,11 @@ class SmsAPIController extends AppBaseController
 
                 // if it is training mode
                 if ($form_type == 'incident') {
-                    $project = Project::where('training', true)->where('type', 'sample2db')->first();
+                    $project = Project::where('training', true)->where('type', 'dynamic')->first();
                 } elseif ($form_type != 'incident') {
-                    $project = Project::where('training', true)->where('type', '<>', 'sample2db')->first();
+                    $project = Project::where('training', true)->where('type', '<>', 'dynamic')->first();
                 } else {
-                    $project = Project::where('type', '<>', 'sample2db')->first();
+                    $project = Project::where('type', '<>', 'dynamic')->first();
                 }
             }
 

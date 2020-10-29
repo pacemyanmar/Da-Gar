@@ -97,7 +97,7 @@ class SurveyResultsController extends AppBaseController
         $table->setProject($project);
 
         // set table join method based on project type
-        if ($project->type == 'sample2db') {
+        if ($project->type == 'dynamic') {
             $table->setJoinMethod('join');
             $samplesData = config('sms.incident_columns');
         } else {
@@ -110,19 +110,7 @@ class SurveyResultsController extends AppBaseController
             $table->setSampleType($samplable);
         }
 
-
-
-        switch ($project->type) {
-            case 'sample2db':
-                $project_type = $project->type;
-                break;
-
-            default:
-                $project_type = 'db2sample';
-                break;
-        }
-
-        return $table->addScope(new OrderByCode())->addScope(new OrderByFormId())->render('projects.survey.' . $project_type . '.index', compact('project'));
+        return $table->addScope(new OrderByCode())->addScope(new OrderByFormId())->render('projects.survey.' . $project->type . '.index', compact('project'));
     }
 
     /**
@@ -345,14 +333,13 @@ class SurveyResultsController extends AppBaseController
             $sampleResponse->setSample($sample_group);
         }
         switch ($project->type) {
-            case 'sample2db':
-                $project_type = $project->type;
-                break;
+            case 'dynamic':
             case 'incident':
-                $project_type = 'sample2db';
+            case 'dynamic':
+                $project_type = 'dynamic';
                 break;
             default:
-                $project_type = 'db2sample';
+                $project_type = 'fixed';
                 break;
         }
 
@@ -400,17 +387,7 @@ class SurveyResultsController extends AppBaseController
 
         $doubleResponse->setProject($project);
 
-        switch ($project->type) {
-            case 'sample2db':
-                $project_type = $project->type;
-                break;
-
-            default:
-                $project_type = 'db2sample';
-                break;
-        }
-
-        return $doubleResponse->render('projects.survey.' . $project_type . '.response-double', compact('settings', $settings));
+        return $doubleResponse->render('projects.survey.' . $project->type . '.response-double', compact('settings', $settings));
     }
 
     public function originUse($project_id, $survey_id, $column, Request $request)

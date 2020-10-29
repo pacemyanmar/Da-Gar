@@ -2,7 +2,7 @@
     <div class="col-sm-4">
         <div class="row">
             <div class='btn-group'>
-                @if($type == 'sample2db')
+                @if($type == 'dynamic')
                     <a href="{{ route('projects.surveys.index', $id) }}" class='btn btn-default btn-sm'>
                         <i class="glyphicon glyphicon-eye-open"></i> {!! trans('messages.list_incidents') !!}
                     </a>

@@ -27,7 +27,7 @@
         </div>
         <div class="box box-primary">
             <div class="box-body">
-                    @include('projects.survey.sample2db.table')
+                    @include('projects.survey.dynamic.table')
             </div>
         </div>
     </div>
