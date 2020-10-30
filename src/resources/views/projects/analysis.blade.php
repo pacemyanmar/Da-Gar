@@ -134,19 +134,24 @@
                                                                 @endif
                                                             @endforeach
                                                             @if(isset(${$question->qnum.'hasradio'}))
+                                                                    <li class="list-group-item">
+                                                                        Missing from to be reported<a
+                                                                                href="{{ route('projects.surveys.index', $project->id) }}/?column={{ $element->inputid }}&sect={{ $section_table }}&value=NULL">
+                                                                            ( {{ $results->{'q'.strtolower($question->qnum).'_none'} }}
+                                                                            - {{ number_format(($results->{'q'.strtolower($question->qnum).'_none'} * 100)/ ($results->total)??1, 2, '.', '') }}
+                                                                            % ) </a>
 
-                                                                <li class="list-group-item">
-                                                                    Missing <a
-                                                                            href="{{ route('projects.surveys.index', $project->id) }}/?column={{ $element->inputid }}&sect={{ $section_table }}&value=NULL">
-                                                                        ( {{ $results->{'q'.strtolower($question->qnum).'_none'} }}
-                                                                        - {{ number_format(($results->{'q'.strtolower($question->qnum).'_none'} * 100)/ ($results->total)??1, 2, '.', '') }}
-                                                                        % ) </a>
-
-                                                                    {{--@push('d3-js')--}}
-                                                                    {{--var data{!! 'q'.$question->qnum.'_none' !!} = {label:"Missing", color:"#000",value: {{ number_format(($results->{'q'.$question->qnum.'_none'} * 100)/ $results->total, 2, '.', '') }} }--}}
-                                                                    {{--d3{!! $question->id !!}Data.push(data{!! 'q'.$question->qnum.'_none' !!});--}}
-                                                                    {{--@endpush--}}
-                                                                </li>
+                                                                        {{--@push('d3-js')--}}
+                                                                        {{--var data{!! 'q'.$question->qnum.'_none' !!} = {label:"Missing", color:"#000",value: {{ number_format(($results->{'q'.$question->qnum.'_none'} * 100)/ $results->total, 2, '.', '') }} }--}}
+                                                                        {{--d3{!! $question->id !!}Data.push(data{!! 'q'.$question->qnum.'_none' !!});--}}
+                                                                        {{--@endpush--}}
+                                                                    </li>
+                                                                    <li class="list-group-item">
+                                                                        Total reported  - ( {{ number_format($results->total - $results->{'q'.strtolower($question->qnum).'_none'}, 2, '.', '') }} )
+                                                                    </li>
+                                                                    <li class="list-group-item">
+                                                                        Total to be reported  - ( {{ number_format($results->total, 2, '.', '') }} )
+                                                                    </li>
                                                             @endif
                                                         </ul>
                                                     </div>
