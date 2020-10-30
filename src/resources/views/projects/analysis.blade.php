@@ -99,7 +99,7 @@
 
                                                                                     @push('d3-js')
                                                                                         var data{!! $element->inputid.'_'.$element->value !!} = {
-                                                                                            label:"{!! $element->label !!}",
+                                                                                            label:"({!! $element->value !!})",
                                                                                             color:"{!! $colors[$k] !!}",
                                                                                             value: {{ number_format(($results->{$element->inputid.'_'.$element->value} * 100)/ ($results->{strtolower($question->qnum).'_reported'})??1, 2, '.', '') }}
                                                                                         }
@@ -114,7 +114,7 @@
 
                                                                                     @push('d3-js')
                                                                                         var data{!! $element->inputid.'_'.$element->value !!} = {
-                                                                                            label:"{!! $element->label !!}",
+                                                                                            label:"({!! $element->value !!})",
                                                                                             color:"{!! $colors[$k] !!}",
                                                                                             value: {{ number_format($results->{$element->inputid.'_'.$element->value}, 2, '.', '') }}
                                                                                         }
