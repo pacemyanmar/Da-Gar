@@ -52,7 +52,8 @@
                             </thead>
                             <tbody data-section="{!! $section->id !!}">
                             @foreach($section->questions as $question)
-                                @if(!in_array($question->layout,['household']))
+                                @if(!$question->surveyInputs->whereIn('type',['radio','checkbox'])->isEmpty())
+                                    @if(!in_array($question->layout,['household']))
                                     <tr id="sort-{!! $question->id !!}">
                                         <td class="col-xs-1" id="{!! $question->css_id !!}">
                                             <label>{!! $question->qnum !!}</label>
@@ -93,14 +94,14 @@
                                                                             @if( $element->type == 'radio' )
                                                                                 @if($results->{strtolower($question->qnum).'_reported'} && is_numeric($element->value))
                                                                                     ( {{ $results->{$element->inputid.'_'.$element->value} }}
-                                                                                    - {{ number_format(($results->{$element->inputid.'_'.$element->value} * 100)/ $results->{strtolower($question->qnum).'_reported'}, 2, '.', '') }}
+                                                                                    - {{ number_format(($results->{$element->inputid.'_'.$element->value} * 100)/ ($results->{strtolower($question->qnum).'_reported'})??1, 2, '.', '') }}
                                                                                     % )
 
                                                                                     @push('d3-js')
                                                                                         var data{!! $element->inputid.'_'.$element->value !!} = {
                                                                                             label:"{!! $element->label !!}",
                                                                                             color:"{!! $colors[$k] !!}",
-                                                                                            value: {{ number_format(($results->{$element->inputid.'_'.$element->value} * 100)/ $results->{strtolower($question->qnum).'_reported'}, 2, '.', '') }}
+                                                                                            value: {{ number_format(($results->{$element->inputid.'_'.$element->value} * 100)/ ($results->{strtolower($question->qnum).'_reported'})??1, 2, '.', '') }}
                                                                                         }
                                                                                         d3{!! $question->id !!}Data.push(data{!! $element->inputid.'_'.$element->value !!});
                                                                                     @endpush
@@ -137,8 +138,8 @@
                                                                 <li class="list-group-item">
                                                                     Missing <a
                                                                             href="{{ route('projects.surveys.index', $project->id) }}/?column={{ $element->inputid }}&sect={{ $section_table }}&value=NULL">
-                                                                        ( {{ $results->{'q'.$question->qnum.'_none'} }}
-                                                                        - {{ number_format(($results->{'q'.$question->qnum.'_none'} * 100)/ $results->total, 2, '.', '') }}
+                                                                        ( {{ $results->{'q'.strtolower($question->qnum).'_none'} }}
+                                                                        - {{ number_format(($results->{'q'.strtolower($question->qnum).'_none'} * 100)/ ($results->total)??1, 2, '.', '') }}
                                                                         % ) </a>
 
                                                                     {{--@push('d3-js')--}}
@@ -168,6 +169,7 @@
                                         </td>
                                     </tr>
                                 @endif
+                                @endif
                             @endforeach
                             </tbody>
                         </table>
@@ -191,7 +193,7 @@
                     ex = rx * Math.cos(d.endAngle),
                     ey = ry * Math.sin(d.endAngle);
                 var ret = [];
-                ret.push("M", sx, sy, "A", rx, ry, "0", (d.endAngle - d.startAngle > Math.PI ? 1 : 0), "1", ex, ey, "L", ir * ex, ir * ey);
+                ret.push("M", sx, (sy)?sy:0.0000001, "A", rx, ry, "0", (d.endAngle - d.startAngle > Math.PI ? 1 : 0), "1", ex, ey, "L", ir * ex, ir * ey);
                 ret.push("A", ir * rx, ir * ry, "0", (d.endAngle - d.startAngle > Math.PI ? 1 : 0), "0", ir * sx, ir * sy, "z");
                 return ret.join(" ");
             }
@@ -222,7 +224,7 @@
 
             function getPercent(d) {
                 return (d.endAngle - d.startAngle > 0.2 ?
-                    Math.round(10000 * (d.endAngle - d.startAngle) / (Math.PI * 2)) / 100 + '%' : '');
+                    Math.round(100000 * (d.endAngle - d.startAngle) / (Math.PI * 2)) / 1000 + '%' : '');
             }
 
             Donut3D.transition = function (id, data, rx, ry, h, ir) {
@@ -333,7 +335,7 @@
             var margin = {top: 40, right: 20, bottom: 30, left: 40},
                 width = 700 - margin.left - margin.right,
                 height = 300 - margin.top - margin.bottom;
-            var formatPercent = d3.format(".0%");
+            var formatPercent = d3.format(".00%");
             var x = d3.scale.ordinal()
                 .rangeRoundBands([0, width], .1);
             var y = d3.scale.linear()

@@ -489,8 +489,8 @@ class SurveyResultsController extends AppBaseController
         $reported = [];
         foreach ($project->inputs as $input) {
             if (is_numeric($input->value)) {
-                $sample_query .= ' , SUM(IF(' . $input->inputid . '=' . $input->value . ',1,0)) AS ' . $input->inputid . '_' . $input->value . ' ,';
-                $sample_query .= 'SUM(IF(' . $input->inputid . ' IS NULL OR ' .$input->inputid. ' = 0,1,0)) AS q' . $input->question->qnum . '_none';
+                $sample_query .= ' , SUM(IF(' . $input->inputid . '=' . $input->value . ',1,0)) AS ' . strtolower($input->inputid . '_' . $input->value) . ' ,';
+                $sample_query .= 'SUM(IF(' . $input->inputid . ' IS NULL OR ' .$input->inputid. ' = 0,1,0)) AS q' . strtolower($input->question->qnum) . '_none';
                 $reported[$input->inputid] = 'SUM(IF(' . $input->inputid . ',1,0)) AS '.strtolower($input->question->qnum).'_reported';
             }
         }
