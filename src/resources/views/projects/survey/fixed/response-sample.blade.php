@@ -10,9 +10,12 @@
     <section class="content-header">
         <h1 class="pull-left">{!! (request()->is('*double*'))?'Double Entry':'Samples' !!} Response Rate</h1>
         <span class="pull-right">
-        @foreach($data['samples'] as $group) 
-            <button class="btn btn-primary sample" data-sample="{{ $group }}" id="#{{ $group }}">{!! strtoupper($group) !!}</button>
-        @endforeach
+            @if(!empty($data['tracks']))
+            <button class="btn btn-primary sample" data-sample="0" id="#trackall">All Tracks</button>
+            @foreach($data['tracks'] as $track)
+                <button class="btn btn-primary sample" data-sample="{{ $track }}" id="#track{{ $track }}">{!! strtoupper("Track ".$track) !!}</button>
+            @endforeach
+            @endif
         <label>Response rate by:
            <select autocomplete="off" id="responseBy" class="form-control input-md">
                @foreach($select_filters as $filter)
@@ -61,23 +64,23 @@
     }, 10000 );
     ajaxoverlay = false;
 
-    var sample_group;
+    var track;
     
 
     @if(!empty($data['selected']))
-        sample_group="{{$data['selected']}}"
+        track="{{$data['selected']}}"
     @endif
 
-    $('button.sample').on('change', function(){
-        sample_group=$(this).data('sample');
-        var url = document.location.href.split('?')[0]+"?sample_group="+sample_group;
+    $('button.sample').on('click', function(){
+        track=$(this).data('sample');
+        var url = document.location.href.split('?')[0]+"?track="+track;
         document.location = url;
     })
 
     $('#responseBy').on('change', function(e){
         var filterurl = $(this).val();
-        if(sample_group) {
-            url = filterurl.split('?')[0]+"?sample_group="+sample_group;
+        if(track) {
+            url = filterurl.split('?')[0]+"?track="+track;
         } else {
             url = filterurl;
         }

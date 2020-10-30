@@ -16,7 +16,9 @@ class SampleResponseDataTable extends DataTable
 
     private $type;
 
-    private $sample_group;
+    private $track_column;
+
+    private $track_value;
 
     private $section;
 
@@ -38,9 +40,10 @@ class SampleResponseDataTable extends DataTable
         return $this;
     }
 
-    public function setSample($sample)
+    public function setTrack($column,$value)
     {
-        $this->sample_group = $sample;
+        $this->track_column = $column;
+        $this->track_value = $value;
         return $this;
     }
 
@@ -217,8 +220,8 @@ class SampleResponseDataTable extends DataTable
         });
         $query->where('project_id', $project->id);
 
-        if(!empty($this->sample_group)) {
-            $query->whereNotNull($this->sample_group)->where($this->sample_group,'>',0);
+        if($this->track_value) {
+            $query->where($this->track_column,'=',$this->track_value);
         }
         //$query->where('sdv.sample', '<>', '0');
 

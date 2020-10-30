@@ -12,6 +12,7 @@ use App\Models\Section;
 use App\Models\SurveyResult;
 use App\Repositories\ProjectRepository;
 use App\Repositories\QuestionRepository;
+use App\Repositories\SampleDetailsRepository;
 use App\Repositories\SampleRepository;
 use App\Repositories\SurveyInputRepository;
 use App\Traits\LogicalCheckTrait;
@@ -310,7 +311,7 @@ class SurveyResultsController extends AppBaseController
         return view('projects.monitor')->withQuestions($question_in_report);
     }
 
-    public function responseRateSample($project_id, $filter, $type='first', SampleResponseDataTable $sampleResponse, Request $request)
+    public function responseRateSample($project_id, $filter, $type='first', SampleResponseDataTable $sampleResponse,SampleDetailsRepository $sampleDetails, Request $request)
     {
         $project = $this->projectRepository->findWithoutFail($project_id);
         if (empty($project)) {
@@ -328,10 +329,6 @@ class SurveyResultsController extends AppBaseController
 
         $sampleResponse->setFilter($filter);
 
-        if(!empty($request->input('sample_group'))) {
-            $sample_group = $request->input('sample_group');
-            $sampleResponse->setSample($sample_group);
-        }
         switch ($project->type) {
             case 'dynamic':
             case 'incident':
@@ -355,12 +352,21 @@ class SurveyResultsController extends AppBaseController
 
         $filters = ['type' => $filter, 'section_num' => $section_num];
 
-        $sample_groups = $project->locationMetas->where('data_type', 'sample')->pluck('field_name');
+        $sample_track = $project->locationMetas->where('data_type', 'sample')->first();
+        if($sample_track) {
+            $track_samples = $sampleDetails->setTable($project->dbname . '_samples')->pluck($sample_track->field_name)->unique();
+
+            if (!empty($request->input('track'))) {
+                $track = $request->input('track');
+                $sampleResponse->setTrack($sample_track->field_name, $track);
+            }
+        }
 
         $data = [   'filters' => $filters,
-                    'samples' => $sample_groups,
-                    'selected' => $request->input('sample_group')
+                    'tracks' => (isset($track_samples))?$track_samples->values()->all():[],
+                    'selected' => $request->input('track')
                 ];
+
 
         return $sampleResponse->render('projects.survey.' . $project_type . '.response-sample', compact('project', $project), compact('data', collect($data)));
     }
