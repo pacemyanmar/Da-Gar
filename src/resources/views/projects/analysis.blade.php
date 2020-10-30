@@ -365,9 +365,7 @@
                 x.domain(data.map(function (d) {
                     return d.label;
                 }));
-                y.domain([0, d3.max(data, function (d) {
-                    return d.value;
-                })]);
+                y.domain([0, 100]);
                 svg.append("g")
                     .attr("class", "x axis")
                     .attr("transform", "translate(0," + height + ")")
@@ -390,10 +388,10 @@
                     })
                     .attr("width", x.rangeBand())
                     .attr("y", function (d) {
-                        return y(d.value);
+                        return y((d.value*100)/{!! $results->total !!});
                     })
                     .attr("height", function (d) {
-                        return height - y(d.value);
+                        return height - y((d.value*100)/{!! $results->total !!});
                     })
                     .style("fill", function (d) {
                         return d.color
