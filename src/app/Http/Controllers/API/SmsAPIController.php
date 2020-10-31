@@ -95,12 +95,12 @@ class SmsAPIController extends AppBaseController
 
         if(!empty($secret)) {
             $user = User::whereUsername('telerivet')->first();
-            return $this->telerivet($request, $user);
+            return ($user)?$this->telerivet($request, $user):$this->sendError("Not allowed!");
         }
 
         if(!empty($callerid)) {
             $user = User::whereUsername('boom')->first();
-            return $this->boom($request, $user);
+            return ($user)?$this->boom($request, $user):$this->sendError("Not allowed!");
         }
 
         if(!isset($user)) {
@@ -510,6 +510,16 @@ class SmsAPIController extends AppBaseController
             }
 
             $reply['form_code'] = $sample_code;
+
+            $sample_data = new SampleData();
+            $valid_sample = $sample_data->setTable($project->dbname.'_samples')->find($sample_code);
+
+            if(!$valid_sample) {
+                $reply['message'] = $this->encoding('sms.error_code', $encoding);
+                $reply['status'] = 'error';
+                return $reply;
+            }
+
 
             if($project->type == 'fixed') {
                 $form_no = ($form_no)??1;
