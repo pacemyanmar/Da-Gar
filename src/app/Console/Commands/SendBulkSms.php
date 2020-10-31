@@ -9,6 +9,7 @@ use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Middleware;
 use Illuminate\Console\Command;
 use Akaunting\Setting\Facade as Settings;
+use Illuminate\Support\Facades\Log;
 use Psr\Http\Message\ResponseInterface;
 use App\Registries\SmsProviderRegistry;
 
@@ -49,20 +50,23 @@ class SendBulkSms extends Command
 
         $sms_list = BulkSms::all();
 
-        foreach($sms_list as $sms) {
+        foreach($sms_list->chunk(20) as $chunked_sms) {
+            foreach ($chunked_sms as $sms) {
+                if ($sms->status == 'new') {
 
-            if($sms->status == 'new') {
+                    $message = str_replace("{{NAME}}", $sms->name, $sms->message);
 
-                $message = str_replace("{{NAME}}", $sms->name, $sms->message);
+                    $smsresponse = $smsprovider->send(['message' => $message, 'to' => $sms->phone]);
 
-                $smsresponse = $smsprovider->send(['message' => $message, 'to' => $sms->phone]);
+                    $response_body = json_decode($smsresponse->getBody(), true);
 
-                $response_body = json_decode($smsresponse->getBody(), true);
-
-                $sms->status = ($response_body['status'] === 0)?"sent":$response_body['error-text'];
-                $sms->save();
+                    $sms->status = ($response_body['status'] === 0) ? "sent" : $response_body['error-text'];
+                    $sms->save();
+                }
             }
+            usleep(200 * 1000); // delay 200 milli seconds
         }
+
     }
 
 }

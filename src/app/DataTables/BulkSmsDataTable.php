@@ -41,7 +41,7 @@ class BulkSmsDataTable extends DataTable
     {
         return $this->builder()
             ->columns($this->getColumns())
-            ->minifiedAjax()
+            ->ajax('')
             ->addAction(['width' => '120px'])
             ->parameters([
                 'dom'     => 'Bfrtip',
