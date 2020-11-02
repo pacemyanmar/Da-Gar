@@ -42,18 +42,18 @@ class ProjectAPIController extends AppBaseController
         $sample_sms = Sample::query();
         $sample_sms->select(DB::raw('count(channel_time) AS sms_channel_count'),
             DB::raw('channel'),
-            DB::raw('FROM_UNIXTIME(ROUND((CEILING(UNIX_TIMESTAMP(channel_time) / 300) * 300))) AS sms_time_slice'));
-        $sample_sms->where('project_id', $project->id)->whereNotNull('channel_time')->where('channel', 'sms')->groupBy('sms_time_slice')->groupBy('channel')
-        ->orderBy('channel_time', 'ASC');
+            DB::raw('DATE_FORMAT(MAX(channel_time),\'%Y-%m-%d %H:%i\') AS sms_time_slice'));
+        $sample_sms->where('project_id', $project->id)->whereNotNull('channel_time')->where('channel', 'sms')->groupBy(DB::raw('MINUTE(channel_time)'))->groupBy('channel')
+        ->orderBy('sms_time_slice', 'ASC');
 
         $samples_sms = $sample_sms->get();
 
         $sample_web = Sample::query();
         $sample_web->select(DB::raw('count(channel_time) AS web_channel_count'),
             DB::raw('channel'),
-            DB::raw('FROM_UNIXTIME(ROUND((CEILING(UNIX_TIMESTAMP(channel_time) / 300) * 300))) AS web_time_slice'));
-        $sample_web->where('project_id', $project->id)->whereNotNull('channel_time')->where('channel', 'web')->groupBy('web_time_slice')->groupBy('channel')
-            ->orderBy('channel_time', 'ASC');
+            DB::raw('DATE_FORMAT(MAX(channel_time),\'%Y-%m-%d %H:%i\') AS web_time_slice'));
+        $sample_web->where('project_id', $project->id)->whereNotNull('channel_time')->where('channel', 'web')->groupBy(DB::raw('MINUTE(channel_time)'))->groupBy('channel')
+            ->orderBy('web_time_slice', 'ASC');
 
         $samples_web = $sample_web->get();
 

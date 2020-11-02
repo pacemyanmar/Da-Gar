@@ -1,53 +1,27 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>{{ $project->project }}</title>
-    <!-- Latest compiled and minified plotly.js JavaScript -->
-    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+@extends('layouts.app')
+
+@section('content')
+    <div class="content">
+        <div class="clearfix"></div>
+
+        @include('flash::message')
+
+        <div class="clearfix"></div>
+        <div class="row">
+        <div id="plot"></div>
+        <div id="plot2"></div>
+        </div>
+    </div>
+
+@foreach($project->sections as $section)
+    <div id="section{{$section->sort}}"></div>
+@endforeach
+@endsection
+@section('scripts')
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-
-
-</head>
-<body>
-<div id="plot"></div>
-<div id="plot2"></div>
 <script>
-    // Plotly.d3.csv("https://raw.githubusercontent.com/plotly/datasets/master/finance-charts-apple.csv", function(err, rows){
-    //
-    //     function unpack(rows, key) {
-    //         return rows.map(function(row) { return row[key]; });
-    //     }
-    //
-    //
-    //     var trace1 = {
-    //         type: "scatter",
-    //         mode: "lines",
-    //         name: 'AAPL High',
-    //         x: unpack(rows, 'Date'),
-    //         y: unpack(rows, 'AAPL.High'),
-    //         line: {color: '#17BECF'}
-    //     }
-    //
-    //     var trace2 = {
-    //         type: "scatter",
-    //         mode: "lines",
-    //         name: 'AAPL Low',
-    //         x: unpack(rows, 'Date'),
-    //         y: unpack(rows, 'AAPL.Low'),
-    //         line: {color: '#7F7F7F'}
-    //     }
-    //
-    //     var data = [trace1,trace2];
-    //     console.log(data);
-    //     var layout = {
-    //         title: 'Basic Time Series',
-    //     };
-    //
-    //     Plotly.newPlot('plot', data, layout);
-    // })
-
-    function getFirstData() {
+function getFirstData(update) {
         var ajaxurl = "{{ route('project.responses', [$project->id], false) }}";
 
         var start_time = "{!! $start_time !!}"
@@ -79,23 +53,27 @@
 
                     });
                     trace1 = {
-                        type: "linear",
-                        //mode: "lines",
+                        type: "scatter",
+                        mode: "markers+text",
                         name: 'SMS',
                         x: sms_channel_time,
                         y: ySMS,
-                        line: {color: '#17BECF'}
+			            //text: ySMS,
+			            marker: {size: ySMS, color: '#17BECF'},
+                        //line: {color: '#17BECF'}
                     }
 
                     trace2 = {
-                        type: "linear",
-                        //mode: "lines",
+                        type: "scatter",
+                        mode: "markers+text",
                         name: 'Web',
                         x: web_channel_time,
                         y: yWeb,
-                        line: {color: '#7F7F7F'}
+			            //text: yWeb,
+			            marker: {size: yWeb, color: '#111111'},
+                        //line: {color: '#7F7F7F'}
                     }
-                    drawChart(trace1,trace2);
+                    drawChart(trace1,trace2, update);
                 }
             }
         });
@@ -103,20 +81,32 @@
     }
     var trace1 = {};
     var trace2 = {};
-    getFirstData();
+    getFirstData(false);
 
-    function drawChart(trace1,trace2) {
+    function drawChart(trace1, trace2, update) {
         var data = [trace1,trace2];
         console.log(data);
 
         var layout = {
-            title: "{{ preg_replace('/\s+/', ' ', $project->project) }} response rate by report channel"
+            title: "{{ preg_replace('/\s+/', ' ', $project->project) }} response rate by report channel",
+            xaxis: {
+                autorange: true,
+            },
+            yaxis: {
+                autorange: true,
+                range: [0, 50],
+                //type: 'linear'
+            }
         };
-
-        Plotly.newPlot('plot2', data, layout);
+        if(update){
+            Plotly.restyle('plot2', 'y', [[value]]);
+        } else {
+            Plotly.newPlot('plot2', data, layout, {scrollZoom: true, displayModeBar: false});
+        }
+        
     }
 
-    setInterval(function(){getFirstData();}, 3000);
+    setInterval(function(){getFirstData(true);}, 3000);
 
 
 
@@ -128,9 +118,17 @@
 
         var layout = {
             title: section_title,
+            xaxis: {
+                autorange: true,
+            },
+            yaxis: {
+                autorange: true,
+                range: [0, 50],
+                type: 'linear'
+            }
         };
 
-        Plotly.newPlot(section_id, data, layout);
+        Plotly.newPlot(section_id, data, layout, {scrollZoom: true,displayModeBar: false});
     }
 
     function getSectionData(ajaxurl, section_title, section_id) {
@@ -155,12 +153,14 @@
 
                     });
                     section_data = {
-                        type: "linear",
-                        mode: "lines",
+                        type: "scatter",
+                        mode: "markers+text",
                         name: 'SMS',
                         x: sms_channel_time,
                         y: ySMS,
-                        line: {color: '#17BECF'}
+			//text: ySMS,
+			marker: {size: ySMS, color: '#17BECF'},
+                        //line: {color: '#17BECF'}
                     }
 
                     drawSectionChart(section_data, section_title, section_id);
@@ -170,19 +170,12 @@
 
     }
 
-</script>
-
 @foreach($project->sections as $section)
-    <div id="section{{$section->sort}}"></div>
-        <script>
-
             var section_data{{$section->sort}} = {};
 
             getSectionData("{{ route('smscount', [$project->id, $section->sort], false) }}", "{{ $section->sectionname }}", "section{{$section->sort}}");
 
            setInterval(function(){getSectionData("{{ route('smscount', [$project->id, $section->sort], false) }}", "{{ $section->sectionname }}", "section{{$section->sort}}");}, 10000);
-        </script>
-
 @endforeach
-</body>
-</html>
+    </script>
+@endsection
