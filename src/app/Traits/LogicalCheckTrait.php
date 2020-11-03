@@ -276,7 +276,18 @@ trait LogicalCheckTrait
         if(!empty($this->phone)) {
             $last_messages = json_decode($sample->last_message, true);
 
-            if($sample->sample_data_id != $this->phone->sample_code && config('sms.verify_phone')) {
+            $code_match = (strlen($sample->sample_data_id) == strlen($this->phone->sample_code));
+
+            if(strlen($sample->sample_data_id > $this->phone->sample_code)) {
+                $code_match = ($this->phone->sample_code == substr($sample->sample_data_id,0, strlen($this->phone->sample_code)));
+            }
+
+            if(strlen($sample->sample_data_id < $this->phone->sample_code)) {
+                $code_match = ($sample->sample_data_id == substr($this->phone->sample_code,0, strlen($sample->sample_data_id)));
+            }
+
+            if(!$code_match && config('sms.verify_phone')) {
+
                 $flag_error = 3;
 
                 $last_messages['E1001'] = 'Phone and CODE NOT MATCH!';
