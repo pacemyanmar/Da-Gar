@@ -54,7 +54,7 @@ function getFirstData(update) {
                     });
                     trace1 = {
                         type: "scatter",
-                        mode: "markers+text",
+                        mode: "line",
                         name: 'SMS',
                         x: sms_channel_time,
                         y: ySMS,
@@ -65,7 +65,7 @@ function getFirstData(update) {
 
                     trace2 = {
                         type: "scatter",
-                        mode: "markers+text",
+                        mode: "line",
                         name: 'Web',
                         x: web_channel_time,
                         y: yWeb,
@@ -154,7 +154,7 @@ function getFirstData(update) {
                     });
                     section_data = {
                         type: "scatter",
-                        mode: "markers+text",
+                        mode: "line",
                         name: 'SMS',
                         x: sms_channel_time,
                         y: ySMS,
