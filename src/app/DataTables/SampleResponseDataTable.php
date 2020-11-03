@@ -121,7 +121,7 @@ class SampleResponseDataTable extends DataTable
                     }
                     $status[] = 'IF( ' . $dbname . '.section' . $section->sort . 'status IS NOT NULL OR ' . $dbname . '.section' . $section->sort . 'status != 0, 1, 0) ';
                     $complete[] = 'IF( ' . $dbname . '.section' . $section->sort . 'status = 1, 1, 0) ';
-                    $incomplete[] = 'IF( ' . $dbname . '.section' . $section->sort . 'status = 2, 1, 0) ';
+                    $incomplete[] = 'IF( ' . $dbname . '.section' . $section->sort . 'status != 1 OR ' . $dbname . '.section' . $section->sort . 'status != 0, 1, 0) ';
                     $missing[] = 'IF( ' . $dbname . '.section' . $section->sort . 'status IS NULL OR ' . $dbname . '.section' . $section->sort . 'status = 0, 1, 0) ';
                     $error[] = 'IF( ' . $dbname . '.section' . $section->sort . 'status = 3, 1, 0) ';
                     $reported[] = '( ' . $dbname .'.sample_id is not null AND samples.id = ' . $dbname .'.sample_id )';
@@ -219,7 +219,6 @@ class SampleResponseDataTable extends DataTable
             $join->on('qc_user.id', 'samples.qc_user_id');
         });
         $query->where('project_id', $project->id);
-
         if($this->track_value) {
             $query->where($this->track_column,'=',$this->track_value);
         }
