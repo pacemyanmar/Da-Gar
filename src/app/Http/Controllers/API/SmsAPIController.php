@@ -363,7 +363,7 @@ class SmsAPIController extends AppBaseController
 
         Log::debug($message);
 
-        $match_code = preg_match('/^([a-zA-Z]{1,2})(\d){4,6}/', trim($message), $pcode);
+        $match_code = preg_match('/^([a-zA-Z]{1,2})(\d+){4,6}/', trim($message), $pcode);
 
         Log::debug($pcode);
 
@@ -393,7 +393,7 @@ class SmsAPIController extends AppBaseController
                     return $reply;
                 }
             }
-        } 
+        }
 
 
         if(!config('sms.verify_phone')) {
