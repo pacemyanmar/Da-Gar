@@ -393,11 +393,7 @@ class SmsAPIController extends AppBaseController
                     return $reply;
                 }
             }
-        } else {
-            $reply['message'] = $this->encoding('sms.do_not_send_or_call', 'zawgyi');
-            $reply['status'] = 'error';
-            return $reply;
-        }
+        } 
 
 
         if(!config('sms.verify_phone')) {
