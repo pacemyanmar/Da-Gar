@@ -512,7 +512,7 @@ class SmsAPIController extends AppBaseController
             $reply['form_code'] = $sample_code;
 
             $sample_data = new SampleData();
-            $valid_sample = $sample_data->setTable($project->dbname.'_samples')->find($sample_code);
+            $valid_sample = $sample_data->setTable($project->dbname.'_samples')->find(trim($pcode[2]));
 
             if(!$valid_sample) {
                 $reply['message'] = $this->encoding('sms.error_code', $encoding);
