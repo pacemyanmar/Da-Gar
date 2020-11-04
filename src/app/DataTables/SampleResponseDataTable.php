@@ -112,6 +112,8 @@ class SampleResponseDataTable extends DataTable
                 $missing = [];
                 $error = [];
                 $reported = [];
+                $all_incomplete = [];
+                $missing_except_self = [];
 
                 foreach ($project->sections as $section) {
                     if($this->type == 'double') {
@@ -121,11 +123,30 @@ class SampleResponseDataTable extends DataTable
                     }
                     $status[] = 'IF( ' . $dbname . '.section' . $section->sort . 'status IS NOT NULL OR ' . $dbname . '.section' . $section->sort . 'status != 0, 1, 0) ';
                     $complete[] = 'IF( ' . $dbname . '.section' . $section->sort . 'status = 1, 1, 0) ';
-                    $incomplete[] = 'IF( ' . $dbname . '.section' . $section->sort . 'status != 1 OR ' . $dbname . '.section' . $section->sort . 'status != 0, 1, 0) ';
+                    $incomplete[] = 'IF( ' . $dbname . '.section' . $section->sort . 'status = 2, 1, 0) ';
+                    // IF(pj_s0.section0status = 0 OR pj_s0.section0status IS NULL,1,0)
                     $missing[] = 'IF( ' . $dbname . '.section' . $section->sort . 'status IS NULL OR ' . $dbname . '.section' . $section->sort . 'status = 0, 1, 0) ';
+                    $missing_except_self[] = $dbname . '.section' . $section->sort . 'status IS NULL OR ' . $dbname . '.section' . $section->sort . 'status = 0 ';
                     $error[] = 'IF( ' . $dbname . '.section' . $section->sort . 'status = 3, 1, 0) ';
                     $reported[] = '( ' . $dbname .'.sample_id is not null AND samples.id = ' . $dbname .'.sample_id )';
+                    // IF(pj_s0.section0status = 2 OR pj_s1.section1status = 2, 1, 0)
+                    $all_incomplete[] = $dbname . '.section' . $section->sort . 'status = 2';
                 }
+
+                foreach ($project->sections as $section) {
+                    if ($this->type == 'double') {
+                        $dbname = 'pj_s' . $section->sort . '_dbl';
+                    } else {
+                        $dbname = 'pj_s' . $section->sort;
+                    }
+
+
+                    $any_other_missing[$section->sort] = "IF( ". $dbname . ".section" . $section->sort . "status = 1 AND  IF(".implode(" OR ", $missing_except_self).",1,0), 1, 0)";
+                    $one_incomplete[] = implode(' OR ', $incomplete);
+                }
+
+                // IF(pj_s0.section0status = 2 OR pj_s1.section1status = 2, 1, 0)
+                $all_incomplete_expression = "IF(".implode(' OR ', $all_incomplete).", 1, 0)";
 
                 $sections_status = implode(' + ', $status);
                 $total = "SUM( IF(" . $sections_status . ",1,0) )";
@@ -135,10 +156,10 @@ class SampleResponseDataTable extends DataTable
 
                 // if at least one section incomplete, $incomplete_status will be greater than zero
                 $incomplete_status = implode (' + ', $incomplete);
-                $incompleted ="SUM( IF(" . $incomplete_status . ",1,0) )";
+                $incompleted ="SUM( ".implode(" OR ", $any_other_missing)." OR ".implode(" OR ", $one_incomplete). " )";
 
-                $missing_status = implode (' + ', $missing);
-                $missed ="SUM( IF(" . $missing_status . ",1,0) )";
+                $missing_status = implode (' * ', $missing);
+                $missed ="SUM( " . $missing_status . " ) ";
 
                 $error_status = implode (' + ', $error);
                 $incorrect ="SUM( IF(" . $error_status . ",1,0) )";
@@ -182,6 +203,7 @@ class SampleResponseDataTable extends DataTable
                                 'GROUP_CONCAT(DISTINCT update_user.name) as update_user',
                                 'GROUP_CONCAT(DISTINCT qc_user.name) as qc_user'));
                     }
+
                     $query->groupBy('sdv.' . $filter);
                     break;
             }
