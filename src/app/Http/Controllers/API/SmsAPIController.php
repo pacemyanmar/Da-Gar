@@ -252,6 +252,10 @@ class SmsAPIController extends AppBaseController
 //        if(empty($message_type)) {
         //            return $this->sendError('message type required.');
         //        }
+        if($message_type != 'sms') {
+            $reply = $this->encoding('sms.do_not_send_or_call', 'zawgyi');
+            return $this->sendError($reply);
+        }
 
         $service_id = $request->input('id');
 
