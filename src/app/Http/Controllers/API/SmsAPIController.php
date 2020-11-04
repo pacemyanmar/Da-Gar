@@ -397,6 +397,8 @@ class SmsAPIController extends AppBaseController
                     return $reply;
                 }
             }
+        } else {
+            $this->encoding('sms.no_code_found', 'zawgyi');
         }
 
 
