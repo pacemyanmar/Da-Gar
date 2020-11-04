@@ -398,7 +398,9 @@ class SmsAPIController extends AppBaseController
                 }
             }
         } else {
-            $this->encoding('sms.no_code_found', 'zawgyi');
+            $reply['message'] = $this->encoding('sms.no_code_found', 'zawgyi');
+            $reply['status'] = 'error';
+            return $reply;
         }
 
 
