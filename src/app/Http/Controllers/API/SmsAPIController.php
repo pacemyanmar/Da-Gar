@@ -363,7 +363,7 @@ class SmsAPIController extends AppBaseController
 
         Log::debug($message);
 
-        $match_code = preg_match('/^([a-zA-Z]{1,2})(\d+)/', trim($message), $pcode);
+        $match_code = preg_match('/^([a-zA-Z]{1,2})(\d){4,6}/', trim($message), $pcode);
 
         Log::debug($pcode);
 
@@ -512,7 +512,7 @@ class SmsAPIController extends AppBaseController
             $reply['form_code'] = $sample_code;
 
             $sample_data = new SampleData();
-            $valid_sample = $sample_data->setTable($project->dbname.'_samples')->find(trim($pcode[2]));
+            $valid_sample = $sample_data->setTable($project->dbname.'_samples')->find($sample_code);
 
             if(!$valid_sample) {
                 $reply['message'] = $this->encoding('sms.error_code', $encoding);
