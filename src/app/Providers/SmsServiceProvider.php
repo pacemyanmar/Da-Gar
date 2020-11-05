@@ -18,9 +18,9 @@ class SmsServiceProvider extends ServiceProvider
     {
         $this->app->singleton('blueplanet', function($app) {
             $blueplanet = new BluePlanetSMS();
-            return $blueplanet->setApiUrl(config('sms.providers.blueplanet.api.api_url'))
+            return $blueplanet->setApiUrl(config('sms.providers.blueplanet.api1.api_url'))
             ->setAccessToken(Settings::get('boom_api_key'))
-            ->setSenderId(config('sms.providers.blueplanet.api.sender_id'));
+            ->setSenderId(config('sms.providers.blueplanet.api1.sender_id'));
         });
         $this->app->singleton('blueplanet2', function($app) {
             $blueplanet = new BluePlanetSMS();
