@@ -22,7 +22,7 @@ return [
             'use' => true
         ],
         'blueplanet' => [
-            'active' => env('BP_ACTIVE', 'api2'),
+            'active' => env('BP_ACTIVE', 'blueplanet2'),
             'api1' =>
             [
             'api_url' => 'https://boomsms.net/api/sms/json',
