@@ -59,11 +59,11 @@ class SendBulkSms extends Command
 
                 $response_body = json_decode($smsresponse->getBody(), true);
 
-                if(array_key_exists('status')) {
+                if(array_key_exists('status', $response_body)) {
                     $sms->status = ($response_body['status'] === 0) ? "sent" : $response_body['error-text'];
                 }
 
-                if(array_key_exists('result_code')) {
+                if(array_key_exists('result_code', $response_body)) {
                     $sms->status = ($response_body['result_code'] === 1) ? "sent" : $response_body['result_name'];
                 }
                 $sms->save();

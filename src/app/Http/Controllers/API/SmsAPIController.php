@@ -183,11 +183,11 @@ class SmsAPIController extends AppBaseController
         $smsLog = SmsLog::where('status_secret', $status_uuid)->first();
         $smsLog->sms_status = ($response_body['status'] === 0)?"sent":$response_body['error-text'];
 
-        if(array_key_exists('status')) {
+        if(array_key_exists('status', $response_body)) {
             $smsLog->sms_status = ($response_body['status'] === 0) ? "sent" : $response_body['error-text'];
         }
 
-        if(array_key_exists('result_code')) {
+        if(array_key_exists('result_code', $response_body)) {
             $smsLog->sms_status = ($response_body['result_code'] === 1) ? "sent" : $response_body['result_name'];
         }
         $smsLog->service_id = (array_key_exists('message_id', $response_body))?$response_body['message_id']:$smsLog->service_id;
