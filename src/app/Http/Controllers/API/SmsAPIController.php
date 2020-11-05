@@ -179,8 +179,17 @@ class SmsAPIController extends AppBaseController
         $smsresponse = $smsprovider->send(['message' => $message, 'to' => $to_number]);
 
         $response_body = json_decode($smsresponse->getBody(), true);
+
         $smsLog = SmsLog::where('status_secret', $status_uuid)->first();
         $smsLog->sms_status = ($response_body['status'] === 0)?"sent":$response_body['error-text'];
+
+        if(array_key_exists('status')) {
+            $smsLog->sms_status = ($response_body['status'] === 0) ? "sent" : $response_body['error-text'];
+        }
+
+        if(array_key_exists('result_code')) {
+            $smsLog->sms_status = ($response_body['result_code'] === 1) ? "sent" : $response_body['result_name'];
+        }
         $smsLog->service_id = (array_key_exists('message_id', $response_body))?$response_body['message_id']:$smsLog->service_id;
         $smsLog->save();
 

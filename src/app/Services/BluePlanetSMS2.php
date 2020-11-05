@@ -17,7 +17,7 @@ Class BluePlanetSMS2 implements SMSInterface {
 
     protected $username;
 
-    protected $access_token;
+    protected $password;
 
     protected $sender_id;
 
@@ -37,8 +37,8 @@ Class BluePlanetSMS2 implements SMSInterface {
     }
 
     public function setAccessToken($token){
-        $this->access_token = $token; // Settings::get('boom_api_key');
-        if(!$this->access_token) {
+        $this->password = $token; // Settings::get('boom_api_key');
+        if(!$this->password) {
             throw new TokenErrorException();
         }
         return $this;

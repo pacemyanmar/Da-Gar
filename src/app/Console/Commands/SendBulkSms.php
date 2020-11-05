@@ -46,7 +46,7 @@ class SendBulkSms extends Command
      */
     public function handle()
     {
-        $smsprovider = app('blueplanet');
+        $smsprovider = app(config('sms.providers.blueplanet.active'));
 
         $sms_list = BulkSms::where('status','new')->get();
 
@@ -59,7 +59,13 @@ class SendBulkSms extends Command
 
                 $response_body = json_decode($smsresponse->getBody(), true);
 
-                $sms->status = ($response_body['status'] === 0) ? "sent" : $response_body['error-text'];
+                if(array_key_exists('status')) {
+                    $sms->status = ($response_body['status'] === 0) ? "sent" : $response_body['error-text'];
+                }
+
+                if(array_key_exists('result_code')) {
+                    $sms->status = ($response_body['result_code'] === 1) ? "sent" : $response_body['result_name'];
+                }
                 $sms->save();
 
             }

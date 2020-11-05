@@ -18,7 +18,7 @@ return [
     ],
     'providers' => [
         'global' => [
-            'provider' => 'blueplanet2',
+            'provider' => 'blueplanet',
             'use' => true
         ],
         'blueplanet' => [
@@ -30,7 +30,7 @@ return [
             'sender_id' => 'PACE',
             ],
             'api2' => [
-                'api_url' => ' http://apiv2.blueplanet.com.mm/mptsdp/bizsendsmsapi.php',
+                'api_url' => 'http://apiv2.blueplanet.com.mm/mptsdp/bizsendsmsapi.php',
                 'sender_id' => 'PACE',
                 'username' => env('BP_USERNAME'),
                 'password' => env('BP_PASSWORD')

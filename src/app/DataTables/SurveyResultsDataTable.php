@@ -219,10 +219,20 @@ class SurveyResultsDataTable extends DataTable
                     $sect_short = 'pj_s'.$section->sort;
                     if($status === 1) {
                         $q->where($sect_short.'.'.$sectionStatus, '=', $status);
-                    } elseif($status !== 0 && $status !== null) {
+                    } elseif($status === 2) {
+                        $q->orWhere($sect_short.'.'.$sectionStatus, '!=', 1);
+
+                        $q->orWhereNotNull($sect_short.'.'.$sectionStatus)->orWhere($sect_short.'.'.$sectionStatus, '!=', 0);
+                    } elseif($status === 3) {
                         $q->orWhere($sect_short.'.'.$sectionStatus, '=', $status);
                     } else {
-                        $q->orWhereNull($sect_short.'.'.$sectionStatus)->orWhere($sect_short.'.'.$sectionStatus, '=', 0);
+                        $q->where($sect_short.'.'.$sectionStatus, '!=', 1);
+                        $q->where($sect_short.'.'.$sectionStatus, '!=', 2);
+                        $q->where($sect_short.'.'.$sectionStatus, '!=', 3);
+                        $q->orWhere(function($q) use ($sect_short, $sectionStatus) {
+                            $q->orWhereNull($sect_short.'.'.$sectionStatus)->orWhere($sect_short.'.'.$sectionStatus, '=', 0);
+                        });
+
                     }
 
                 }
