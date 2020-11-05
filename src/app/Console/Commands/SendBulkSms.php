@@ -48,23 +48,22 @@ class SendBulkSms extends Command
     {
         $smsprovider = app('blueplanet');
 
-        $sms_list = BulkSms::all();
+        $sms_list = BulkSms::where('status','new')->get();
 
         foreach($sms_list->chunk(20) as $chunked_sms) {
             foreach ($chunked_sms as $sms) {
-                if ($sms->status == 'new') {
 
-                    $message = str_replace("{{NAME}}", $sms->name, $sms->message);
+                $message = str_replace("{{NAME}}", $sms->name, $sms->message);
 
-                    $smsresponse = $smsprovider->send(['message' => $message, 'to' => $sms->phone]);
+                $smsresponse = $smsprovider->send(['message' => $message, 'to' => $sms->phone]);
 
-                    $response_body = json_decode($smsresponse->getBody(), true);
+                $response_body = json_decode($smsresponse->getBody(), true);
 
-                    $sms->status = ($response_body['status'] === 0) ? "sent" : $response_body['error-text'];
-                    $sms->save();
-                }
+                $sms->status = ($response_body['status'] === 0) ? "sent" : $response_body['error-text'];
+                $sms->save();
+
             }
-            usleep(200 * 1000); // delay 200 milli seconds
+            usleep(20 * 1000); // delay 20 milli seconds
         }
 
     }
