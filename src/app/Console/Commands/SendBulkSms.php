@@ -64,7 +64,7 @@ class SendBulkSms extends Command
                 }
 
                 if(array_key_exists('result_code', $response_body)) {
-                    $sms->status = ($response_body['result_code'] === 1) ? "sent" : $response_body['result_name'];
+                    $sms->status = ($response_body['result_code'] === 1) ? "sent" : $response_body['result_status'];
                 }
                 $sms->save();
 

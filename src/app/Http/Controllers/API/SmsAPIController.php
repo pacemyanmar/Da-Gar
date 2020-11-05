@@ -187,7 +187,7 @@ class SmsAPIController extends AppBaseController
         }
 
         if(array_key_exists('result_code', $response_body)) {
-            $smsLog->sms_status = ($response_body['result_code'] === 1) ? "sent" : $response_body['result_name'];
+            $smsLog->sms_status = ($response_body['result_code'] === 1) ? "sent" : $response_body['result_status'];
         }
         $smsLog->service_id = (array_key_exists('message_id', $response_body))?$response_body['message_id']:$smsLog->service_id;
         $smsLog->save();
