@@ -172,7 +172,8 @@ class SmsAPIController extends AppBaseController
 
     public function sendToBoom($response, $to_number, $status_uuid)
     {
-        $smsprovider = app('blueplanet');
+
+        $smsprovider = app(config('sms.providers.blueplanet.active'));
         $message = $response['message'];
 
         $smsresponse = $smsprovider->send(['message' => $message, 'to' => $to_number]);

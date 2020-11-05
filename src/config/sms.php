@@ -18,13 +18,23 @@ return [
     ],
     'providers' => [
         'global' => [
-            'provider' => 'blueplanet',
+            'provider' => 'blueplanet2',
             'use' => true
         ],
         'blueplanet' => [
+            'active' => env('BP_ACTIVE', 'api2'),
+            'api1' =>
+            [
             'api_url' => 'https://boomsms.net/api/sms/json',
             'access_token' => '',
-            'sender_id' => 'PACE'
+            'sender_id' => 'PACE',
+            ],
+            'api2' => [
+                'api_url' => ' http://apiv2.blueplanet.com.mm/mptsdp/bizsendsmsapi.php',
+                'sender_id' => 'PACE',
+                'username' => env('BP_USERNAME'),
+                'password' => env('BP_PASSWORD')
+            ]
         ]
     ],
     'country_prefix' => '95',
