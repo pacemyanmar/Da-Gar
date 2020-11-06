@@ -300,9 +300,6 @@ class SmsAPIController extends AppBaseController
                 $status_secret = $request->input('secret');
                 $status = $request->input('status');
                 $log['sms_status'] = $status;
-                $response['message'] = '';
-                $response['status'] = 'error';
-                $response['result_id'] = null;
                 break;
             default:
 
@@ -310,8 +307,9 @@ class SmsAPIController extends AppBaseController
                 break;
 
         }
-
-        $this->smsLogs($response, $log);
+        if(array_key_exists('message', $response)) {
+            $this->smsLogs($response, $log);
+        }
 
         if ($event != 'send_status') {
             $reply['content'] = $response['message']; // reply message
