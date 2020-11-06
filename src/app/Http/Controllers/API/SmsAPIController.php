@@ -300,7 +300,8 @@ class SmsAPIController extends AppBaseController
                 $status_secret = $request->input('secret');
                 $status = $request->input('status');
                 $log['sms_status'] = $status;
-
+                $response['message'] = '';
+                $response['status'] = 'error';
                 break;
             default:
 
@@ -308,8 +309,6 @@ class SmsAPIController extends AppBaseController
                 break;
 
         }
-
-
 
         $this->smsLogs($response, $log);
 
@@ -429,7 +428,8 @@ class SmsAPIController extends AppBaseController
             $reply['status'] = 'error';
             $reply['form_code'] = 'unknown';
             return $reply;
-        } else {
+        }
+        else {
 
             $projects = Project::all();
 
