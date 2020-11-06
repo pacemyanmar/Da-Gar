@@ -302,6 +302,7 @@ class SmsAPIController extends AppBaseController
                 $log['sms_status'] = $status;
                 $response['message'] = '';
                 $response['status'] = 'error';
+                $response['result_id'] = null;
                 break;
             default:
 
