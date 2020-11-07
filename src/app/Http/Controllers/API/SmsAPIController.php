@@ -370,7 +370,16 @@ class SmsAPIController extends AppBaseController
 
         // Clean up code, look for Form Code and PCODE/Location code
         $message = strtolower($message);
-        $message = preg_replace('/([^a-zA-Z0-9]*)/', '', $message);
+        $invalid_messages = preg_match('/(missed|call|[^a-zA-Z0-9#\s]*)/', $message );
+
+        if ($invalid_messages) {
+            // if project is empty
+            $reply['message'] = $this->encoding('sms.do_not_send_or_call', 'zawgyi');
+            $reply['status'] = 'error';
+            return $reply;
+        }
+
+        $message = preg_replace('/([^a-zA-Z0-9#]*)/', '', $message);
 
         Log::debug($message);
 
@@ -553,7 +562,7 @@ class SmsAPIController extends AppBaseController
 
             $message = str_replace($pcode[1].$pcode[2],'',$message);
 
-            $qnamatch = preg_match_all('/([a-zA-Z]+)(\d+)/', trim($message), $qna);
+            $qnamatch = preg_match_all('/([a-zA-Z]+)([#0-9]+)/', trim($message), $qna);
 
             if(!$qnamatch && config('sms.reporting_mode')) {
                 $title = (strtolower($sample->details->sex) == 'female')? 'မ':'ကို';
