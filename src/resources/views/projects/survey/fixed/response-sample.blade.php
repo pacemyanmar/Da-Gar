@@ -43,7 +43,7 @@
                <a href="{{ url()->current() }}" class="btn btn-default">All</a>
               @foreach($project->sections as $key => $section)
                 @if(!empty($data['selected']))
-                <a href="{{ url()->current() }}/?section={{ $section->sort + 1 }}&sample_group={{$data['selected']}}" class="btn btn-default">{{$section->sectionname}}</a>
+                <a href="{{ url()->current() }}/?section={{ $section->sort + 1 }}&track={{$data['selected']}}" class="btn btn-default">{{$section->sectionname}}</a>
                 @else
                 <a href="{{ url()->current() }}/?section={{ $section->sort + 1 }}" class="btn btn-default">{{$section->sectionname}}</a>
                 @endif
@@ -87,5 +87,11 @@
 
         window.location.href = url;
     });
+    let params = new URLSearchParams(window.location.search);
+    for (const [key, value] of params) {
+    console.log(key);
+    console.log(value);
+    }
+
 
 @endpush
