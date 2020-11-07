@@ -213,26 +213,45 @@ class SurveyResultsDataTable extends DataTable
                     $status = null;
                     break;
             }
+
             $query->where(function ($q) use ($sectionColumns, $status) {
+
                 foreach ($sectionColumns as $section) {
                     $sectionStatus = 'section'.$section->sort.'status';
                     $sect_short = 'pj_s'.$section->sort;
-                    if($status === 1) {
-                        $q->where($sect_short.'.'.$sectionStatus, '=', $status);
-                    } elseif($status === 2) {
-                        $q->orWhere($sect_short.'.'.$sectionStatus, '!=', 1);
-
-                        $q->orWhereNotNull($sect_short.'.'.$sectionStatus)->orWhere($sect_short.'.'.$sectionStatus, '!=', 0);
-                    } elseif($status === 3) {
-                        $q->orWhere($sect_short.'.'.$sectionStatus, '=', $status);
-                    } else {
-                        $q->where($sect_short.'.'.$sectionStatus, '!=', 1);
-                        $q->where($sect_short.'.'.$sectionStatus, '!=', 2);
-                        $q->where($sect_short.'.'.$sectionStatus, '!=', 3);
-                        $q->orWhere(function($q) use ($sect_short, $sectionStatus) {
-                            $q->orWhereNull($sect_short.'.'.$sectionStatus)->orWhere($sect_short.'.'.$sectionStatus, '=', 0);
-                        });
-
+                    switch($status) {
+                        case '0':
+                            $q->where(function($q) use ($sectionColumns, $status, $section){
+                                $sectionStatus = 'section'.$section->sort.'status';
+                                $sect_short = 'pj_s'.$section->sort;
+                                $q->whereNull($sect_short.'.'.$sectionStatus)->orWhere($sect_short.'.'.$sectionStatus, '=', 0);
+                            });
+                            break;
+                        case 1:
+                            $q->where($sect_short.'.'.$sectionStatus, '=', $status);
+                            break;
+                        case '2':
+                            $q->orWhere($sect_short.'.'.$sectionStatus, '=', 2);
+                            $q->orWhere(function($q) use ($sectionColumns, $status, $section){
+                                $sectionStatus = 'section'.$section->sort.'status';
+                                $sect_short = 'pj_s'.$section->sort;
+                                $q->where($sect_short.'.'.$sectionStatus, '=', 1);
+                                $current = $section->sort;
+                                $q->where(function($q) use ($sectionColumns, $status, $current) {
+                                    foreach($sectionColumns as $sect) {
+                                        $sectStatus = 'section'.$sect->sort.'status';
+                                        $sect_sh = 'pj_s'.$sect->sort;
+                                        if($sect->sort !== $current) {
+                                            //$q->orWhere($sect_sh.'.'.$sectStatus, '=', 1);
+                                            $q->orWhere($sect_sh.'.'.$sectStatus, '=', 0);
+                                            $q->orWhereNull($sect_sh.'.'.$sectStatus)->orWhere($sect_sh.'.'.$sectStatus, '=', 0);
+                                        }
+                                    }
+                                });
+                            });
+                            break;
+                        default:
+                            $q->orWhere($sect_short.'.'.$sectionStatus, '=', $status);
                     }
 
                 }
