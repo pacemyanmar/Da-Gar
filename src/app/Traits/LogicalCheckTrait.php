@@ -65,6 +65,11 @@ trait LogicalCheckTrait
                             $this->errorBag[$question->qnum][$input->id] = 2;
                         }
                     }
+                    if($input->type == 'radio') {
+                        if(preg_match('/#+/', $results[$inputid])) {
+                            $results[$inputid] = '0';
+                        }
+                    }
                     // if found, question is summitted and set checkbox values to zero if false
                     if ($input->type == 'checkbox') {
                         $result_arr[$qid][$inputid] = ($results[$inputid]) ? $results[$inputid] : 0;
