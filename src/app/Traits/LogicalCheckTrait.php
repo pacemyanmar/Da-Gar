@@ -60,7 +60,7 @@ trait LogicalCheckTrait
                 if (array_key_exists($inputid, $results)) {
                     // if submitted values is not in valid value, set null
                     if(in_array($input->type, ['radio','checkbox'])) {
-                        if (!in_array($results[$inputid], $valid_values)) {
+                        if (($results[$inputid] === '0' || $results[$inputid]) && !in_array($results[$inputid], $valid_values)) {
                             $results[$inputid] = null;
                             $this->errorBag[$question->qnum][$input->id] = 2;
                         }
