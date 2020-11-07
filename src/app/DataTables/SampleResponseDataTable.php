@@ -241,8 +241,8 @@ class SampleResponseDataTable extends DataTable
             $join->on('qc_user.id', 'samples.qc_user_id');
         });
         $query->where('project_id', $project->id);
-        if($this->track_value) {
-            $query->where($this->track_column,'=',$this->track_value);
+        if($this->track_column && $this->track_value != 'all') {
+            $query->where($this->track_column,'=',($this->track_value)?$this->track_value:'');
         }
         //$query->where('sdv.sample', '<>', '0');
 

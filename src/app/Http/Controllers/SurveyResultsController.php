@@ -356,7 +356,7 @@ class SurveyResultsController extends AppBaseController
         if($sample_track) {
             $track_samples = $sampleDetails->setTable($project->dbname . '_samples')->pluck($sample_track->field_name)->unique();
 
-            if (!empty($request->input('track'))) {
+            if ($request->has('track')) {
                 $track = $request->input('track');
                 $sampleResponse->setTrack($sample_track->field_name, $track);
             }

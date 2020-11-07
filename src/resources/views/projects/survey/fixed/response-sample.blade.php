@@ -11,7 +11,7 @@
         <h1 class="pull-left">{!! (request()->is('*double*'))?'Double Entry':'Samples' !!} Response Rate</h1>
         <span class="pull-right">
             @if(!empty($data['tracks']))
-            <button class="btn btn-primary sample" data-sample="0" id="#trackall">All Tracks</button>
+            <button class="btn btn-primary sample" data-sample="all" id="#trackall">All Tracks</button>
             @foreach($data['tracks'] as $track)
                 <button class="btn btn-primary sample" data-sample="{{ $track }}" id="#track{{ $track }}">{!! strtoupper("Track ".$track) !!}</button>
             @endforeach
