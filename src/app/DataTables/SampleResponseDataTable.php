@@ -308,7 +308,30 @@ class SampleResponseDataTable extends DataTable
         $missing_img = "<img data-toggle='tooltip' data-placement='top' title='Missing' data-container='body' src='" . asset('images/missing.png') . "'>";
         $error_img = "<img data-toggle='tooltip' data-placement='top' title='Error' data-container='body' src='" . asset('images/error.png') . "'>";
 
-
+        $columns["alltotal"] = ['data' => 'alltotal', 'name' => 'alltotal', 'title' => 'All Forms', 'orderable' => false, "render" => function () use ($project, $filter) {
+            return "function ( data, type, full, meta ) {
+                                    if(type == 'display') {
+                                      return '<a href=" . route('projects.surveys.index', [$project->id]) . "/?nosample=1&" . $filter . "='+ encodeURI(full." . $filter . ") +'&alltotal=1>' + data + '</a>';
+                                    } else {
+                                      return data;
+                                    }
+                                  }";
+        }];
+        $columns["total"] = [
+            'data' => 'total',
+            'name' => 'total',
+            'title' => 'Response',
+            'orderable' => false,
+            "render" => function () use ($project, $filter) {
+                return "function ( data, type, full, meta ) {
+                                    if(type == 'display') {
+                                      return '<a href=" . route('projects.surveys.index', [$project->id]) . "/?nosample=1&" . $filter . "='+ encodeURI(full." . $filter . ") +'&total=1>' + data + '<br> (' +parseFloat((parseInt(data, 10) * 100)/ parseInt(full.alltotal, 10)).toFixed(1) + '%) </a>';
+                                    } else {
+                                      return data;
+                                    }
+                                  }";
+            }
+        ];
         if ($this->section) {
             $sectionColumns = [];
             foreach ($project->sections as $k => $section) {
@@ -387,30 +410,7 @@ class SampleResponseDataTable extends DataTable
                     }];
             }
         } else {
-            $columns["alltotal"] = ['data' => 'alltotal', 'name' => 'alltotal', 'title' => 'All Forms', 'orderable' => false, "render" => function () use ($project, $filter) {
-                return "function ( data, type, full, meta ) {
-                                    if(type == 'display') {
-                                      return '<a href=" . route('projects.surveys.index', [$project->id]) . "/?nosample=1&" . $filter . "='+ encodeURI(full." . $filter . ") +'&alltotal=1>' + data + '</a>';
-                                    } else {
-                                      return data;
-                                    }
-                                  }";
-            }];
-            $columns["total"] = [
-                'data' => 'total',
-                'name' => 'total',
-                'title' => 'Response',
-                'orderable' => false,
-                "render" => function () use ($project, $filter) {
-                return "function ( data, type, full, meta ) {
-                                    if(type == 'display') {
-                                      return '<a href=" . route('projects.surveys.index', [$project->id]) . "/?nosample=1&" . $filter . "='+ encodeURI(full." . $filter . ") +'&total=1>' + data + '<br> (' +parseFloat((parseInt(data, 10) * 100)/ parseInt(full.alltotal, 10)).toFixed(1) + '%) </a>';
-                                    } else {
-                                      return data;
-                                    }
-                                  }";
-            }
-            ];
+
             $columns['ltotal'] = [
                 'data' => 'ltotal',
                 'name' => 'ltotal',
