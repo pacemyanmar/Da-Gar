@@ -3,6 +3,7 @@
 namespace App\Console;
 
 use App\Console\Commands\GenerateSMSLog;
+use App\Console\Commands\ImportResults;
 use App\Console\Commands\SendBulkSms;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
@@ -16,7 +17,8 @@ class Kernel extends ConsoleKernel
      */
     protected $commands = [
         GenerateSMSLog::class,
-        SendBulkSms::class
+        SendBulkSms::class,
+        ImportResults::class
     ];
 
     /**

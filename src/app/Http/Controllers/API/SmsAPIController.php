@@ -372,7 +372,7 @@ class SmsAPIController extends AppBaseController
 
         // Clean up code, look for Form Code and PCODE/Location code
         $message = strtolower($message);
-        $invalid_messages = preg_match('/missed|call]|[^a-zA-Z0-9#\s]*/', $message );
+        $invalid_messages = preg_match('/missed|call]|[^a-zA-Z0-9#\s]+/', $message );
 
         if ($invalid_messages) {
             // if project is empty
