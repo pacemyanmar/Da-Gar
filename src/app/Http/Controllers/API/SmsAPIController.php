@@ -368,9 +368,11 @@ class SmsAPIController extends AppBaseController
     {
         Log::debug($message);
 
+        $reply['result_id'] = null;
+
         // Clean up code, look for Form Code and PCODE/Location code
         $message = strtolower($message);
-        $invalid_messages = preg_match('/(missed|call|[^a-zA-Z0-9#\s]*)/', $message );
+        $invalid_messages = preg_match('/missed|call]|[^a-zA-Z0-9#\s]*/', $message );
 
         if ($invalid_messages) {
             // if project is empty
@@ -386,8 +388,6 @@ class SmsAPIController extends AppBaseController
         $match_code = preg_match('/^([a-zA-Z]{1,2})(\d{4,6})/', trim($message), $pcode);
 
         Log::debug($pcode);
-
-        $reply['result_id'] = null;
 
         $sender = preg_replace('/^(\+95|0)/','', preg_replace('/[^\+0-9]/','', $to_number));
 
