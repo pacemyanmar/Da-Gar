@@ -16,5 +16,7 @@ Interface SMSInterface {
     public function receive($request);
 
     public function send($request);
+
+    public function sendBatch($sms_model);
   
   }

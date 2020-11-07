@@ -46,6 +46,11 @@ Class BluePlanetSMS implements SMSInterface {
     
     public function receive($request){}
 
+    public function sendBatch($sms_model)
+    {
+        // TODO: Implement sendBatch() method.
+    }
+
     public function send($request){
         $client = new Client();
         $container = [];

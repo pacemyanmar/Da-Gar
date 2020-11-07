@@ -5,6 +5,7 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Middleware;
+use GuzzleHttp\Pool;
 use Psr\Http\Message\ResponseInterface;
 use Illuminate\Support\Facades\Log;
 use App\Exceptions\ApiUrlErrorException;
@@ -53,6 +54,48 @@ Class BluePlanetSMS2 implements SMSInterface {
     }
     
     public function receive($request){}
+
+    public function sendBatch($sms_model)
+    {
+        $client = new Client();
+        $provider = [
+            'url' => $this->api_url,
+            'u' => $this->username,
+            'p' => $this->password,
+            'k' => $this->sender_id,
+            't' => $this->sender_id,
+        ];
+
+        $requests = function () use ($client, $sms_model, $provider) {
+            foreach($sms_model as $sms) {
+                yield function() use ($client, $provider, $sms) {
+                    $message = str_replace("{{NAME}}", $sms->name, $sms->message);
+                    $query = [
+                        'u' => $provider['u'],
+                        'p' => $provider['p'],
+                        'k' => $provider['k'],
+                        't' => $provider['t'],
+                        'callerid' => preg_replace('/^(\+959|09)/','959',ltrim($sms->phone)),
+                        'm' => $message,
+                        'uni' => true
+                    ];
+                    Log::debug($this->api_url);
+                    return $client->requestAsync('GET', $this->api_url, [
+                        'headers' => [
+                            'Accept' => 'application/json'
+                        ],
+                        'query' => $query
+                    ]);
+                };
+            }
+        };
+
+        $pool = new Pool($client, $requests());
+        $promise = $pool->promise();
+
+// Force the pool of requests to complete.
+        $promise->wait();
+    }
 
     public function send($request){
         $client = new Client();
