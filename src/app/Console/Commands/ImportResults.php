@@ -52,6 +52,7 @@ class ImportResults extends Command
         $file = $this->argument('file');
 
         $project = Project::where('unique_code', $this->argument('code'))->first();
+        $dbname = $project->dbname;
 
         $reader = Reader::createFromPath($file, 'r');
         $reader->setHeaderOffset(0);
@@ -95,7 +96,7 @@ class ImportResults extends Command
 
             foreach($project->sections as $section) {
                 $section_no = $section->sort + 1;
-                $section_table =
+                $section_table = $dbname . '_s' . $this->section->sort;
                 //dd($section->inputs->pluck('inputid')->unique());
                 $savedResult = $this->saveResults($section_table);
             }
