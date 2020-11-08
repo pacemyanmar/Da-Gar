@@ -57,7 +57,7 @@
             @endforeach
             },
             created: function() {
-                axios.get('/api/v1/projects/6/incidents').then(response => {
+                axios.get('/api/v1/projects/{{ $question->project->id }}/incidents').then(response => {
                     @foreach($question->surveyInputs as $k => $option)
                     if (typeof response.data.data.{{ $option->id }} !== 'undefined') {
                         this.{{ $option->id }} = response.data.data.{{ $option->id }}
