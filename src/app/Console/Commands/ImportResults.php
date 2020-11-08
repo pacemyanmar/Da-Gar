@@ -62,6 +62,7 @@ class ImportResults extends Command
         $count = count($reader);
         $total = $count;
         Log::debug('Total: '. $total);
+        $increment = 0;
         $offset = 0;
         $limit = 100;
         $gap = 100;
@@ -74,7 +75,7 @@ class ImportResults extends Command
                 if($limit > $count){
                     $limit = $count;
                 }
-                
+
                 $stmt = (new Statement())
                     ->offset($offset)
                     ->limit($limit);
@@ -83,6 +84,7 @@ class ImportResults extends Command
 
                 Log::debug('Previous gap: '. $gap);
                 $gap = $gap + $limit;
+                $offset = $offset + $increment;
                 Log::debug('Current Offset: '. $offset);
                 Log::debug('New Gap: '.$gap);
                 log::debug('Records: '. count($records));
@@ -101,7 +103,7 @@ class ImportResults extends Command
                 break;
             }
 
-            $offset++;
+            $increment++;
             $count--;
 
         }
