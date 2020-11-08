@@ -66,7 +66,7 @@ trait LogicalCheckTrait
                         }
                     }
                     if($input->type == 'radio') {
-                        if(preg_match('/#+/', $results[$inputid])) {
+                        if(preg_match('/[#]+/', $results[$inputid])) {
                             $results[$inputid] = '0';
                         }
                     }
@@ -327,7 +327,7 @@ trait LogicalCheckTrait
 
         }
 
-        $surveyResult->{$this->section} = $this->sectionStatus = (isset($flag_error))?$flag_error:$this->getSectionStatus();
+        $surveyResult->{'section' . $this->section->sort . 'status'} = $this->sectionStatus = (isset($flag_error))?$flag_error:$this->getSectionStatus();
 
         $surveyResult->sample_type = $this->sampleType;
 

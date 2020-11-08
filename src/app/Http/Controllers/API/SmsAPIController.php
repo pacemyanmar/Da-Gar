@@ -665,8 +665,6 @@ class SmsAPIController extends AppBaseController
 
             $this->results = $allResults;
 
-            $this->section = 'section' . $this->section->sort . 'status';
-
             if($training_mode) {
                 $this->saveTrainingLogs($dbname . '_training');
                 $reply['result_id'] = $this->traininglog->id;

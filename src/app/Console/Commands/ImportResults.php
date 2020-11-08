@@ -4,9 +4,11 @@ namespace App\Console\Commands;
 
 use Akaunting\Setting\Facade as Settings;
 use App\Http\Controllers\API\SmsAPIController;
+use App\Models\Project;
 use App\Models\User;
 use App\Repositories\ProjectRepository;
 use App\Repositories\SmsLogRepository;
+use App\Traits\LogicalCheckTrait;
 use Illuminate\Console\Command;
 use Illuminate\Container\Container;
 use Illuminate\Support\Facades\Log;
@@ -15,12 +17,13 @@ use League\Csv\Statement;
 
 class ImportResults extends Command
 {
+    use LogicalCheckTrait;
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'report:import {file}';
+    protected $signature = 'report:import {code} {file}';
 
     /**
      * The console command description.
@@ -48,6 +51,8 @@ class ImportResults extends Command
     {
         $file = $this->argument('file');
 
+        $project = Project::where('unique_code', $this->argument('code'))->first();
+
         $reader = Reader::createFromPath($file, 'r');
         $reader->setHeaderOffset(0);
         $count = count($reader);
@@ -58,6 +63,10 @@ class ImportResults extends Command
         $gap = $limit;
         while($count){
 
+            if($total < $limit) {
+                $limit = $total;
+            }
+
             if($offset === $gap) {
                 Log::debug('Offset: '. $offset);
                 Log::debug('Gap: '.$gap);
@@ -66,23 +75,31 @@ class ImportResults extends Command
                     $limit = $total - $gap;
                 }
 
-                $stmt = (new Statement())
-                    ->offset($offset)
-                    ->limit($limit);
-                $records = $stmt->process($reader);
-
-                log::debug('Records: '. count($records));
-                Log::debug('Limit: '.$limit);
-                foreach($records as $data) {
-                    Log::debug($data);
-
-                }
-
                 if(($total - $gap) < 1000){
                     break;
                 }
                 $gap = $gap + 1000;
             }
+            $stmt = (new Statement())
+                ->offset($offset)
+                ->limit($limit);
+            $records = $stmt->process($reader);
+
+            log::debug('Records: '. count($records));
+            Log::debug('Limit: '.$limit);
+            $results = [];
+            foreach($records as $data) {
+                $results[$data['psid']] = $data;
+
+            }
+
+            foreach($project->sections as $section) {
+                $section_no = $section->sort + 1;
+                $section_table =
+                //dd($section->inputs->pluck('inputid')->unique());
+                $savedResult = $this->saveResults($section_table);
+            }
+
 
             $offset++;
             $count--;
