@@ -67,7 +67,7 @@ class ImportResults extends Command
         $limit = 100;
         $gap = 100;
         while($count){
-            $last = ($total - $gap) ;
+            $last = ( $total - $gap ) ;
 //            Log::debug('Last:'. $last);
 //            Log::debug('count:' .$count);
 
@@ -84,7 +84,7 @@ class ImportResults extends Command
 
                 Log::debug('Previous gap: '. $gap);
                 $gap = $gap + $limit;
-                $offset = $offset + $increment;
+                $offset = $offset + $limit;
                 Log::debug('Current Offset: '. $offset);
                 Log::debug('New Gap: '.$gap);
                 log::debug('Records: '. count($records));
@@ -120,6 +120,7 @@ class ImportResults extends Command
                 $sample = $project->samplesList->where('project_id', $project->id)->where('sample_data_id', $data['psid'])->where('form_id', 1)->where('frequency', 1) ->first();
 
                 $sample->setRelatedTable($section_table);
+                Log::debug($data['psid']);
                 $data_columns = [
                     "sample_type" => 1,
                     "section".$section->sort."status" => (!empty($data['status'.$section_no]))?$data['status'.$section_no]:0,
