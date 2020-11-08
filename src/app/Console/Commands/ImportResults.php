@@ -5,10 +5,12 @@ namespace App\Console\Commands;
 use Akaunting\Setting\Facade as Settings;
 use App\Http\Controllers\API\SmsAPIController;
 use App\Models\Project;
+use App\Models\SurveyResult;
 use App\Models\User;
 use App\Repositories\ProjectRepository;
 use App\Repositories\SmsLogRepository;
 use App\Traits\LogicalCheckTrait;
+use Carbon\Carbon;
 use Illuminate\Console\Command;
 use Illuminate\Container\Container;
 use Illuminate\Support\Facades\Log;
@@ -32,6 +34,8 @@ class ImportResults extends Command
      */
     protected $description = 'import reported data from CSV';
 
+    private $sample;
+
     /**
      * Create a new command instance.
      *
@@ -52,58 +56,112 @@ class ImportResults extends Command
         $file = $this->argument('file');
 
         $project = Project::where('unique_code', $this->argument('code'))->first();
-        $dbname = $project->dbname;
 
         $reader = Reader::createFromPath($file, 'r');
         $reader->setHeaderOffset(0);
         $count = count($reader);
         $total = $count;
-        Log::debug('Count: '. $count);
+        Log::debug('Total: '. $total);
         $offset = 0;
-        $limit = 1000;
-        $gap = $limit;
+        $limit = 100;
+        $gap = 100;
         while($count){
+            $last = ($total - $gap) ;
+//            Log::debug('Last:'. $last);
+//            Log::debug('count:' .$count);
 
-            if($total < $limit) {
-                $limit = $total;
-            }
+            if($last === $count) {
+                $stmt = (new Statement())
+                    ->offset($offset)
+                    ->limit($limit);
+                $records = $stmt->process($reader);
+                $this->importData($project, $records);
 
-            if($offset === $gap) {
-                Log::debug('Offset: '. $offset);
-                Log::debug('Gap: '.$gap);
-                Log::debug('total: '.$total);
-                if(($total - $gap) < 1000){
-                    $limit = $total - $gap;
+                if($limit > $count){
+                    $limit = $count;
                 }
-
-                if(($total - $gap) < 1000){
-                    break;
-                }
-                $gap = $gap + 1000;
-            }
-            $stmt = (new Statement())
-                ->offset($offset)
-                ->limit($limit);
-            $records = $stmt->process($reader);
-
-            log::debug('Records: '. count($records));
-            Log::debug('Limit: '.$limit);
-            $results = [];
-            foreach($records as $data) {
-                $results[$data['psid']] = $data;
-
+                Log::debug('Previous gap: '. $gap);
+                $gap = $gap + $limit;
+                Log::debug('Current Offset: '. $offset);
+                Log::debug('New Gap: '.$gap);
+                log::debug('Records: '. count($records));
+                Log::debug('Limit: '.$limit);
+                Log::debug('Count : '.$count);
             }
 
-            foreach($project->sections as $section) {
-                $section_no = $section->sort + 1;
-                $section_table = $dbname . '_s' . $this->section->sort;
-                //dd($section->inputs->pluck('inputid')->unique());
-                $savedResult = $this->saveResults($section_table);
+            if( $gap > $total ) {
+                //$this->importData($project, $records);
+//                Log::debug('Last Offset: '. $offset);
+//                Log::debug('Last Count : '. $last);
+//                Log::debug('Gap: '.$gap);
+//                log::debug('Records: '. count($records));
+//                Log::debug('Limit: '.$limit);
+//                Log::debug('Count : '.$count);
+                break;
             }
-
 
             $offset++;
             $count--;
+
+        }
+    }
+
+    protected function importData($project,$records)
+    {
+        $dbname = $project->dbname;
+        foreach($records as $data) {
+            foreach($project->sections as $section) {
+                $section_no = $section->sort + 1;
+                $section_table = $dbname . '_s' . $section->sort;
+
+                $sample = $project->samplesList->where('project_id', $project->id)->where('sample_data_id', $data['psid'])->where('form_id', 1)->where('frequency', 1) ->first();
+
+                $sample->setRelatedTable($section_table);
+                $data_columns = [
+                    "sample_type" => 1,
+                    "section".$section->sort."status" => (!empty($data['status'.$section_no]))?$data['status'.$section_no]:0,
+                    "user_id" => 1
+                ];
+                $unique_inputs = $section->inputs->pluck('inputid')->unique();
+                $datamapped = [];
+                array_walk($data, function($value,$key) use (&$datamapped) {
+                    $mapped_key = preg_replace('/[^0-9a-zA-Z]+/','', $key);
+                    if(preg_match('/[^0-9]$/', $mapped_key)) {
+                        $mapped_key = $mapped_key.'r';
+                    }
+                    $datamapped[$mapped_key] = $value;
+                });
+                //Log::debug($datamapped);
+                $input_array = array_flip($unique_inputs->toArray());
+                //Log::debug($input_array);
+                $results = [];
+
+                array_walk($input_array, function(&$value,  $key) use ($datamapped) {
+                    $value = (array_key_exists($key, $datamapped))?$datamapped[$key]:"";
+                });
+
+                $final_results = array_merge($data_columns, $input_array);
+                //Log::debug($final_results);
+                $sample->channel_time = Carbon::now();
+                $sample->channel = 'sms';
+                $sample->save();
+
+
+
+                $surveyResult = $sample->resultWithTable()->first();
+
+                if (empty($surveyResult)) {
+
+                    $surveyResult = new SurveyResult();
+
+                }
+                $surveyResult->setTable($section_table);
+                $surveyResult->sample()->associate($sample);
+                $surveyResult->forceFill(array_filter($final_results));
+
+                $surveyResult->save();
+            }
+
         }
     }
 }
