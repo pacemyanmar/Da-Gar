@@ -94,14 +94,14 @@
                                                                             @if( $element->type == 'radio' )
                                                                                 @if($results->{strtolower($question->qnum).'_reported'} && is_numeric($element->value))
                                                                                     ( {{ $results->{$element->inputid.'_'.$element->value} }}
-                                                                                    - {{ number_format(($results->{$element->inputid.'_'.$element->value} * 100)/ ($results->{strtolower($question->qnum).'_reported'})??1, 2, '.', '') }}
+                                                                                    - {{ number_format(($results->{$element->inputid.'_'.$element->value} * 100)/ ($results->{strtolower($question->qnum).'_reported'})??1, 1, '.', '') }}
                                                                                     % )
 
                                                                                     @push('d3-js')
                                                                                         var data{!! $element->inputid.'_'.$element->value !!} = {
                                                                                             label:"({!! $element->value !!})",
                                                                                             color:"{!! $colors[$k] !!}",
-                                                                                            value: {{ number_format(($results->{$element->inputid.'_'.$element->value} * 100)/ ($results->{strtolower($question->qnum).'_reported'})??1, 2, '.', '') }}
+                                                                                            value: {{ number_format(($results->{$element->inputid.'_'.$element->value} * 100)/ ($results->{strtolower($question->qnum).'_reported'})??1, 1, '.', '') }}
                                                                                         }
                                                                                         d3{!! $question->id !!}Data.push(data{!! $element->inputid.'_'.$element->value !!});
                                                                                     @endpush
@@ -116,7 +116,7 @@
                                                                                         var data{!! $element->inputid.'_'.$element->value !!} = {
                                                                                             label:"({!! $element->value !!})",
                                                                                             color:"{!! $colors[$k] !!}",
-                                                                                            value: {{ number_format($results->{$element->inputid.'_'.$element->value}, 2, '.', '') }}
+                                                                                            value: {{ number_format($results->{$element->inputid.'_'.$element->value}, 1, '.', '') }}
                                                                                         }
                                                                                         d3{!! $question->id !!}Data.push(data{!! $element->inputid.'_'.$element->value !!});
                                                                                     @endpush
@@ -138,7 +138,7 @@
                                                                         Missing from to be reported<a
                                                                                 href="{{ route('projects.surveys.index', $project->id) }}/?column={{ $element->inputid }}&sect={{ $section_table }}&value=NULL">
                                                                             ( {{ $results->{'q'.strtolower($question->qnum).'_none'} }}
-                                                                            - {{ number_format(($results->{'q'.strtolower($question->qnum).'_none'} * 100)/ ($results->total)??1, 2, '.', '') }}
+                                                                            - {{ number_format(($results->{'q'.strtolower($question->qnum).'_none'} * 100)/ ($results->total)??1, 1, '.', '') }}
                                                                             % ) </a>
 
                                                                         {{--@push('d3-js')--}}
@@ -147,10 +147,10 @@
                                                                         {{--@endpush--}}
                                                                     </li>
                                                                     <li class="list-group-item">
-                                                                        Total reported  - ( {{ number_format($results->total - $results->{'q'.strtolower($question->qnum).'_none'}, 2, '.', '') }} )
+                                                                        Total reported  - ( {{ number_format($results->total - $results->{'q'.strtolower($question->qnum).'_none'}, 0, '.', '') }} )
                                                                     </li>
                                                                     <li class="list-group-item">
-                                                                        Total to be reported  - ( {{ number_format($results->total, 2, '.', '') }} )
+                                                                        Total to be reported  - ( {{ number_format($results->total, 0, '.', '') }} )
                                                                     </li>
                                                             @endif
                                                         </ul>
