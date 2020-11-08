@@ -71,15 +71,16 @@ class ImportResults extends Command
 //            Log::debug('count:' .$count);
 
             if($last === $count) {
+                if($limit > $count){
+                    $limit = $count;
+                }
+                
                 $stmt = (new Statement())
                     ->offset($offset)
                     ->limit($limit);
                 $records = $stmt->process($reader);
                 $this->importData($project, $records);
 
-                if($limit > $count){
-                    $limit = $count;
-                }
                 Log::debug('Previous gap: '. $gap);
                 $gap = $gap + $limit;
                 Log::debug('Current Offset: '. $offset);
