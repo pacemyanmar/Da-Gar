@@ -219,9 +219,7 @@ class SampleResponseDataTable extends DataTable
             });
 
             foreach ($project->sections as $k => $section) {
-                if($section->optional) {
-                    continue;
-                }
+
                 if($this->type == 'double') {
                     $dbname = 'pj_s'.$section->sort.'_dbl';
                     $section_table = $childTable . '_s' . $section->sort.'_dbl';
