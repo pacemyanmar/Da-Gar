@@ -8,6 +8,7 @@ use App\DataTables\Scopes\OrderByCode;
 use App\DataTables\Scopes\OrderByFormId;
 use App\DataTables\SurveyResultsDataTable;
 use App\Models\SampleData;
+use App\Models\SampleDetails;
 use App\Models\Section;
 use App\Models\SurveyResult;
 use App\Repositories\ProjectRepository;
@@ -311,7 +312,7 @@ class SurveyResultsController extends AppBaseController
         return view('projects.monitor')->withQuestions($question_in_report);
     }
 
-    public function responseRateSample($project_id, $filter, $type='first', SampleResponseDataTable $sampleResponse,SampleDetailsRepository $sampleDetails, Request $request)
+    public function responseRateSample($project_id, $filter, $type='first', SampleResponseDataTable $sampleResponse, SampleDetails $sampleDetails, Request $request)
     {
         $project = $this->projectRepository->findWithoutFail($project_id);
         if (empty($project)) {
