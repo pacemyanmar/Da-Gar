@@ -1102,7 +1102,8 @@ class ProjectController extends AppBaseController
                     }
                 }
             }
-            $settings = array_replace(setting('show_projects'),[$projectInstance->id => 1]);
+            if(setting('show_projects'))
+                $settings = array_replace(setting('show_projects'),[$projectInstance->id => 1]);
 
             Settings::set('show_projects', $settings);
             Flash::success('Project imported successfully.');
