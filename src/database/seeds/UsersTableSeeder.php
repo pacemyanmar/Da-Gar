@@ -19,7 +19,7 @@ class UsersTableSeeder extends Seeder
             'username' => 'herzcthu',
             'email' => 'sithu@thwin.net',
             'role_id' => 1,
-            'password' => bcrypt('Forever#123'),
+            'password' => bcrypt('noghFuAnReogInca'),
             'created_at' => $date,
             'updated_at' => $date,
         ]);

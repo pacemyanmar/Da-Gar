@@ -72,6 +72,7 @@ class QuestionController extends AppBaseController
         // $input['qnum_trans'] = json_encode([$lang => $input['qnum']]);
 
         // $input['question_trans'] = json_encode([$lang => $input['question']]);
+        $input['raw_ans'] = strip_tags($input['raw_ans']);
 
         $question = Question::create($input);
 
@@ -145,9 +146,11 @@ class QuestionController extends AppBaseController
         if(!$request->input('qnum') && $request->input('layout') == 'description') {
             $form_input['qnum'] = 'desc_'.$short_unique;
         }
-
+        
         $form_input['css_id'] = str_slug('qnum' . $form_input['qnum']);
-
+        $raw_ans = json_decode($form_input['raw_ans']);
+        array_walk_recursive($raw_ans, function($item, $key){ $item->label = strip_tags(html_entity_decode($item->label)); return $item;});
+        $form_input['raw_ans'] = json_encode($raw_ans);
         $form_input['raw_ans'] = str_replace("'", "&#39;", $form_input['raw_ans']);
 
         $need_rebuild = false;

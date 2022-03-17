@@ -326,8 +326,7 @@ trait LogicalCheckTrait
             }
 
         }
-
-        $surveyResult->{'section' . $this->section->sort . 'status'} = $this->sectionStatus = (isset($flag_error))?$flag_error:$this->getSectionStatus();
+        $surveyResult->{ $this->section} = $this->sectionStatus = (isset($flag_error))?$flag_error:$this->getSectionStatus();
 
         $surveyResult->sample_type = $this->sampleType;
 

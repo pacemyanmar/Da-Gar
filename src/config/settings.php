@@ -60,7 +60,7 @@ return [
 
         'database' => [
             'driver' => 'database',
-            'connection' => env('DB_CONNECTION', 'sms'),
+            'connection' => null,
             'table' => 'settings',
         ],
 

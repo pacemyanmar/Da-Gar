@@ -612,6 +612,7 @@ class ProjectController extends AppBaseController
                                 break;
 
                             case 'textarea':
+                            case 'text':
                                 $inputType = 'text';
                                 break;
 
@@ -652,6 +653,7 @@ class ProjectController extends AppBaseController
                                 break;
                             case 'checkbox':
                                 $inputType = 'unsignedTinyInteger';
+                                $questions[$input->question->qnum][$columnName] = $columnName;
                                 break;
 
                             case 'number':
@@ -659,6 +661,7 @@ class ProjectController extends AppBaseController
                                 break;
 
                             case 'textarea':
+                            case 'text':
                                 $inputType = 'text';
                                 break;
 
@@ -688,30 +691,32 @@ class ProjectController extends AppBaseController
 
                         Schema::table($dbname, function ($table) use ($input, $dbname) {
                             $columnName = $input->inputid;
-                            $table->string($columnName . '_other', 100)->change()
-                                ->nullable();
+                            $table->text($columnName . '_other', 100)->change();
                         });
                     } else {
                         // if column has not been created, creat now
                         Schema::table($dbname, function ($table) use ($input, $project) {
                             $columnName = $input->inputid;
-                            $table->string($columnName . '_other', 100)
-                                ->nullable();
+                            $table->text($columnName . '_other');
                         });
                     }
                 }
             }
         }
+        if(!empty($questions)) {
 
-        foreach ($questions as $question => $inputs) {
-            $checkboxes = implode(' OR ', $inputs);
+            foreach ($questions as $question => $inputs) {
+                $checkboxes = implode(' OR ', $inputs);
 
-            $checkboxes_status_col = trim(strtolower($question).'_cs');
+                $checkboxes_status_col = trim(strtolower($question).'_cs');
 
-            if (!Schema::hasColumn($dbname, $checkboxes_status_col)) {
-                Schema::table($dbname, function ($table) use ($checkboxes_status_col, $checkboxes) {
-                    $table->unsignedTinyInteger($checkboxes_status_col)->virtualAs('IF(' . $checkboxes . ',1,0)');
-                });
+                Log::info("Checkbox:". $checkboxes . " " . $checkboxes_status_col. " " . $dbname);
+
+                if (!Schema::hasColumn($dbname, $checkboxes_status_col)) {
+                    Schema::table($dbname, function ($table) use ($checkboxes_status_col, $checkboxes) {
+                        $table->unsignedTinyInteger($checkboxes_status_col)->virtualAs('IF(' . $checkboxes . ',1,0)');
+                    });
+                }
             }
         }
     }
@@ -781,6 +786,7 @@ class ProjectController extends AppBaseController
                         break;
 
                     case 'textarea':
+                    case 'text':
                         $inputType = 'text';
                         break;
 
@@ -804,7 +810,7 @@ class ProjectController extends AppBaseController
                 }
 
                 if ($input->other) {
-                    $table->string($columnName . '_other', 100)
+                    $table->text($columnName . '_other')
                         ->nullable();
                 }
             }
@@ -1104,7 +1110,6 @@ class ProjectController extends AppBaseController
             }
             if(setting('show_projects'))
                 $settings = array_replace(setting('show_projects'),[$projectInstance->id => 1]);
-
             Settings::set('show_projects', $settings);
             Flash::success('Project imported successfully.');
 
@@ -1448,7 +1453,11 @@ class ProjectController extends AppBaseController
                 ini_set("auto_detect_line_endings", '1');
             }
             $reader = Reader::createFromPath($request->samplefile->path());
+            //$reader->setDelimiter(config('sms.csv_delimiter'));
+
             $reader->setHeaderOffset(0);
+
+
 
             $stmt = (new Statement());
             $records = $stmt->process($reader);
