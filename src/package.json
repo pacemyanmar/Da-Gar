@@ -50,7 +50,7 @@
     "laravel-mix": "^4.0.0",
     "magic-check": "^1.0.3",
     "marked": "^4.0.10",
-    "moment": "^2.24.0",
+    "moment": "^2.29.4",
     "mozjpeg": "^6.0.1",
     "node-sass": "^7.0.0",
     "select2": "^4.0.6-rc.1",
