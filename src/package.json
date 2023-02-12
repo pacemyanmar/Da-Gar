@@ -52,7 +52,7 @@
     "marked": "^4.0.10",
     "moment": "^2.24.0",
     "mozjpeg": "^6.0.1",
-    "node-sass": "^4.11.0",
+    "node-sass": "^7.0.0",
     "select2": "^4.0.6-rc.1",
     "socket.io-client": "^2.2.0",
     "v-tooltip": "^2.0.0-rc.33",
