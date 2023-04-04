@@ -20,7 +20,7 @@ jobs:
       run: php -r "file_exists('.env') || copy('.env.example', './src/.env');"
     - name: update dependencies
       working-directory: ./src
-      run: composer update
+      run: composer self-update --2.2 && composer update
     - name: Install Dependencies
       working-directory: ./src
       run: composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
